@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @Setter
 public class SceneSuite {
-    // make it refer the default empty list to avoid NPE caused by some group 
+    // make it refer the default empty list to avoid NPE caused by some group
 	public List<Integer> monsters = List.of();
 	public List<Integer> gadgets = List.of();
 	public List<String> triggers = List.of();
@@ -21,7 +21,7 @@ public class SceneSuite {
 	public transient List<SceneTrigger> sceneTriggers = List.of();
     public transient List<SceneRegion> sceneRegions = List.of();
 
-    public void init(SceneGroup sceneGroup) {
+    public void init(BaseGroup sceneGroup) {
         if(sceneGroup.monsters != null){
             this.sceneMonsters = new ArrayList<>(
                 this.monsters.stream()

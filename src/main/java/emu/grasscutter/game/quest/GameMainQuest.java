@@ -158,7 +158,7 @@ public class GameMainQuest {
         if (this.questManager == null) {
             this.questManager = getOwner().getQuestManager();
         }
-        List<GameQuest> sortedByOrder = new ArrayList<>(getChildQuests().values().stream().filter(q -> q.getQuestData().isRewind()).toList());
+        List<GameQuest> sortedByOrder = new ArrayList<>(getChildQuests().values().stream().filter(q -> q.getQuestData() != null && q.getQuestData().isRewind()).toList());
         sortedByOrder.sort((a,b) -> {
             if ( a == b) {
                 return 0;
@@ -177,7 +177,7 @@ public class GameMainQuest {
             }
         }
         List<GameQuest> rewindQuests = getChildQuests().values().stream()
-            .filter(p -> (p.getState() == QuestState.QUEST_STATE_UNFINISHED || p.getState() == QuestState.QUEST_STATE_FINISHED) && p.getQuestData().isRewind()).toList();
+            .filter(p -> (p.getState() == QuestState.QUEST_STATE_UNFINISHED || p.getState() == QuestState.QUEST_STATE_FINISHED) && p.getQuestData() != null && p.getQuestData().isRewind()).toList();
         for (GameQuest quest : rewindQuests) {
             if (rewindPositions.containsKey(quest.getSubQuestId())) {
                 List<Position> posAndRot = new ArrayList<>();

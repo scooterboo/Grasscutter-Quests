@@ -12,6 +12,7 @@ import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.quest.enums.QuestTrigger;
 import emu.grasscutter.net.proto.ChapterStateOuterClass;
 import emu.grasscutter.net.proto.QuestOuterClass.Quest;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
 
 import emu.grasscutter.server.packet.send.PacketChapterStateNotify;
@@ -75,7 +76,7 @@ public class GameQuest {
                     }
                     triggerData.put(newTrigger.getTriggerName(), newTrigger);
                     triggers.put(newTrigger.getTriggerName(), false);
-                    SceneGroup group = SceneGroup.of(newTrigger.getGroupId()).load(newTrigger.getSceneId());
+                    BaseGroup group = SceneGroup.of(newTrigger.getGroupId()).load(newTrigger.getSceneId());
                     getOwner().getWorld().getSceneById(newTrigger.getSceneId()).loadTriggerFromGroup(group, newTrigger.getTriggerName());
                 }
             }
@@ -121,7 +122,7 @@ public class GameQuest {
     }
 
     public void setConfig(QuestData config) {
-        if (getSubQuestId() != config.getId()) return;
+        if (config == null || getSubQuestId() != config.getId()) return;
         this.questData = config;
     }
 
@@ -181,7 +182,7 @@ public class GameQuest {
         }
         return false;
     }
-    
+
     public void save() {
         getMainQuest().save();
     }

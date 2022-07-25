@@ -9,8 +9,8 @@ import emu.grasscutter.game.dungeons.challenge.factory.ChallengeFactory;
 import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.quest.enums.QuestTrigger;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneRegion;
 import emu.grasscutter.server.packet.send.PacketCanUseSkillNotify;
 import emu.grasscutter.server.packet.send.PacketDungeonShowReminderNotify;
 import emu.grasscutter.server.packet.send.PacketWorktopOptionNotify;
@@ -25,7 +25,7 @@ import java.util.Optional;
 public class ScriptLib {
 	public static final Logger logger = LoggerFactory.getLogger(ScriptLib.class);
 	private final FastThreadLocal<SceneScriptManager> sceneScriptManager;
-	private final FastThreadLocal<SceneGroup> currentGroup;
+	private final FastThreadLocal<BaseGroup> currentGroup;
 	public ScriptLib() {
 		this.sceneScriptManager = new FastThreadLocal<>();
 		this.currentGroup = new FastThreadLocal<>();
@@ -53,10 +53,10 @@ public class ScriptLib {
 		sb.append("}");
 		return sb.toString();
 	}
-	public void setCurrentGroup(SceneGroup currentGroup){
+	public void setCurrentGroup(BaseGroup currentGroup){
 		this.currentGroup.set(currentGroup);
 	}
-	public Optional<SceneGroup> getCurrentGroup(){
+	public Optional<BaseGroup> getCurrentGroup(){
 		return Optional.of(this.currentGroup.get());
 	}
 	public void removeCurrentGroup(){
@@ -89,14 +89,14 @@ public class ScriptLib {
 				.filter(e -> e instanceof EntityGadget)
 				.map(e -> (EntityGadget)e)
 				.forEach(e -> e.updateState(gadgetState));
-		
+
 		return 0;
 	}
-	
+
 	public int SetWorktopOptionsByGroupId(int groupId, int configId, int[] options) {
 		logger.debug("[LUA] Call SetWorktopOptionsByGroupId with {},{},{}",
 				groupId,configId,options);
-		
+
 		Optional<GameEntity> entity = getSceneScriptManager().getScene().getEntities().values().stream()
 				.filter(e -> e.getConfigId() == configId && e.getGroupId() == groupId).findFirst();
 
@@ -108,10 +108,10 @@ public class ScriptLib {
 		if (!(gadget.getContent() instanceof GadgetWorktop worktop)) {
 			return 1;
 		}
-		
+
 		worktop.addWorktopOptions(options);
 		getSceneScriptManager().getScene().broadcastPacket(new PacketWorktopOptionNotify(gadget));
-		
+
 		return 0;
 	}
 
@@ -133,34 +133,34 @@ public class ScriptLib {
 		if (!(gadget.getContent() instanceof GadgetWorktop worktop)) {
 			return 1;
 		}
-		
+
 		worktop.removeWorktopOption(option);
 		getSceneScriptManager().getScene().broadcastPacket(new PacketWorktopOptionNotify(gadget));
-		
+
 		return 0;
 	}
-	
+
 	// Some fields are guessed
 	public int AutoMonsterTide(int challengeIndex, int groupId, Integer[] ordersConfigId, int tideCount, int sceneLimit, int param6) {
 		logger.debug("[LUA] Call AutoMonsterTide with {},{},{},{},{},{}",
 				challengeIndex,groupId,ordersConfigId,tideCount,sceneLimit,param6);
 
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
 
 		if (group == null || group.monsters == null) {
 			return 1;
 		}
 
 		this.getSceneScriptManager().startMonsterTideInGroup(group, ordersConfigId, tideCount, sceneLimit);
-		
+
 		return 0;
 	}
-	
+
 	public int AddExtraGroupSuite(int groupId, int suite) {
 		logger.debug("[LUA] Call AddExtraGroupSuite with {},{}",
 				groupId,suite);
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
-		
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
+
 		if (group == null || group.monsters == null) {
 			return 1;
 		}
@@ -181,7 +181,7 @@ public class ScriptLib {
 	public int GoToGroupSuite(int groupId, int suite) {
 		logger.debug("[LUA] Call GoToGroupSuite with {},{}",
 				groupId,suite);
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
 		if (group == null || group.monsters == null) {
 			return 1;
 		}
@@ -204,7 +204,7 @@ public class ScriptLib {
 		logger.debug("[LUA] Call RemoveExtraGroupSuite with {},{}",
 				groupId,suite);
 
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
 		if (group == null || group.monsters == null) {
 			return 1;
 		}
@@ -221,7 +221,7 @@ public class ScriptLib {
 		logger.debug("[LUA] Call KillExtraGroupSuite with {},{}",
 				groupId,suite);
 
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
 		if (group == null || group.monsters == null) {
 			return 1;
 		}
@@ -263,7 +263,7 @@ public class ScriptLib {
 		challenge.start();
 		return 0;
 	}
-	
+
 	public int GetGroupMonsterCountByGroupId(int groupId) {
 		logger.debug("[LUA] Call GetGroupMonsterCountByGroupId with {}",
 				groupId);
@@ -271,20 +271,20 @@ public class ScriptLib {
 								.filter(e -> e instanceof EntityMonster && e.getGroupId() == groupId)
 								.count();
 	}
-	
+
 	public int GetGroupVariableValue(String var) {
 		logger.debug("[LUA] Call GetGroupVariableValue with {}",
 				var);
 		return getSceneScriptManager().getVariables().getOrDefault(var, 0);
 	}
-	
+
 	public int SetGroupVariableValue(String var, int value) {
 		logger.debug("[LUA] Call SetGroupVariableValue with {},{}",
 				var, value);
 		getSceneScriptManager().getVariables().put(var, value);
 		return 0;
 	}
-	
+
 	public LuaValue ChangeGroupVariableValue(String var, int value) {
 		logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
 				var, value);
@@ -302,15 +302,16 @@ public class ScriptLib {
 		// Kill and Respawn?
 		int groupId = table.get("group_id").toint();
 		int suite = table.get("suite").toint();
-		
-		SceneGroup group = getSceneScriptManager().getGroupById(groupId);
-		
-		if (group == null || group.monsters == null) {
+
+        BaseGroup group = getSceneScriptManager().getGroupById(groupId);
+
+		if (group == null) {
+            logger.warn("[LUA] trying to reload unknown group {}", groupId);
 			return 1;
 		}
-		
+
 		getSceneScriptManager().refreshGroup(group, suite);
-		
+
 		return 0;
 	}
 
@@ -360,6 +361,15 @@ public class ScriptLib {
 
 		return 0;
 	}
+
+    public int SetPlatformRouteId(int var2, int routeId){
+        logger.warn("[LUA] Call SetPlatformRouteId {} {}", var2, routeId);
+        //TODO
+        // var2 == seelie ID?
+        // e.g. scene3_group133003381.lua action_EVENT_ENTER_REGION_381007 line 387
+        // or scene3_group133001159.lua action_EVENT_ENTER_REGION_159007 line 387
+        return 0;
+    }
 
 	public int GetGroupVariableValueByGroup(String name, int groupId){
 		logger.debug("[LUA] Call GetGroupVariableValueByGroup with {},{}",
@@ -430,14 +440,14 @@ public class ScriptLib {
 		var configId = table.get("config_id").toint();
 
 		var group = getCurrentGroup();
-		
+
 		if (group.isEmpty()) {
 			return 1;
 		}
-		
+
 		var gadget = group.get().gadgets.get(configId);
 		var entity = getSceneScriptManager().createGadget(group.get().id, group.get().block_id, gadget);
-		
+
 		getSceneScriptManager().addEntity(entity);
 
 		return 0;

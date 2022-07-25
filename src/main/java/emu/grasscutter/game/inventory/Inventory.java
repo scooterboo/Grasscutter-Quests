@@ -282,6 +282,7 @@ public class Inventory extends BasePlayerManager implements Iterable<GameItem> {
                 this.player.getResinManager().addResin(count);
             case 107 ->  // Legendary Key
                 this.player.addLegendaryKey(count);
+            //case 109 -> //
             case 201 -> // Primogem
                 this.player.setPrimogems(this.player.getPrimogems() + count);
             case 202 -> // Mora

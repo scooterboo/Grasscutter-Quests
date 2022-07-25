@@ -11,6 +11,7 @@ import emu.grasscutter.game.entity.gadget.chest.ChestInteractHandler;
 import emu.grasscutter.game.entity.gadget.chest.NormalChestInteractHandler;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.proto.InvestigationMonsterOuterClass;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneMonster;
 import emu.grasscutter.server.game.BaseGameSystem;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldDataSystem extends BaseGameSystem {
     private final Map<String, ChestInteractHandler> chestInteractHandlerMap; // chestType-Handler
-    private final Map<String, SceneGroup> sceneInvestigationGroupMap; // <sceneId_groupId, Group>
+    private final Map<String, BaseGroup> sceneInvestigationGroupMap; // <sceneId_groupId, Group>
 
     public WorldDataSystem(GameServer server) {
         super(server);
@@ -64,7 +65,7 @@ public class WorldDataSystem extends BaseGameSystem {
         return GameData.getRewardPreviewDataMap().get(investigationMonsterData.get().getRewardPreviewId());
     }
 
-    private SceneGroup getInvestigationGroup(int sceneId, int groupId) {
+    private BaseGroup getInvestigationGroup(int sceneId, int groupId) {
         var key = sceneId + "_" + groupId;
         if (!sceneInvestigationGroupMap.containsKey(key)) {
             var group = SceneGroup.of(groupId).load(sceneId);

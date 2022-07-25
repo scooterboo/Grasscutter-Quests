@@ -1,11 +1,13 @@
 package emu.grasscutter.scripts;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.game.activity.ActivityManager;
 import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.scripts.constants.ScriptRegionShape;
+import emu.grasscutter.scripts.data.ActivityMeta;
 import emu.grasscutter.scripts.data.SceneMeta;
 import emu.grasscutter.scripts.serializer.LuaSerializer;
 import emu.grasscutter.scripts.serializer.Serializer;
@@ -40,6 +42,7 @@ public class ScriptLoader {
 	 * sceneId - SceneMeta
 	 */
 	private static Map<Integer, SoftReference<SceneMeta>> sceneMetaCache = new ConcurrentHashMap<>();
+	private static Map<Integer, SoftReference<ActivityMeta>> activityMetaCache = new ConcurrentHashMap<>();
 
 	public synchronized static void init() throws Exception {
 		if (sm != null) {
@@ -134,7 +137,16 @@ public class ScriptLoader {
 	public static SceneMeta getSceneMeta(int sceneId) {
 		return tryGet(sceneMetaCache.get(sceneId)).orElseGet(() -> {
 			var instance = SceneMeta.of(sceneId);
+
 			sceneMetaCache.put(sceneId, new SoftReference<>(instance));
+			return instance;
+		});
+	}
+
+	public static ActivityMeta getActivityMeta(int activityId) {
+		return tryGet(activityMetaCache.get(activityId)).orElseGet(() -> {
+			var instance = ActivityMeta.of(activityId);
+            activityMetaCache.put(activityId, new SoftReference<>(instance));
 			return instance;
 		});
 	}

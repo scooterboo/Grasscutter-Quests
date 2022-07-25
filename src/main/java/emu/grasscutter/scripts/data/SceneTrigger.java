@@ -11,7 +11,7 @@ public class SceneTrigger {
 	public String condition;
 	public String action;
 
-	public transient SceneGroup currentGroup;
+	public transient BaseGroup currentGroup;
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof SceneTrigger sceneTrigger){

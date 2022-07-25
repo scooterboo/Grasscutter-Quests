@@ -6,6 +6,7 @@ import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketDungeonChallengeBeginNotify;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 public class WorldChallenge {
     private final Scene scene;
-    private final SceneGroup group;
+    private final BaseGroup group;
     private final int challengeId;
     private final int challengeIndex;
     private final List<Integer> paramList;
@@ -33,7 +34,7 @@ public class WorldChallenge {
     private final int goal;
     private final AtomicInteger score;
 
-    public WorldChallenge(Scene scene, SceneGroup group,
+    public WorldChallenge(Scene scene, BaseGroup group,
                           int challengeId, int challengeIndex, List<Integer> paramList,
                           int timeLimit, int goal,
                           List<ChallengeTrigger> challengeTriggers){

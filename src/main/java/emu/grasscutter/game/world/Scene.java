@@ -23,9 +23,7 @@ import emu.grasscutter.net.proto.SelectWorktopOptionReqOuterClass;
 import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.SceneScriptManager;
-import emu.grasscutter.scripts.data.SceneBlock;
-import emu.grasscutter.scripts.data.SceneGadget;
-import emu.grasscutter.scripts.data.SceneGroup;
+import emu.grasscutter.scripts.data.*;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
@@ -341,6 +339,8 @@ public class Scene {
         }
         if (this.getScriptManager().isInit()) {
             this.checkBlocks();
+            // Activity
+            this.scriptManager.checkActivities();
         } else {
             // TEMPORARY
             this.checkSpawns();
@@ -550,18 +550,18 @@ public class Scene {
         onLoadGroup(groups);
         Grasscutter.getLogger().info("Scene {} Block {} loaded.", this.getId(), block.id);
     }
-    public void loadTriggerFromGroup(SceneGroup group, String triggerName) {
+    public void loadTriggerFromGroup(BaseGroup group, String triggerName) {
         //Load triggers and regions
         getScriptManager().registerTrigger(group.triggers.values().stream().filter(p -> p.name.contains(triggerName)).toList());
         group.regions.values().stream().filter(q -> q.config_id == Integer.parseInt(triggerName.substring(13))).map(region -> new EntityRegion(this, region))
             .forEach(getScriptManager()::registerRegion);
     }
 
-    public void onLoadGroup(List<SceneGroup> groups) {
+    public void onLoadGroup(List<? extends BaseGroup> groups) {
         if (groups == null || groups.isEmpty()) {
             return;
         }
-        for (SceneGroup group : groups) {
+        for (BaseGroup group : groups) {
             // We load the script files for the groups here
             this.getScriptManager().loadGroupFromScript(group);
         }
@@ -569,7 +569,7 @@ public class Scene {
         // Spawn gadgets AFTER triggers are added
         // TODO
         var entities = new ArrayList<GameEntity>();
-        for (SceneGroup group : groups) {
+        for (BaseGroup group : groups) {
             if (group.init_config == null) {
                 continue;
             }
@@ -615,7 +615,7 @@ public class Scene {
             this.broadcastPacket(new PacketSceneEntityDisappearNotify(toRemove, VisionType.VISION_TYPE_REMOVE));
         }
 
-        for (SceneGroup group : block.groups.values()) {
+        for (BaseGroup group : block.groups.values()) {
             if (group.triggers != null) {
                 group.triggers.values().forEach(getScriptManager()::deregisterTrigger);
             }
@@ -742,6 +742,7 @@ public class Scene {
             }
             var suite = group.getSuiteByIndex(i.getSuite());
             if (suite == null) {
+                Grasscutter.getLogger().warn("suite is null from sceneGroupSuit {}", i);
                 return;
             }
             scriptManager.addGroupSuite(group, suite);

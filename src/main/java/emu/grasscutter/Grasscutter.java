@@ -270,11 +270,6 @@ public final class Grasscutter {
         return consoleLineReader;
     }
 
-    @Deprecated(forRemoval = true)
-    public static Gson getGsonFactory() {
-        return JsonUtils.getGsonFactory();
-    }
-
     public static HttpServer getHttpServer() {
         return httpServer;
     }

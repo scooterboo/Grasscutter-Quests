@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.Set;
 
+import emu.grasscutter.net.proto.PropValueOuterClass;
 import org.bson.types.ObjectId;
 
 import dev.morphia.annotations.Entity;
@@ -870,6 +871,31 @@ public class Avatar {
         avatarInfo.putPropMap(PlayerProperty.PROP_BREAK_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_BREAK_LEVEL, this.getPromoteLevel()));
         avatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_VAL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_VAL, 0));
         avatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_PENALTY_TIME.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_PENALTY_TIME, 0));
+        for(int i=10030; i< 10035; i++){
+            avatarInfo.putPropMap(i, PropValueOuterClass.PropValue.newBuilder()
+                .setType(i)
+                .setIval(i)
+                .setVal(i)
+                .build());
+        }for(int i=10021; i<= 10021; i++){
+            avatarInfo.putPropMap(i, PropValueOuterClass.PropValue.newBuilder()
+                .setType(i)
+                .setIval(i)
+                .setVal(i)
+                .build());
+        }for(int i=1005; i< 1100; i++){
+            avatarInfo.putPropMap(i, PropValueOuterClass.PropValue.newBuilder()
+                .setType(i)
+                .setIval(i)
+                .setVal(i)
+                .build());
+        }for(int i=4002; i< 4100; i++){
+            avatarInfo.putPropMap(i, PropValueOuterClass.PropValue.newBuilder()
+                .setType(i)
+                .setIval(i)
+                .setVal(i)
+                .build());
+        }
 
         return avatarInfo.build();
     }

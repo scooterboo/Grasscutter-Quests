@@ -106,6 +106,7 @@ public class GameData {
     private static final Int2ObjectMap<CookBonusData> cookBonusDataMap = new Int2ObjectOpenHashMap<>();
 
     @Getter private static final Int2ObjectMap<ActivityData> activityDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<ActivityShopData> activityShopDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ActivityWatcherData> activityWatcherDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<MusicGameBasicData> musicGameBasicDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<PersonalLineData> personalLineDataMap = new Int2ObjectOpenHashMap<>();
@@ -123,9 +124,7 @@ public class GameData {
     private static final IntList scenePointIdList = new IntArrayList();
 
 
-
     @Getter private static final List<OpenStateData> openStateList = new ArrayList<>();
-
 
     public static Int2ObjectMap<?> getMapByResourceDef(Class<?> resourceDefinition) {
         Int2ObjectMap<?> map = null;

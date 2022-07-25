@@ -28,6 +28,9 @@ public class PacketHomeComfortInfoNotify extends BasePacket {
                     .map(HomeBlockItem::calComfort)
                     .toList();
             var homeRoomScene = player.getHome().getHomeSceneItem(homeScene.getRoomSceneId());
+            if(homeRoomScene == null){
+                continue;
+            }
 
             comfortInfoList.add(
                     HomeModuleComfortInfoOuterClass.HomeModuleComfortInfo.newBuilder()

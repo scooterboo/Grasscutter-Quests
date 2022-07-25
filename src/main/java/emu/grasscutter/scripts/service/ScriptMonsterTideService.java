@@ -3,6 +3,7 @@ package emu.grasscutter.scripts.service;
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.scripts.SceneScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneMonster;
 import emu.grasscutter.scripts.data.ScriptArgs;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScriptMonsterTideService {
     private final SceneScriptManager sceneScriptManager;
-    private final SceneGroup currentGroup;
+    private final BaseGroup currentGroup;
     private final AtomicInteger monsterAlive;
     private final AtomicInteger monsterTideCount;
     private final AtomicInteger monsterKillCount;
@@ -24,7 +25,7 @@ public class ScriptMonsterTideService {
     private final OnMonsterDead onMonsterDead= new OnMonsterDead();
 
     public ScriptMonsterTideService(SceneScriptManager sceneScriptManager,
-                     SceneGroup group, int tideCount, int monsterSceneLimit, Integer[] ordersConfigId){
+                                    BaseGroup group, int tideCount, int monsterSceneLimit, Integer[] ordersConfigId){
         this.sceneScriptManager = sceneScriptManager;
         this.currentGroup = group;
         this.monsterSceneLimit = monsterSceneLimit;

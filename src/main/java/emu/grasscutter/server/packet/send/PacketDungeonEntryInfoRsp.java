@@ -10,30 +10,35 @@ import emu.grasscutter.net.proto.DungeonEntryInfoOuterClass.DungeonEntryInfo;
 import emu.grasscutter.net.proto.DungeonEntryInfoRspOuterClass.DungeonEntryInfoRsp;
 
 public class PacketDungeonEntryInfoRsp extends BasePacket {
-	
+
 	public PacketDungeonEntryInfoRsp(Player player, PointData pointData) {
 		super(PacketOpcodes.DungeonEntryInfoRsp);
 
 		DungeonEntryInfoRsp.Builder proto = DungeonEntryInfoRsp.newBuilder()
 				.setPointId(pointData.getId());
-		
+
 		if (pointData.getDungeonIds() != null) {
 			for (int dungeonId : pointData.getDungeonIds()) {
-				DungeonEntryInfo info = DungeonEntryInfo.newBuilder().setDungeonId(dungeonId).build();
+				DungeonEntryInfo info = DungeonEntryInfo.newBuilder()
+                    .setDungeonId(dungeonId)
+                    .setNextRefreshTime(26020201)
+                    .setMaxBossChestNum(26020201)
+                    .setIsPassed(true)
+                    .build();
 				proto.addDungeonEntryList(info);
 			}
 		}
 
 		this.setData(proto);
 	}
-	
+
 	public PacketDungeonEntryInfoRsp() {
 		super(PacketOpcodes.DungeonEntryInfoRsp);
 
 		DungeonEntryInfoRsp proto = DungeonEntryInfoRsp.newBuilder()
 				.setRetcode(1)
 				.build();
-		
+
 		this.setData(proto);
 	}
 }

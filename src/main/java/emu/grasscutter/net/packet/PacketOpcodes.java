@@ -1478,7 +1478,7 @@ public class PacketOpcodes {
     public static final int Unk2700_BLFFJBMLAPI = 8772;
     public static final int Unk2700_BLHIGLFDHFA_ServerNotify = 4654;
     public static final int Unk2700_BLNOMGJJLOI = 8854;
-    public static final int Unk2700_BMDBBHFJMPF = 8178;
+    public static final int ActivityStartBasicMode = 8178; // Unk2700_BMDBBHFJMPF
     public static final int Unk2700_BNABFJBODGE = 8226;
     public static final int Unk2700_BNCBHLOKDCD = 8602;
     public static final int Unk2700_BNMDCEKPDMC = 8641;

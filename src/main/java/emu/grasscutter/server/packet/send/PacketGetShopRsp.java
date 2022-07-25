@@ -24,8 +24,8 @@ public class PacketGetShopRsp extends BasePacket {
         // TODO: CityReputationLevel
         Shop.Builder shop = Shop.newBuilder()
                 .setShopType(shopType)
-                .setCityId(1) //mock
-                .setCityReputationLevel(10); //mock
+                .setCityId(0) //mock
+                .setCityReputationLevel(0); //mock
 
         ShopSystem manager = Grasscutter.getGameServer().getShopSystem();
         if (manager.getShopData().get(shopType) != null) {

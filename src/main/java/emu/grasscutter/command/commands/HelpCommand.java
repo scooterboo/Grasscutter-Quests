@@ -1,5 +1,6 @@
 package emu.grasscutter.command.commands;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
 import emu.grasscutter.command.CommandMap;
@@ -52,10 +53,14 @@ public final class HelpCommand implements CommandHandler {
         if (args.isEmpty()) {
             commandMap.getHandlers().forEach((key, command) -> {
                 Command annotation = command.getClass().getAnnotation(Command.class);
-                if (player == null || account.hasPermission(annotation.permission())) {
-                    commands.add(createCommand(player, command, args));
-                } else if (SHOW_COMMANDS_WITHOUT_PERMISSIONS) {
-                    commands_no_permission.add(createCommand(player, command, args));
+                try {
+                    if (player == null || account.hasPermission(annotation.permission())) {
+                        commands.add(createCommand(player, command, args));
+                    } else if (SHOW_COMMANDS_WITHOUT_PERMISSIONS) {
+                        commands_no_permission.add(createCommand(player, command, args));
+                    }
+                } catch (Exception ex){
+                    Grasscutter.getLogger().error("exception while creating help for command: ", ex);
                 }
             });
             CommandHandler.sendTranslatedMessage(player, "commands.help.available_commands");

@@ -15,6 +15,7 @@ import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
 import emu.grasscutter.net.proto.ResinCostTypeOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.data.BaseGroup;
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketGadgetAutoPickDropInfoNotify;
@@ -24,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +54,7 @@ public class DungeonChallenge extends WorldChallenge {
         }
     }
 
-    public DungeonChallenge(Scene scene, SceneGroup group,
+    public DungeonChallenge(Scene scene, BaseGroup group,
                             int challengeId, int challengeIndex,
                             List<Integer> paramList,
                             int timeLimit, int goal,

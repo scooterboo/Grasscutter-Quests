@@ -15,7 +15,7 @@ public class SceneRegion {
     // for SPHERE
     public int radius;
 
-    public transient SceneGroup group;
+    public transient BaseGroup group;
     public boolean contains(Position position) {
         switch (shape) {
             case ScriptRegionShape.CUBIC:
