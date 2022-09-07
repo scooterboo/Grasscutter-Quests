@@ -60,7 +60,7 @@ public final class EvtDoSkillSuccNotifyOuterClass {
    * <pre>
    * CmdId: 335
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -433,7 +433,7 @@ public final class EvtDoSkillSuccNotifyOuterClass {
      * <pre>
      * CmdId: 335
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

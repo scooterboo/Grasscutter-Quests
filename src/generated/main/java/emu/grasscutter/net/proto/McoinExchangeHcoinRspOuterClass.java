@@ -40,8 +40,7 @@ public final class McoinExchangeHcoinRspOuterClass {
    * <pre>
    * CmdId: 687
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code McoinExchangeHcoinRsp}
@@ -349,8 +348,7 @@ public final class McoinExchangeHcoinRspOuterClass {
      * <pre>
      * CmdId: 687
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code McoinExchangeHcoinRsp}

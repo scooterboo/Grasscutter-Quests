@@ -45,7 +45,7 @@ public final class ChangeMpTeamAvatarReqOuterClass {
    * <pre>
    * CmdId: 1708
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -383,7 +383,7 @@ public final class ChangeMpTeamAvatarReqOuterClass {
      * <pre>
      * CmdId: 1708
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

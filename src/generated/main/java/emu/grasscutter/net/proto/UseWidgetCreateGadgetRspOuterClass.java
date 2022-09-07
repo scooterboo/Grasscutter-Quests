@@ -34,8 +34,7 @@ public final class UseWidgetCreateGadgetRspOuterClass {
    * <pre>
    * CmdId: 4290
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code UseWidgetCreateGadgetRsp}
@@ -316,8 +315,7 @@ public final class UseWidgetCreateGadgetRspOuterClass {
      * <pre>
      * CmdId: 4290
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code UseWidgetCreateGadgetRsp}

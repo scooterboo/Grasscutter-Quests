@@ -45,7 +45,7 @@ public final class ReliquaryDecomposeRspOuterClass {
    * <pre>
    * CmdId: 611
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -382,7 +382,7 @@ public final class ReliquaryDecomposeRspOuterClass {
      * <pre>
      * CmdId: 611
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

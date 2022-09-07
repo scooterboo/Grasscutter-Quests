@@ -43,8 +43,7 @@ public final class SetUpLunchBoxWidgetRspOuterClass {
    * <pre>
    * CmdId: 4294
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SetUpLunchBoxWidgetRsp}
@@ -353,8 +352,7 @@ public final class SetUpLunchBoxWidgetRspOuterClass {
      * <pre>
      * CmdId: 4294
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SetUpLunchBoxWidgetRsp}

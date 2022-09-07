@@ -63,8 +63,7 @@ public final class MailChangeNotifyOuterClass {
    * <pre>
    * CmdId: 1498
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code MailChangeNotify}
@@ -439,8 +438,7 @@ public final class MailChangeNotifyOuterClass {
      * <pre>
      * CmdId: 1498
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code MailChangeNotify}

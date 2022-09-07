@@ -28,8 +28,7 @@ public final class QuestDelNotifyOuterClass {
    * <pre>
    * CmdId: 412
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuestDelNotify}
@@ -283,8 +282,7 @@ public final class QuestDelNotifyOuterClass {
      * <pre>
      * CmdId: 412
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuestDelNotify}

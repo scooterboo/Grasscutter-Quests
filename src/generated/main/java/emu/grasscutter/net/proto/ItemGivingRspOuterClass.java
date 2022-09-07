@@ -40,8 +40,7 @@ public final class ItemGivingRspOuterClass {
    * <pre>
    * CmdId: 118
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ItemGivingRsp}
@@ -349,8 +348,7 @@ public final class ItemGivingRspOuterClass {
      * <pre>
      * CmdId: 118
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ItemGivingRsp}

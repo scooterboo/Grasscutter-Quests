@@ -45,8 +45,7 @@ public final class DelMailRspOuterClass {
    * <pre>
    * CmdId: 1403
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DelMailRsp}
@@ -382,8 +381,7 @@ public final class DelMailRspOuterClass {
      * <pre>
      * CmdId: 1403
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DelMailRsp}

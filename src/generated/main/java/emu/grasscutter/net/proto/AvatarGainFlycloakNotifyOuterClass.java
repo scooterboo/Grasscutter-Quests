@@ -28,8 +28,7 @@ public final class AvatarGainFlycloakNotifyOuterClass {
    * <pre>
    * CmdId: 1656
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarGainFlycloakNotify}
@@ -283,8 +282,7 @@ public final class AvatarGainFlycloakNotifyOuterClass {
      * <pre>
      * CmdId: 1656
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarGainFlycloakNotify}

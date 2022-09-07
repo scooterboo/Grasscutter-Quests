@@ -52,7 +52,7 @@ public final class UseItemReqOuterClass {
    * <pre>
    * CmdId: 690
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -418,7 +418,7 @@ public final class UseItemReqOuterClass {
      * <pre>
      * CmdId: 690
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

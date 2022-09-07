@@ -8,10 +8,10 @@ public enum QuestState {
     QUEST_STATE_FAILED (4),
 
     // Used by lua
-    NONE (0),
-    UNSTARTED(1),
-    UNFINISHED(2),
-    FINISHED(3),
+    None (0),
+    UnStarted(1),
+    UnFinished(2),
+    Finished(3),
     FAILED(4);
 
     private final int value;

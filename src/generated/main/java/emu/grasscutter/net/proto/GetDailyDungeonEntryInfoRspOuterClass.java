@@ -52,8 +52,7 @@ public final class GetDailyDungeonEntryInfoRspOuterClass {
    * <pre>
    * CmdId: 967
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetDailyDungeonEntryInfoRsp}
@@ -374,8 +373,7 @@ public final class GetDailyDungeonEntryInfoRspOuterClass {
      * <pre>
      * CmdId: 967
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetDailyDungeonEntryInfoRsp}

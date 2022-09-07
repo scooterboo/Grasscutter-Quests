@@ -40,8 +40,7 @@ public final class CreateVehicleRspOuterClass {
    * <pre>
    * CmdId: 827
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CreateVehicleRsp}
@@ -349,8 +348,7 @@ public final class CreateVehicleRspOuterClass {
      * <pre>
      * CmdId: 827
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CreateVehicleRsp}

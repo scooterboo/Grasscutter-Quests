@@ -46,8 +46,7 @@ public final class PlayerApplyEnterMpResultRspOuterClass {
    * <pre>
    * CmdId: 1831
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerApplyEnterMpResultRsp}
@@ -383,8 +382,7 @@ public final class PlayerApplyEnterMpResultRspOuterClass {
      * <pre>
      * CmdId: 1831
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerApplyEnterMpResultRsp}

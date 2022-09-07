@@ -3,6 +3,7 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.game.entity.EntityBaseGadget;
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketOpcodes;
@@ -19,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 
 @Opcodes(PacketOpcodes.AbilityInvocationsNotify)
 public class HandlerAbilityInvocationsNotify extends PacketHandler {
-	
+
 	@Override
 	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
 		AbilityInvocationsNotify notif = AbilityInvocationsNotify.parseFrom(payload);

@@ -115,8 +115,7 @@ public final class ItemAddHintNotifyOuterClass {
    * <pre>
    * CmdId: 607
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ItemAddHintNotify}
@@ -669,8 +668,7 @@ public final class ItemAddHintNotifyOuterClass {
      * <pre>
      * CmdId: 607
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ItemAddHintNotify}

@@ -45,7 +45,7 @@ public final class GetAllUnlockNameCardRspOuterClass {
    * <pre>
    * CmdId: 4094
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -382,7 +382,7 @@ public final class GetAllUnlockNameCardRspOuterClass {
      * <pre>
      * CmdId: 4094
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

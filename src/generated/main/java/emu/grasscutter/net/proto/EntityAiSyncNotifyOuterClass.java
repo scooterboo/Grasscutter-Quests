@@ -63,7 +63,7 @@ public final class EntityAiSyncNotifyOuterClass {
    * <pre>
    * CmdId: 400
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -439,7 +439,7 @@ public final class EntityAiSyncNotifyOuterClass {
      * <pre>
      * CmdId: 400
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

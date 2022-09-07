@@ -43,8 +43,7 @@ public final class AbilityChangeNotifyOuterClass {
    * <pre>
    * CmdId: 1131
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AbilityChangeNotify}
@@ -353,8 +352,7 @@ public final class AbilityChangeNotifyOuterClass {
      * <pre>
      * CmdId: 1131
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AbilityChangeNotify}

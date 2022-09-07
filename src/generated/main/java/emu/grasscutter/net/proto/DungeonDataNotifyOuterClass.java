@@ -56,8 +56,7 @@ public final class DungeonDataNotifyOuterClass {
    * <pre>
    * CmdId: 982
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DungeonDataNotify}
@@ -413,8 +412,7 @@ public final class DungeonDataNotifyOuterClass {
      * <pre>
      * CmdId: 982
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DungeonDataNotify}

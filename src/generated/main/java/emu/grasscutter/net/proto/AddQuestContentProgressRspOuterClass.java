@@ -34,8 +34,7 @@ public final class AddQuestContentProgressRspOuterClass {
    * <pre>
    * CmdId: 403
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AddQuestContentProgressRsp}
@@ -316,8 +315,7 @@ public final class AddQuestContentProgressRspOuterClass {
      * <pre>
      * CmdId: 403
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AddQuestContentProgressRsp}

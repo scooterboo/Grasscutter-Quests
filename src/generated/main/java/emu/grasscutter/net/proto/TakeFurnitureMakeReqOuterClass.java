@@ -40,7 +40,7 @@ public final class TakeFurnitureMakeReqOuterClass {
    * <pre>
    * CmdId: 4772
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -350,7 +350,7 @@ public final class TakeFurnitureMakeReqOuterClass {
      * <pre>
      * CmdId: 4772
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

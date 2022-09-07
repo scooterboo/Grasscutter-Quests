@@ -272,6 +272,8 @@ public class QuestManager extends BasePlayerManager {
             case QUEST_CONTENT_INTERACT_GADGET:
             case QUEST_CONTENT_TRIGGER_FIRE:
             case QUEST_CONTENT_UNLOCK_TRANS_POINT:
+            case QUEST_CONTENT_SKILL:
+            case QUEST_CONTENT_OBTAIN_ITEM:
                 for (GameMainQuest mainQuest : checkMainQuests) {
                     mainQuest.tryFinishSubQuests(condType, paramStr, params);
                 }
@@ -313,20 +315,20 @@ public class QuestManager extends BasePlayerManager {
     }
     public void loadFromDatabase() {
         List<GameMainQuest> quests = DatabaseHelper.getAllQuests(getPlayer());
-        
+
         for (GameMainQuest mainQuest : quests) {
             boolean cancelAdd = false;
             mainQuest.setOwner(this.getPlayer());
 
             for (GameQuest quest : mainQuest.getChildQuests().values()) {
                 QuestData questConfig = GameData.getQuestDataMap().get(quest.getSubQuestId());
-                
+
                 if (questConfig == null) {
                     mainQuest.delete();
                     cancelAdd = true;
                     break;
                 }
-                
+
                 quest.setMainQuest(mainQuest);
                 quest.setConfig(questConfig);
             }

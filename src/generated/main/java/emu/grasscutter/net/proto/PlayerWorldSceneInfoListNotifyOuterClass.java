@@ -46,8 +46,7 @@ public final class PlayerWorldSceneInfoListNotifyOuterClass {
    * <pre>
    * CmdId: 3129
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerWorldSceneInfoListNotify}
@@ -341,8 +340,7 @@ public final class PlayerWorldSceneInfoListNotifyOuterClass {
      * <pre>
      * CmdId: 3129
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerWorldSceneInfoListNotify}

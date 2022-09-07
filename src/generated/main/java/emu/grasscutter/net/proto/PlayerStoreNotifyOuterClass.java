@@ -63,8 +63,7 @@ public final class PlayerStoreNotifyOuterClass {
    * <pre>
    * CmdId: 672
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerStoreNotify}
@@ -421,8 +420,7 @@ public final class PlayerStoreNotifyOuterClass {
      * <pre>
      * CmdId: 672
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerStoreNotify}

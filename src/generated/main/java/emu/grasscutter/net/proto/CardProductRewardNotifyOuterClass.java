@@ -46,8 +46,7 @@ public final class CardProductRewardNotifyOuterClass {
    * <pre>
    * CmdId: 4107
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CardProductRewardNotify}
@@ -383,8 +382,7 @@ public final class CardProductRewardNotifyOuterClass {
      * <pre>
      * CmdId: 4107
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CardProductRewardNotify}

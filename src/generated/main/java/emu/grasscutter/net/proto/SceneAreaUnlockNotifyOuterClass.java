@@ -45,8 +45,7 @@ public final class SceneAreaUnlockNotifyOuterClass {
    * <pre>
    * CmdId: 293
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneAreaUnlockNotify}
@@ -382,8 +381,7 @@ public final class SceneAreaUnlockNotifyOuterClass {
      * <pre>
      * CmdId: 293
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneAreaUnlockNotify}

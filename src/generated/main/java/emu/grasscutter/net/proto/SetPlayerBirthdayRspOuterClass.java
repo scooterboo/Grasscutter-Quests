@@ -43,8 +43,7 @@ public final class SetPlayerBirthdayRspOuterClass {
    * <pre>
    * CmdId: 4097
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SetPlayerBirthdayRsp}
@@ -353,8 +352,7 @@ public final class SetPlayerBirthdayRspOuterClass {
      * <pre>
      * CmdId: 4097
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SetPlayerBirthdayRsp}

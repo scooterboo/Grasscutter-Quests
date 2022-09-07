@@ -225,8 +225,7 @@ public final class TowerAllDataRspOuterClass {
    * <pre>
    * CmdId: 2473
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TowerAllDataRsp}
@@ -1230,8 +1229,7 @@ public final class TowerAllDataRspOuterClass {
      * <pre>
      * CmdId: 2473
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TowerAllDataRsp}

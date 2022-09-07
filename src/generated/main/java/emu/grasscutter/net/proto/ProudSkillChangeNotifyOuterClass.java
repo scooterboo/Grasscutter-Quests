@@ -57,8 +57,7 @@ public final class ProudSkillChangeNotifyOuterClass {
    * <pre>
    * CmdId: 1031
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ProudSkillChangeNotify}
@@ -449,8 +448,7 @@ public final class ProudSkillChangeNotifyOuterClass {
      * <pre>
      * CmdId: 1031
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ProudSkillChangeNotify}

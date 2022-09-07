@@ -63,8 +63,7 @@ public final class StoreWeightLimitNotifyOuterClass {
    * <pre>
    * CmdId: 698
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code StoreWeightLimitNotify}
@@ -462,8 +461,7 @@ public final class StoreWeightLimitNotifyOuterClass {
      * <pre>
      * CmdId: 698
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code StoreWeightLimitNotify}

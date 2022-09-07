@@ -28,8 +28,7 @@ public final class CookGradeDataNotifyOuterClass {
    * <pre>
    * CmdId: 134
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CookGradeDataNotify}
@@ -283,8 +282,7 @@ public final class CookGradeDataNotifyOuterClass {
      * <pre>
      * CmdId: 134
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CookGradeDataNotify}

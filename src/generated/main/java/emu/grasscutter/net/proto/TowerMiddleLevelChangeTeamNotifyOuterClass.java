@@ -22,8 +22,7 @@ public final class TowerMiddleLevelChangeTeamNotifyOuterClass {
    * <pre>
    * CmdId: 2434
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TowerMiddleLevelChangeTeamNotify}
@@ -250,8 +249,7 @@ public final class TowerMiddleLevelChangeTeamNotifyOuterClass {
      * <pre>
      * CmdId: 2434
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TowerMiddleLevelChangeTeamNotify}

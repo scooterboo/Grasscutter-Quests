@@ -63,8 +63,7 @@ public final class WorldPlayerDieNotifyOuterClass {
    * <pre>
    * CmdId: 285
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WorldPlayerDieNotify}
@@ -490,8 +489,7 @@ public final class WorldPlayerDieNotifyOuterClass {
      * <pre>
      * CmdId: 285
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WorldPlayerDieNotify}

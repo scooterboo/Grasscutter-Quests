@@ -40,8 +40,7 @@ public final class PlayerGetForceQuitBanInfoRspOuterClass {
    * <pre>
    * CmdId: 4197
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerGetForceQuitBanInfoRsp}
@@ -349,8 +348,7 @@ public final class PlayerGetForceQuitBanInfoRspOuterClass {
      * <pre>
      * CmdId: 4197
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerGetForceQuitBanInfoRsp}

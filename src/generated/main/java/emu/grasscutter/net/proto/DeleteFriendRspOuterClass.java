@@ -34,8 +34,7 @@ public final class DeleteFriendRspOuterClass {
    * <pre>
    * CmdId: 4075
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DeleteFriendRsp}
@@ -316,8 +315,7 @@ public final class DeleteFriendRspOuterClass {
      * <pre>
      * CmdId: 4075
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DeleteFriendRsp}

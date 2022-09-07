@@ -94,6 +94,9 @@ public class SceneScriptManager {
     public Set<SceneTrigger> getTriggersByEvent(int eventId) {
         return currentTriggers.computeIfAbsent(eventId, e -> new HashSet<>());
     }
+    public int getTriggerCount() {
+        return currentTriggers.size();
+    }
     public void registerTrigger(List<SceneTrigger> triggers) {
         triggers.forEach(this::registerTrigger);
     }
@@ -110,7 +113,7 @@ public class SceneScriptManager {
     public void resetTriggers(int eventId) {
         currentTriggers.put(eventId, new HashSet<>());
     }
-    public void refreshGroup(SceneGroup group, int suiteIndex) {
+    public void refreshGroup(BaseGroup group, int suiteIndex) {
         if(group == null){
             return;
         }
@@ -359,7 +362,12 @@ public class SceneScriptManager {
     }
     public void spawnMonstersByConfigId(BaseGroup group, int configId, int delayTime) {
         // TODO delay
-        getScene().addEntity(createMonster(group.id, group.block_id, group.monsters.get(configId)));
+        var entity = createMonster(group.id, group.block_id, group.monsters.get(configId));
+        if(entity!=null){
+            getScene().addEntity(entity);
+        } else {
+            Grasscutter.getLogger().warn("failed to create entity with group {} and config {}", group.id, configId);
+        }
     }
     // Events
     public void callEvent(int eventType, ScriptArgs params) {
@@ -429,17 +437,17 @@ public class SceneScriptManager {
                 args = CoerceJavaToLua.coerce(params);
             }
 
-            ret = safetyCall(funcName, funcLua, args);
+            ret = safetyCall(funcName, funcLua, args, group.id);
         }
         return ret;
     }
 
-    public LuaValue safetyCall(String name, LuaValue func, LuaValue args) {
+    public LuaValue safetyCall(String name, LuaValue func, LuaValue args, int groupId) {
         try {
             //ScriptLoader.getScriptLib().setSceneScriptManager(this);
             return func.call(ScriptLoader.getScriptLibLua(), args);
         }catch (LuaError error) {
-            ScriptLib.logger.error("[LUA] call trigger failed {},{}",name,args,error);
+            ScriptLib.logger.error("[LUA] call trigger failed group {} {},{}", groupId,name,args,error);
             return LuaValue.valueOf(-1);
         }
     }
@@ -539,7 +547,7 @@ public class SceneScriptManager {
     public RTree<SceneBlock, Geometry> getBlocksIndex() {
         return meta.sceneBlockIndex;
     }
-    public void removeMonstersInGroup(SceneGroup group, SceneSuite suite) {
+    public void removeMonstersInGroup(BaseGroup group, SceneSuite suite) {
         var configSet = suite.sceneMonsters.stream()
                 .map(m -> m.config_id)
                 .collect(Collectors.toSet());
@@ -551,7 +559,7 @@ public class SceneScriptManager {
 
         getScene().removeEntities(toRemove, VisionTypeOuterClass.VisionType.VISION_TYPE_MISS);
     }
-    public void removeGadgetsInGroup(SceneGroup group, SceneSuite suite) {
+    public void removeGadgetsInGroup(BaseGroup group, SceneSuite suite) {
         var configSet = suite.sceneGadgets.stream()
                 .map(m -> m.config_id)
                 .collect(Collectors.toSet());

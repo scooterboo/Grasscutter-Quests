@@ -52,8 +52,7 @@ public final class GetPlayerBlacklistRspOuterClass {
    * <pre>
    * CmdId: 4091
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetPlayerBlacklistRsp}
@@ -374,8 +373,7 @@ public final class GetPlayerBlacklistRspOuterClass {
      * <pre>
      * CmdId: 4091
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetPlayerBlacklistRsp}

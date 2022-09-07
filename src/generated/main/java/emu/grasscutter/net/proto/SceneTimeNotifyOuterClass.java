@@ -40,8 +40,7 @@ public final class SceneTimeNotifyOuterClass {
    * <pre>
    * CmdId: 245
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneTimeNotify}
@@ -351,8 +350,7 @@ public final class SceneTimeNotifyOuterClass {
      * <pre>
      * CmdId: 245
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneTimeNotify}

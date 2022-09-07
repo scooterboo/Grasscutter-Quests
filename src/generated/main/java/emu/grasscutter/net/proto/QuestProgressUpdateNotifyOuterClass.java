@@ -62,8 +62,7 @@ public final class QuestProgressUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 482
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuestProgressUpdateNotify}
@@ -479,8 +478,7 @@ public final class QuestProgressUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 482
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuestProgressUpdateNotify}

@@ -40,7 +40,7 @@ public final class AskAddFriendRspOuterClass {
    * <pre>
    * CmdId: 4021
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -349,7 +349,7 @@ public final class AskAddFriendRspOuterClass {
      * <pre>
      * CmdId: 4021
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

@@ -93,8 +93,7 @@ public final class AvatarLifeStateChangeNotifyOuterClass {
    * <pre>
    * CmdId: 1290
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarLifeStateChangeNotify}
@@ -588,8 +587,7 @@ public final class AvatarLifeStateChangeNotifyOuterClass {
      * <pre>
      * CmdId: 1290
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarLifeStateChangeNotify}

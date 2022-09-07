@@ -34,8 +34,7 @@ public final class PlayerQuitDungeonRspOuterClass {
    * <pre>
    * CmdId: 921
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerQuitDungeonRsp}
@@ -316,8 +315,7 @@ public final class PlayerQuitDungeonRspOuterClass {
      * <pre>
      * CmdId: 921
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerQuitDungeonRsp}

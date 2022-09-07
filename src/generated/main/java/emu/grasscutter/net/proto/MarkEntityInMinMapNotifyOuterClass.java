@@ -49,8 +49,7 @@ public final class MarkEntityInMinMapNotifyOuterClass {
    * <pre>
    * CmdId: 202
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code MarkEntityInMinMapNotify}
@@ -386,8 +385,7 @@ public final class MarkEntityInMinMapNotifyOuterClass {
      * <pre>
      * CmdId: 202
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code MarkEntityInMinMapNotify}

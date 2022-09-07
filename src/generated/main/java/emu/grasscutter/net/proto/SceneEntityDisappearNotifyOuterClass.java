@@ -56,8 +56,7 @@ public final class SceneEntityDisappearNotifyOuterClass {
    * <pre>
    * CmdId: 203
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneEntityDisappearNotify}
@@ -429,8 +428,7 @@ public final class SceneEntityDisappearNotifyOuterClass {
      * <pre>
      * CmdId: 203
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneEntityDisappearNotify}

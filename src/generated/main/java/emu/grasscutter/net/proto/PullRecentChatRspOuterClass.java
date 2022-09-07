@@ -52,8 +52,7 @@ public final class PullRecentChatRspOuterClass {
    * <pre>
    * CmdId: 5023
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PullRecentChatRsp}
@@ -374,8 +373,7 @@ public final class PullRecentChatRspOuterClass {
      * <pre>
      * CmdId: 5023
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PullRecentChatRsp}

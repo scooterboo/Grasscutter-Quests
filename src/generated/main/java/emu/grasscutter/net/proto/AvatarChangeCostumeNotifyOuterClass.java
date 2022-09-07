@@ -37,8 +37,7 @@ public final class AvatarChangeCostumeNotifyOuterClass {
    * <pre>
    * CmdId: 1644
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarChangeCostumeNotify}
@@ -320,8 +319,7 @@ public final class AvatarChangeCostumeNotifyOuterClass {
      * <pre>
      * CmdId: 1644
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarChangeCostumeNotify}

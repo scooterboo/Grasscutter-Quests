@@ -231,7 +231,7 @@ public final class SetPropCommand implements CommandHandler {
     }
 
     // List of map areas. Unfortunately, there is no readily available source for them in excels or bins.
-    final static private List<Integer> sceneAreas = List.of(1,2,3,4,5,6,7,8,9,10,11,12,13,14,17,18,19,20,21,22,23,24,25,29,100,101,102,103,200,210,300,400,401,402,403);
+    final static private List<Integer> sceneAreas = List.of(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,100,101,102,103,200,201,201,202,203,204,205,206,207,208,209,210,300,301,302,303,304,305,306,307,400,401,402,403,404,405,406,407,408,409,500,501,502,503,504);
     private boolean unlockMap(Player targetPlayer) {
         // Unlock.
         GameData.getScenePointsPerScene().forEach((sceneId, scenePoints) -> {

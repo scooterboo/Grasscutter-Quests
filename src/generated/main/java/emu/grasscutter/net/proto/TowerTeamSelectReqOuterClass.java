@@ -52,7 +52,7 @@ public final class TowerTeamSelectReqOuterClass {
    * <pre>
    * CmdId: 2421
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -374,7 +374,7 @@ public final class TowerTeamSelectReqOuterClass {
      * <pre>
      * CmdId: 2421
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

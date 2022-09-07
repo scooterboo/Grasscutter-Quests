@@ -34,8 +34,7 @@ public final class AvatarFlycloakChangeNotifyOuterClass {
    * <pre>
    * CmdId: 1643
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarFlycloakChangeNotify}
@@ -317,8 +316,7 @@ public final class AvatarFlycloakChangeNotifyOuterClass {
      * <pre>
      * CmdId: 1643
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarFlycloakChangeNotify}

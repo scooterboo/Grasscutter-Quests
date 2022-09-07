@@ -20,9 +20,9 @@ public final class PersonalLineAllDataReqOuterClass {
   }
   /**
    * <pre>
-   * CmdId: 474
+   * CmdId: 446
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -248,9 +248,9 @@ public final class PersonalLineAllDataReqOuterClass {
     }
     /**
      * <pre>
-     * CmdId: 474
+     * CmdId: 446
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

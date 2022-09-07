@@ -63,8 +63,7 @@ public final class SceneEntityAppearNotifyOuterClass {
    * <pre>
    * CmdId: 221
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneEntityAppearNotify}
@@ -421,8 +420,7 @@ public final class SceneEntityAppearNotifyOuterClass {
      * <pre>
      * CmdId: 221
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneEntityAppearNotify}

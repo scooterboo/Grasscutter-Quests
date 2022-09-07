@@ -46,8 +46,7 @@ public final class WidgetGadgetAllDataNotifyOuterClass {
    * <pre>
    * CmdId: 4284
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetGadgetAllDataNotify}
@@ -341,8 +340,7 @@ public final class WidgetGadgetAllDataNotifyOuterClass {
      * <pre>
      * CmdId: 4284
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetGadgetAllDataNotify}

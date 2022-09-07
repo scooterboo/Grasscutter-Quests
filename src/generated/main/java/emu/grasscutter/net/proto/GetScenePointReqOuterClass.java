@@ -34,7 +34,7 @@ public final class GetScenePointReqOuterClass {
    * <pre>
    * CmdId: 297
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -316,7 +316,7 @@ public final class GetScenePointReqOuterClass {
      * <pre>
      * CmdId: 297
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

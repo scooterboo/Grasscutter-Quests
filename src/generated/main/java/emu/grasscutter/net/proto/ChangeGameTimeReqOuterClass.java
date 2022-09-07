@@ -40,7 +40,7 @@ public final class ChangeGameTimeReqOuterClass {
    * <pre>
    * CmdId: 173
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -350,7 +350,7 @@ public final class ChangeGameTimeReqOuterClass {
      * <pre>
      * CmdId: 173
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

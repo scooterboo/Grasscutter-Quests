@@ -34,8 +34,7 @@ public final class WidgetReportRspOuterClass {
    * <pre>
    * CmdId: 4292
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetReportRsp}
@@ -316,8 +315,7 @@ public final class WidgetReportRspOuterClass {
      * <pre>
      * CmdId: 4292
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetReportRsp}

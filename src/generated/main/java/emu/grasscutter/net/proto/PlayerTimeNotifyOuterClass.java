@@ -40,8 +40,7 @@ public final class PlayerTimeNotifyOuterClass {
    * <pre>
    * CmdId: 191
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerTimeNotify}
@@ -352,8 +351,7 @@ public final class PlayerTimeNotifyOuterClass {
      * <pre>
      * CmdId: 191
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerTimeNotify}

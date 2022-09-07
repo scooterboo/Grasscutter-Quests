@@ -22,7 +22,7 @@ public final class HomeGetBasicInfoReqOuterClass {
    * <pre>
    * CmdId: 4655
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -250,7 +250,7 @@ public final class HomeGetBasicInfoReqOuterClass {
      * <pre>
      * CmdId: 4655
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

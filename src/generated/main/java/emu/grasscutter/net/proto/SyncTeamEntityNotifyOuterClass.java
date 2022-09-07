@@ -52,8 +52,7 @@ public final class SyncTeamEntityNotifyOuterClass {
    * <pre>
    * CmdId: 317
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SyncTeamEntityNotify}
@@ -374,8 +373,7 @@ public final class SyncTeamEntityNotifyOuterClass {
      * <pre>
      * CmdId: 317
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SyncTeamEntityNotify}

@@ -33,7 +33,7 @@ public final class UnlockTransPointReqOuterClass {
   /**
    * <pre>
    * CmdId: 3035
-   * EnetChannelId: 0
+   * EnetChannelId: 1
    * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
@@ -315,7 +315,7 @@ public final class UnlockTransPointReqOuterClass {
     /**
      * <pre>
      * CmdId: 3035
-     * EnetChannelId: 0
+     * EnetChannelId: 1
      * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>

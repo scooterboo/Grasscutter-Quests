@@ -34,8 +34,7 @@ public final class BuyBattlePassLevelRspOuterClass {
    * <pre>
    * CmdId: 2637
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code BuyBattlePassLevelRsp}
@@ -316,8 +315,7 @@ public final class BuyBattlePassLevelRspOuterClass {
      * <pre>
      * CmdId: 2637
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code BuyBattlePassLevelRsp}

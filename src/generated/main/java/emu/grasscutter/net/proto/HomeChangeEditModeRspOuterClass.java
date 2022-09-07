@@ -34,8 +34,7 @@ public final class HomeChangeEditModeRspOuterClass {
    * <pre>
    * CmdId: 4559
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code HomeChangeEditModeRsp}
@@ -317,8 +316,7 @@ public final class HomeChangeEditModeRspOuterClass {
      * <pre>
      * CmdId: 4559
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code HomeChangeEditModeRsp}

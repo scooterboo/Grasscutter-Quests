@@ -34,8 +34,7 @@ public final class HostPlayerNotifyOuterClass {
    * <pre>
    * CmdId: 312
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code HostPlayerNotify}
@@ -316,8 +315,7 @@ public final class HostPlayerNotifyOuterClass {
      * <pre>
      * CmdId: 312
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code HostPlayerNotify}

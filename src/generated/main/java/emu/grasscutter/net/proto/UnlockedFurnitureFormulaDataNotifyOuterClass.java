@@ -45,8 +45,7 @@ public final class UnlockedFurnitureFormulaDataNotifyOuterClass {
    * <pre>
    * CmdId: 4846
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code UnlockedFurnitureFormulaDataNotify}
@@ -383,8 +382,7 @@ public final class UnlockedFurnitureFormulaDataNotifyOuterClass {
      * <pre>
      * CmdId: 4846
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code UnlockedFurnitureFormulaDataNotify}

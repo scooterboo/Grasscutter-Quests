@@ -43,8 +43,7 @@ public final class GetPlayerSocialDetailRspOuterClass {
    * <pre>
    * CmdId: 4099
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetPlayerSocialDetailRsp}
@@ -353,8 +352,7 @@ public final class GetPlayerSocialDetailRspOuterClass {
      * <pre>
      * CmdId: 4099
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetPlayerSocialDetailRsp}

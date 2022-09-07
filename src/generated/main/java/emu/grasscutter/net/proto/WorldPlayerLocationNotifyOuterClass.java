@@ -70,8 +70,7 @@ public final class WorldPlayerLocationNotifyOuterClass {
    * <pre>
    * CmdId: 258
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WorldPlayerLocationNotify}
@@ -431,8 +430,7 @@ public final class WorldPlayerLocationNotifyOuterClass {
      * <pre>
      * CmdId: 258
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WorldPlayerLocationNotify}

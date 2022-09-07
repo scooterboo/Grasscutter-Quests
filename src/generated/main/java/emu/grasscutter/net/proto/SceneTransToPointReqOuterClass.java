@@ -34,7 +34,7 @@ public final class SceneTransToPointReqOuterClass {
    * <pre>
    * CmdId: 239
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -316,7 +316,7 @@ public final class SceneTransToPointReqOuterClass {
      * <pre>
      * CmdId: 239
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

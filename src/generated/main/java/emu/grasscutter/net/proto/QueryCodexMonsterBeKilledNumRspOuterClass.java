@@ -79,8 +79,7 @@ public final class QueryCodexMonsterBeKilledNumRspOuterClass {
    * <pre>
    * CmdId: 4209
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QueryCodexMonsterBeKilledNumRsp}
@@ -576,8 +575,7 @@ public final class QueryCodexMonsterBeKilledNumRspOuterClass {
      * <pre>
      * CmdId: 4209
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QueryCodexMonsterBeKilledNumRsp}

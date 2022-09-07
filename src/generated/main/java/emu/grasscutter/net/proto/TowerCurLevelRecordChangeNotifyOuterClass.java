@@ -37,8 +37,7 @@ public final class TowerCurLevelRecordChangeNotifyOuterClass {
    * <pre>
    * CmdId: 2412
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TowerCurLevelRecordChangeNotify}
@@ -320,8 +319,7 @@ public final class TowerCurLevelRecordChangeNotifyOuterClass {
      * <pre>
      * CmdId: 2412
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TowerCurLevelRecordChangeNotify}

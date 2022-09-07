@@ -43,8 +43,7 @@ public final class PlayerChatNotifyOuterClass {
    * <pre>
    * CmdId: 3010
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerChatNotify}
@@ -353,8 +352,7 @@ public final class PlayerChatNotifyOuterClass {
      * <pre>
      * CmdId: 3010
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerChatNotify}

@@ -46,8 +46,7 @@ public final class AvatarFetterLevelRewardRspOuterClass {
    * <pre>
    * CmdId: 1606
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarFetterLevelRewardRsp}
@@ -383,8 +382,7 @@ public final class AvatarFetterLevelRewardRspOuterClass {
      * <pre>
      * CmdId: 1606
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarFetterLevelRewardRsp}

@@ -34,8 +34,7 @@ public final class HomeChooseModuleRspOuterClass {
    * <pre>
    * CmdId: 4648
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code HomeChooseModuleRsp}
@@ -316,8 +315,7 @@ public final class HomeChooseModuleRspOuterClass {
      * <pre>
      * CmdId: 4648
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code HomeChooseModuleRsp}

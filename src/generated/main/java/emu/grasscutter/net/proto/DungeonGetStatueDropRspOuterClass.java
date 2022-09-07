@@ -28,8 +28,7 @@ public final class DungeonGetStatueDropRspOuterClass {
    * <pre>
    * CmdId: 904
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DungeonGetStatueDropRsp}
@@ -283,8 +282,7 @@ public final class DungeonGetStatueDropRspOuterClass {
      * <pre>
      * CmdId: 904
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DungeonGetStatueDropRsp}

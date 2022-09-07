@@ -46,8 +46,7 @@ public final class WidgetActiveChangeNotifyOuterClass {
    * <pre>
    * CmdId: 4280
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetActiveChangeNotify}
@@ -341,8 +340,7 @@ public final class WidgetActiveChangeNotifyOuterClass {
      * <pre>
      * CmdId: 4280
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetActiveChangeNotify}

@@ -49,8 +49,7 @@ public final class PersonalSceneJumpRspOuterClass {
    * <pre>
    * CmdId: 280
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PersonalSceneJumpRsp}
@@ -386,8 +385,7 @@ public final class PersonalSceneJumpRspOuterClass {
      * <pre>
      * CmdId: 280
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PersonalSceneJumpRsp}

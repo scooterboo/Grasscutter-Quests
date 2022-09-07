@@ -73,6 +73,7 @@ public class ScriptLoader {
 
         LuaTable table1 = new LuaTable();
         Arrays.stream(QuestState.values()).forEach(e -> table1.set(e.name().toUpperCase(), e.getValue()));
+        Arrays.stream(QuestState.values()).forEach(e -> table1.set(e.name(), e.getValue()));
         ctx.globals.set("QuestState", table1);
 
 		ctx.globals.set("EventType", CoerceJavaToLua.coerce(new EventType())); // TODO - make static class to avoid instantiating a new class every scene

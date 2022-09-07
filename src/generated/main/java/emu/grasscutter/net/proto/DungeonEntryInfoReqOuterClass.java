@@ -58,7 +58,7 @@ public final class DungeonEntryInfoReqOuterClass {
    * <pre>
    * CmdId: 972
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -407,7 +407,7 @@ public final class DungeonEntryInfoReqOuterClass {
      * <pre>
      * CmdId: 972
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

@@ -40,8 +40,7 @@ public final class ChallengeDataNotifyOuterClass {
    * <pre>
    * CmdId: 953
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ChallengeDataNotify}
@@ -349,8 +348,7 @@ public final class ChallengeDataNotifyOuterClass {
      * <pre>
      * CmdId: 953
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ChallengeDataNotify}

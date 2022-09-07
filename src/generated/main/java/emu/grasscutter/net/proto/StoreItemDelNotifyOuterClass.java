@@ -50,8 +50,7 @@ public final class StoreItemDelNotifyOuterClass {
    * <pre>
    * CmdId: 635
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code StoreItemDelNotify}
@@ -396,8 +395,7 @@ public final class StoreItemDelNotifyOuterClass {
      * <pre>
      * CmdId: 635
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code StoreItemDelNotify}

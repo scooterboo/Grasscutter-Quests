@@ -48,8 +48,7 @@ public final class WidgetSlotChangeNotifyOuterClass {
    * <pre>
    * CmdId: 4267
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetSlotChangeNotify}
@@ -367,8 +366,7 @@ public final class WidgetSlotChangeNotifyOuterClass {
      * <pre>
      * CmdId: 4267
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetSlotChangeNotify}

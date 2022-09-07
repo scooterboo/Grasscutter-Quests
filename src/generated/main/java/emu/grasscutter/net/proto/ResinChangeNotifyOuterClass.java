@@ -40,8 +40,7 @@ public final class ResinChangeNotifyOuterClass {
    * <pre>
    * CmdId: 642
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ResinChangeNotify}
@@ -349,8 +348,7 @@ public final class ResinChangeNotifyOuterClass {
      * <pre>
      * CmdId: 642
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ResinChangeNotify}

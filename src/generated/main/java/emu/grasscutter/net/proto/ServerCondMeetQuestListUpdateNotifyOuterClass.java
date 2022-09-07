@@ -56,8 +56,7 @@ public final class ServerCondMeetQuestListUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 406
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ServerCondMeetQuestListUpdateNotify}
@@ -446,8 +445,7 @@ public final class ServerCondMeetQuestListUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 406
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ServerCondMeetQuestListUpdateNotify}

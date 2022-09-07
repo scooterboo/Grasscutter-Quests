@@ -46,8 +46,7 @@ public final class ClientCollectorDataNotifyOuterClass {
    * <pre>
    * CmdId: 4264
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ClientCollectorDataNotify}
@@ -341,8 +340,7 @@ public final class ClientCollectorDataNotifyOuterClass {
      * <pre>
      * CmdId: 4264
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ClientCollectorDataNotify}

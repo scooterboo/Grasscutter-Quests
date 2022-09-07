@@ -64,8 +64,7 @@ public final class GetAllMailRspOuterClass {
    * <pre>
    * CmdId: 1475
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetAllMailRsp}
@@ -442,8 +441,7 @@ public final class GetAllMailRspOuterClass {
      * <pre>
      * CmdId: 1475
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetAllMailRsp}

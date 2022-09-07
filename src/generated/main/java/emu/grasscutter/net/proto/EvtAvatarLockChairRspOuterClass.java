@@ -55,8 +55,7 @@ public final class EvtAvatarLockChairRspOuterClass {
    * <pre>
    * CmdId: 366
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code EvtAvatarLockChairRsp}
@@ -420,8 +419,7 @@ public final class EvtAvatarLockChairRspOuterClass {
      * <pre>
      * CmdId: 366
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code EvtAvatarLockChairRsp}

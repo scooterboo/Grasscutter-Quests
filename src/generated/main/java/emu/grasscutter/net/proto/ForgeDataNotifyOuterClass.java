@@ -79,8 +79,7 @@ public final class ForgeDataNotifyOuterClass {
    * <pre>
    * CmdId: 680
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ForgeDataNotify}
@@ -544,8 +543,7 @@ public final class ForgeDataNotifyOuterClass {
      * <pre>
      * CmdId: 680
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ForgeDataNotify}

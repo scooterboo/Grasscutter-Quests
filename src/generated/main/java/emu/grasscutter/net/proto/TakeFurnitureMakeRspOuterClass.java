@@ -97,8 +97,7 @@ public final class TakeFurnitureMakeRspOuterClass {
    * <pre>
    * CmdId: 4769
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TakeFurnitureMakeRsp}
@@ -567,8 +566,7 @@ public final class TakeFurnitureMakeRspOuterClass {
      * <pre>
      * CmdId: 4769
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TakeFurnitureMakeRsp}

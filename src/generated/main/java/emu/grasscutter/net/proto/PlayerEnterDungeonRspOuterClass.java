@@ -40,8 +40,7 @@ public final class PlayerEnterDungeonRspOuterClass {
    * <pre>
    * CmdId: 935
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerEnterDungeonRsp}
@@ -349,8 +348,7 @@ public final class PlayerEnterDungeonRspOuterClass {
      * <pre>
      * CmdId: 935
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerEnterDungeonRsp}

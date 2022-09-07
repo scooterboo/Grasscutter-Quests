@@ -52,8 +52,7 @@ public final class SyncScenePlayTeamEntityNotifyOuterClass {
    * <pre>
    * CmdId: 3333
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SyncScenePlayTeamEntityNotify}
@@ -374,8 +373,7 @@ public final class SyncScenePlayTeamEntityNotifyOuterClass {
      * <pre>
      * CmdId: 3333
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SyncScenePlayTeamEntityNotify}

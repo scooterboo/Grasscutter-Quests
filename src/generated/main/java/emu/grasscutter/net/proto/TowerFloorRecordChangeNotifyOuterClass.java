@@ -52,8 +52,7 @@ public final class TowerFloorRecordChangeNotifyOuterClass {
    * <pre>
    * CmdId: 2498
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TowerFloorRecordChangeNotify}
@@ -375,8 +374,7 @@ public final class TowerFloorRecordChangeNotifyOuterClass {
      * <pre>
      * CmdId: 2498
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TowerFloorRecordChangeNotify}

@@ -34,8 +34,7 @@ public final class VehicleStaminaNotifyOuterClass {
    * <pre>
    * CmdId: 834
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code VehicleStaminaNotify}
@@ -318,8 +317,7 @@ public final class VehicleStaminaNotifyOuterClass {
      * <pre>
      * CmdId: 834
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code VehicleStaminaNotify}

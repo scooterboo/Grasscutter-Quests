@@ -22,7 +22,7 @@ public final class GetWidgetSlotReqOuterClass {
    * <pre>
    * CmdId: 4253
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -250,7 +250,7 @@ public final class GetWidgetSlotReqOuterClass {
      * <pre>
      * CmdId: 4253
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

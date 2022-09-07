@@ -28,7 +28,7 @@ public final class HomeSceneJumpReqOuterClass {
    * <pre>
    * CmdId: 4528
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -284,7 +284,7 @@ public final class HomeSceneJumpReqOuterClass {
      * <pre>
      * CmdId: 4528
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

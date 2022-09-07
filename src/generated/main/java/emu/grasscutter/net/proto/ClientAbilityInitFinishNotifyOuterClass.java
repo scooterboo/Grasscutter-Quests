@@ -52,7 +52,7 @@ public final class ClientAbilityInitFinishNotifyOuterClass {
    * <pre>
    * CmdId: 1135
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -374,7 +374,7 @@ public final class ClientAbilityInitFinishNotifyOuterClass {
      * <pre>
      * CmdId: 1135
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

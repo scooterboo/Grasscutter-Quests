@@ -45,8 +45,7 @@ public final class TakeBattlePassMissionPointRspOuterClass {
    * <pre>
    * CmdId: 2622
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TakeBattlePassMissionPointRsp}
@@ -382,8 +381,7 @@ public final class TakeBattlePassMissionPointRspOuterClass {
      * <pre>
      * CmdId: 2622
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TakeBattlePassMissionPointRsp}

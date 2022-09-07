@@ -97,8 +97,7 @@ public final class ServerBuffChangeNotifyOuterClass {
    * <pre>
    * CmdId: 361
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ServerBuffChangeNotify}
@@ -725,8 +724,7 @@ public final class ServerBuffChangeNotifyOuterClass {
      * <pre>
      * CmdId: 361
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ServerBuffChangeNotify}

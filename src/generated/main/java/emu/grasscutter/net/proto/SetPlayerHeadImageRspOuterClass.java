@@ -49,8 +49,7 @@ public final class SetPlayerHeadImageRspOuterClass {
    * <pre>
    * CmdId: 4047
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SetPlayerHeadImageRsp}
@@ -386,8 +385,7 @@ public final class SetPlayerHeadImageRspOuterClass {
      * <pre>
      * CmdId: 4047
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SetPlayerHeadImageRsp}

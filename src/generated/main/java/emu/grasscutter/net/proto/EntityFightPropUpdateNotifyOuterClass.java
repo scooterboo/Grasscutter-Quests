@@ -62,8 +62,7 @@ public final class EntityFightPropUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 1235
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code EntityFightPropUpdateNotify}
@@ -446,8 +445,7 @@ public final class EntityFightPropUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 1235
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code EntityFightPropUpdateNotify}

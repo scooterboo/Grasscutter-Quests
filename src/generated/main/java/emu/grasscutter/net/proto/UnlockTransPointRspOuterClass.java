@@ -27,9 +27,8 @@ public final class UnlockTransPointRspOuterClass {
   /**
    * <pre>
    * CmdId: 3426
-   * EnetChannelId: 0
+   * EnetChannelId: 1
    * EnetIsReliable: true
-   * IsAllowClient: true
    * </pre>
    *
    * Protobuf type {@code UnlockTransPointRsp}
@@ -282,9 +281,8 @@ public final class UnlockTransPointRspOuterClass {
     /**
      * <pre>
      * CmdId: 3426
-     * EnetChannelId: 0
+     * EnetChannelId: 1
      * EnetIsReliable: true
-     * IsAllowClient: true
      * </pre>
      *
      * Protobuf type {@code UnlockTransPointRsp}

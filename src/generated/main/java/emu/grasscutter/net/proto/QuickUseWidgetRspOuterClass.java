@@ -81,8 +81,7 @@ public final class QuickUseWidgetRspOuterClass {
    * <pre>
    * CmdId: 4270
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuickUseWidgetRsp}
@@ -595,8 +594,7 @@ public final class QuickUseWidgetRspOuterClass {
      * <pre>
      * CmdId: 4270
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuickUseWidgetRsp}

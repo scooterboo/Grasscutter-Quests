@@ -37,10 +37,9 @@ public final class BattlePassMissionDelNotifyOuterClass {
   }
   /**
    * <pre>
-   * CmdId: 2625
+   * CmdId: 2643
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code BattlePassMissionDelNotify}
@@ -347,10 +346,9 @@ public final class BattlePassMissionDelNotifyOuterClass {
     }
     /**
      * <pre>
-     * CmdId: 2625
+     * CmdId: 2643
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code BattlePassMissionDelNotify}

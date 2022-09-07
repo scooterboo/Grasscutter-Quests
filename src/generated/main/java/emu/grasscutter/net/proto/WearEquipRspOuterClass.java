@@ -40,8 +40,7 @@ public final class WearEquipRspOuterClass {
    * <pre>
    * CmdId: 681
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WearEquipRsp}
@@ -351,8 +350,7 @@ public final class WearEquipRspOuterClass {
      * <pre>
      * CmdId: 681
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WearEquipRsp}

@@ -97,6 +97,7 @@ public class WorldDataSystem extends BaseGameSystem {
 
         var monster = group.monsters.values().stream()
                 .filter(x -> x.monster_id == monsterId)
+                .filter(x -> x.monster_id != 0)
                 .findFirst();
         if (monster.isEmpty()) {
             return null;

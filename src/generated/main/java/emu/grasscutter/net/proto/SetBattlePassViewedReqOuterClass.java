@@ -28,7 +28,7 @@ public final class SetBattlePassViewedReqOuterClass {
    * <pre>
    * CmdId: 2641
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -283,7 +283,7 @@ public final class SetBattlePassViewedReqOuterClass {
      * <pre>
      * CmdId: 2641
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

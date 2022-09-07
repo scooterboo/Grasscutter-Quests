@@ -62,8 +62,7 @@ public final class AvatarFightPropUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 1221
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarFightPropUpdateNotify}
@@ -447,8 +446,7 @@ public final class AvatarFightPropUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 1221
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarFightPropUpdateNotify}

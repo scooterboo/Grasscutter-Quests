@@ -46,7 +46,7 @@ public final class AbilityInvocationsNotifyOuterClass {
    * <pre>
    * CmdId: 1198
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -341,7 +341,7 @@ public final class AbilityInvocationsNotifyOuterClass {
      * <pre>
      * CmdId: 1198
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

@@ -37,7 +37,7 @@ public final class SetUpLunchBoxWidgetReqOuterClass {
    * <pre>
    * CmdId: 4272
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -320,7 +320,7 @@ public final class SetUpLunchBoxWidgetReqOuterClass {
      * <pre>
      * CmdId: 4272
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

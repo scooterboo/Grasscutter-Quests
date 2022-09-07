@@ -142,8 +142,7 @@ public final class DoGachaRspOuterClass {
    * <pre>
    * CmdId: 1535
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DoGachaRsp}
@@ -870,8 +869,7 @@ public final class DoGachaRspOuterClass {
      * <pre>
      * CmdId: 1535
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DoGachaRsp}

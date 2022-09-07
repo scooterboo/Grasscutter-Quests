@@ -46,8 +46,7 @@ public final class WorldPlayerRTTNotifyOuterClass {
    * <pre>
    * CmdId: 22
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WorldPlayerRTTNotify}
@@ -341,8 +340,7 @@ public final class WorldPlayerRTTNotifyOuterClass {
      * <pre>
      * CmdId: 22
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WorldPlayerRTTNotify}

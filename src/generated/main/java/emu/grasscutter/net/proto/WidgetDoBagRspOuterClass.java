@@ -34,8 +34,7 @@ public final class WidgetDoBagRspOuterClass {
    * <pre>
    * CmdId: 4296
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetDoBagRsp}
@@ -316,8 +315,7 @@ public final class WidgetDoBagRspOuterClass {
      * <pre>
      * CmdId: 4296
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetDoBagRsp}

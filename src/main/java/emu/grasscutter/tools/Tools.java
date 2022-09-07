@@ -69,6 +69,9 @@ public final class Tools {
             h.forEach((id, hash) -> {
                 final String sId = padId.formatted(id);
                 final TextStrings t = textMaps.get((int) hash);
+                if(t==null){
+                    return;
+                }
                 for (int i = 0; i < TextStrings.NUM_LANGUAGES; i++)
                     handbookBuilders.get(i).append(sId + t.strings[i] + "\n");
             });
@@ -135,6 +138,9 @@ public final class Tools {
                 default -> "";
             };
             Language.TextStrings avatarName = Language.getTextMapKey(data.getNameTextMapHash());
+            if(avatarName == null){
+                return;
+            }
             for (int langIdx = 0; langIdx < NUM_LANGUAGES; langIdx++) {
                 sbs.get(langIdx)
                     .append("\t\"")
@@ -163,6 +169,9 @@ public final class Tools {
             };
             if (color == null) return;  // skip unnecessary entries
             Language.TextStrings weaponName = Language.getTextMapKey(data.getNameTextMapHash());
+            if(weaponName == null){
+                return;
+            }
             for (int langIdx = 0; langIdx < NUM_LANGUAGES; langIdx++) {
                 sbs.get(langIdx)
                     .append("\t\"")

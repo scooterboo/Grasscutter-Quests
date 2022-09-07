@@ -62,8 +62,7 @@ public final class AvatarExpeditionCallBackRspOuterClass {
    * <pre>
    * CmdId: 1726
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarExpeditionCallBackRsp}
@@ -446,8 +445,7 @@ public final class AvatarExpeditionCallBackRspOuterClass {
      * <pre>
      * CmdId: 1726
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarExpeditionCallBackRsp}

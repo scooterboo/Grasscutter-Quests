@@ -28,8 +28,7 @@ public final class CanUseSkillNotifyOuterClass {
    * <pre>
    * CmdId: 1005
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CanUseSkillNotify}
@@ -284,8 +283,7 @@ public final class CanUseSkillNotifyOuterClass {
      * <pre>
      * CmdId: 1005
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CanUseSkillNotify}

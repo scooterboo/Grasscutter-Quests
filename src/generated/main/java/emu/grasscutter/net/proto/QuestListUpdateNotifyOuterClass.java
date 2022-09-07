@@ -46,8 +46,7 @@ public final class QuestListUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 498
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuestListUpdateNotify}
@@ -341,8 +340,7 @@ public final class QuestListUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 498
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuestListUpdateNotify}

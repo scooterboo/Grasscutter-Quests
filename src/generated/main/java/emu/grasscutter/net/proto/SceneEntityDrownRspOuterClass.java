@@ -34,8 +34,7 @@ public final class SceneEntityDrownRspOuterClass {
    * <pre>
    * CmdId: 294
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneEntityDrownRsp}
@@ -316,8 +315,7 @@ public final class SceneEntityDrownRspOuterClass {
      * <pre>
      * CmdId: 294
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneEntityDrownRsp}

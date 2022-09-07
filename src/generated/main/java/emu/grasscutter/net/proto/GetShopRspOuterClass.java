@@ -43,8 +43,7 @@ public final class GetShopRspOuterClass {
    * <pre>
    * CmdId: 798
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetShopRsp}
@@ -353,8 +352,7 @@ public final class GetShopRspOuterClass {
      * <pre>
      * CmdId: 798
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetShopRsp}

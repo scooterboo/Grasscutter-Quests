@@ -40,8 +40,7 @@ public final class AvatarDieAnimationEndRspOuterClass {
    * <pre>
    * CmdId: 1694
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarDieAnimationEndRsp}
@@ -350,8 +349,7 @@ public final class AvatarDieAnimationEndRspOuterClass {
      * <pre>
      * CmdId: 1694
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarDieAnimationEndRsp}

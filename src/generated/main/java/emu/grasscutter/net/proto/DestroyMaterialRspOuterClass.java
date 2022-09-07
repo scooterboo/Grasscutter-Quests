@@ -62,8 +62,7 @@ public final class DestroyMaterialRspOuterClass {
    * <pre>
    * CmdId: 618
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DestroyMaterialRsp}
@@ -479,8 +478,7 @@ public final class DestroyMaterialRspOuterClass {
      * <pre>
      * CmdId: 618
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DestroyMaterialRsp}

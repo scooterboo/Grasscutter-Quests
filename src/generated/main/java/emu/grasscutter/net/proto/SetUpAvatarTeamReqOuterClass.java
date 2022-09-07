@@ -51,7 +51,7 @@ public final class SetUpAvatarTeamReqOuterClass {
    * <pre>
    * CmdId: 1690
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -416,7 +416,7 @@ public final class SetUpAvatarTeamReqOuterClass {
      * <pre>
      * CmdId: 1690
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

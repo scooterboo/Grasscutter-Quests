@@ -39,8 +39,7 @@ public final class GroupUnloadNotifyOuterClass {
    * <pre>
    * CmdId: 3344
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GroupUnloadNotify}
@@ -349,8 +348,7 @@ public final class GroupUnloadNotifyOuterClass {
      * <pre>
      * CmdId: 3344
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GroupUnloadNotify}

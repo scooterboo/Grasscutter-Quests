@@ -28,8 +28,7 @@ public final class TrialAvatarFirstPassDungeonNotifyOuterClass {
    * <pre>
    * CmdId: 2013
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TrialAvatarFirstPassDungeonNotify}
@@ -283,8 +282,7 @@ public final class TrialAvatarFirstPassDungeonNotifyOuterClass {
      * <pre>
      * CmdId: 2013
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TrialAvatarFirstPassDungeonNotify}

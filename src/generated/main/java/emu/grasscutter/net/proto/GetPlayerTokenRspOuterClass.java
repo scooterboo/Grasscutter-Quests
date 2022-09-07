@@ -285,8 +285,7 @@ public final class GetPlayerTokenRspOuterClass {
    * <pre>
    * CmdId: 198
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetPlayerTokenRsp}
@@ -1720,8 +1719,7 @@ public final class GetPlayerTokenRspOuterClass {
      * <pre>
      * CmdId: 198
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetPlayerTokenRsp}

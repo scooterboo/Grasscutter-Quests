@@ -51,8 +51,7 @@ public final class TryEnterHomeRspOuterClass {
    * <pre>
    * CmdId: 4653
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TryEnterHomeRsp}
@@ -415,8 +414,7 @@ public final class TryEnterHomeRspOuterClass {
      * <pre>
      * CmdId: 4653
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TryEnterHomeRsp}

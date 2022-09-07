@@ -88,8 +88,7 @@ public final class DungeonEntryInfoRspOuterClass {
    * <pre>
    * CmdId: 998
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DungeonEntryInfoRsp}
@@ -530,8 +529,7 @@ public final class DungeonEntryInfoRspOuterClass {
      * <pre>
      * CmdId: 998
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DungeonEntryInfoRsp}

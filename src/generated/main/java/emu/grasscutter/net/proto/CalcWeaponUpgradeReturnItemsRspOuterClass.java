@@ -58,8 +58,7 @@ public final class CalcWeaponUpgradeReturnItemsRspOuterClass {
    * <pre>
    * CmdId: 684
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CalcWeaponUpgradeReturnItemsRsp}
@@ -408,8 +407,7 @@ public final class CalcWeaponUpgradeReturnItemsRspOuterClass {
      * <pre>
      * CmdId: 684
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CalcWeaponUpgradeReturnItemsRsp}

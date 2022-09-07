@@ -45,8 +45,7 @@ public final class DelTeamEntityNotifyOuterClass {
    * <pre>
    * CmdId: 302
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code DelTeamEntityNotify}
@@ -382,8 +381,7 @@ public final class DelTeamEntityNotifyOuterClass {
      * <pre>
      * CmdId: 302
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code DelTeamEntityNotify}

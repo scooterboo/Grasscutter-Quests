@@ -40,8 +40,7 @@ public final class TakePlayerLevelRewardRspOuterClass {
    * <pre>
    * CmdId: 157
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code TakePlayerLevelRewardRsp}
@@ -349,8 +348,7 @@ public final class TakePlayerLevelRewardRspOuterClass {
      * <pre>
      * CmdId: 157
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code TakePlayerLevelRewardRsp}

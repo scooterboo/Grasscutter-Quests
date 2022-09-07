@@ -69,6 +69,9 @@ final class HandbookRequestHandler implements DocumentationHandler {
         avatarMap.keySet().intStream().sorted().mapToObj(avatarMap::get).forEach(data -> {
             int id = data.getId();
             Language.TextStrings name = Language.getTextMapKey(data.getNameTextMapHash());
+            if(name == null){
+                return;
+            }
             for (int langIdx = 0; langIdx < NUM_LANGUAGES; langIdx++)
                 sbs.get(langIdx).append("<tr><td><code>" + id + "</code></td><td>" + name.get(langIdx) + "</td></tr>\n");
         });
@@ -81,6 +84,9 @@ final class HandbookRequestHandler implements DocumentationHandler {
         itemMap.keySet().intStream().sorted().mapToObj(itemMap::get).forEach(data -> {
             int id = data.getId();
             Language.TextStrings name = Language.getTextMapKey(data.getNameTextMapHash());
+            if(name == null){
+                return;
+            }
             for (int langIdx = 0; langIdx < NUM_LANGUAGES; langIdx++)
                 sbs.get(langIdx).append("<tr><td><code>" + id + "</code></td><td>" + name.get(langIdx) + "</td></tr>\n");
         });
@@ -102,6 +108,9 @@ final class HandbookRequestHandler implements DocumentationHandler {
         monsterMap.keySet().intStream().sorted().mapToObj(monsterMap::get).forEach(data -> {
             int id = data.getId();
             Language.TextStrings name = Language.getTextMapKey(data.getNameTextMapHash());
+            if(name == null){
+                return;
+            }
             for (int langIdx = 0; langIdx < NUM_LANGUAGES; langIdx++)
                 sbs.get(langIdx).append("<tr><td><code>" + id + "</code></td><td>" + name.get(langIdx) + "</td></tr>\n");
         });

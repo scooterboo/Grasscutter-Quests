@@ -93,8 +93,7 @@ public final class GetActivityInfoRspOuterClass {
    * <pre>
    * CmdId: 2041
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetActivityInfoRsp}
@@ -562,8 +561,7 @@ public final class GetActivityInfoRspOuterClass {
      * <pre>
      * CmdId: 2041
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetActivityInfoRsp}

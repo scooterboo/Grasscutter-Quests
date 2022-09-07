@@ -73,8 +73,7 @@ public final class AvatarTeamUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 1706
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarTeamUpdateNotify}
@@ -511,8 +510,7 @@ public final class AvatarTeamUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 1706
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarTeamUpdateNotify}

@@ -60,10 +60,6 @@ public final class ActivityInfoOuterClass {
     int getTakenRewardList(int index);
 
     /**
-     * <pre>
-     *bool Unk2700_NONJFHAIFLA = 102;
-     * </pre>
-     *
      * <code>uint32 selected_avatar_reward_id = 1290;</code>
      * @return The selectedAvatarRewardId.
      */
@@ -146,44 +142,24 @@ public final class ActivityInfoOuterClass {
     int getActivityType();
 
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     java.util.List<emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC> 
         getUnk2800KOMIPKKKOBEList();
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC getUnk2800KOMIPKKKOBE(int index);
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     int getUnk2800KOMIPKKKOBECount();
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     java.util.List<? extends emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLCOrBuilder> 
         getUnk2800KOMIPKKKOBEOrBuilderList();
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLCOrBuilder getUnk2800KOMIPKKKOBEOrBuilder(
@@ -207,28 +183,16 @@ public final class ActivityInfoOuterClass {
     int getMeetCondList(int index);
 
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @return A list containing the expireCondList.
      */
     java.util.List<java.lang.Integer> getExpireCondListList();
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @return The count of expireCondList.
      */
     int getExpireCondListCount();
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @param index The index of the element to return.
      * @return The expireCondList at the given index.
@@ -266,13 +230,79 @@ public final class ActivityInfoOuterClass {
     int getActivityId();
 
     /**
+     * <code>bool Unk2700_NONJFHAIFLA = 102;</code>
+     * @return The unk2700NONJFHAIFLA.
+     */
+    boolean getUnk2700NONJFHAIFLA();
+
+    /**
+     * <code>bool Unk2700_EDKLLHBEEGE = 1449;</code>
+     * @return The unk2700EDKLLHBEEGE.
+     */
+    boolean getUnk2700EDKLLHBEEGE();
+
+    /**
      * <pre>
      * SeaLampActivityDetailInfo sam_lamp_info = 7;
      * CrucibleActivityDetailInfo crucible_info = 14;
      * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     * @return Whether the trialAvatarInfo field is set.
+     */
+    boolean hasTrialAvatarInfo();
+    /**
+     * <pre>
+     * SeaLampActivityDetailInfo sam_lamp_info = 7;
+     * CrucibleActivityDetailInfo crucible_info = 14;
+     * SalesmanActivityDetailInfo salesman_info = 11;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     * @return The trialAvatarInfo.
+     */
+    emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo getTrialAvatarInfo();
+    /**
+     * <pre>
+     * SeaLampActivityDetailInfo sam_lamp_info = 7;
+     * CrucibleActivityDetailInfo crucible_info = 14;
+     * SalesmanActivityDetailInfo salesman_info = 11;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     */
+    emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder getTrialAvatarInfoOrBuilder();
+
+    /**
+     * <pre>
      * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     * @return Whether the asterInfo field is set.
+     */
+    boolean hasAsterInfo();
+    /**
+     * <pre>
+     * DeliveryActivityDetailInfo delivery_info = 1092;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     * @return The asterInfo.
+     */
+    emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo getAsterInfo();
+    /**
+     * <pre>
+     * DeliveryActivityDetailInfo delivery_info = 1092;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     */
+    emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder getAsterInfoOrBuilder();
+
+    /**
+     * <pre>
      * FlightActivityDetailInfo flight_info = 1365;
      * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
      * EffigyActivityDetailInfo effigy_info = 391;
@@ -281,7 +311,46 @@ public final class ActivityInfoOuterClass {
      * SeaLampActivityInfo sea_lamp_info = 494;
      * ExpeditionActivityDetailInfo expedition_info = 202;
      * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     * @return Whether the fleurFairInfo field is set.
+     */
+    boolean hasFleurFairInfo();
+    /**
+     * <pre>
+     * FlightActivityDetailInfo flight_info = 1365;
+     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+     * EffigyActivityDetailInfo effigy_info = 391;
+     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+     * BlessingActivityDetailInfo blessing_info = 1869;
+     * SeaLampActivityInfo sea_lamp_info = 494;
+     * ExpeditionActivityDetailInfo expedition_info = 202;
+     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     * @return The fleurFairInfo.
+     */
+    emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo getFleurFairInfo();
+    /**
+     * <pre>
+     * FlightActivityDetailInfo flight_info = 1365;
+     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+     * EffigyActivityDetailInfo effigy_info = 391;
+     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+     * BlessingActivityDetailInfo blessing_info = 1869;
+     * SeaLampActivityInfo sea_lamp_info = 494;
+     * ExpeditionActivityDetailInfo expedition_info = 202;
+     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     */
+    emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder getFleurFairInfoOrBuilder();
+
+    /**
+     * <pre>
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -305,21 +374,6 @@ public final class ActivityInfoOuterClass {
     boolean hasMusicGameInfo();
     /**
      * <pre>
-     * SeaLampActivityDetailInfo sam_lamp_info = 7;
-     * CrucibleActivityDetailInfo crucible_info = 14;
-     * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-     * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
-     * FlightActivityDetailInfo flight_info = 1365;
-     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-     * EffigyActivityDetailInfo effigy_info = 391;
-     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-     * BlessingActivityDetailInfo blessing_info = 1869;
-     * SeaLampActivityInfo sea_lamp_info = 494;
-     * ExpeditionActivityDetailInfo expedition_info = 202;
-     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -343,21 +397,6 @@ public final class ActivityInfoOuterClass {
     emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo getMusicGameInfo();
     /**
      * <pre>
-     * SeaLampActivityDetailInfo sam_lamp_info = 7;
-     * CrucibleActivityDetailInfo crucible_info = 14;
-     * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-     * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
-     * FlightActivityDetailInfo flight_info = 1365;
-     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-     * EffigyActivityDetailInfo effigy_info = 391;
-     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-     * BlessingActivityDetailInfo blessing_info = 1869;
-     * SeaLampActivityInfo sea_lamp_info = 494;
-     * ExpeditionActivityDetailInfo expedition_info = 202;
-     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -378,6 +417,81 @@ public final class ActivityInfoOuterClass {
      * <code>.MusicGameActivityDetailInfo music_game_info = 460;</code>
      */
     emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfoOrBuilder getMusicGameInfoOrBuilder();
+
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     * @return Whether the summerTimeV2Info field is set.
+     */
+    boolean hasSummerTimeV2Info();
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     * @return The summerTimeV2Info.
+     */
+    emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo getSummerTimeV2Info();
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     */
+    emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder getSummerTimeV2InfoOrBuilder();
 
     public emu.grasscutter.net.proto.ActivityInfoOuterClass.ActivityInfo.DetailCase getDetailCase();
   }
@@ -432,6 +546,20 @@ public final class ActivityInfoOuterClass {
             case 0:
               done = true;
               break;
+            case 10: {
+              emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder subBuilder = null;
+              if (detailCase_ == 1) {
+                subBuilder = ((emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_).toBuilder();
+              }
+              detail_ =
+                  input.readMessage(emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_);
+                detail_ = subBuilder.buildPartial();
+              }
+              detailCase_ = 1;
+              break;
+            }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000020) != 0)) {
                 watcherInfoList_ = new java.util.ArrayList<emu.grasscutter.net.proto.ActivityWatcherInfoOuterClass.ActivityWatcherInfo>();
@@ -523,6 +651,11 @@ public final class ActivityInfoOuterClass {
               scheduleId_ = input.readUInt32();
               break;
             }
+            case 816: {
+
+              unk2700NONJFHAIFLA_ = input.readBool();
+              break;
+            }
             case 2632: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 takenRewardList_ = newIntList();
@@ -558,9 +691,37 @@ public final class ActivityInfoOuterClass {
               detailCase_ = 460;
               break;
             }
+            case 4458: {
+              emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder subBuilder = null;
+              if (detailCase_ == 557) {
+                subBuilder = ((emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_).toBuilder();
+              }
+              detail_ =
+                  input.readMessage(emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_);
+                detail_ = subBuilder.buildPartial();
+              }
+              detailCase_ = 557;
+              break;
+            }
             case 4736: {
 
               firstDayStartTime_ = input.readUInt32();
+              break;
+            }
+            case 4978: {
+              emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder subBuilder = null;
+              if (detailCase_ == 622) {
+                subBuilder = ((emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_).toBuilder();
+              }
+              detail_ =
+                  input.readMessage(emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_);
+                detail_ = subBuilder.buildPartial();
+              }
+              detailCase_ = 622;
               break;
             }
             case 5458: {
@@ -574,6 +735,20 @@ public final class ActivityInfoOuterClass {
                   ActivityCoinMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               activityCoinMap_.getMutableMap().put(
                   activityCoinMap__.getKey(), activityCoinMap__.getValue());
+              break;
+            }
+            case 6858: {
+              emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder subBuilder = null;
+              if (detailCase_ == 857) {
+                subBuilder = ((emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_).toBuilder();
+              }
+              detail_ =
+                  input.readMessage(emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_);
+                detail_ = subBuilder.buildPartial();
+              }
+              detailCase_ = 857;
               break;
             }
             case 6914: {
@@ -593,6 +768,11 @@ public final class ActivityInfoOuterClass {
             case 10320: {
 
               selectedAvatarRewardId_ = input.readUInt32();
+              break;
+            }
+            case 11592: {
+
+              unk2700EDKLLHBEEGE_ = input.readBool();
               break;
             }
             case 15248: {
@@ -669,7 +849,11 @@ public final class ActivityInfoOuterClass {
     public enum DetailCase
         implements com.google.protobuf.Internal.EnumLite,
             com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      TRIAL_AVATAR_INFO(1),
+      ASTER_INFO(557),
+      FLEUR_FAIR_INFO(857),
       MUSIC_GAME_INFO(460),
+      SUMMER_TIME_V_2_INFO(622),
       DETAIL_NOT_SET(0);
       private final int value;
       private DetailCase(int value) {
@@ -687,7 +871,11 @@ public final class ActivityInfoOuterClass {
 
       public static DetailCase forNumber(int value) {
         switch (value) {
+          case 1: return TRIAL_AVATAR_INFO;
+          case 557: return ASTER_INFO;
+          case 857: return FLEUR_FAIR_INFO;
           case 460: return MUSIC_GAME_INFO;
+          case 622: return SUMMER_TIME_V_2_INFO;
           case 0: return DETAIL_NOT_SET;
           default: return null;
         }
@@ -778,10 +966,6 @@ public final class ActivityInfoOuterClass {
     public static final int SELECTED_AVATAR_REWARD_ID_FIELD_NUMBER = 1290;
     private int selectedAvatarRewardId_;
     /**
-     * <pre>
-     *bool Unk2700_NONJFHAIFLA = 102;
-     * </pre>
-     *
      * <code>uint32 selected_avatar_reward_id = 1290;</code>
      * @return The selectedAvatarRewardId.
      */
@@ -951,10 +1135,6 @@ public final class ActivityInfoOuterClass {
     public static final int UNK2800_KOMIPKKKOBE_FIELD_NUMBER = 864;
     private java.util.List<emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC> unk2800KOMIPKKKOBE_;
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     @java.lang.Override
@@ -962,10 +1142,6 @@ public final class ActivityInfoOuterClass {
       return unk2800KOMIPKKKOBE_;
     }
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     @java.lang.Override
@@ -974,10 +1150,6 @@ public final class ActivityInfoOuterClass {
       return unk2800KOMIPKKKOBE_;
     }
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     @java.lang.Override
@@ -985,10 +1157,6 @@ public final class ActivityInfoOuterClass {
       return unk2800KOMIPKKKOBE_.size();
     }
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     @java.lang.Override
@@ -996,10 +1164,6 @@ public final class ActivityInfoOuterClass {
       return unk2800KOMIPKKKOBE_.get(index);
     }
     /**
-     * <pre>
-     *bool Unk2700_EDKLLHBEEGE = 1449;
-     * </pre>
-     *
      * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
      */
     @java.lang.Override
@@ -1039,10 +1203,6 @@ public final class ActivityInfoOuterClass {
     public static final int EXPIRE_COND_LIST_FIELD_NUMBER = 3;
     private com.google.protobuf.Internal.IntList expireCondList_;
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @return A list containing the expireCondList.
      */
@@ -1052,10 +1212,6 @@ public final class ActivityInfoOuterClass {
       return expireCondList_;
     }
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @return The count of expireCondList.
      */
@@ -1063,10 +1219,6 @@ public final class ActivityInfoOuterClass {
       return expireCondList_.size();
     }
     /**
-     * <pre>
-     *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-     * </pre>
-     *
      * <code>repeated uint32 expire_cond_list = 3;</code>
      * @param index The index of the element to return.
      * @return The expireCondList at the given index.
@@ -1127,15 +1279,123 @@ public final class ActivityInfoOuterClass {
       return activityId_;
     }
 
-    public static final int MUSIC_GAME_INFO_FIELD_NUMBER = 460;
+    public static final int UNK2700_NONJFHAIFLA_FIELD_NUMBER = 102;
+    private boolean unk2700NONJFHAIFLA_;
+    /**
+     * <code>bool Unk2700_NONJFHAIFLA = 102;</code>
+     * @return The unk2700NONJFHAIFLA.
+     */
+    @java.lang.Override
+    public boolean getUnk2700NONJFHAIFLA() {
+      return unk2700NONJFHAIFLA_;
+    }
+
+    public static final int UNK2700_EDKLLHBEEGE_FIELD_NUMBER = 1449;
+    private boolean unk2700EDKLLHBEEGE_;
+    /**
+     * <code>bool Unk2700_EDKLLHBEEGE = 1449;</code>
+     * @return The unk2700EDKLLHBEEGE.
+     */
+    @java.lang.Override
+    public boolean getUnk2700EDKLLHBEEGE() {
+      return unk2700EDKLLHBEEGE_;
+    }
+
+    public static final int TRIAL_AVATAR_INFO_FIELD_NUMBER = 1;
     /**
      * <pre>
      * SeaLampActivityDetailInfo sam_lamp_info = 7;
      * CrucibleActivityDetailInfo crucible_info = 14;
      * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     * @return Whether the trialAvatarInfo field is set.
+     */
+    @java.lang.Override
+    public boolean hasTrialAvatarInfo() {
+      return detailCase_ == 1;
+    }
+    /**
+     * <pre>
+     * SeaLampActivityDetailInfo sam_lamp_info = 7;
+     * CrucibleActivityDetailInfo crucible_info = 14;
+     * SalesmanActivityDetailInfo salesman_info = 11;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     * @return The trialAvatarInfo.
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo getTrialAvatarInfo() {
+      if (detailCase_ == 1) {
+         return (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+    }
+    /**
+     * <pre>
+     * SeaLampActivityDetailInfo sam_lamp_info = 7;
+     * CrucibleActivityDetailInfo crucible_info = 14;
+     * SalesmanActivityDetailInfo salesman_info = 11;
+     * </pre>
+     *
+     * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder getTrialAvatarInfoOrBuilder() {
+      if (detailCase_ == 1) {
+         return (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+    }
+
+    public static final int ASTER_INFO_FIELD_NUMBER = 557;
+    /**
+     * <pre>
      * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     * @return Whether the asterInfo field is set.
+     */
+    @java.lang.Override
+    public boolean hasAsterInfo() {
+      return detailCase_ == 557;
+    }
+    /**
+     * <pre>
+     * DeliveryActivityDetailInfo delivery_info = 1092;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     * @return The asterInfo.
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo getAsterInfo() {
+      if (detailCase_ == 557) {
+         return (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+    }
+    /**
+     * <pre>
+     * DeliveryActivityDetailInfo delivery_info = 1092;
+     * </pre>
+     *
+     * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder getAsterInfoOrBuilder() {
+      if (detailCase_ == 557) {
+         return (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+    }
+
+    public static final int FLEUR_FAIR_INFO_FIELD_NUMBER = 857;
+    /**
+     * <pre>
      * FlightActivityDetailInfo flight_info = 1365;
      * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
      * EffigyActivityDetailInfo effigy_info = 391;
@@ -1144,7 +1404,62 @@ public final class ActivityInfoOuterClass {
      * SeaLampActivityInfo sea_lamp_info = 494;
      * ExpeditionActivityDetailInfo expedition_info = 202;
      * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     * @return Whether the fleurFairInfo field is set.
+     */
+    @java.lang.Override
+    public boolean hasFleurFairInfo() {
+      return detailCase_ == 857;
+    }
+    /**
+     * <pre>
+     * FlightActivityDetailInfo flight_info = 1365;
+     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+     * EffigyActivityDetailInfo effigy_info = 391;
+     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+     * BlessingActivityDetailInfo blessing_info = 1869;
+     * SeaLampActivityInfo sea_lamp_info = 494;
+     * ExpeditionActivityDetailInfo expedition_info = 202;
+     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     * @return The fleurFairInfo.
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo getFleurFairInfo() {
+      if (detailCase_ == 857) {
+         return (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+    }
+    /**
+     * <pre>
+     * FlightActivityDetailInfo flight_info = 1365;
+     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+     * EffigyActivityDetailInfo effigy_info = 391;
+     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+     * BlessingActivityDetailInfo blessing_info = 1869;
+     * SeaLampActivityInfo sea_lamp_info = 494;
+     * ExpeditionActivityDetailInfo expedition_info = 202;
+     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+     * </pre>
+     *
+     * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder getFleurFairInfoOrBuilder() {
+      if (detailCase_ == 857) {
+         return (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+    }
+
+    public static final int MUSIC_GAME_INFO_FIELD_NUMBER = 460;
+    /**
+     * <pre>
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -1171,21 +1486,6 @@ public final class ActivityInfoOuterClass {
     }
     /**
      * <pre>
-     * SeaLampActivityDetailInfo sam_lamp_info = 7;
-     * CrucibleActivityDetailInfo crucible_info = 14;
-     * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-     * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
-     * FlightActivityDetailInfo flight_info = 1365;
-     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-     * EffigyActivityDetailInfo effigy_info = 391;
-     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-     * BlessingActivityDetailInfo blessing_info = 1869;
-     * SeaLampActivityInfo sea_lamp_info = 494;
-     * ExpeditionActivityDetailInfo expedition_info = 202;
-     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -1215,21 +1515,6 @@ public final class ActivityInfoOuterClass {
     }
     /**
      * <pre>
-     * SeaLampActivityDetailInfo sam_lamp_info = 7;
-     * CrucibleActivityDetailInfo crucible_info = 14;
-     * SalesmanActivityDetailInfo salesman_info = 11;
-     * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-     * DeliveryActivityDetailInfo delivery_info = 1092;
-     * AsterActivityDetailInfo aster_info = 557;
-     * FlightActivityDetailInfo flight_info = 1365;
-     * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-     * EffigyActivityDetailInfo effigy_info = 391;
-     * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-     * BlessingActivityDetailInfo blessing_info = 1869;
-     * SeaLampActivityInfo sea_lamp_info = 494;
-     * ExpeditionActivityDetailInfo expedition_info = 202;
-     * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-     * FleurFairActivityDetailInfo fleur_fair_info = 857;
      * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
      * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
      * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -1257,6 +1542,97 @@ public final class ActivityInfoOuterClass {
       return emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo.getDefaultInstance();
     }
 
+    public static final int SUMMER_TIME_V_2_INFO_FIELD_NUMBER = 622;
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     * @return Whether the summerTimeV2Info field is set.
+     */
+    @java.lang.Override
+    public boolean hasSummerTimeV2Info() {
+      return detailCase_ == 622;
+    }
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     * @return The summerTimeV2Info.
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo getSummerTimeV2Info() {
+      if (detailCase_ == 622) {
+         return (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+    }
+    /**
+     * <pre>
+     * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+     * DigActivityDetailInfo dig_info = 403;
+     * HachiActivityDetailInfo hachi_info = 491;
+     * WinterCampActivityDetailInfo winter_camp_info = 1083;
+     * PotionActivityDetailInfo potion_info = 1273;
+     * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+     * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+     * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+     * BartenderActivityDetailInfo bartender_info = 1725;
+     * UgcActivityDetailInfo ugc_info = 703;
+     * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+     * IrodoriActivityDetailInfo irodori_info = 750;
+     * PhotoActivityDetailInfo photo_info = 328;
+     * SpiceActivityDetailInfo spice_info = 1891;
+     * GachaActivityDetailInfo gacha_info = 825;
+     * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+     * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+     * </pre>
+     *
+     * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder getSummerTimeV2InfoOrBuilder() {
+      if (detailCase_ == 622) {
+         return (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_;
+      }
+      return emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1272,6 +1648,9 @@ public final class ActivityInfoOuterClass {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (detailCase_ == 1) {
+        output.writeMessage(1, (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_);
+      }
       for (int i = 0; i < watcherInfoList_.size(); i++) {
         output.writeMessage(2, watcherInfoList_.get(i));
       }
@@ -1313,6 +1692,9 @@ public final class ActivityInfoOuterClass {
       if (scheduleId_ != 0) {
         output.writeUInt32(15, scheduleId_);
       }
+      if (unk2700NONJFHAIFLA_ != false) {
+        output.writeBool(102, unk2700NONJFHAIFLA_);
+      }
       if (getTakenRewardListList().size() > 0) {
         output.writeUInt32NoTag(2634);
         output.writeUInt32NoTag(takenRewardListMemoizedSerializedSize);
@@ -1323,8 +1705,14 @@ public final class ActivityInfoOuterClass {
       if (detailCase_ == 460) {
         output.writeMessage(460, (emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo) detail_);
       }
+      if (detailCase_ == 557) {
+        output.writeMessage(557, (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_);
+      }
       if (firstDayStartTime_ != 0) {
         output.writeUInt32(592, firstDayStartTime_);
+      }
+      if (detailCase_ == 622) {
+        output.writeMessage(622, (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_);
       }
       com.google.protobuf.GeneratedMessageV3
         .serializeIntegerMapTo(
@@ -1332,6 +1720,9 @@ public final class ActivityInfoOuterClass {
           internalGetActivityCoinMap(),
           ActivityCoinMapDefaultEntryHolder.defaultEntry,
           682);
+      if (detailCase_ == 857) {
+        output.writeMessage(857, (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_);
+      }
       for (int i = 0; i < unk2800KOMIPKKKOBE_.size(); i++) {
         output.writeMessage(864, unk2800KOMIPKKKOBE_.get(i));
       }
@@ -1340,6 +1731,9 @@ public final class ActivityInfoOuterClass {
       }
       if (selectedAvatarRewardId_ != 0) {
         output.writeUInt32(1290, selectedAvatarRewardId_);
+      }
+      if (unk2700EDKLLHBEEGE_ != false) {
+        output.writeBool(1449, unk2700EDKLLHBEEGE_);
       }
       if (curScore_ != 0) {
         output.writeUInt32(1906, curScore_);
@@ -1356,6 +1750,10 @@ public final class ActivityInfoOuterClass {
       if (size != -1) return size;
 
       size = 0;
+      if (detailCase_ == 1) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_);
+      }
       for (int i = 0; i < watcherInfoList_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, watcherInfoList_.get(i));
@@ -1420,6 +1818,10 @@ public final class ActivityInfoOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(15, scheduleId_);
       }
+      if (unk2700NONJFHAIFLA_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(102, unk2700NONJFHAIFLA_);
+      }
       {
         int dataSize = 0;
         for (int i = 0; i < takenRewardList_.size(); i++) {
@@ -1438,9 +1840,17 @@ public final class ActivityInfoOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(460, (emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo) detail_);
       }
+      if (detailCase_ == 557) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(557, (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_);
+      }
       if (firstDayStartTime_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(592, firstDayStartTime_);
+      }
+      if (detailCase_ == 622) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(622, (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_);
       }
       for (java.util.Map.Entry<java.lang.Integer, java.lang.Integer> entry
            : internalGetActivityCoinMap().getMap().entrySet()) {
@@ -1451,6 +1861,10 @@ public final class ActivityInfoOuterClass {
             .build();
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(682, activityCoinMap__);
+      }
+      if (detailCase_ == 857) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(857, (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_);
       }
       for (int i = 0; i < unk2800KOMIPKKKOBE_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -1463,6 +1877,10 @@ public final class ActivityInfoOuterClass {
       if (selectedAvatarRewardId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1290, selectedAvatarRewardId_);
+      }
+      if (unk2700EDKLLHBEEGE_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1449, unk2700EDKLLHBEEGE_);
       }
       if (curScore_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -1525,11 +1943,31 @@ public final class ActivityInfoOuterClass {
           .equals(other.getWatcherInfoListList())) return false;
       if (getActivityId()
           != other.getActivityId()) return false;
+      if (getUnk2700NONJFHAIFLA()
+          != other.getUnk2700NONJFHAIFLA()) return false;
+      if (getUnk2700EDKLLHBEEGE()
+          != other.getUnk2700EDKLLHBEEGE()) return false;
       if (!getDetailCase().equals(other.getDetailCase())) return false;
       switch (detailCase_) {
+        case 1:
+          if (!getTrialAvatarInfo()
+              .equals(other.getTrialAvatarInfo())) return false;
+          break;
+        case 557:
+          if (!getAsterInfo()
+              .equals(other.getAsterInfo())) return false;
+          break;
+        case 857:
+          if (!getFleurFairInfo()
+              .equals(other.getFleurFairInfo())) return false;
+          break;
         case 460:
           if (!getMusicGameInfo()
               .equals(other.getMusicGameInfo())) return false;
+          break;
+        case 622:
+          if (!getSummerTimeV2Info()
+              .equals(other.getSummerTimeV2Info())) return false;
           break;
         case 0:
         default:
@@ -1599,10 +2037,32 @@ public final class ActivityInfoOuterClass {
       }
       hash = (37 * hash) + ACTIVITY_ID_FIELD_NUMBER;
       hash = (53 * hash) + getActivityId();
+      hash = (37 * hash) + UNK2700_NONJFHAIFLA_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getUnk2700NONJFHAIFLA());
+      hash = (37 * hash) + UNK2700_EDKLLHBEEGE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getUnk2700EDKLLHBEEGE());
       switch (detailCase_) {
+        case 1:
+          hash = (37 * hash) + TRIAL_AVATAR_INFO_FIELD_NUMBER;
+          hash = (53 * hash) + getTrialAvatarInfo().hashCode();
+          break;
+        case 557:
+          hash = (37 * hash) + ASTER_INFO_FIELD_NUMBER;
+          hash = (53 * hash) + getAsterInfo().hashCode();
+          break;
+        case 857:
+          hash = (37 * hash) + FLEUR_FAIR_INFO_FIELD_NUMBER;
+          hash = (53 * hash) + getFleurFairInfo().hashCode();
+          break;
         case 460:
           hash = (37 * hash) + MUSIC_GAME_INFO_FIELD_NUMBER;
           hash = (53 * hash) + getMusicGameInfo().hashCode();
+          break;
+        case 622:
+          hash = (37 * hash) + SUMMER_TIME_V_2_INFO_FIELD_NUMBER;
+          hash = (53 * hash) + getSummerTimeV2Info().hashCode();
           break;
         case 0:
         default:
@@ -1809,6 +2269,10 @@ public final class ActivityInfoOuterClass {
         }
         activityId_ = 0;
 
+        unk2700NONJFHAIFLA_ = false;
+
+        unk2700EDKLLHBEEGE_ = false;
+
         detailCase_ = 0;
         detail_ = null;
         return this;
@@ -1886,11 +2350,41 @@ public final class ActivityInfoOuterClass {
           result.watcherInfoList_ = watcherInfoListBuilder_.build();
         }
         result.activityId_ = activityId_;
+        result.unk2700NONJFHAIFLA_ = unk2700NONJFHAIFLA_;
+        result.unk2700EDKLLHBEEGE_ = unk2700EDKLLHBEEGE_;
+        if (detailCase_ == 1) {
+          if (trialAvatarInfoBuilder_ == null) {
+            result.detail_ = detail_;
+          } else {
+            result.detail_ = trialAvatarInfoBuilder_.build();
+          }
+        }
+        if (detailCase_ == 557) {
+          if (asterInfoBuilder_ == null) {
+            result.detail_ = detail_;
+          } else {
+            result.detail_ = asterInfoBuilder_.build();
+          }
+        }
+        if (detailCase_ == 857) {
+          if (fleurFairInfoBuilder_ == null) {
+            result.detail_ = detail_;
+          } else {
+            result.detail_ = fleurFairInfoBuilder_.build();
+          }
+        }
         if (detailCase_ == 460) {
           if (musicGameInfoBuilder_ == null) {
             result.detail_ = detail_;
           } else {
             result.detail_ = musicGameInfoBuilder_.build();
+          }
+        }
+        if (detailCase_ == 622) {
+          if (summerTimeV2InfoBuilder_ == null) {
+            result.detail_ = detail_;
+          } else {
+            result.detail_ = summerTimeV2InfoBuilder_.build();
           }
         }
         result.detailCase_ = detailCase_;
@@ -2065,9 +2559,31 @@ public final class ActivityInfoOuterClass {
         if (other.getActivityId() != 0) {
           setActivityId(other.getActivityId());
         }
+        if (other.getUnk2700NONJFHAIFLA() != false) {
+          setUnk2700NONJFHAIFLA(other.getUnk2700NONJFHAIFLA());
+        }
+        if (other.getUnk2700EDKLLHBEEGE() != false) {
+          setUnk2700EDKLLHBEEGE(other.getUnk2700EDKLLHBEEGE());
+        }
         switch (other.getDetailCase()) {
+          case TRIAL_AVATAR_INFO: {
+            mergeTrialAvatarInfo(other.getTrialAvatarInfo());
+            break;
+          }
+          case ASTER_INFO: {
+            mergeAsterInfo(other.getAsterInfo());
+            break;
+          }
+          case FLEUR_FAIR_INFO: {
+            mergeFleurFairInfo(other.getFleurFairInfo());
+            break;
+          }
           case MUSIC_GAME_INFO: {
             mergeMusicGameInfo(other.getMusicGameInfo());
+            break;
+          }
+          case SUMMER_TIME_V_2_INFO: {
+            mergeSummerTimeV2Info(other.getSummerTimeV2Info());
             break;
           }
           case DETAIL_NOT_SET: {
@@ -2324,10 +2840,6 @@ public final class ActivityInfoOuterClass {
 
       private int selectedAvatarRewardId_ ;
       /**
-       * <pre>
-       *bool Unk2700_NONJFHAIFLA = 102;
-       * </pre>
-       *
        * <code>uint32 selected_avatar_reward_id = 1290;</code>
        * @return The selectedAvatarRewardId.
        */
@@ -2336,10 +2848,6 @@ public final class ActivityInfoOuterClass {
         return selectedAvatarRewardId_;
       }
       /**
-       * <pre>
-       *bool Unk2700_NONJFHAIFLA = 102;
-       * </pre>
-       *
        * <code>uint32 selected_avatar_reward_id = 1290;</code>
        * @param value The selectedAvatarRewardId to set.
        * @return This builder for chaining.
@@ -2351,10 +2859,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_NONJFHAIFLA = 102;
-       * </pre>
-       *
        * <code>uint32 selected_avatar_reward_id = 1290;</code>
        * @return This builder for chaining.
        */
@@ -2723,10 +3227,6 @@ public final class ActivityInfoOuterClass {
           emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC, emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.Builder, emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLCOrBuilder> unk2800KOMIPKKKOBEBuilder_;
 
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public java.util.List<emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC> getUnk2800KOMIPKKKOBEList() {
@@ -2737,10 +3237,6 @@ public final class ActivityInfoOuterClass {
         }
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public int getUnk2800KOMIPKKKOBECount() {
@@ -2751,10 +3247,6 @@ public final class ActivityInfoOuterClass {
         }
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC getUnk2800KOMIPKKKOBE(int index) {
@@ -2765,10 +3257,6 @@ public final class ActivityInfoOuterClass {
         }
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder setUnk2800KOMIPKKKOBE(
@@ -2786,10 +3274,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder setUnk2800KOMIPKKKOBE(
@@ -2804,10 +3288,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder addUnk2800KOMIPKKKOBE(emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC value) {
@@ -2824,10 +3304,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder addUnk2800KOMIPKKKOBE(
@@ -2845,10 +3321,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder addUnk2800KOMIPKKKOBE(
@@ -2863,10 +3335,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder addUnk2800KOMIPKKKOBE(
@@ -2881,10 +3349,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder addAllUnk2800KOMIPKKKOBE(
@@ -2900,10 +3364,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder clearUnk2800KOMIPKKKOBE() {
@@ -2917,10 +3377,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public Builder removeUnk2800KOMIPKKKOBE(int index) {
@@ -2934,10 +3390,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.Builder getUnk2800KOMIPKKKOBEBuilder(
@@ -2945,10 +3397,6 @@ public final class ActivityInfoOuterClass {
         return getUnk2800KOMIPKKKOBEFieldBuilder().getBuilder(index);
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLCOrBuilder getUnk2800KOMIPKKKOBEOrBuilder(
@@ -2959,10 +3407,6 @@ public final class ActivityInfoOuterClass {
         }
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public java.util.List<? extends emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLCOrBuilder> 
@@ -2974,10 +3418,6 @@ public final class ActivityInfoOuterClass {
         }
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.Builder addUnk2800KOMIPKKKOBEBuilder() {
@@ -2985,10 +3425,6 @@ public final class ActivityInfoOuterClass {
             emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.getDefaultInstance());
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.Builder addUnk2800KOMIPKKKOBEBuilder(
@@ -2997,10 +3433,6 @@ public final class ActivityInfoOuterClass {
             index, emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.getDefaultInstance());
       }
       /**
-       * <pre>
-       *bool Unk2700_EDKLLHBEEGE = 1449;
-       * </pre>
-       *
        * <code>repeated .Unk2800_PHPHMILPOLC Unk2800_KOMIPKKKOBE = 864;</code>
        */
       public java.util.List<emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.Unk2800_PHPHMILPOLC.Builder> 
@@ -3109,10 +3541,6 @@ public final class ActivityInfoOuterClass {
          }
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @return A list containing the expireCondList.
        */
@@ -3122,10 +3550,6 @@ public final class ActivityInfoOuterClass {
                  java.util.Collections.unmodifiableList(expireCondList_) : expireCondList_;
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @return The count of expireCondList.
        */
@@ -3133,10 +3557,6 @@ public final class ActivityInfoOuterClass {
         return expireCondList_.size();
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @param index The index of the element to return.
        * @return The expireCondList at the given index.
@@ -3145,10 +3565,6 @@ public final class ActivityInfoOuterClass {
         return expireCondList_.getInt(index);
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @param index The index to set the value at.
        * @param value The expireCondList to set.
@@ -3162,10 +3578,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @param value The expireCondList to add.
        * @return This builder for chaining.
@@ -3177,10 +3589,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @param values The expireCondList to add.
        * @return This builder for chaining.
@@ -3194,10 +3602,6 @@ public final class ActivityInfoOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *map&lt;uint32, uint32&gt; Unk2700_IFPBCNLCKLG = 1399;
-       * </pre>
-       *
        * <code>repeated uint32 expire_cond_list = 3;</code>
        * @return This builder for chaining.
        */
@@ -3479,16 +3883,444 @@ public final class ActivityInfoOuterClass {
         return this;
       }
 
+      private boolean unk2700NONJFHAIFLA_ ;
+      /**
+       * <code>bool Unk2700_NONJFHAIFLA = 102;</code>
+       * @return The unk2700NONJFHAIFLA.
+       */
+      @java.lang.Override
+      public boolean getUnk2700NONJFHAIFLA() {
+        return unk2700NONJFHAIFLA_;
+      }
+      /**
+       * <code>bool Unk2700_NONJFHAIFLA = 102;</code>
+       * @param value The unk2700NONJFHAIFLA to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUnk2700NONJFHAIFLA(boolean value) {
+        
+        unk2700NONJFHAIFLA_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool Unk2700_NONJFHAIFLA = 102;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearUnk2700NONJFHAIFLA() {
+        
+        unk2700NONJFHAIFLA_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean unk2700EDKLLHBEEGE_ ;
+      /**
+       * <code>bool Unk2700_EDKLLHBEEGE = 1449;</code>
+       * @return The unk2700EDKLLHBEEGE.
+       */
+      @java.lang.Override
+      public boolean getUnk2700EDKLLHBEEGE() {
+        return unk2700EDKLLHBEEGE_;
+      }
+      /**
+       * <code>bool Unk2700_EDKLLHBEEGE = 1449;</code>
+       * @param value The unk2700EDKLLHBEEGE to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUnk2700EDKLLHBEEGE(boolean value) {
+        
+        unk2700EDKLLHBEEGE_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool Unk2700_EDKLLHBEEGE = 1449;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearUnk2700EDKLLHBEEGE() {
+        
+        unk2700EDKLLHBEEGE_ = false;
+        onChanged();
+        return this;
+      }
+
       private com.google.protobuf.SingleFieldBuilderV3<
-          emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo, emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo.Builder, emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfoOrBuilder> musicGameInfoBuilder_;
+          emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder> trialAvatarInfoBuilder_;
       /**
        * <pre>
        * SeaLampActivityDetailInfo sam_lamp_info = 7;
        * CrucibleActivityDetailInfo crucible_info = 14;
        * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       * @return Whether the trialAvatarInfo field is set.
+       */
+      @java.lang.Override
+      public boolean hasTrialAvatarInfo() {
+        return detailCase_ == 1;
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       * @return The trialAvatarInfo.
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo getTrialAvatarInfo() {
+        if (trialAvatarInfoBuilder_ == null) {
+          if (detailCase_ == 1) {
+            return (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+        } else {
+          if (detailCase_ == 1) {
+            return trialAvatarInfoBuilder_.getMessage();
+          }
+          return emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      public Builder setTrialAvatarInfo(emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo value) {
+        if (trialAvatarInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          detail_ = value;
+          onChanged();
+        } else {
+          trialAvatarInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 1;
+        return this;
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      public Builder setTrialAvatarInfo(
+          emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder builderForValue) {
+        if (trialAvatarInfoBuilder_ == null) {
+          detail_ = builderForValue.build();
+          onChanged();
+        } else {
+          trialAvatarInfoBuilder_.setMessage(builderForValue.build());
+        }
+        detailCase_ = 1;
+        return this;
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      public Builder mergeTrialAvatarInfo(emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo value) {
+        if (trialAvatarInfoBuilder_ == null) {
+          if (detailCase_ == 1 &&
+              detail_ != emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance()) {
+            detail_ = emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.newBuilder((emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            detail_ = value;
+          }
+          onChanged();
+        } else {
+          if (detailCase_ == 1) {
+            trialAvatarInfoBuilder_.mergeFrom(value);
+          }
+          trialAvatarInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 1;
+        return this;
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      public Builder clearTrialAvatarInfo() {
+        if (trialAvatarInfoBuilder_ == null) {
+          if (detailCase_ == 1) {
+            detailCase_ = 0;
+            detail_ = null;
+            onChanged();
+          }
+        } else {
+          if (detailCase_ == 1) {
+            detailCase_ = 0;
+            detail_ = null;
+          }
+          trialAvatarInfoBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      public emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder getTrialAvatarInfoBuilder() {
+        return getTrialAvatarInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder getTrialAvatarInfoOrBuilder() {
+        if ((detailCase_ == 1) && (trialAvatarInfoBuilder_ != null)) {
+          return trialAvatarInfoBuilder_.getMessageOrBuilder();
+        } else {
+          if (detailCase_ == 1) {
+            return (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * SeaLampActivityDetailInfo sam_lamp_info = 7;
+       * CrucibleActivityDetailInfo crucible_info = 14;
+       * SalesmanActivityDetailInfo salesman_info = 11;
+       * </pre>
+       *
+       * <code>.TrialAvatarActivityDetailInfo trial_avatar_info = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder> 
+          getTrialAvatarInfoFieldBuilder() {
+        if (trialAvatarInfoBuilder_ == null) {
+          if (!(detailCase_ == 1)) {
+            detail_ = emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.getDefaultInstance();
+          }
+          trialAvatarInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo.Builder, emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfoOrBuilder>(
+                  (emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo) detail_,
+                  getParentForChildren(),
+                  isClean());
+          detail_ = null;
+        }
+        detailCase_ = 1;
+        onChanged();;
+        return trialAvatarInfoBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder> asterInfoBuilder_;
+      /**
+       * <pre>
        * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       * @return Whether the asterInfo field is set.
+       */
+      @java.lang.Override
+      public boolean hasAsterInfo() {
+        return detailCase_ == 557;
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       * @return The asterInfo.
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo getAsterInfo() {
+        if (asterInfoBuilder_ == null) {
+          if (detailCase_ == 557) {
+            return (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+        } else {
+          if (detailCase_ == 557) {
+            return asterInfoBuilder_.getMessage();
+          }
+          return emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      public Builder setAsterInfo(emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo value) {
+        if (asterInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          detail_ = value;
+          onChanged();
+        } else {
+          asterInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 557;
+        return this;
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      public Builder setAsterInfo(
+          emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder builderForValue) {
+        if (asterInfoBuilder_ == null) {
+          detail_ = builderForValue.build();
+          onChanged();
+        } else {
+          asterInfoBuilder_.setMessage(builderForValue.build());
+        }
+        detailCase_ = 557;
+        return this;
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      public Builder mergeAsterInfo(emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo value) {
+        if (asterInfoBuilder_ == null) {
+          if (detailCase_ == 557 &&
+              detail_ != emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance()) {
+            detail_ = emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.newBuilder((emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            detail_ = value;
+          }
+          onChanged();
+        } else {
+          if (detailCase_ == 557) {
+            asterInfoBuilder_.mergeFrom(value);
+          }
+          asterInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 557;
+        return this;
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      public Builder clearAsterInfo() {
+        if (asterInfoBuilder_ == null) {
+          if (detailCase_ == 557) {
+            detailCase_ = 0;
+            detail_ = null;
+            onChanged();
+          }
+        } else {
+          if (detailCase_ == 557) {
+            detailCase_ = 0;
+            detail_ = null;
+          }
+          asterInfoBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      public emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder getAsterInfoBuilder() {
+        return getAsterInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder getAsterInfoOrBuilder() {
+        if ((detailCase_ == 557) && (asterInfoBuilder_ != null)) {
+          return asterInfoBuilder_.getMessageOrBuilder();
+        } else {
+          if (detailCase_ == 557) {
+            return (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * DeliveryActivityDetailInfo delivery_info = 1092;
+       * </pre>
+       *
+       * <code>.AsterActivityDetailInfo aster_info = 557;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder> 
+          getAsterInfoFieldBuilder() {
+        if (asterInfoBuilder_ == null) {
+          if (!(detailCase_ == 557)) {
+            detail_ = emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.getDefaultInstance();
+          }
+          asterInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo.Builder, emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfoOrBuilder>(
+                  (emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.AsterActivityDetailInfo) detail_,
+                  getParentForChildren(),
+                  isClean());
+          detail_ = null;
+        }
+        detailCase_ = 557;
+        onChanged();;
+        return asterInfoBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder> fleurFairInfoBuilder_;
+      /**
+       * <pre>
        * FlightActivityDetailInfo flight_info = 1365;
        * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
        * EffigyActivityDetailInfo effigy_info = 391;
@@ -3497,7 +4329,238 @@ public final class ActivityInfoOuterClass {
        * SeaLampActivityInfo sea_lamp_info = 494;
        * ExpeditionActivityDetailInfo expedition_info = 202;
        * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       * @return Whether the fleurFairInfo field is set.
+       */
+      @java.lang.Override
+      public boolean hasFleurFairInfo() {
+        return detailCase_ == 857;
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       * @return The fleurFairInfo.
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo getFleurFairInfo() {
+        if (fleurFairInfoBuilder_ == null) {
+          if (detailCase_ == 857) {
+            return (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+        } else {
+          if (detailCase_ == 857) {
+            return fleurFairInfoBuilder_.getMessage();
+          }
+          return emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      public Builder setFleurFairInfo(emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo value) {
+        if (fleurFairInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          detail_ = value;
+          onChanged();
+        } else {
+          fleurFairInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 857;
+        return this;
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      public Builder setFleurFairInfo(
+          emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder builderForValue) {
+        if (fleurFairInfoBuilder_ == null) {
+          detail_ = builderForValue.build();
+          onChanged();
+        } else {
+          fleurFairInfoBuilder_.setMessage(builderForValue.build());
+        }
+        detailCase_ = 857;
+        return this;
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      public Builder mergeFleurFairInfo(emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo value) {
+        if (fleurFairInfoBuilder_ == null) {
+          if (detailCase_ == 857 &&
+              detail_ != emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance()) {
+            detail_ = emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.newBuilder((emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            detail_ = value;
+          }
+          onChanged();
+        } else {
+          if (detailCase_ == 857) {
+            fleurFairInfoBuilder_.mergeFrom(value);
+          }
+          fleurFairInfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 857;
+        return this;
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      public Builder clearFleurFairInfo() {
+        if (fleurFairInfoBuilder_ == null) {
+          if (detailCase_ == 857) {
+            detailCase_ = 0;
+            detail_ = null;
+            onChanged();
+          }
+        } else {
+          if (detailCase_ == 857) {
+            detailCase_ = 0;
+            detail_ = null;
+          }
+          fleurFairInfoBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      public emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder getFleurFairInfoBuilder() {
+        return getFleurFairInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder getFleurFairInfoOrBuilder() {
+        if ((detailCase_ == 857) && (fleurFairInfoBuilder_ != null)) {
+          return fleurFairInfoBuilder_.getMessageOrBuilder();
+        } else {
+          if (detailCase_ == 857) {
+            return (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * FlightActivityDetailInfo flight_info = 1365;
+       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
+       * EffigyActivityDetailInfo effigy_info = 391;
+       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
+       * BlessingActivityDetailInfo blessing_info = 1869;
+       * SeaLampActivityInfo sea_lamp_info = 494;
+       * ExpeditionActivityDetailInfo expedition_info = 202;
+       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
+       * </pre>
+       *
+       * <code>.FleurFairActivityDetailInfo fleur_fair_info = 857;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder> 
+          getFleurFairInfoFieldBuilder() {
+        if (fleurFairInfoBuilder_ == null) {
+          if (!(detailCase_ == 857)) {
+            detail_ = emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.getDefaultInstance();
+          }
+          fleurFairInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo.Builder, emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfoOrBuilder>(
+                  (emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.FleurFairActivityDetailInfo) detail_,
+                  getParentForChildren(),
+                  isClean());
+          detail_ = null;
+        }
+        detailCase_ = 857;
+        onChanged();;
+        return fleurFairInfoBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo, emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo.Builder, emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfoOrBuilder> musicGameInfoBuilder_;
+      /**
+       * <pre>
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3524,21 +4587,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3575,21 +4623,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3624,21 +4657,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3671,21 +4689,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3726,21 +4729,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3778,21 +4766,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3817,21 +4790,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3864,21 +4822,6 @@ public final class ActivityInfoOuterClass {
       }
       /**
        * <pre>
-       * SeaLampActivityDetailInfo sam_lamp_info = 7;
-       * CrucibleActivityDetailInfo crucible_info = 14;
-       * SalesmanActivityDetailInfo salesman_info = 11;
-       * TrialAvatarActivityDetailInfo trial_avatar_info = 1;
-       * DeliveryActivityDetailInfo delivery_info = 1092;
-       * AsterActivityDetailInfo aster_info = 557;
-       * FlightActivityDetailInfo flight_info = 1365;
-       * DragonSpineActivityDetailInfo dragon_spine_info = 1727;
-       * EffigyActivityDetailInfo effigy_info = 391;
-       * TreasureMapActivityDetailInfo treasure_map_info = 1114;
-       * BlessingActivityDetailInfo blessing_info = 1869;
-       * SeaLampActivityInfo sea_lamp_info = 494;
-       * ExpeditionActivityDetailInfo expedition_info = 202;
-       * ArenaChallengeActivityDetailInfo arena_challenge_info = 859;
-       * FleurFairActivityDetailInfo fleur_fair_info = 857;
        * WaterSpiritActivityDetailInfo water_spirit_info = 1675;
        * ChannelerSlabActivityDetailInfo channeler_slab_info = 1015;
        * MistTrialActivityDetailInfo mist_trial_activity_info = 156;
@@ -3915,6 +4858,327 @@ public final class ActivityInfoOuterClass {
         detailCase_ = 460;
         onChanged();;
         return musicGameInfoBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder> summerTimeV2InfoBuilder_;
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       * @return Whether the summerTimeV2Info field is set.
+       */
+      @java.lang.Override
+      public boolean hasSummerTimeV2Info() {
+        return detailCase_ == 622;
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       * @return The summerTimeV2Info.
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo getSummerTimeV2Info() {
+        if (summerTimeV2InfoBuilder_ == null) {
+          if (detailCase_ == 622) {
+            return (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+        } else {
+          if (detailCase_ == 622) {
+            return summerTimeV2InfoBuilder_.getMessage();
+          }
+          return emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      public Builder setSummerTimeV2Info(emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo value) {
+        if (summerTimeV2InfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          detail_ = value;
+          onChanged();
+        } else {
+          summerTimeV2InfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 622;
+        return this;
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      public Builder setSummerTimeV2Info(
+          emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder builderForValue) {
+        if (summerTimeV2InfoBuilder_ == null) {
+          detail_ = builderForValue.build();
+          onChanged();
+        } else {
+          summerTimeV2InfoBuilder_.setMessage(builderForValue.build());
+        }
+        detailCase_ = 622;
+        return this;
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      public Builder mergeSummerTimeV2Info(emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo value) {
+        if (summerTimeV2InfoBuilder_ == null) {
+          if (detailCase_ == 622 &&
+              detail_ != emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance()) {
+            detail_ = emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.newBuilder((emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            detail_ = value;
+          }
+          onChanged();
+        } else {
+          if (detailCase_ == 622) {
+            summerTimeV2InfoBuilder_.mergeFrom(value);
+          }
+          summerTimeV2InfoBuilder_.setMessage(value);
+        }
+        detailCase_ = 622;
+        return this;
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      public Builder clearSummerTimeV2Info() {
+        if (summerTimeV2InfoBuilder_ == null) {
+          if (detailCase_ == 622) {
+            detailCase_ = 0;
+            detail_ = null;
+            onChanged();
+          }
+        } else {
+          if (detailCase_ == 622) {
+            detailCase_ = 0;
+            detail_ = null;
+          }
+          summerTimeV2InfoBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      public emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder getSummerTimeV2InfoBuilder() {
+        return getSummerTimeV2InfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      @java.lang.Override
+      public emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder getSummerTimeV2InfoOrBuilder() {
+        if ((detailCase_ == 622) && (summerTimeV2InfoBuilder_ != null)) {
+          return summerTimeV2InfoBuilder_.getMessageOrBuilder();
+        } else {
+          if (detailCase_ == 622) {
+            return (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_;
+          }
+          return emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * RoguelikeDungeonActivityDetailInfo roguelike_dungeon_info = 219;
+       * DigActivityDetailInfo dig_info = 403;
+       * HachiActivityDetailInfo hachi_info = 491;
+       * WinterCampActivityDetailInfo winter_camp_info = 1083;
+       * PotionActivityDetailInfo potion_info = 1273;
+       * TanukiTravelActivityDetailInfo tanuki_travel_activity_info = 1796;
+       * LanternRiteActivityDetailInfo lantern_rite_activity_info = 1876;
+       * MichiaeMatsuriActivityDetailInfo michiae_matsuri_info = 194;
+       * BartenderActivityDetailInfo bartender_info = 1725;
+       * UgcActivityDetailInfo ugc_info = 703;
+       * CrystalLinkActivityDetailInfo crystal_link_info = 1226;
+       * IrodoriActivityDetailInfo irodori_info = 750;
+       * PhotoActivityDetailInfo photo_info = 328;
+       * SpiceActivityDetailInfo spice_info = 1891;
+       * GachaActivityDetailInfo gacha_info = 825;
+       * LuminanceStoneChallengeActivityDetailInfo luminance_stone_challenge_info = 1308;
+       * RogueDiaryActivityDetailInfo rogue_diary_info = 812;
+       * </pre>
+       *
+       * <code>.SummerTimeV2DetailInfo summer_time_v_2_info = 622;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder> 
+          getSummerTimeV2InfoFieldBuilder() {
+        if (summerTimeV2InfoBuilder_ == null) {
+          if (!(detailCase_ == 622)) {
+            detail_ = emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.getDefaultInstance();
+          }
+          summerTimeV2InfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo.Builder, emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfoOrBuilder>(
+                  (emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.SummerTimeV2DetailInfo) detail_,
+                  getParentForChildren(),
+                  isClean());
+          detail_ = null;
+        }
+        detailCase_ = 622;
+        onChanged();;
+        return summerTimeV2InfoBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -3989,31 +5253,46 @@ public final class ActivityInfoOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\022ActivityInfo.proto\032\031ActivityWatcherInf" +
-      "o.proto\032!MusicGameActivityDetailInfo.pro" +
-      "to\032\031Unk2800_PHPHMILPOLC.proto\"\252\005\n\014Activi" +
-      "tyInfo\022\031\n\021is_play_open_anim\030\r \001(\010\022\023\n\013sch" +
-      "edule_id\030\017 \001(\r\022\022\n\tcur_score\030\362\016 \001(\r\022\023\n\013is" +
-      "_starting\030\t \001(\010\022\032\n\021taken_reward_list\030\311\002 " +
-      "\003(\r\022\"\n\031selected_avatar_reward_id\030\212\n \001(\r\022" +
-      "\035\n\024first_day_start_time\030\320\004 \001(\r\022\024\n\013score_" +
-      "limit\030\246\017 \001(\r\022\023\n\013is_finished\030\006 \001(\010\022\022\n\tis_" +
-      "hidden\030\227\007 \001(\010\022\022\n\nbegin_time\030\010 \001(\r\022\020\n\010end" +
-      "_time\030\005 \001(\r\022>\n\021activity_coin_map\030\252\005 \003(\0132" +
-      "\".ActivityInfo.ActivityCoinMapEntry\022\025\n\ra" +
-      "ctivity_type\030\004 \001(\r\0222\n\023Unk2800_KOMIPKKKOB" +
-      "E\030\340\006 \003(\0132\024.Unk2800_PHPHMILPOLC\022\026\n\016meet_c" +
-      "ond_list\030\n \003(\r\022\030\n\020expire_cond_list\030\003 \003(\r" +
-      "\022/\n\021watcher_info_list\030\002 \003(\0132\024.ActivityWa" +
-      "tcherInfo\022\023\n\013activity_id\030\014 \001(\r\0228\n\017music_" +
+      "o.proto\032\035AsterActivityDetailInfo.proto\032!" +
+      "FleurFairActivityDetailInfo.proto\032\034Summe" +
+      "rTimeV2DetailInfo.proto\032#TrialAvatarActi" +
+      "vityDetailInfo.proto\032!MusicGameActivityD" +
+      "etailInfo.proto\032\031Unk2800_PHPHMILPOLC.pro" +
+      "to\"\307\007\n\014ActivityInfo\022\031\n\021is_play_open_anim" +
+      "\030\r \001(\010\022\023\n\013schedule_id\030\017 \001(\r\022\022\n\tcur_score" +
+      "\030\362\016 \001(\r\022\023\n\013is_starting\030\t \001(\010\022\032\n\021taken_re" +
+      "ward_list\030\311\002 \003(\r\022\"\n\031selected_avatar_rewa" +
+      "rd_id\030\212\n \001(\r\022\035\n\024first_day_start_time\030\320\004 " +
+      "\001(\r\022\024\n\013score_limit\030\246\017 \001(\r\022\023\n\013is_finished" +
+      "\030\006 \001(\010\022\022\n\tis_hidden\030\227\007 \001(\010\022\022\n\nbegin_time" +
+      "\030\010 \001(\r\022\020\n\010end_time\030\005 \001(\r\022>\n\021activity_coi" +
+      "n_map\030\252\005 \003(\0132\".ActivityInfo.ActivityCoin" +
+      "MapEntry\022\025\n\ractivity_type\030\004 \001(\r\0222\n\023Unk28" +
+      "00_KOMIPKKKOBE\030\340\006 \003(\0132\024.Unk2800_PHPHMILP" +
+      "OLC\022\026\n\016meet_cond_list\030\n \003(\r\022\030\n\020expire_co" +
+      "nd_list\030\003 \003(\r\022/\n\021watcher_info_list\030\002 \003(\013" +
+      "2\024.ActivityWatcherInfo\022\023\n\013activity_id\030\014 " +
+      "\001(\r\022\033\n\023Unk2700_NONJFHAIFLA\030f \001(\010\022\034\n\023Unk2" +
+      "700_EDKLLHBEEGE\030\251\013 \001(\010\022;\n\021trial_avatar_i" +
+      "nfo\030\001 \001(\0132\036.TrialAvatarActivityDetailInf" +
+      "oH\000\022/\n\naster_info\030\255\004 \001(\0132\030.AsterActivity" +
+      "DetailInfoH\000\0228\n\017fleur_fair_info\030\331\006 \001(\0132\034" +
+      ".FleurFairActivityDetailInfoH\000\0228\n\017music_" +
       "game_info\030\314\003 \001(\0132\034.MusicGameActivityDeta" +
-      "ilInfoH\000\0326\n\024ActivityCoinMapEntry\022\013\n\003key\030" +
-      "\001 \001(\r\022\r\n\005value\030\002 \001(\r:\0028\001B\010\n\006detailB\033\n\031em" +
-      "u.grasscutter.net.protob\006proto3"
+      "ilInfoH\000\0228\n\024summer_time_v_2_info\030\356\004 \001(\0132" +
+      "\027.SummerTimeV2DetailInfoH\000\0326\n\024ActivityCo" +
+      "inMapEntry\022\013\n\003key\030\001 \001(\r\022\r\n\005value\030\002 \001(\r:\002" +
+      "8\001B\010\n\006detailB\033\n\031emu.grasscutter.net.prot" +
+      "ob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           emu.grasscutter.net.proto.ActivityWatcherInfoOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.getDescriptor(),
           emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.getDescriptor(),
           emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.getDescriptor(),
         });
@@ -4022,7 +5301,7 @@ public final class ActivityInfoOuterClass {
     internal_static_ActivityInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ActivityInfo_descriptor,
-        new java.lang.String[] { "IsPlayOpenAnim", "ScheduleId", "CurScore", "IsStarting", "TakenRewardList", "SelectedAvatarRewardId", "FirstDayStartTime", "ScoreLimit", "IsFinished", "IsHidden", "BeginTime", "EndTime", "ActivityCoinMap", "ActivityType", "Unk2800KOMIPKKKOBE", "MeetCondList", "ExpireCondList", "WatcherInfoList", "ActivityId", "MusicGameInfo", "Detail", });
+        new java.lang.String[] { "IsPlayOpenAnim", "ScheduleId", "CurScore", "IsStarting", "TakenRewardList", "SelectedAvatarRewardId", "FirstDayStartTime", "ScoreLimit", "IsFinished", "IsHidden", "BeginTime", "EndTime", "ActivityCoinMap", "ActivityType", "Unk2800KOMIPKKKOBE", "MeetCondList", "ExpireCondList", "WatcherInfoList", "ActivityId", "Unk2700NONJFHAIFLA", "Unk2700EDKLLHBEEGE", "TrialAvatarInfo", "AsterInfo", "FleurFairInfo", "MusicGameInfo", "SummerTimeV2Info", "Detail", });
     internal_static_ActivityInfo_ActivityCoinMapEntry_descriptor =
       internal_static_ActivityInfo_descriptor.getNestedTypes().get(0);
     internal_static_ActivityInfo_ActivityCoinMapEntry_fieldAccessorTable = new
@@ -4030,6 +5309,10 @@ public final class ActivityInfoOuterClass {
         internal_static_ActivityInfo_ActivityCoinMapEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     emu.grasscutter.net.proto.ActivityWatcherInfoOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.AsterActivityDetailInfoOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.FleurFairActivityDetailInfoOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.SummerTimeV2DetailInfoOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.getDescriptor();
     emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.getDescriptor();
     emu.grasscutter.net.proto.Unk2800PHPHMILPOLC.getDescriptor();
   }

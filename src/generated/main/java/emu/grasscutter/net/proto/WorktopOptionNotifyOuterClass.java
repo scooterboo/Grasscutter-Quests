@@ -45,8 +45,7 @@ public final class WorktopOptionNotifyOuterClass {
    * <pre>
    * CmdId: 835
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WorktopOptionNotify}
@@ -382,8 +381,7 @@ public final class WorktopOptionNotifyOuterClass {
      * <pre>
      * CmdId: 835
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WorktopOptionNotify}

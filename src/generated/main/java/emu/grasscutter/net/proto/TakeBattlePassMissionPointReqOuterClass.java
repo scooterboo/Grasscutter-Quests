@@ -39,7 +39,7 @@ public final class TakeBattlePassMissionPointReqOuterClass {
    * <pre>
    * CmdId: 2629
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -349,7 +349,7 @@ public final class TakeBattlePassMissionPointReqOuterClass {
      * <pre>
      * CmdId: 2629
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

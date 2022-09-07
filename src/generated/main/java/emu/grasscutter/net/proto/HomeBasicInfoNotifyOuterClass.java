@@ -37,8 +37,7 @@ public final class HomeBasicInfoNotifyOuterClass {
    * <pre>
    * CmdId: 4885
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code HomeBasicInfoNotify}
@@ -320,8 +319,7 @@ public final class HomeBasicInfoNotifyOuterClass {
      * <pre>
      * CmdId: 4885
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code HomeBasicInfoNotify}

@@ -46,7 +46,7 @@ public final class SetPlayerPropReqOuterClass {
    * <pre>
    * CmdId: 197
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -341,7 +341,7 @@ public final class SetPlayerPropReqOuterClass {
      * <pre>
      * CmdId: 197
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

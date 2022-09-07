@@ -86,8 +86,7 @@ public final class PlayerDataNotifyOuterClass {
    * <pre>
    * CmdId: 190
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PlayerDataNotify}
@@ -581,8 +580,7 @@ public final class PlayerDataNotifyOuterClass {
      * <pre>
      * CmdId: 190
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PlayerDataNotify}

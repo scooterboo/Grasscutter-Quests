@@ -28,8 +28,7 @@ public final class ForgeStartRspOuterClass {
    * <pre>
    * CmdId: 691
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ForgeStartRsp}
@@ -283,8 +282,7 @@ public final class ForgeStartRspOuterClass {
      * <pre>
      * CmdId: 691
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ForgeStartRsp}

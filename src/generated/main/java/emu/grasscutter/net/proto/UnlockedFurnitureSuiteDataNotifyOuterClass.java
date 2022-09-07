@@ -45,8 +45,7 @@ public final class UnlockedFurnitureSuiteDataNotifyOuterClass {
    * <pre>
    * CmdId: 4454
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code UnlockedFurnitureSuiteDataNotify}
@@ -383,8 +382,7 @@ public final class UnlockedFurnitureSuiteDataNotifyOuterClass {
      * <pre>
      * CmdId: 4454
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code UnlockedFurnitureSuiteDataNotify}

@@ -40,8 +40,7 @@ public final class AvatarSkillMaxChargeCountNotifyOuterClass {
    * <pre>
    * CmdId: 1003
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarSkillMaxChargeCountNotify}
@@ -350,8 +349,7 @@ public final class AvatarSkillMaxChargeCountNotifyOuterClass {
      * <pre>
      * CmdId: 1003
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarSkillMaxChargeCountNotify}

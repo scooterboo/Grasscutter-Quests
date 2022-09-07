@@ -52,8 +52,7 @@ public final class SceneTeamUpdateNotifyOuterClass {
    * <pre>
    * CmdId: 1775
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SceneTeamUpdateNotify}
@@ -375,8 +374,7 @@ public final class SceneTeamUpdateNotifyOuterClass {
      * <pre>
      * CmdId: 1775
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SceneTeamUpdateNotify}

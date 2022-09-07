@@ -40,8 +40,7 @@ public final class AvatarWearFlycloakRspOuterClass {
    * <pre>
    * CmdId: 1698
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code AvatarWearFlycloakRsp}
@@ -350,8 +349,7 @@ public final class AvatarWearFlycloakRspOuterClass {
      * <pre>
      * CmdId: 1698
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code AvatarWearFlycloakRsp}

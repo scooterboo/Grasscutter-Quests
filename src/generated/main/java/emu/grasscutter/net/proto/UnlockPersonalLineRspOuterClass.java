@@ -58,8 +58,7 @@ public final class UnlockPersonalLineRspOuterClass {
    * <pre>
    * CmdId: 491
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code UnlockPersonalLineRsp}
@@ -476,8 +475,7 @@ public final class UnlockPersonalLineRspOuterClass {
      * <pre>
      * CmdId: 491
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code UnlockPersonalLineRsp}

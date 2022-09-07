@@ -40,8 +40,7 @@ public final class SetPlayerNameRspOuterClass {
    * <pre>
    * CmdId: 122
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SetPlayerNameRsp}
@@ -350,8 +349,7 @@ public final class SetPlayerNameRspOuterClass {
      * <pre>
      * CmdId: 122
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SetPlayerNameRsp}

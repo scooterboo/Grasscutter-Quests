@@ -133,14 +133,16 @@ public class GameMainQuest {
 
         // Add rewards
         MainQuestData mainQuestData = GameData.getMainQuestDataMap().get(this.getParentQuestId());
-        for (int rewardId : mainQuestData.getRewardIdList()) {
-            RewardData rewardData = GameData.getRewardDataMap().get(rewardId);
+        if(mainQuestData.getRewardIdList()!=null) {
+            for (int rewardId : mainQuestData.getRewardIdList()) {
+                RewardData rewardData = GameData.getRewardDataMap().get(rewardId);
 
-            if (rewardData == null) {
-                continue;
+                if (rewardData == null) {
+                    continue;
+                }
+
+                getOwner().getInventory().addItemParamDatas(rewardData.getRewardItemList(), ActionReason.QuestReward);
             }
-
-            getOwner().getInventory().addItemParamDatas(rewardData.getRewardItemList(), ActionReason.QuestReward);
         }
 
         // handoff main quest
@@ -167,7 +169,7 @@ public class GameMainQuest {
         boolean didRewind = false;
         for (GameQuest quest : sortedByOrder) {
             int i = sortedByOrder.indexOf(quest);
-            if ( i == sortedByOrder.size()) {
+            if ( i+1 == sortedByOrder.size()) {
                 didRewind = quest.rewind(null);
             } else {
                 didRewind = quest.rewind(sortedByOrder.get(i+1));

@@ -40,8 +40,7 @@ public final class SetEquipLockStateRspOuterClass {
    * <pre>
    * CmdId: 668
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code SetEquipLockStateRsp}
@@ -351,8 +350,7 @@ public final class SetEquipLockStateRspOuterClass {
      * <pre>
      * CmdId: 668
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code SetEquipLockStateRsp}

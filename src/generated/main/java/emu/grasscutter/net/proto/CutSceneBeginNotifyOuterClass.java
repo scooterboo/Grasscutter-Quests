@@ -34,8 +34,7 @@ public final class CutSceneBeginNotifyOuterClass {
    * <pre>
    * CmdId: 296
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code CutSceneBeginNotify}
@@ -317,8 +316,7 @@ public final class CutSceneBeginNotifyOuterClass {
      * <pre>
      * CmdId: 296
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code CutSceneBeginNotify}

@@ -56,8 +56,7 @@ public final class GroupSuiteNotifyOuterClass {
    * <pre>
    * CmdId: 3257
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GroupSuiteNotify}
@@ -413,8 +412,7 @@ public final class GroupSuiteNotifyOuterClass {
      * <pre>
      * CmdId: 3257
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GroupSuiteNotify}

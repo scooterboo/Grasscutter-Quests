@@ -46,8 +46,7 @@ public final class QuestUpdateQuestVarRspOuterClass {
    * <pre>
    * CmdId: 439
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuestUpdateQuestVarRsp}
@@ -382,8 +381,7 @@ public final class QuestUpdateQuestVarRspOuterClass {
      * <pre>
      * CmdId: 439
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuestUpdateQuestVarRsp}

@@ -40,7 +40,7 @@ public final class NpcTalkReqOuterClass {
    * <pre>
    * CmdId: 572
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -349,7 +349,7 @@ public final class NpcTalkReqOuterClass {
      * <pre>
      * CmdId: 572
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

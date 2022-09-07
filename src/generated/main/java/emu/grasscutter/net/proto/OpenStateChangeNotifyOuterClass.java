@@ -56,8 +56,7 @@ public final class OpenStateChangeNotifyOuterClass {
    * <pre>
    * CmdId: 127
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code OpenStateChangeNotify}
@@ -413,8 +412,7 @@ public final class OpenStateChangeNotifyOuterClass {
      * <pre>
      * CmdId: 127
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code OpenStateChangeNotify}

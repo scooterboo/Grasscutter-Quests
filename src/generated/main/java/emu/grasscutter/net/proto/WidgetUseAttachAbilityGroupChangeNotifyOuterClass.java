@@ -34,8 +34,7 @@ public final class WidgetUseAttachAbilityGroupChangeNotifyOuterClass {
    * <pre>
    * CmdId: 4258
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code WidgetUseAttachAbilityGroupChangeNotify}
@@ -317,8 +316,7 @@ public final class WidgetUseAttachAbilityGroupChangeNotifyOuterClass {
      * <pre>
      * CmdId: 4258
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code WidgetUseAttachAbilityGroupChangeNotify}

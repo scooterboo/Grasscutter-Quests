@@ -46,8 +46,7 @@ public final class QuestGlobalVarNotifyOuterClass {
    * <pre>
    * CmdId: 434
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code QuestGlobalVarNotify}
@@ -341,8 +340,7 @@ public final class QuestGlobalVarNotifyOuterClass {
      * <pre>
      * CmdId: 434
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code QuestGlobalVarNotify}

@@ -37,8 +37,7 @@ public final class PrivateChatNotifyOuterClass {
    * <pre>
    * CmdId: 4962
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PrivateChatNotify}
@@ -320,8 +319,7 @@ public final class PrivateChatNotifyOuterClass {
      * <pre>
      * CmdId: 4962
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PrivateChatNotify}

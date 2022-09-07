@@ -35,9 +35,9 @@ public final class ActivityInfoNotifyOuterClass {
   }
   /**
    * <pre>
-   * CmdId: 2060
+   * CmdId: 2125
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -318,9 +318,9 @@ public final class ActivityInfoNotifyOuterClass {
     }
     /**
      * <pre>
-     * CmdId: 2060
+     * CmdId: 2125
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

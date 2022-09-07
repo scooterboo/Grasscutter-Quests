@@ -28,7 +28,7 @@ public final class SetPlayerHeadImageReqOuterClass {
    * <pre>
    * CmdId: 4082
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -283,7 +283,7 @@ public final class SetPlayerHeadImageReqOuterClass {
      * <pre>
      * CmdId: 4082
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

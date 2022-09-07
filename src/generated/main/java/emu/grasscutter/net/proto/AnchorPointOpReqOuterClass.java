@@ -34,7 +34,7 @@ public final class AnchorPointOpReqOuterClass {
    * <pre>
    * CmdId: 4257
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -433,7 +433,7 @@ public final class AnchorPointOpReqOuterClass {
      * <pre>
      * CmdId: 4257
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

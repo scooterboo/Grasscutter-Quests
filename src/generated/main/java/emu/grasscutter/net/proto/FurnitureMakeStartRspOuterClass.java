@@ -43,8 +43,7 @@ public final class FurnitureMakeStartRspOuterClass {
    * <pre>
    * CmdId: 4729
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code FurnitureMakeStartRsp}
@@ -353,8 +352,7 @@ public final class FurnitureMakeStartRspOuterClass {
      * <pre>
      * CmdId: 4729
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code FurnitureMakeStartRsp}

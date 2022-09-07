@@ -58,8 +58,7 @@ public final class GetFriendShowAvatarInfoRspOuterClass {
    * <pre>
    * CmdId: 4017
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetFriendShowAvatarInfoRsp}
@@ -407,8 +406,7 @@ public final class GetFriendShowAvatarInfoRspOuterClass {
      * <pre>
      * CmdId: 4017
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetFriendShowAvatarInfoRsp}

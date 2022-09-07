@@ -1,5 +1,6 @@
 package emu.grasscutter.game.quest.exec;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
@@ -22,10 +23,14 @@ public class ExecNotifyGroupLua extends QuestExecHandler {
         var scriptManager = quest.getOwner().getScene().getScriptManager();
 
         if(quest.getOwner().getScene().getId() == sceneId){
+            var group = scriptManager.getGroupById(groupId);
+            Grasscutter.getLogger().warn("group: {}", group);
             scriptManager.callEvent(
                 quest.getState() == QuestState.QUEST_STATE_FINISHED ?
                     EventType.EVENT_QUEST_FINISH : EventType.EVENT_QUEST_START
                 , new ScriptArgs());
+        } else {
+            return false;
         }
 
         return true;

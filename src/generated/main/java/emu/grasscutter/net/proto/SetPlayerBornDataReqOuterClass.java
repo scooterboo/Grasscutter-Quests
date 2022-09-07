@@ -40,7 +40,7 @@ public final class SetPlayerBornDataReqOuterClass {
    * <pre>
    * CmdId: 105
    * EnetChannelId: 0
-   * EnetIsReliable: false
+   * EnetIsReliable: true
    * IsAllowClient: true
    * </pre>
    *
@@ -350,7 +350,7 @@ public final class SetPlayerBornDataReqOuterClass {
      * <pre>
      * CmdId: 105
      * EnetChannelId: 0
-     * EnetIsReliable: false
+     * EnetIsReliable: true
      * IsAllowClient: true
      * </pre>
      *

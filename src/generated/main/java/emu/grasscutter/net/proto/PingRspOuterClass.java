@@ -40,8 +40,7 @@ public final class PingRspOuterClass {
    * <pre>
    * CmdId: 21
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code PingRsp}
@@ -349,8 +348,7 @@ public final class PingRspOuterClass {
      * <pre>
      * CmdId: 21
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code PingRsp}

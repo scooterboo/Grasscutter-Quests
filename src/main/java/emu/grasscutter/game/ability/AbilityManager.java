@@ -2,6 +2,7 @@ package emu.grasscutter.game.ability;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityModifierEntry;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
@@ -10,6 +11,7 @@ import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.entity.gadget.GadgetGatherObject;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.enums.QuestTrigger;
 import emu.grasscutter.net.proto.AbilityInvokeEntryHeadOuterClass.AbilityInvokeEntryHead;
 import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
 import emu.grasscutter.net.proto.AbilityMetaModifierChangeOuterClass.AbilityMetaModifierChange;
@@ -17,6 +19,7 @@ import emu.grasscutter.net.proto.AbilityMetaReInitOverrideMapOuterClass.AbilityM
 import emu.grasscutter.net.proto.AbilityMixinCostStaminaOuterClass.AbilityMixinCostStamina;
 import emu.grasscutter.net.proto.AbilityScalarValueEntryOuterClass.AbilityScalarValueEntry;
 import emu.grasscutter.net.proto.ModifierActionOuterClass.ModifierAction;
+import emu.grasscutter.utils.Utils;
 import lombok.Getter;
 
 public final class AbilityManager extends BasePlayerManager {
@@ -32,14 +35,13 @@ public final class AbilityManager extends BasePlayerManager {
     public void onAbilityInvoke(AbilityInvokeEntry invoke) throws Exception {
         this.healAbilityManager.healHandler(invoke);
 
-         //Grasscutter.getLogger().info(invoke.getArgumentType() + " (" + invoke.getArgumentTypeValue() + "): " + Utils.bytesToHex(invoke.toByteArray()));
         switch (invoke.getArgumentType()) {
             case ABILITY_INVOKE_ARGUMENT_META_OVERRIDE_PARAM -> this.handleOverrideParam(invoke);
             case ABILITY_INVOKE_ARGUMENT_META_REINIT_OVERRIDEMAP -> this.handleReinitOverrideMap(invoke);
             case ABILITY_INVOKE_ARGUMENT_META_MODIFIER_CHANGE -> this.handleModifierChange(invoke);
             case ABILITY_INVOKE_ARGUMENT_MIXIN_COST_STAMINA -> this.handleMixinCostStamina(invoke);
             case ABILITY_INVOKE_ARGUMENT_ACTION_GENERATE_ELEM_BALL -> this.handleGenerateElemBall(invoke);
-            default -> {}
+            case ABILITY_INVOKE_ARGUMENT_META_GLOBAL_FLOAT_VALUE -> this.handleGlobalFloatValue(invoke);
         }
     }
 
@@ -102,7 +104,7 @@ public final class AbilityManager extends BasePlayerManager {
 
         AbilityScalarValueEntry entry = AbilityScalarValueEntry.parseFrom(invoke.getAbilityData());
 
-        entity.getMetaOverrideMap().put(entry.getKey().getStr(), entry.getFloatValue());
+         entity.getMetaOverrideMap().put(entry.getKey().getStr(), entry.getFloatValue());
     }
 
     private void handleReinitOverrideMap(AbilityInvokeEntry invoke) throws Exception {
@@ -191,6 +193,13 @@ public final class AbilityManager extends BasePlayerManager {
 
     private void handleGenerateElemBall(AbilityInvokeEntry invoke) throws InvalidProtocolBufferException {
         this.player.getEnergyManager().handleGenerateElemBall(invoke);
+    }
+
+    private void handleGlobalFloatValue(AbilityInvokeEntry invoke) throws InvalidProtocolBufferException {
+        AbilityScalarValueEntry entry = AbilityScalarValueEntry.parseFrom(invoke.getAbilityData());
+        if(entry.getKey().hasStr() && entry.getKey().getStr().equals("_ABILITY_UziExplode_Count") && entry.hasFloatValue() && entry.getFloatValue() == 2.0f){
+            player.getQuestManager().triggerEvent(QuestTrigger.QUEST_CONTENT_SKILL, 10006);
+        }
     }
 
     private void invokeAction(AbilityModifierAction action, GameEntity target, GameEntity sourceEntity) {

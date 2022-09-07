@@ -52,8 +52,7 @@ public final class UseItemRspOuterClass {
    * <pre>
    * CmdId: 673
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code UseItemRsp}
@@ -417,8 +416,7 @@ public final class UseItemRspOuterClass {
      * <pre>
      * CmdId: 673
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code UseItemRsp}

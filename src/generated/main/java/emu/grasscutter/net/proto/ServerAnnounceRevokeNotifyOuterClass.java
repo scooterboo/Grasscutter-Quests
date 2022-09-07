@@ -39,8 +39,7 @@ public final class ServerAnnounceRevokeNotifyOuterClass {
    * <pre>
    * CmdId: 2092
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code ServerAnnounceRevokeNotify}
@@ -349,8 +348,7 @@ public final class ServerAnnounceRevokeNotifyOuterClass {
      * <pre>
      * CmdId: 2092
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code ServerAnnounceRevokeNotify}

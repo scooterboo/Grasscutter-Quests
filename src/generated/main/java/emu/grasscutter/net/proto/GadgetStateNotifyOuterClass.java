@@ -40,8 +40,7 @@ public final class GadgetStateNotifyOuterClass {
    * <pre>
    * CmdId: 812
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GadgetStateNotify}
@@ -350,8 +349,7 @@ public final class GadgetStateNotifyOuterClass {
      * <pre>
      * CmdId: 812
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GadgetStateNotify}
