@@ -330,7 +330,15 @@ public class QuestManager extends BasePlayerManager {
      * @param quest
      */
     public void checkQuestAlreadyFullfilled(GameQuest quest){
+        if(quest.getQuestData().getFailCond() == null){
+            Grasscutter.getLogger().error("FailCond null for {}", quest.getSubQuestId());
+            return;
+        }
         for(var condition : quest.getQuestData().getFinishCond()){
+            if(condition.getType() == null){
+                Grasscutter.getLogger().error("FailCond type null for {}", quest.getSubQuestId());
+                return;
+            }
             switch (condition.getType()){
                 case QUEST_CONTENT_OBTAIN_ITEM:
                 case QUEST_CONTENT_ITEM_LESS_THAN:{
@@ -374,7 +382,7 @@ public class QuestManager extends BasePlayerManager {
             mainQuest.setOwner(this.getPlayer());
 
             for (GameQuest quest : mainQuest.getChildQuests().values()) {
-                QuestData questConfig = GameData.getQuestDataMap().get(quest.getSubQuestId());
+                var questConfig = GameData.getSubQuestData().get(quest.getSubQuestId());
 
                 if (questConfig == null) {
                     mainQuest.delete();

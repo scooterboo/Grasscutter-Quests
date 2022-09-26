@@ -21,9 +21,10 @@ public class HandlerAddQuestContentProgressReq extends PacketHandler {
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
         var req = AddQuestContentProgressReqOuterClass.AddQuestContentProgressReq.parseFrom(payload);
         //Find all conditions in quest that are the same as the given one
-        Stream<QuestCondition> finishCond = GameData.getQuestDataMap().get(req.getParam()).getFinishCond().stream();
-        Stream<QuestCondition> acceptCond = GameData.getQuestDataMap().get(req.getParam()).getAcceptCond().stream();
-        Stream<QuestCondition> failCond = GameData.getQuestDataMap().get(req.getParam()).getFailCond().stream();
+        var quest = GameData.getSubQuestData().get(req.getParam());
+        Stream<QuestCondition> finishCond = quest.getFinishCond().stream();
+        Stream<QuestCondition> acceptCond = quest.getAcceptCond().stream();
+        Stream<QuestCondition> failCond = quest.getFailCond().stream();
         List<QuestCondition> allCondMatch = Stream.concat(Stream.concat(acceptCond,failCond),finishCond).filter(p -> p.getType().getValue() == req.getContentType()).toList();
         for (QuestCondition cond : allCondMatch ) {
             session.getPlayer().getQuestManager().triggerEvent(QuestTrigger.getContentTriggerByValue(req.getContentType()), cond.getParam());

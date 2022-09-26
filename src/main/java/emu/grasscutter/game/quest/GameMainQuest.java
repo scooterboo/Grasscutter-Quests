@@ -10,6 +10,7 @@ import emu.grasscutter.game.quest.enums.QuestTrigger;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.server.packet.send.PacketCodexDataUpdateNotify;
 import emu.grasscutter.utils.Position;
+import lombok.Data;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 
@@ -83,7 +84,7 @@ public class GameMainQuest {
     private void addAllChildQuests() {
         List<Integer> subQuestIds = Arrays.stream(GameData.getMainQuestDataMap().get(this.parentQuestId).getSubQuests()).map(SubQuestData::getSubId).toList();
         for (Integer subQuestId : subQuestIds) {
-            QuestData questConfig = GameData.getQuestDataMap().get(subQuestId);
+            var questConfig = GameData.getSubQuestData().get(subQuestId);
             this.childQuests.put(subQuestId, new GameQuest(this, questConfig));
         }
     }
@@ -300,7 +301,8 @@ public class GameMainQuest {
         try {
             List<GameQuest> subQuestsWithCond = getChildQuests().values().stream()
                 .filter(p -> p.getState() == QuestState.QUEST_STATE_UNFINISHED)
-                .filter(p -> p.getQuestData().getFailCond().stream().anyMatch(q -> q.getType() == condType))
+                .filter(p -> p.getQuestData().getFailCond() != null &&
+                    p.getQuestData().getFailCond().stream().anyMatch(q -> q.getType() == condType))
                 .toList();
 
             for (GameQuest subQuestWithCond : subQuestsWithCond) {

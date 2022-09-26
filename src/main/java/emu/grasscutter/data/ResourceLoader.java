@@ -2,6 +2,7 @@ package emu.grasscutter.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
+import com.mchange.v2.log.LogUtils;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.binout.*;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityConfigData;
@@ -29,6 +30,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static emu.grasscutter.config.Configuration.DATA;
 import static emu.grasscutter.config.Configuration.RESOURCE;
@@ -425,6 +427,13 @@ public class ResourceLoader {
             }
 
             GameData.getMainQuestDataMap().put(mainQuest.getId(), mainQuest);
+            if(mainQuest.getSubQuests() == null){
+                Grasscutter.getLogger().error("missing subquests for mainQuest {}", mainQuest.getId());
+                continue;
+            }
+            for(MainQuestData.SubQuestData sq: mainQuest.getSubQuests()){
+                GameData.getSubQuestData().put(sq.getSubId(), sq);
+            }
         }
 
         try {

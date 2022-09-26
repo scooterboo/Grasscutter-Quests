@@ -27,6 +27,7 @@ public class GameData {
     private static final Map<String, OpenConfigEntry> openConfigEntries = new HashMap<>();
     private static final Map<String, ScenePointEntry> scenePointEntries = new HashMap<>();
     private static final Int2ObjectMap<MainQuestData> mainQuestData = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<MainQuestData.SubQuestData> subQuestData = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<QuestEncryptionKey> questsKeys = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<HomeworldDefaultSaveData> homeworldDefaultSaveData = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<SceneNpcBornData> npcBornData = new Int2ObjectOpenHashMap<>();

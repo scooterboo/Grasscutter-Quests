@@ -1,6 +1,8 @@
 package emu.grasscutter.data.binout;
 
 import dev.morphia.annotations.Entity;
+import emu.grasscutter.data.excels.QuestData;
+import emu.grasscutter.game.quest.enums.LogicType;
 import emu.grasscutter.game.quest.enums.QuestType;
 import lombok.Data;
 import java.util.List;
@@ -58,7 +60,23 @@ public class MainQuestData {
     @Data
     public static class SubQuestData {
         private int subId;
+        private int mainId;
         private int order;
+
+        private LogicType acceptCondComb;
+        private LogicType finishCondComb;
+        private LogicType failCondComb;
+
+        //showType
+        private boolean finishParent;
+        private boolean isRewind;
+
+        private List<QuestData.QuestCondition> acceptCond;
+        private List<QuestData.QuestCondition> finishCond;
+        private List<QuestData.QuestCondition> failCond;
+        private List<QuestData.QuestExecParam> beginExec;
+        private List<QuestData.QuestExecParam> finishExec;
+        private List<QuestData.QuestExecParam> failExec;
     }
 
 

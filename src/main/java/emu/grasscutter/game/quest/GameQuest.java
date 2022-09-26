@@ -4,6 +4,7 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Transient;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.binout.MainQuestData;
 import emu.grasscutter.data.excels.ChapterData;
 import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.data.excels.TriggerExcelConfigData;
@@ -31,7 +32,7 @@ import java.util.Map;
 @Entity
 public class GameQuest {
     @Transient @Getter @Setter private GameMainQuest mainQuest;
-    @Transient @Getter private QuestData questData;
+    @Transient @Getter private MainQuestData.SubQuestData questData;
 
     @Getter private int subQuestId;
     @Getter private int mainQuestId;
@@ -51,9 +52,9 @@ public class GameQuest {
     @Deprecated // Morphia only. Do not use.
     public GameQuest() {}
 
-    public GameQuest(GameMainQuest mainQuest, QuestData questData) {
+    public GameQuest(GameMainQuest mainQuest, MainQuestData.SubQuestData questData) {
         this.mainQuest = mainQuest;
-        this.subQuestId = questData.getId();
+        this.subQuestId = questData.getSubId();
         this.mainQuestId = questData.getMainId();
         this.questData = questData;
         this.state = QuestState.QUEST_STATE_UNSTARTED;
@@ -89,9 +90,10 @@ public class GameQuest {
         if (questData.getFailCond() != null && questData.getFailCond().size() != 0) {
             this.failProgressList = new int[questData.getFailCond().size()];
         }
-
-        getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
-
+        var questData = getQuestData();
+        if(questData != null && questData.getBeginExec()!=null) {
+            questData.getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
+        }
 
         if (ChapterData.beginQuestChapterMap.containsKey(subQuestId)) {
             mainQuest.getOwner().sendPacket(new PacketChapterStateNotify(
@@ -124,8 +126,8 @@ public class GameQuest {
         return this.getMainQuest().getOwner();
     }
 
-    public void setConfig(QuestData config) {
-        if (config == null || getSubQuestId() != config.getId()) return;
+    public void setConfig(MainQuestData.SubQuestData config) {
+        if (config == null || getSubQuestId() != config.getSubId()) return;
         this.questData = config;
     }
 
@@ -141,7 +143,7 @@ public class GameQuest {
         this.state = QuestState.QUEST_STATE_FINISHED;
         this.finishTime = Utils.getCurrentSeconds();
 
-        if (getQuestData().finishParent()) {
+        if (getQuestData().isFinishParent()) {
             // This quest finishes the questline - the main quest will also save the quest to db, so we don't have to call save() here
             getMainQuest().finish();
         }
