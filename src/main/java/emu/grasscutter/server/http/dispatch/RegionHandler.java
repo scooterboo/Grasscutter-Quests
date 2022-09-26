@@ -133,10 +133,20 @@ public final class RegionHandler implements Router {
                 regionData = region.getBase64();
         }
 
-        String[] versionCode = versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "").split("\\.");
-        int versionMajor = Integer.parseInt(versionCode[0]);
-        int versionMinor = Integer.parseInt(versionCode[1]);
-        int versionFix   = Integer.parseInt(versionCode[2]);
+
+        int versionMajor;
+        int versionMinor;
+        int versionFix;
+        if(versionName != null) {
+            String[] versionCode = versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "").split("\\.");
+            versionMajor = Integer.parseInt(versionCode[0]);
+            versionMinor = Integer.parseInt(versionCode[1]);
+            versionFix = Integer.parseInt(versionCode[2]);
+        } else {
+            versionMajor = 3;
+            versionMinor = 1;
+            versionFix = 0;
+        }
 
         if (versionMajor >= 3 || (versionMajor == 2 && versionMinor == 7 && versionFix >= 50) || (versionMajor == 2 && versionMinor == 8)) {
             try {

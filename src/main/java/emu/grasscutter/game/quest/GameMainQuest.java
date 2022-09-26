@@ -155,6 +155,14 @@ public class GameMainQuest {
     public void fail() {}
     public void cancel() {}
 
+    @Data
+    public static class RewindResult{
+        @Getter Position position;
+        @Getter Position rot;
+        @Getter List<Integer> rewindedQuests;
+        @Getter GameQuest newCurrentQuest;
+    }
+
     // Rewinds to the last finished/unfinished rewind quest, and returns the avatar rewind position (if it exists)
     public List<Position> rewind() {
         if (this.questManager == null) {
@@ -168,6 +176,7 @@ public class GameMainQuest {
             }
             return a.getQuestData().getOrder() > b.getQuestData().getOrder() ? 1 : -1;});
         boolean didRewind = false;
+        List<Integer> rewindedQuests = new ArrayList<>();
         for (GameQuest quest : sortedByOrder) {
             int i = sortedByOrder.indexOf(quest);
             if ( i+1 == sortedByOrder.size()) {

@@ -16,6 +16,20 @@ import static emu.grasscutter.utils.Language.translate;
  * Handles requests related to authentication. (aka dispatch)
  */
 public final class DispatchHandler implements Router {
+
+    private ClientType getClientType(Context ctx, ClientType fallback){
+        var useragent = ctx.userAgent();
+        if(useragent==null){
+            return fallback;
+        }
+        if(useragent.contains("Android") || useragent.contains("IOS")){
+            return ClientType.MOBILE;
+        }
+        if(useragent.contains("Windows") ||useragent.contains("Linux")) {
+            return ClientType.DESKTOP;
+        }
+        return fallback;
+    }
     @Override public void applyRoutes(Javalin javalin) {
         // Username & Password login (from client).
         javalin.post("/hk4e_global/mdk/shield/api/login", DispatchHandler::clientLogin);
@@ -39,9 +53,9 @@ public final class DispatchHandler implements Router {
         javalin.get("/authentication/openid/redirect", ctx -> Grasscutter.getAuthenticationSystem().getOAuthAuthenticator()
                 .handleTokenProcess(AuthenticationSystem.fromExternalRequest(ctx)));
         javalin.get("/Api/twitter_login", ctx -> Grasscutter.getAuthenticationSystem().getOAuthAuthenticator()
-                .handleRedirection(AuthenticationSystem.fromExternalRequest(ctx), ClientType.DESKTOP));
+                .handleRedirection(AuthenticationSystem.fromExternalRequest(ctx), getClientType(ctx, ClientType.DESKTOP)));
         javalin.get("/sdkTwitterLogin.html", ctx -> Grasscutter.getAuthenticationSystem().getOAuthAuthenticator()
-                .handleRedirection(AuthenticationSystem.fromExternalRequest(ctx), ClientType.MOBILE));
+                .handleRedirection(AuthenticationSystem.fromExternalRequest(ctx), getClientType(ctx, ClientType.MOBILE)));
     }
 
     /**
