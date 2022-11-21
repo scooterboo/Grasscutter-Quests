@@ -28,7 +28,7 @@ import javax.script.Bindings;
 import java.util.HashMap;
 import java.util.Map;
 
-import static emu.grasscutter.game.dungeons.DungeonPassConditionType.DUNGEON_COND_FINISH_QUEST;
+import static emu.grasscutter.game.dungeons.enums.DungeonPassConditionType.DUNGEON_COND_FINISH_QUEST;
 import static emu.grasscutter.game.quest.enums.QuestCond.QUEST_COND_STATE_EQUAL;
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_FINISH_PLOT;
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL;
