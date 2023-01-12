@@ -442,10 +442,11 @@ public class ResourceLoader {
 
     private static void loadQuests() {
         try {
-            Files.list(getResourcePath("BinOutput/Quest/")).forEach(path -> {
+            Files.list(getResourcePath("Generated/Quest")).forEach(path -> {
                 try {
                     val mainQuest = JsonUtils.loadToClass(path, MainQuestData.class);
                     GameData.getMainQuestDataMap().put(mainQuest.getId(), mainQuest);
+                    mainQuest.onLoad();
                     if(mainQuest.getTalks() != null) {
                         mainQuest.getTalks().forEach(talkData -> GameData.getQuestTalkMap().put(talkData.getId(), mainQuest.getId()));
                     }

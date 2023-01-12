@@ -64,7 +64,7 @@ public class GameMainQuest {
     }
 
     private void addAllChildQuests() {
-        List<Integer> subQuestIds = Arrays.stream(GameData.getMainQuestDataMap().get(this.parentQuestId).getSubQuests()).map(SubQuestData::getSubId).toList();
+        List<Integer> subQuestIds = Arrays.stream(GameData.getMainQuestDataMap().get(this.parentQuestId).getSubQuests()).map(QuestData::getSubId).toList();
         for (Integer subQuestId : subQuestIds) {
             QuestData questConfig = GameData.getQuestDataMap().get(subQuestId);
             this.childQuests.put(subQuestId, new GameQuest(this, questConfig));

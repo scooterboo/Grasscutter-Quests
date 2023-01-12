@@ -1,6 +1,8 @@
 package emu.grasscutter.data.binout;
 
 import dev.morphia.annotations.Entity;
+import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.game.quest.enums.QuestType;
 import lombok.Data;
 import java.util.List;
@@ -16,7 +18,7 @@ public class MainQuestData {
     private int[] suggestTrackMainQuestList;
     private int[] rewardIdList;
 
-    private SubQuestData[] subQuests;
+    private QuestData[] subQuests;
     private List<TalkData> talks;
     private long[] preloadLuaList;
 
@@ -44,7 +46,7 @@ public class MainQuestData {
         return rewardIdList;
     }
 
-    public SubQuestData[] getSubQuests() {
+    public QuestData[] getSubQuests() {
         return subQuests;
     }
     public List<TalkData> getTalks() {
@@ -52,7 +54,15 @@ public class MainQuestData {
     }
 
     public void onLoad() {
-        this.talks = talks.stream().filter(Objects::nonNull).toList();
+        if(talks != null) {
+            this.talks = talks.stream().filter(Objects::nonNull).toList();
+        }
+        if(subQuests!= null && subQuests.length > 0) {
+            for (QuestData subQuest : subQuests) {
+                subQuest.onLoad();
+                GameData.getQuestDataMap().put(subQuest.getSubId(), subQuest);
+            }
+        }
     }
 
     @Data

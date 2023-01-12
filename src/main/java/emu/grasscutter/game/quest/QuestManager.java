@@ -240,8 +240,8 @@ public class QuestManager extends BasePlayerManager {
         }
 
         Arrays.stream(mainQuestData.getSubQuests())
-            .min(Comparator.comparingInt(MainQuestData.SubQuestData::getOrder))
-            .map(MainQuestData.SubQuestData::getSubId)
+            .min(Comparator.comparingInt(QuestData::getOrder))
+            .map(QuestData::getSubId)
             .ifPresent(this::addQuest);
         //TODO find a better way then hardcoding to detect needed required quests
         if(mainQuestId == 355){

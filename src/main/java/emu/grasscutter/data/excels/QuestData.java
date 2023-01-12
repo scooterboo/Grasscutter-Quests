@@ -57,6 +57,17 @@ public class QuestData extends GameResource {
         this.finishExec = finishExec.stream().filter(p -> p.type != null).toList();
         this.failExec = failExec.stream().filter(p -> p.type != null).toList();
 
+        finishCond.stream().filter(p -> p.getType() != null).forEach(c -> {
+            if(c.getParamStr() == null){
+                c.setParamStr("");
+            }
+        });
+        failCond.stream().filter(p -> p.getType() != null).forEach(c -> {
+            if(c.getParamStr() == null){
+                c.setParamStr("");
+            }
+        });
+
         if (this.acceptCondComb == null)
             this.acceptCondComb = LogicType.LOGIC_NONE;
 
@@ -94,11 +105,11 @@ public class QuestData extends GameResource {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class QuestExecParam {
-        @SerializedName("_type")
+        @SerializedName(value = "type", alternate = {"_type"})
         QuestExec type;
-        @SerializedName("_param")
+        @SerializedName(value = "param", alternate = {"_param"})
         String[] param;
-        @SerializedName("_count")
+        @SerializedName(value = "count", alternate = {"_count"})
         String count;
     }
 
@@ -108,13 +119,13 @@ public class QuestData extends GameResource {
 
     @Data
     public static class QuestCondition<TYPE extends Enum<?> & QuestTrigger> {
-        @SerializedName("_type")
+        @SerializedName(value = "type", alternate = {"_type"})
         private TYPE type;
-        @SerializedName("_param")
+        @SerializedName(value = "param", alternate = {"_param"})
         private int[] param;
-        @SerializedName("_param_str")
+        @SerializedName(value = "paramStr", alternate = {"_param_str", "param_str"})
         private String paramStr;
-        @SerializedName("_count")
+        @SerializedName(value = "count", alternate = {"_count"})
         private int count;
 
         public String asKey() {
