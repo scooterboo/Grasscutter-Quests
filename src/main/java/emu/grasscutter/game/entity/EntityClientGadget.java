@@ -1,5 +1,11 @@
 package emu.grasscutter.game.entity;
 
+import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.binout.AbilityData;
+import emu.grasscutter.data.binout.config.ConfigEntityGadget;
+import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
+import emu.grasscutter.data.excels.GadgetData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.world.Scene;
@@ -28,24 +34,28 @@ public class EntityClientGadget extends EntityBaseGadget {
     @Getter(onMethod = @__(@Override))
     private final int gadgetId;
 
-    @Getter private final int campId;
-    @Getter private final int campType;
     @Getter private final int ownerEntityId;
     @Getter private final int targetEntityId;
     @Getter private final boolean asyncLoad;
 
     @Getter private final int originalOwnerEntityId;
 
+    @Getter private final GadgetData gadgetData;
+    private ConfigEntityGadget configGadget;
+
     public EntityClientGadget(Scene scene, Player player, EvtCreateGadgetNotify notify) {
-        super(scene, new Position(notify.getInitPos()), new Position(notify.getInitEulerAngles()));
+        super(scene, new Position(notify.getInitPos()), new Position(notify.getInitEulerAngles()), notify.getCampId(), notify.getCampType());
         this.owner = player;
         this.id = notify.getEntityId();
         this.gadgetId = notify.getConfigId();
-        this.campId = notify.getCampId();
-        this.campType = notify.getCampType();
         this.ownerEntityId = notify.getPropOwnerEntityId();
         this.targetEntityId = notify.getTargetEntityId();
         this.asyncLoad = notify.getIsAsyncLoad();
+
+        this.gadgetData = GameData.getGadgetDataMap().get(gadgetId);
+        if (gadgetData!=null && gadgetData.getJsonName()!=null) {
+            this.configGadget = GameData.getGadgetConfigData().get(gadgetData.getJsonName());
+        }
 
         GameEntity owner = scene.getEntityById(this.ownerEntityId);
         if (owner instanceof EntityClientGadget ownerGadget) {
@@ -53,6 +63,24 @@ public class EntityClientGadget extends EntityBaseGadget {
         } else {
             this.originalOwnerEntityId = this.ownerEntityId;
         }
+
+        initAbilities();
+    }
+
+    @Override
+    public void initAbilities() {
+        if(this.configGadget != null && this.configGadget.getAbilities() != null) {
+            for (var ability : this.configGadget.getAbilities()) {
+                addConfigAbility(ability);
+            }
+        }
+    }
+
+    private void addConfigAbility(ConfigAbilityData abilityData){
+        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
+        if(data != null)
+            owner.getAbilityManager().addAbilityToEntity(
+                this, data);
     }
 
     @Override

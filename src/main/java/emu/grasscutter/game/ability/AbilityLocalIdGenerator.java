@@ -3,6 +3,7 @@ package emu.grasscutter.game.ability;
 import java.util.Map;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.binout.AbilityMixinData;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
 
 public class AbilityLocalIdGenerator {
@@ -42,6 +43,20 @@ public class AbilityLocalIdGenerator {
             localIdToAction.put((int)id, actions[i]);
         }
         ActionIndex = 0;
+    }
+
+    public void InitializeMixinsLocalIds(AbilityMixinData mixins[], Map<Integer, AbilityMixinData> localIdToAction)
+    {
+        if (mixins == null) return;
+        MixinIndex = 0;
+        for (int i = 0; i < mixins.length; i++)
+        {
+            long id = GetLocalId();
+            localIdToAction.put((int)id, mixins[i]);
+
+            MixinIndex++;
+        }
+        MixinIndex = 0;
     }
 
     public long GetLocalId()

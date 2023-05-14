@@ -1,10 +1,14 @@
 package emu.grasscutter.data.common;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import emu.grasscutter.game.ability.Ability;
+import emu.grasscutter.data.excels.ProudSkillData;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import lombok.Getter;
 import lombok.val;
 
 public class DynamicFloat {
@@ -15,6 +19,7 @@ public class DynamicFloat {
         public Op op;
         public float fValue;
         public String sValue;
+        public boolean negative = false;
 
         public StackOp(String s) {
             switch (s.toUpperCase()) {
@@ -23,6 +28,11 @@ public class DynamicFloat {
                 case "MUL" -> this.op = Op.MUL;
                 case "DIV" -> this.op = Op.DIV;
                 default -> {
+                    if(s.startsWith("%")) {
+                        s = s.substring(1);
+                    } else if(s.startsWith("-%")) {
+                        s = s.substring(2);
+                    }
                     this.op = Op.KEY;
                     this.sValue = s;
                 }
@@ -35,7 +45,7 @@ public class DynamicFloat {
         }
     }
     private List<StackOp> ops;
-    private boolean dynamic = false;
+    @Getter private boolean dynamic = false;
     private float constant = 0f;
 
     public DynamicFloat(float constant) {
@@ -56,6 +66,10 @@ public class DynamicFloat {
         return this.get(new Object2FloatArrayMap<String>());
     }
 
+    public float get(Ability ability) {
+        return get(ability.getAbilitySpecials());
+    }
+
     public float get(Object2FloatMap<String> props) {
         if (!dynamic)
             return constant;
@@ -64,13 +78,22 @@ public class DynamicFloat {
         for (var op : this.ops) {
             switch (op.op) {
                 case CONSTANT -> fl.push(op.fValue);
-                case KEY -> fl.push(props.getOrDefault(op.sValue, 0f));
+                case KEY -> fl.push(props.getOrDefault(op.sValue, 0f) * (op.negative ? -1 : 1));
                 case ADD -> fl.push(fl.popFloat() + fl.popFloat());
                 case SUB -> fl.push(-fl.popFloat() + fl.popFloat());  // [f0, f1, f2] -> [f0, f1-f2]  (opposite of RPN order)
                 case MUL -> fl.push(fl.popFloat() * fl.popFloat());
                 case DIV -> fl.push((1f/fl.popFloat()) * fl.popFloat());  // [f0, f1, f2] -> [f0, f1/f2]
             }
         }
-        return fl.popFloat();  // well-formed data will always have only one value left at this point
+        try {
+            return fl.popFloat();  // well-formed data will always have only one value left at this point
+        } catch(NoSuchElementException e) {
+            return 0;
+        }
+    }
+
+    public float get(ProudSkillData skill) {
+        //Construct the map
+        return get(skill.getParamListMap());
     }
 }

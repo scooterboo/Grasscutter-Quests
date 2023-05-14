@@ -11,7 +11,7 @@ import emu.grasscutter.data.server.Grid;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
-import emu.grasscutter.game.props.EntityType;
+import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.world.Scene;
@@ -531,7 +531,7 @@ public class SceneScriptManager {
             // currently all condition_ENTER_REGION Events check for avatar, so we have no necessary to add other types of entity
             var entities = getScene().getEntities().values()
                 .stream()
-                .filter(e -> e.getEntityType() == EntityType.Avatar.getValue() && region.getMetaRegion().contains(e.getPosition()))
+                .filter(e -> e.getEntityType() == EntityIdType.AVATAR.getId() && region.getMetaRegion().contains(e.getPosition()))
                 .toList();
             entities.forEach(region::addEntity);
 

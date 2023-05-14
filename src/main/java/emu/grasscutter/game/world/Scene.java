@@ -23,6 +23,7 @@ import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
 import emu.grasscutter.net.proto.EnterTypeOuterClass;
+import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SelectWorktopOptionReqOuterClass;
 import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
 import emu.grasscutter.scripts.SceneIndexManager;
@@ -36,7 +37,10 @@ import emu.grasscutter.server.event.player.PlayerTeleportEvent;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.KahnsSort;
 import emu.grasscutter.utils.Position;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -77,6 +81,8 @@ public class Scene {
     @Getter private int tickCount = 0;
     @Getter private boolean isPaused = false;
 
+    @Getter private GameEntity sceneEntity;
+
     public Scene(World world, SceneData sceneData) {
         this.world = world;
         this.sceneData = sceneData;
@@ -97,6 +103,10 @@ public class Scene {
         this.scriptManager = new SceneScriptManager(this);
         this.blossomManager = new BlossomManager(this);
         this.unlockedForces = new HashSet<>();
+
+        //Create scene entity
+
+        this.sceneEntity = new EntityScene(this);
     }
 
     public int getId() {
@@ -112,7 +122,17 @@ public class Scene {
     }
 
     public GameEntity getEntityById(int id) {
-        return this.entities.get(id);
+        if(id == 0x13800001) return sceneEntity;
+        var entity = this.entities.get(id);
+        if(entity == null && (id >> 24) == EntityIdType.AVATAR.getId()) {
+            for (var player : getPlayers()) {
+                for (var avatar : player.getTeamManager().getActiveTeam()) {
+                    if(avatar.getId() == id) return avatar;
+                }
+            }
+        }
+
+        return entity;
     }
 
     public GameEntity getEntityByConfigId(int configId) {

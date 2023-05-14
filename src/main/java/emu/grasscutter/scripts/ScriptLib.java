@@ -11,7 +11,7 @@ import emu.grasscutter.game.entity.gadget.GadgetWorktop;
 import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.entity.gadget.platform.PointArrayRoute;
 import emu.grasscutter.game.props.ClimateType;
-import emu.grasscutter.game.props.EntityType;
+import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.quest.enums.QuestState;
@@ -681,7 +681,7 @@ public class ScriptLib {
     public int GetEntityType(int entityId){
         var entity = getSceneScriptManager().getScene().getEntityById(entityId);
         if(entity == null){
-            return EntityType.None.getValue();
+            return EntityIdType.NONE.getId();
         }
 
         return entity.getEntityType();
@@ -788,7 +788,7 @@ public class ScriptLib {
     }
     public int IsPlayerAllAvatarDie(int sceneUid){
         logger.warn("[LUA] Call unimplemented IsPlayerAllAvatarDie {}", sceneUid);
-        var playerEntities = getSceneScriptManager().getScene().getEntities().values().stream().filter(e -> e.getEntityType() == EntityType.Avatar.getValue()).toList();
+        var playerEntities = getSceneScriptManager().getScene().getEntities().values().stream().filter(e -> e.getEntityType() == EntityIdType.AVATAR.getId()).toList();
         for (GameEntity p : playerEntities){
             var player = (EntityAvatar)p;
             if(player.isAlive()){

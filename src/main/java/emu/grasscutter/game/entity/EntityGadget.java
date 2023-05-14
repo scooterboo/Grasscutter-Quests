@@ -1,5 +1,6 @@
 package emu.grasscutter.game.entity;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
@@ -80,8 +81,16 @@ public class EntityGadget extends EntityBaseGadget {
         this(scene, gadgetId, pos, rot, null);
     }
 
+    public EntityGadget(Scene scene, int gadgetId, Position pos, Position rot, int campId, int campType) {
+        this(scene, gadgetId, pos, rot, null, campId, campType);
+    }
+
     public EntityGadget(Scene scene, int gadgetId, Position pos, Position rot, GadgetContent content) {
-        super(scene, pos, rot);
+        this(scene, gadgetId, pos, rot, content, 0, 0);
+    }
+
+    public EntityGadget(Scene scene, int gadgetId, Position pos, Position rot, GadgetContent content, int campId, int campType) {
+        super(scene, pos, rot, campId, campType);
         this.gadgetData = GameData.getGadgetDataMap().get(gadgetId);
         if (gadgetData!=null && gadgetData.getJsonName()!=null) {
             this.configGadget = GameData.getGadgetConfigData().get(gadgetData.getJsonName());
@@ -97,24 +106,26 @@ public class EntityGadget extends EntityBaseGadget {
             setEntityController(EntityControllerScriptManager.getGadgetController(controllerName));
         }
 
-        addConfigAbilities();
+        initAbilities(); //TODO: move this
     }
 
-    private void addConfigAbilities(){
+    private void addConfigAbility(ConfigAbilityData abilityData){
+
+        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
+        if(data != null)
+            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
+                this, data);
+    }
+
+    @Override
+    public void initAbilities() {
+        //TODO: handle predynamic, static and dynamic here
         if(this.configGadget != null && this.configGadget.getAbilities() != null) {
             for (var ability : this.configGadget.getAbilities()) {
                 addConfigAbility(ability);
             }
         }
     }
-    private void addConfigAbility(ConfigAbilityData abilityData){
-
-        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
-        if(data != null)
-            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
-                this, data, abilityData.getAbilityID());
-    }
-
 
     public void setState(int state) {
         this.state = state;

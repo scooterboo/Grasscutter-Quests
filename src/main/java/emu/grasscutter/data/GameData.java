@@ -12,11 +12,13 @@ import emu.grasscutter.data.binout.*;
 import emu.grasscutter.data.binout.config.ConfigEntityAvatar;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
+import emu.grasscutter.data.binout.config.ConfigGlobalCombat;
 import emu.grasscutter.data.binout.config.ConfigLevelEntity;
 import emu.grasscutter.data.binout.routes.Route;
 import emu.grasscutter.data.custom.*;
 import emu.grasscutter.data.server.ActivityCondGroup;
 import emu.grasscutter.data.server.GadgetMapping;
+import emu.grasscutter.data.server.MonsterMapping;
 import emu.grasscutter.game.dungeons.DungeonDropEntry;
 import emu.grasscutter.game.quest.QuestEncryptionKey;
 import emu.grasscutter.game.quest.RewindData;
@@ -34,6 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Tolerate;
 import lombok.val;
 
@@ -45,6 +48,7 @@ public class GameData {
     @Getter private static final Int2ObjectMap<String> abilityHashes = new Int2ObjectOpenHashMap<>();
     @Deprecated(forRemoval = true)
     @Getter private static final Map<String, AbilityModifierEntry> abilityModifiers = new HashMap<>();
+    @Getter private static final Map<String, List<TalentData>> talents = new HashMap<>();
     @Getter private static final Map<String, ConfigEntityAvatar> avatarConfigData = new HashMap<>();
     @Getter private static final Map<String, ConfigEntityGadget> gadgetConfigData = new HashMap<>();
     @Getter private static final Map<String, ConfigEntityMonster> monsterConfigData = new HashMap<>();
@@ -155,8 +159,11 @@ public class GameData {
 
     @Getter private static final Int2ObjectMap<List<DungeonDropEntry>> dungeonDropDataMap = new Int2ObjectOpenHashMap<>();
 
+    @Getter @Setter private static ConfigGlobalCombat configGlobalCombat = null;
+
     // Custom community server resources
     @Getter private static final Int2ObjectMap<GadgetMapping> gadgetMappingMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<MonsterMapping> monsterMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ActivityCondGroup> activityCondGroupMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<GroupReplacementData> groupReplacements = new Int2ObjectOpenHashMap<>();
 

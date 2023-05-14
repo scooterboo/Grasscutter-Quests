@@ -41,7 +41,7 @@ public class HealAbilityManager {
         public float fRatio = 0;
         public float fBase = 0;
         public boolean healAll = false;
-        
+
         public HealData(String _abilityType, String _sRatio, String _sBase, boolean _healAll) {
             abilityType = _abilityType;
             isString = true;
@@ -88,12 +88,12 @@ public class HealAbilityManager {
 
     ArrayList<HealDataAvatar> healDataAvatarList;
 	private Player player;
-    
+
     public HealAbilityManager (Player player) {
 		this.player = player;
         healDataAvatarList = new ArrayList();
         healDataAvatarList.add(new HealDataAvatar(10000054, "Kokomi", 0).addHealData("E", "ElementalArt_Heal_MaxHP_Base_Percentage", "ElementalArt_Heal_Base_Amount", false).addHealData("Q", "Avatar_Kokomi_ElementalBurst_Heal", 0.0172f, 212f, false));
-        healDataAvatarList.add(new HealDataAvatar(10000003, "Qin", 1).addHealData("Q", "Heal", "BurstHealConst", true)); 
+        healDataAvatarList.add(new HealDataAvatar(10000003, "Qin", 1).addHealData("Q", "Heal", "BurstHealConst", true));
         healDataAvatarList.add(new HealDataAvatar(10000034, "Noel", 2).addHealData("E", "OnAttack_HealthRate", 0.452f, 282f, true));
         healDataAvatarList.add(new HealDataAvatar(10000032, "Bennett", 0).addHealData("Q", "HealMaxHpRatio", "HealConst", false));
         healDataAvatarList.add(new HealDataAvatar(10000039, "Diona", 0).addHealData("Q", "HealHPRatio", "HealHP_Const", false));
@@ -110,11 +110,11 @@ public class HealAbilityManager {
 
     public void healHandler(AbilityInvokeEntry invoke) throws Exception {
 		AbilityMetaModifierChange data = AbilityMetaModifierChange.parseFrom(invoke.getAbilityData());
-		
+
 		if (data == null) {
 			return;
 		}
-		
+
 		GameEntity sourceEntity = player.getScene().getEntityById(data.getApplyEntityId());
 
         String modifierString = "";
@@ -126,6 +126,7 @@ public class HealAbilityManager {
     }
 
     public void checkAndHeal(GameEntity sourceEntity, String modifierString) {
+        /*
         int fightPropertyType = 0;
         float healAmount = 0;
         float ratio = 0, base = 0;
@@ -203,6 +204,6 @@ public class HealAbilityManager {
                 }
                 break;
             }
-        }
+        } */
     }
 }
