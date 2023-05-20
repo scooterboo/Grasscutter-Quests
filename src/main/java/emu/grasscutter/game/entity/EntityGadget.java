@@ -27,6 +27,7 @@ import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
 import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import emu.grasscutter.net.proto.VectorOuterClass.Vector;
+import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.EntityControllerScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
@@ -72,6 +73,8 @@ public class EntityGadget extends EntityBaseGadget {
     @Getter @Setter private int startValue = 0; //Controller related, inited to zero
     @Getter @Setter private int ticksSinceChange;
 
+    @Getter private boolean interactEnabled = true;
+
 
     public EntityGadget(Scene scene, int gadgetId, Position pos) {
         this(scene, gadgetId, pos, null, null);
@@ -104,6 +107,9 @@ public class EntityGadget extends EntityBaseGadget {
         if(GameData.getGadgetMappingMap().containsKey(gadgetId)) {
             String controllerName = GameData.getGadgetMappingMap().get(gadgetId).getServerController();
             setEntityController(EntityControllerScriptManager.getGadgetController(controllerName));
+            if(getEntityController() == null) {
+                Grasscutter.getLogger().warn("Gadget controller {} not found", controllerName);
+            }
         }
 
         initAbilities(); //TODO: move this
@@ -125,6 +131,11 @@ public class EntityGadget extends EntityBaseGadget {
                 addConfigAbility(ability);
             }
         }
+    }
+
+    public void setInteractEnabled(boolean enable) {
+        this.interactEnabled = enable;
+        this.getScene().broadcastPacket(new PacketGadgetStateNotify(this, this.getState())); //Update the interact
     }
 
     public void setState(int state) {
@@ -169,6 +180,8 @@ public class EntityGadget extends EntityBaseGadget {
 
     @Override
     public void onInteract(Player player, GadgetInteractReq interactReq) {
+        if(!interactEnabled) return;
+
         if (this.getContent() == null) {
             return;
         }
@@ -275,7 +288,7 @@ public class EntityGadget extends EntityBaseGadget {
                 .setGroupId(this.getGroupId())
                 .setConfigId(this.getConfigId())
                 .setGadgetState(this.getState())
-                .setIsEnableInteract(true)
+                .setIsEnableInteract(this.interactEnabled)
                 .setAuthorityPeerId(this.getScene().getWorld().getHostPeerId());
 
         if (this.metaGadget != null) {

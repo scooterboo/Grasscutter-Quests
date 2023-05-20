@@ -127,6 +127,10 @@ public abstract class GameEntity {
     }
 
     public float heal(float amount) {
+        return heal(amount, false);
+    }
+
+    public float heal(float amount, boolean mute) {
         if (this.getFightProperties() == null) {
             return 0f;
         }

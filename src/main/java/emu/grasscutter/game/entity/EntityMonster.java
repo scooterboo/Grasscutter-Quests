@@ -27,6 +27,7 @@ import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SceneMonsterInfoOuterClass.SceneMonsterInfo;
 import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneMonster;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
@@ -36,6 +37,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Optional;
 
 import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
@@ -94,6 +96,28 @@ public class EntityMonster extends GameEntity {
     @Override
     public void initAbilities() {
         if(configEntityMonster != null) {
+            //Affix abilities
+            Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
+            List<Integer> affixes = null;
+            if(optionalGroup.isPresent()) {
+                var group = optionalGroup.get();
+
+                SceneMonster monster = group.monsters.get(getConfigId());
+                if(monster != null) affixes = monster.affix;
+            }
+
+            if(affixes != null) {
+                for(var affixId : affixes) {
+                    var affix = GameData.getMonsterAffixDataMap().get(affixId.intValue());
+                    if(!affix.isPreAdd()) continue;
+
+                    //Add the ability
+                    for(var name : affix.getAbilityName()) {
+                        addConfigAbility(name);
+                    }
+                }
+            }
+
             //TODO: Research if any monster is non humanoid
             for(var ability : GameData.getConfigGlobalCombat().getDefaultAbilities().getNonHumanoidMoveAbilities()) {
                 addConfigAbility(ability);
@@ -102,6 +126,37 @@ public class EntityMonster extends GameEntity {
             if(configEntityMonster.getAbilities() != null)
                 for(var configAbilityData : configEntityMonster.getAbilities()) {
                     addConfigAbility(configAbilityData.abilityName);
+                }
+
+            if(optionalGroup.isPresent()) {
+                var group = optionalGroup.get();
+                SceneMonster monster = group.monsters.get(getConfigId());
+                if(monster != null && monster.isElite) {
+                    addConfigAbility(GameData.getConfigGlobalCombat().getDefaultAbilities().getMonterEliteAbilityName());
+                }
+            }
+
+            if(affixes != null) {
+                for(var affixId : affixes) {
+                    var affix = GameData.getMonsterAffixDataMap().get(affixId.intValue());
+                    if(affix.isPreAdd()) continue;
+
+                    //Add the ability
+                    for(var name : affix.getAbilityName()) {
+                        addConfigAbility(name);
+                    }
+                }
+            }
+
+            String levelEntityConfig = getScene().getSceneData().getLevelEntityConfig();
+            var config = GameData.getConfigLevelEntityDataMap().get(levelEntityConfig);
+            if (config == null){
+                return;
+            }
+
+            if(config.getMonsterAbilities() != null)
+                for(var monsterAbility : config.getMonsterAbilities()) {
+                    addConfigAbility(monsterAbility.abilityName);
                 }
         }
     }
