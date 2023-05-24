@@ -16,8 +16,6 @@ import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.TalentData;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
 import emu.grasscutter.data.excels.ProudSkillData;
-import emu.grasscutter.game.ability.talents.TalentAction;
-import emu.grasscutter.game.ability.talents.TalentActionHandler;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.GameEntity;
@@ -43,16 +41,6 @@ public class Ability {
 
     @Getter private int hash;
 
-    private static final HashMap<TalentData.Type, TalentActionHandler> talentHandlers = new HashMap<>();
-    public static final ExecutorService eventExecutor;
-    static {
-        eventExecutor = new ThreadPoolExecutor(4, 4,
-            60, TimeUnit.SECONDS, new LinkedBlockingDeque<>(1000),
-            FastThreadLocalThread::new, new ThreadPoolExecutor.AbortPolicy());
-
-        registerTalentHandlers();
-    }
-
     public Ability(AbilityData data, GameEntity owner, Player playerOwner) {
         this.data = data;
         this.owner = owner;
@@ -69,45 +57,6 @@ public class Ability {
         hash = AbilityHash(data.abilityName);
 
         data.initialize();
-    }
-
-    public static void executeTalent(List<TalentData> dataList, ProudSkillData skillData) {
-        for (var data : dataList) {
-            executeTalent(data, skillData);
-        }
-    }
-
-    public static void registerTalentHandlers() {
-        Reflections reflections = new Reflections("emu.grasscutter.game.ability.talents");
-        var handlerClasses = reflections.getSubTypesOf(TalentActionHandler.class);
-
-        for (var obj : handlerClasses) {
-            try {
-                if (obj.isAnnotationPresent(TalentAction.class)) {
-                    TalentData.Type talentAction = obj.getAnnotation(TalentAction.class).value();
-                    talentHandlers.put(talentAction, obj.getDeclaredConstructor().newInstance());
-                } else {
-                    return;
-                }
-            } catch (Exception e) {
-                Grasscutter.getLogger().error("Unable to register handler.", e);
-            }
-        }
-    }
-
-    public static void executeTalent(TalentData data, ProudSkillData skillData) {
-        TalentActionHandler handler = talentHandlers.get(data.type);
-
-        if (handler == null) {
-            Grasscutter.getLogger().debug("Could not execute talent action {}", data.type);
-            return;
-        }
-
-        eventExecutor.submit(() -> {
-            if (!handler.execute(data, skillData)) {
-                Grasscutter.getLogger().debug("exec ability talent failed {}", data.type);
-            }
-        });
     }
 
     public static int AbilityHash(String str)

@@ -491,6 +491,13 @@ public class ScriptLib {
 		logger.debug("[LUA] Call SetMonsterBattleByGroup with {} {}",
             configId,groupId);
 		// TODO implement scene50008_group250008057.lua uses incomplete group numbers
+
+        // -> MonsterForceAlertNotify
+        var entity = getSceneScriptManager().getScene().getEntityByConfigId(configId, groupId);
+        if(entity != null && entity instanceof EntityMonster monster) {
+            getSceneScriptManager().getScene().broadcastPacket(new PacketMonsterForceAlertNotify(monster.getId()));
+        }
+
 		return 0;
 	}
 

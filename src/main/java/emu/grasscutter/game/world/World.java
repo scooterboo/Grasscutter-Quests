@@ -3,6 +3,8 @@ package emu.grasscutter.game.world;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.DungeonData;
 import emu.grasscutter.data.excels.SceneData;
+import emu.grasscutter.game.entity.EntityTeam;
+import emu.grasscutter.game.entity.EntityWorld;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.props.EnterReason;
@@ -37,7 +39,7 @@ public class World implements Iterable<Player> {
     private final List<Player> players;
     private final Int2ObjectMap<Scene> scenes;
 
-    private int levelEntityId;
+    @Getter private EntityWorld entity;
     private int nextEntityId = 0;
     private int nextPeerId = 0;
     private int worldLevel;
@@ -61,7 +63,8 @@ public class World implements Iterable<Player> {
         this.players = Collections.synchronizedList(new ArrayList<>());
         this.scenes = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
 
-        this.levelEntityId = this.getNextEntityId(EntityIdType.MPLEVEL);
+        //this.levelEntityId = this.getNextEntityId(EntityIdType.MPLEVEL);
+        this.entity = new EntityWorld(this);
         this.worldLevel = player.getWorldLevel();
         this.isMultiplayer = isMultiplayer;
         this.lastUpdateTime = System.currentTimeMillis();
@@ -79,7 +82,7 @@ public class World implements Iterable<Player> {
     }
 
     public int getLevelEntityId() {
-        return levelEntityId;
+        return entity.getId();
     }
 
     public int getHostPeerId() {
@@ -156,7 +159,8 @@ public class World implements Iterable<Player> {
 
         // Set player variables
         player.setPeerId(this.getNextPeerId());
-        player.getTeamManager().setEntityId(this.getNextEntityId(EntityIdType.TEAM));
+        player.getTeamManager().setEntity(new EntityTeam(player.getScene()));
+        //player.getTeamManager().setEntityId(this.getNextEntityId(EntityIdType.TEAM));
 
         // Copy main team to multiplayer team
         if (this.isMultiplayer()) {
@@ -179,7 +183,7 @@ public class World implements Iterable<Player> {
         player.sendPacket(
                 new PacketDelTeamEntityNotify(
                         player.getSceneId(),
-                    this.getPlayers().stream().map(p -> p.getTeamManager().getEntityId()).collect(Collectors.toList())
+                    this.getPlayers().stream().map(p -> p.getTeamManager().getEntity().getId()).collect(Collectors.toList())
                 )
         );
 

@@ -11,6 +11,7 @@ import emu.grasscutter.data.excels.AvatarSkillDepotData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.EntityBaseGadget;
+import emu.grasscutter.game.entity.EntityTeam;
 import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.props.FightProperty;
@@ -56,7 +57,7 @@ public class TeamManager extends BasePlayerDataManager {
     @Getter @Setter private int currentCharacterIndex;
 
     @Transient @Getter @Setter private TeamInfo mpTeam;
-    @Transient @Getter @Setter private int entityId;
+    @Transient @Getter @Setter private EntityTeam entity;
     @Transient private final List<EntityAvatar> avatars;
     @Transient @Getter private final Set<EntityBaseGadget> gadgets;
     @Transient @Getter private final IntSet teamResonances;

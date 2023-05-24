@@ -4,32 +4,41 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
+import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 
-public class EntityScene extends GameEntity {
+public class EntityWorld extends GameEntity {
 
-    public EntityScene(Scene scene) {
-        super(scene);
+    private World world;
+
+    public EntityWorld(World world) {
+        super(null);
+        this.id = world.getNextEntityId(EntityIdType.MPLEVEL);
         initAbilities();
+    }
+
+    @Override
+    public Scene getScene() {
+        return world.getHost().getScene();
     }
 
     @Override
     public void initAbilities() {
         //Load abilities from levelElementAbilities
-        for(var ability : GameData.getConfigGlobalCombat().getDefaultAbilities().getLevelElementAbilities()) {
+        for(var ability : GameData.getConfigGlobalCombat().getDefaultAbilities().getDefaultMPLevelAbilities()) {
             AbilityData data =  GameData.getAbilityData(ability);
             if(data != null)
-                getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
+                world.getHost().getAbilityManager().addAbilityToEntity(
                     this, data);
         }
     }
 
     @Override
     public int getEntityTypeId() {
-        return 0x13;
+        return EntityIdType.TEAM.getId();
     }
 
     @Override
