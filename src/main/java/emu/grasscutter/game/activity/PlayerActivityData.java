@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,9 +117,11 @@ public class PlayerActivityData {
         }
 
         public static WatcherInfo init(ActivityWatcher watcher) {
+            val watcherData= watcher.getActivityWatcherData();
+            val progress = watcherData!=null ? watcherData.getProgress() : 0;
             return WatcherInfo.of()
                 .watcherId(watcher.getWatcherId())
-                .totalProgress(watcher.getActivityWatcherData().getProgress())
+                .totalProgress(progress)
                 .isTakenReward(false)
                 .build();
         }

@@ -90,7 +90,10 @@ public class WorldChallenge {
 
         this.getScene().getScriptManager().callEvent(
                 // TODO record the time in PARAM2 and used in action
-                new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_SUCCESS).setParam2(finishedTime));
+                new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_SUCCESS)
+                    .setParam2(finishedTime)
+                    .setEventSource(Integer.toString(getChallengeIndex())
+                    ));
         this.getScene().triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_FINISH_CHALLENGE, getChallengeId(), getChallengeIndex());
 
         challengeTriggers.forEach(t -> t.onFinish(this));
@@ -101,7 +104,8 @@ public class WorldChallenge {
             return;
         }
         finish(false);
-        this.getScene().getScriptManager().callEvent(new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_FAIL));
+        this.getScene().getScriptManager().callEvent(new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_FAIL)
+            .setEventSource(Integer.toString(getChallengeIndex())));
         challengeTriggers.forEach(t -> t.onFinish(this));
     }
 
