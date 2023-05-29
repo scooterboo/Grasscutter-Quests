@@ -16,6 +16,8 @@ public class EntityWorld extends GameEntity {
 
     public EntityWorld(World world) {
         super(null);
+        this.world = world;
+
         this.id = world.getNextEntityId(EntityIdType.MPLEVEL);
         initAbilities();
     }
@@ -23,6 +25,11 @@ public class EntityWorld extends GameEntity {
     @Override
     public Scene getScene() {
         return world.getHost().getScene();
+    }
+
+    @Override
+    public World getWorld() {
+        return world;
     }
 
     @Override
