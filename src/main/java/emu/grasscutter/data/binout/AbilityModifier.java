@@ -103,7 +103,7 @@ public class AbilityModifier implements Serializable {
         public DynamicFloat amount = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterAttackRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterCurrentHPRatio = DynamicFloat.ZERO;
-        @SerializedName(value = "amountByCasterMaxHPRatio", alternate = "HFNJHOGGFKB")
+        @SerializedName(value = "amountByCasterMaxHPRatio", alternate = {"HFNJHOGGFKB", "GEJGGCIOLKN"})
         public DynamicFloat amountByCasterMaxHPRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByGetDamage = DynamicFloat.ZERO;
         public DynamicFloat amountByTargetCurrentHPRatio = DynamicFloat.ZERO;

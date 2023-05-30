@@ -62,7 +62,11 @@ public class EntityAvatar extends GameEntity {
 
         GameItem weapon = this.getAvatar().getWeapon();
         if (weapon != null) {
-            weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
+            if(!(weapon.getWeaponEntity() != null && weapon.getWeaponEntity().getScene() == scene)) {
+                weapon.setWeaponEntity(new EntityWeapon(getPlayer().getScene(), weapon.getItemData().getGadgetId()));
+                scene.getWeaponEntities().put(weapon.getWeaponEntity().getId(), weapon.getWeaponEntity());
+            }
+            //weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
         }
 
         initAbilities();
@@ -98,8 +102,8 @@ public class EntityAvatar extends GameEntity {
     }
 
     public int getWeaponEntityId() {
-        if (getAvatar().getWeapon() != null) {
-            return getAvatar().getWeapon().getWeaponEntityId(); //TODO: Add weapon entity to ble able to register abilities to it
+        if (getAvatar().getWeapon() != null && getAvatar().getWeapon().getWeaponEntity() != null) {
+            return getAvatar().getWeapon().getWeaponEntity().getId();
         }
         return 0;
     }

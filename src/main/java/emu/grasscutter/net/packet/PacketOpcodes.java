@@ -1816,10 +1816,10 @@ public class PacketOpcodes {
     public static final int Unk3000_KKHPGFINACH = 24602;
     public static final int Unk3000_KOKEHAPLNHF = 6190;
     public static final int Unk3000_LAIAGAPKPLB = 3113;
-    public static final int Unk3000_LHEMAMBKEKI = 6107;
+    public static final int ToTheMoonEnterSceneRsp = 6107;
     public static final int Unk3000_LJIMEHHNHJA = 3152;
     public static final int Unk3000_LLBCFCDMCID = 24312;
-    public static final int Unk3000_MEFJDDHIAOK = 6135;
+    public static final int ToTheMoonEnterSceneReq = 6135;
     public static final int Unk3000_MFCAIADEPGJ = 6198;
     public static final int Unk3000_MFHOOFLHNPH = 419;
     public static final int Unk3000_MOIPPIJMIJC = 3323;

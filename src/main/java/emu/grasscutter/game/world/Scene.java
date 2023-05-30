@@ -58,6 +58,7 @@ public class Scene {
     @Getter private final SceneData sceneData;
     @Getter private final List<Player> players;
     @Getter private final Map<Integer, GameEntity> entities;
+    @Getter private final Map<Integer, GameEntity> weaponEntities;
     @Getter private final Set<SpawnDataEntry> spawnedEntities;
     @Getter private final Set<SpawnDataEntry> deadSpawnedEntities;
     @Getter private final Set<SceneBlock> loadedBlocks;
@@ -88,6 +89,7 @@ public class Scene {
         this.sceneData = sceneData;
         this.players = new CopyOnWriteArrayList<>();
         this.entities = new ConcurrentHashMap<>();
+        this.weaponEntities = new ConcurrentHashMap<>();
 
         this.prevScene = 3;
         this.sceneRoutes = GameData.getSceneRoutes(getId());
@@ -129,6 +131,7 @@ public class Scene {
         if(teamEntityPlayer.isPresent()) return teamEntityPlayer.get().getTeamManager().getEntity();
 
         var entity = this.entities.get(id);
+        if(entity == null) entity = this.weaponEntities.get(id);
         if(entity == null && (id >> 24) == EntityIdType.AVATAR.getId()) {
             for (var player : getPlayers()) {
                 for (var avatar : player.getTeamManager().getActiveTeam()) {
@@ -340,6 +343,14 @@ public class Scene {
         if (removed != null) {
             removed.onRemoved();//Call entity remove event
         }
+
+        //if(entity instanceof EntityWeapon) {
+        //    Grasscutter.getLogger().warn("Weapon removed {}: ", entity.getId());
+//
+        //    for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+        //        Grasscutter.getLogger().warn(ste.toString());
+        //    }
+        //}
         return removed;
     }
 
@@ -659,7 +670,7 @@ public class Scene {
 
         for (GameEntity entity : this.getEntities().values()) {
             var spawnEntry = entity.getSpawnEntry();
-            if (spawnEntry != null && !visible.contains(spawnEntry)) {
+            if (spawnEntry != null && !(entity instanceof EntityWeapon) && !visible.contains(spawnEntry)) {
                 toRemove.add(entity);
                 spawnedEntities.remove(spawnEntry);
             }
