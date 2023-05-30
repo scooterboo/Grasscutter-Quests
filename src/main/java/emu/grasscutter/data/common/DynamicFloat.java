@@ -33,6 +33,7 @@ public class DynamicFloat {
                         s = s.substring(1);
                     } else if(s.startsWith("-%")) {
                         s = s.substring(2);
+                        negative = true;
                     }
                     this.op = Op.KEY;
                     this.sValue = s;

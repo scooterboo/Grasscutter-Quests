@@ -99,10 +99,11 @@ public class AbilityModifier implements Serializable {
         @SerializedName("$type")
         public Type type;
         public String target;
-        @SerializedName(value = "amount", alternate = "PDLLIFICICJ")
+        @SerializedName(value = "amount", alternate = {"PDLLIFICICJ", "cdRatio"})
         public DynamicFloat amount = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterAttackRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterCurrentHPRatio = DynamicFloat.ZERO;
+        @SerializedName(value = "amountByCasterMaxHPRatio", alternate = "HFNJHOGGFKB")
         public DynamicFloat amountByCasterMaxHPRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByGetDamage = DynamicFloat.ZERO;
         public DynamicFloat amountByTargetCurrentHPRatio = DynamicFloat.ZERO;
