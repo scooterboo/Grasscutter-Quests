@@ -131,6 +131,8 @@ public class AbilityModifier implements Serializable {
         public String globalValueKey;
         public String abilityFormula;
 
+        public int skillID;
+
         public int param1;
         public int param2;
         public int param3;
