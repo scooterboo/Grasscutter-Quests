@@ -44,8 +44,8 @@ public class AbilityLocalIdGenerator {
 
             if(actions[i].actions != null) InitializeActionLocalIds(actions[i].actions, localIdToAction);
             else {
-                if(actions[i].successActions[i] != null) InitializeActionLocalIds(actions[i].successActions, localIdToAction); //Need to check this specific order
-                if(actions[i].failActions[i] != null) InitializeActionLocalIds(actions[i].failActions, localIdToAction);
+                if(actions[i].successActions != null) InitializeActionLocalIds(actions[i].successActions, localIdToAction); //Need to check this specific order
+                if(actions[i].failActions != null) InitializeActionLocalIds(actions[i].failActions, localIdToAction);
             }
         }
         ActionIndex = 0;

@@ -8,7 +8,6 @@ import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.GadgetData;
-import emu.grasscutter.game.entity.gadget.GadgetContent;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;

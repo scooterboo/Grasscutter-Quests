@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityModifier;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.ability.AbilityModifierController;
@@ -239,6 +241,76 @@ public abstract class GameEntity {
 
     public void onRemoved() {
 
+    }
+
+    private int[] parseCountRange(String range) {
+        var split = range.split(";");
+        if(split.length == 1) return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[0])};
+        return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[1])};
+    }
+
+    public boolean dropSubfieldItem(int dropId) {
+        var drop = GameData.getDropSubfieldMappingMap().get(dropId);
+        if(drop == null) return false;
+        var dropTableEntry = GameData.getDropTableExcelConfigDataMap().get(drop.getItemId());
+        if(dropTableEntry == null) return false;
+
+        Int2ObjectMap<Integer> itemsToDrop = new Int2ObjectOpenHashMap<>();
+        switch(dropTableEntry.getRandomType()) {
+            case 0: //select one
+                {
+                    int weightCount = 0;
+                    for(var entry : dropTableEntry.getDropVec()) weightCount += entry.getWeight();
+
+                    int randomValue = new Random().nextInt(weightCount);
+
+                    weightCount = 0;
+                    for(var entry : dropTableEntry.getDropVec()) {
+                        if(randomValue >= weightCount && randomValue < (weightCount + entry.getWeight())) {
+                            var countRange = parseCountRange(entry.getCountRange());
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((new Random().nextBoolean() ? countRange[0] : countRange[1])));
+                        }
+                    }
+                }
+                break;
+            case 1: //Select various
+                {
+                    for(var entry : dropTableEntry.getDropVec()) {
+                        if(entry.getWeight() < new Random().nextInt(10000)) {
+                            var countRange = parseCountRange(entry.getCountRange());
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((new Random().nextBoolean() ? countRange[0] : countRange[1])));
+                        }
+                    }
+                }
+                break;
+        }
+
+        for (var entry : itemsToDrop.int2ObjectEntrySet()) {
+            EntityItem item = new EntityItem(
+                scene,
+                null,
+                GameData.getItemDataMap().get(entry.getIntKey()),
+                getPosition().nearby2d(1f).addY(0.5f),
+                entry.getValue(),
+                true);
+
+            scene.addEntity(item);
+        }
+
+        return true;
+    }
+
+    public boolean dropSubfield(String subfieldName) {
+        var subfieldMapping = GameData.getSubfieldMappingMap().get(getEntityTypeId());
+        if(subfieldMapping == null || subfieldMapping.getSubfields() == null) return false;
+
+        for(var entry : subfieldMapping.getSubfields()) {
+            if(entry.getSubfieldName().compareTo(subfieldName) == 0) {
+                return dropSubfieldItem(entry.getDrop_id());
+            }
+        }
+
+        return false;
     }
 
     public void onTick(int sceneTime) {

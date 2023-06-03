@@ -13,8 +13,11 @@ import emu.grasscutter.data.common.PointData;
 import emu.grasscutter.data.custom.*;
 import emu.grasscutter.data.excels.TrialAvatarActivityDataData;
 import emu.grasscutter.data.server.ActivityCondGroup;
+import emu.grasscutter.data.server.DropSubfieldMapping;
+import emu.grasscutter.data.server.DropTableExcelConfigData;
 import emu.grasscutter.data.server.GadgetMapping;
 import emu.grasscutter.data.server.MonsterMapping;
+import emu.grasscutter.data.server.SubfieldMapping;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.dungeons.DungeonDrop;
 import emu.grasscutter.game.managers.blossom.BlossomConfig;
@@ -129,6 +132,7 @@ public class ResourceLoader {
         loadConfigLevelEntityData();
         loadQuestShareConfig();
         loadGadgetMappings();
+        loadSubfieldMappings();
         loadMonsterMappings();
         loadActivityCondGroups();
         loadGroupReplacements();
@@ -705,6 +709,38 @@ public class ResourceLoader {
             Grasscutter.getLogger().debug("Loaded {} gadget mappings.", gadgetMap.size());
         } catch (Exception e) {
             Grasscutter.getLogger().error("Unable to load gadget mappings.", e);
+        }
+    }
+
+    private static void loadSubfieldMappings() {
+        try {
+            val subfieldMap = GameData.getSubfieldMappingMap();
+            try {
+                JsonUtils.loadToList(getResourcePath("Server/SubfieldMapping.json"), SubfieldMapping.class).forEach(entry -> subfieldMap.put(entry.getEntityId(), entry));;
+            } catch (IOException | NullPointerException ignored) {}
+            Grasscutter.getLogger().debug("Loaded {} subfield mappings.", subfieldMap.size());
+        } catch (Exception e) {
+            Grasscutter.getLogger().error("Unable to load subfield mappings.", e);
+        }
+
+        try {
+            val dropSubfieldMap = GameData.getDropSubfieldMappingMap();
+            try {
+                JsonUtils.loadToList(getResourcePath("Server/DropSubfieldMapping.json"), DropSubfieldMapping.class).forEach(entry -> dropSubfieldMap.put(entry.getDropId(), entry));;
+            } catch (IOException | NullPointerException ignored) {}
+            Grasscutter.getLogger().debug("Loaded {} drop subfield mappings.", dropSubfieldMap.size());
+        } catch (Exception e) {
+            Grasscutter.getLogger().error("Unable to load drop subfield mappings.", e);
+        }
+
+        try {
+            val dropTableExcelConfigDataMap = GameData.getDropTableExcelConfigDataMap();
+            try {
+                JsonUtils.loadToList(getResourcePath("Server/DropTableExcelConfigData.json"), DropTableExcelConfigData.class).forEach(entry -> dropTableExcelConfigDataMap.put(entry.getId(), entry));;
+            } catch (IOException | NullPointerException ignored) {}
+            Grasscutter.getLogger().debug("Loaded {} drop table configs.", dropTableExcelConfigDataMap.size());
+        } catch (Exception e) {
+            Grasscutter.getLogger().error("Unable to load drop table config data.", e);
         }
     }
 
