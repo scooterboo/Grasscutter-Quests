@@ -34,21 +34,26 @@ public class AbilityLocalIdGenerator {
 
     public void InitializeActionLocalIds(AbilityModifierAction actions[], Map<Integer, AbilityModifierAction> localIdToAction)
     {
+        InitializeActionLocalIds(actions, localIdToAction, false);
+    }
+
+    public void InitializeActionLocalIds(AbilityModifierAction actions[], Map<Integer, AbilityModifierAction> localIdToAction, boolean preserveActionIndex)
+    {
         if (actions == null) return;
-        ActionIndex = 0;
+        if(!preserveActionIndex) ActionIndex = 0;
         for (int i = 0; i < actions.length; i++)
         {
             ActionIndex++;
             long id = GetLocalId();
             localIdToAction.put((int)id, actions[i]);
 
-            if(actions[i].actions != null) InitializeActionLocalIds(actions[i].actions, localIdToAction);
+            if(actions[i].actions != null) InitializeActionLocalIds(actions[i].actions, localIdToAction, true);
             else {
-                if(actions[i].successActions != null) InitializeActionLocalIds(actions[i].successActions, localIdToAction); //Need to check this specific order
-                if(actions[i].failActions != null) InitializeActionLocalIds(actions[i].failActions, localIdToAction);
+                if(actions[i].successActions != null) InitializeActionLocalIds(actions[i].successActions, localIdToAction, true); //Need to check this specific order
+                if(actions[i].failActions != null) InitializeActionLocalIds(actions[i].failActions, localIdToAction, true);
             }
         }
-        ActionIndex = 0;
+        if(!preserveActionIndex) ActionIndex = 0;
     }
 
     public void InitializeMixinsLocalIds(AbilityMixinData mixins[], Map<Integer, AbilityMixinData> localIdToAction)
