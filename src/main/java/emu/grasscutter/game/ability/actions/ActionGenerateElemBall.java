@@ -6,6 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
+import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction.DropType;
 import emu.grasscutter.data.binout.config.ConfigLevelEntity;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.entity.EntityAvatar;
@@ -30,14 +31,14 @@ public class ActionGenerateElemBall extends AbilityActionHandler {
         }
 
         //Check if we should allow elem ball generation
-        if(action.dropType == 0x0) {
+        if(action.dropType == DropType.LevelControl) {
             String levelEntityConfig = owner.getScene().getSceneData().getLevelEntityConfig();
             ConfigLevelEntity config = GameData.getConfigLevelEntityDataMap().get(levelEntityConfig);
             if(config != null && config.getDropElemControlType() != null && config.getDropElemControlType().compareTo("None") == 0) {
                 Grasscutter.getLogger().warn("This level config don't allow element balls");
                 return true;
             }
-        } else if(action.dropType == 0x1) {
+        } else if(action.dropType == DropType.BigWorldOnly) {
             if(owner.getScene().getSceneData().getSceneType() != SceneType.SCENE_WORLD) {
                 Grasscutter.getLogger().warn("This level config only allows element balls on big world");
                 return true;
