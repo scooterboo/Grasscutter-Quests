@@ -112,6 +112,11 @@ public class EntityMonster extends GameEntity {
                 if(monster != null) affixes = monster.affix;
             }
 
+            if(monsterData != null) {
+                if(affixes == null) affixes = monsterData.getAffix();
+                else affixes.addAll(monsterData.getAffix());
+            }
+
             if(affixes != null) {
                 for(var affixId : affixes) {
                     var affix = GameData.getMonsterAffixDataMap().get(affixId.intValue());
