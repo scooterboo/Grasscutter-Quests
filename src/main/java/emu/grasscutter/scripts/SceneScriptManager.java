@@ -191,9 +191,15 @@ public class SceneScriptManager {
         //}
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite) {
-        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null);
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null, false);
+    }
+    public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, boolean dontLoad) {
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null, dontLoad);
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded) {
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, entitiesAdded, false);
+    }
+    public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded, boolean dontLoad) {
         SceneGroup group = groupInstance.getLuaGroup();
         if(suiteIndex == 0) {
             if(excludePrevSuite) {
@@ -229,11 +235,13 @@ public class SceneScriptManager {
 
         groupInstance.setTargetSuiteId(0);
 
-		if(prevSuiteData != null) {
-			removeGroupSuite(group, prevSuiteData);
-		} //Remove old group suite
+        if(!dontLoad) {
+            if(prevSuiteData != null) {
+                removeGroupSuite(group, prevSuiteData);
+            } //Remove old group suite
 
-		addGroupSuite(groupInstance, suiteData, entitiesAdded);
+            addGroupSuite(groupInstance, suiteData, entitiesAdded);
+        }
 
         //Refesh variables here
         group.variables.forEach(variable -> {
@@ -251,13 +259,13 @@ public class SceneScriptManager {
         if (targetGroupInstance == null) {
             getGroupById(groupId); //Load the group, this ensures an instance is created and the if neccesary unloaded, but the suite data is stored
             targetGroupInstance = getGroupInstanceById(groupId);
+            suiteId = refreshGroup(targetGroupInstance, suiteId, false, true); //If suiteId is zero, the value of suiteId changes
             Grasscutter.getLogger().debug("trying to regresh group suite {} in an unloaded and uncached group {} in scene {}", suiteId, groupId, getScene().getId());
         } else {
             Grasscutter.getLogger().debug("Refreshing group {} suite {}", groupId, suiteId);
             suiteId = refreshGroup(targetGroupInstance, suiteId, false); //If suiteId is zero, the value of suiteId changes
-            scene.broadcastPacket(new PacketGroupSuiteNotify(groupId, suiteId));
         }
-
+        scene.broadcastPacket(new PacketGroupSuiteNotify(groupId, suiteId));
 
         return true;
     }
