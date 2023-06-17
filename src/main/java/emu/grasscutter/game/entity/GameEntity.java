@@ -60,6 +60,8 @@ public abstract class GameEntity {
     @Getter private Int2ObjectMap<AbilityModifierController> instancedModifiers = new Int2ObjectOpenHashMap<>();
     @Getter private Map<String, Float> globalAbilityValues = new HashMap<>();
 
+    private Random dropRandom = new Random();
+
     public GameEntity(Scene scene) {
         this.scene = scene;
         this.motionState = MotionState.MOTION_STATE_NONE;
@@ -262,13 +264,13 @@ public abstract class GameEntity {
                     int weightCount = 0;
                     for(var entry : dropTableEntry.getDropVec()) weightCount += entry.getWeight();
 
-                    int randomValue = new Random().nextInt(weightCount);
+                    int randomValue = dropRandom.nextInt(weightCount);
 
                     weightCount = 0;
                     for(var entry : dropTableEntry.getDropVec()) {
                         if(randomValue >= weightCount && randomValue < (weightCount + entry.getWeight())) {
                             var countRange = parseCountRange(entry.getCountRange());
-                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((new Random().nextBoolean() ? countRange[0] : countRange[1])));
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((dropRandom.nextBoolean() ? countRange[0] : countRange[1])));
                         }
                     }
                 }
@@ -276,9 +278,9 @@ public abstract class GameEntity {
             case 1: //Select various
                 {
                     for(var entry : dropTableEntry.getDropVec()) {
-                        if(entry.getWeight() < new Random().nextInt(10000)) {
+                        if(entry.getWeight() < dropRandom.nextInt(10000)) {
                             var countRange = parseCountRange(entry.getCountRange());
-                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((new Random().nextBoolean() ? countRange[0] : countRange[1])));
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((dropRandom.nextBoolean() ? countRange[0] : countRange[1])));
                         }
                     }
                 }
