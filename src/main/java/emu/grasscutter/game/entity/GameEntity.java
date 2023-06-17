@@ -60,8 +60,6 @@ public abstract class GameEntity {
     @Getter private Int2ObjectMap<AbilityModifierController> instancedModifiers = new Int2ObjectOpenHashMap<>();
     @Getter private Map<String, Float> globalAbilityValues = new HashMap<>();
 
-    private Random dropRandom = new Random();
-
     public GameEntity(Scene scene) {
         this.scene = scene;
         this.motionState = MotionState.MOTION_STATE_NONE;
@@ -256,6 +254,8 @@ public abstract class GameEntity {
         if(drop == null) return false;
         var dropTableEntry = GameData.getDropTableExcelConfigDataMap().get(drop.getItemId());
         if(dropTableEntry == null) return false;
+
+        var dropRandom = getScene().getWorld().getWorldRandomGenerator();
 
         Int2ObjectMap<Integer> itemsToDrop = new Int2ObjectOpenHashMap<>();
         switch(dropTableEntry.getRandomType()) {

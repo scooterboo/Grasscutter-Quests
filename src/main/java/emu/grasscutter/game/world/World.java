@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static emu.grasscutter.server.event.player.PlayerTeleportEvent.TeleportType.SCRIPT;
@@ -52,6 +53,8 @@ public class World implements Iterable<Player> {
     @Getter private boolean isPaused = false;
     private long lastUpdateTime;
     @Getter private long currentWorldTime = 0;
+
+    @Getter private Random worldRandomGenerator = new Random();
 
     public World(Player player) {
         this(player, false);
