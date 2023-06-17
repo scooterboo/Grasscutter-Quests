@@ -54,7 +54,7 @@ public class World implements Iterable<Player> {
     private long lastUpdateTime;
     @Getter private long currentWorldTime = 0;
 
-    @Getter private Random worldRandomGenerator = new Random();
+    @Getter private Random worldRandomGenerator;
 
     public World(Player player) {
         this(player, false);
@@ -72,6 +72,8 @@ public class World implements Iterable<Player> {
         this.isMultiplayer = isMultiplayer;
         this.lastUpdateTime = System.currentTimeMillis();
         this.currentWorldTime = owner.getPlayerGameTime();
+
+        this.worldRandomGenerator = new Random();
 
         this.owner.getServer().registerWorld(this);
     }
