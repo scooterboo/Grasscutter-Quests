@@ -1,20 +1,14 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.RequestLiveInfoRspOuterClass.RequestLiveInfoRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.server.game.GameSession;
+import messages.gadget.RequestLiveInfoRsp;
 
-public class PacketRequestLiveInfoRsp extends BasePacket {
+public class PacketRequestLiveInfoRsp extends BaseTypedPackage<RequestLiveInfoRsp> {
 
 	public PacketRequestLiveInfoRsp(int live_id, String live_url) {
-		super(PacketOpcodes.RequestLiveInfoRsp);
+		super(new RequestLiveInfoRsp(live_id,live_url));
 
-		RequestLiveInfoRsp proto = RequestLiveInfoRsp.newBuilder()
-				.setRetcode(0)
-                .setLiveId(live_id)
-                .setLiveUrl(live_url)
-				.build();
-
-		this.setData(proto);
+        proto.setRetCode(0);
 	}
 }

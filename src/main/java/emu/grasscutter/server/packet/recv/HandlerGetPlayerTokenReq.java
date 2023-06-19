@@ -4,10 +4,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.Account;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetPlayerTokenReqOuterClass.GetPlayerTokenReq;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.event.game.PlayerCreationEvent;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.game.GameSession.SessionState;
@@ -15,6 +12,7 @@ import emu.grasscutter.server.packet.send.PacketGetPlayerTokenRsp;
 import emu.grasscutter.utils.ByteHelper;
 import emu.grasscutter.utils.Crypto;
 import emu.grasscutter.utils.Utils;
+import messages.player.GetPlayerTokenReq;
 
 import javax.crypto.Cipher;
 
@@ -24,12 +22,10 @@ import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 import java.nio.ByteBuffer;
 import java.security.Signature;
 
-@Opcodes(PacketOpcodes.GetPlayerTokenReq)
-public class HandlerGetPlayerTokenReq extends PacketHandler {
+public class HandlerGetPlayerTokenReq extends TypedPacketHandler<GetPlayerTokenReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        GetPlayerTokenReq req = GetPlayerTokenReq.parseFrom(payload);
+    public void handle(GameSession session, byte[] header, GetPlayerTokenReq req) throws Exception {
 
         // Authenticate
         Account account = DatabaseHelper.getAccountById(req.getAccountUid());
@@ -106,7 +102,7 @@ public class HandlerGetPlayerTokenReq extends PacketHandler {
                 Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                 cipher.init(Cipher.DECRYPT_MODE, Crypto.CUR_SIGNING_KEY);
 
-                var client_seed_encrypted = Utils.base64Decode(req.getClientSeed());
+                var client_seed_encrypted = Utils.base64Decode(req.getClientRandKey());
                 var client_seed = ByteBuffer.wrap(cipher.doFinal(client_seed_encrypted))
                     .getLong();
 
@@ -124,7 +120,7 @@ public class HandlerGetPlayerTokenReq extends PacketHandler {
                 session.send(new PacketGetPlayerTokenRsp(session, Utils.base64Encode(seed_encrypted), Utils.base64Encode(privateSignature.sign())));
             } catch (Exception ignore) {
                 // Only UA Patch users will have exception
-                byte[] clientBytes = Utils.base64Decode(req.getClientSeed());
+                byte[] clientBytes = Utils.base64Decode(req.getClientRandKey());
                 byte[] seed = ByteHelper.longToBytes(Crypto.ENCRYPT_SEED);
                 Crypto.xor(clientBytes, seed);
 

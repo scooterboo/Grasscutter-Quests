@@ -3,28 +3,25 @@ package emu.grasscutter.server.packet.send;
 import com.google.protobuf.ByteString;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerRunMode;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerLoginRspOuterClass.PlayerLoginRsp;
-import emu.grasscutter.net.proto.QueryCurrRegionHttpRspOuterClass;
-import emu.grasscutter.net.proto.RegionInfoOuterClass.RegionInfo;
+import emu.grasscutter.net.packet.BaseTypedPackage;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.http.dispatch.RegionHandler;
 import emu.grasscutter.utils.Crypto;
-import emu.grasscutter.utils.FileUtils;
+import lombok.val;
+import messages.general.server.RegionInfo;
+import messages.login.QueryCurrRegionHttpRsp;
+import messages.player.PlayerLoginRsp;
 
 import static emu.grasscutter.config.Configuration.*;
 
-import java.io.File;
-import java.util.Base64;
 import java.util.Objects;
 
-public class PacketPlayerLoginRsp extends BasePacket {
+public class PacketPlayerLoginRsp extends BaseTypedPackage<PlayerLoginRsp> {
 
-    private static QueryCurrRegionHttpRspOuterClass.QueryCurrRegionHttpRsp regionCache;
+    private static QueryCurrRegionHttpRsp regionCache;
 
     public PacketPlayerLoginRsp(GameSession session) {
-        super(PacketOpcodes.PlayerLoginRsp, 1);
+        super(new PlayerLoginRsp());
 
         this.setUseDispatchKey(true);
 
@@ -34,13 +31,14 @@ public class PacketPlayerLoginRsp extends BasePacket {
             if (regionCache == null) {
                 try {
                     // todo: we might want to push custom config to client
-                    RegionInfo serverRegion = RegionInfo.newBuilder()
-                            .setGateserverIp(lr(GAME_INFO.accessAddress, GAME_INFO.bindAddress))
-                            .setGateserverPort(lr(GAME_INFO.accessPort, GAME_INFO.bindPort))
-                            .setSecretKey(ByteString.copyFrom(Crypto.DISPATCH_SEED))
-                            .build();
+                    RegionInfo serverRegion = new RegionInfo();
+                    serverRegion.setGateserverIp(lr(GAME_INFO.accessAddress, GAME_INFO.bindAddress));
+                    serverRegion.setGateserverPort(lr(GAME_INFO.accessPort, GAME_INFO.bindPort));
+                    serverRegion.setSecretKey(Crypto.DISPATCH_SEED);
 
-                    regionCache = QueryCurrRegionHttpRspOuterClass.QueryCurrRegionHttpRsp.newBuilder().setRegionInfo(serverRegion).build();
+                    val regionCache = new QueryCurrRegionHttpRsp();
+                    regionCache.setRegionInfo(serverRegion);
+                    PacketPlayerLoginRsp.regionCache = regionCache;
                 } catch (Exception e) {
                     Grasscutter.getLogger().error("Error while initializing region cache!", e);
                 }
@@ -51,23 +49,19 @@ public class PacketPlayerLoginRsp extends BasePacket {
             info = Objects.requireNonNull(RegionHandler.getCurrentRegion()).getRegionInfo();
         }
 
-        PlayerLoginRsp p = PlayerLoginRsp.newBuilder()
-                .setIsUseAbilityHash(true) // true
-                .setAbilityHashCode(1844674) // 1844674
-                .setGameBiz("hk4e_global")
-                .setClientDataVersion(info.getClientDataVersion())
-                .setClientSilenceDataVersion(info.getClientSilenceDataVersion())
-                .setClientMd5(info.getClientDataMd5())
-                .setClientSilenceMd5(info.getClientSilenceDataMd5())
-                .setResVersionConfig(info.getResVersionConfig())
-                .setClientVersionSuffix(info.getClientVersionSuffix())
-                .setClientSilenceVersionSuffix(info.getClientSilenceVersionSuffix())
-                .setIsScOpen(false)
+        proto.setUseAbilityHash(true); // true
+        proto.setAbilityHashCode(1844674); // 1844674
+        proto.setGameBiz("hk4e_global");
+        proto.setClientDataVersion(info.getClientDataVersion());
+        proto.setClientSilenceDataVersion(info.getClientSilenceDataVersion());
+        proto.setClientMd5(info.getClientDataMd5());
+        proto.setClientSilenceMd5(info.getClientSilenceDataMd5());
+        proto.setResVersionConfig(info.getResVersionConfig());
+        proto.setClientVersionSuffix(info.getClientVersionSuffix());
+        proto.setClientSilenceVersionSuffix(info.getClientSilenceVersionSuffix());
+        proto.setScOpen(false);
                 //.setScInfo(ByteString.copyFrom(new byte[] {}))
-                .setRegisterCps("mihoyo")
-                .setCountryCode("US")
-                .build();
-
-        this.setData(p.toByteArray());
+        proto.setRegisterCps("mihoyo");
+        proto.setCountryCode("US");
     }
 }

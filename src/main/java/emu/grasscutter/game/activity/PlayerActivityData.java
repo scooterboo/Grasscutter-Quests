@@ -10,7 +10,6 @@ import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.proto.ActivityWatcherInfoOuterClass;
 import emu.grasscutter.server.packet.send.PacketActivityUpdateWatcherNotify;
 import emu.grasscutter.utils.JsonUtils;
 import lombok.AccessLevel;
@@ -18,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import messages.activity.ActivityWatcherInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class PlayerActivityData {
         getPlayer().sendPacket(new PacketActivityUpdateWatcherNotify(activityId, watcherInfo));
     }
 
-    public List<ActivityWatcherInfoOuterClass.ActivityWatcherInfo> getAllWatcherInfoList() {
+    public List<ActivityWatcherInfo> getAllWatcherInfoList() {
         return watcherInfoMap.values().stream()
             .map(WatcherInfo::toProto)
             .toList();
@@ -126,13 +126,13 @@ public class PlayerActivityData {
                 .build();
         }
 
-        public ActivityWatcherInfoOuterClass.ActivityWatcherInfo toProto() {
-            return ActivityWatcherInfoOuterClass.ActivityWatcherInfo.newBuilder()
-                .setWatcherId(watcherId)
-                .setCurProgress(curProgress)
-                .setTotalProgress(totalProgress)
-                .setIsTakenReward(isTakenReward)
-                .build();
+        public ActivityWatcherInfo toProto() {
+            val proto =  new ActivityWatcherInfo();
+            proto.setWatcherId(watcherId);
+            proto.setCurProgress(curProgress);
+            proto.setTotalProgress(totalProgress);
+            proto.setTakenReward(isTakenReward);
+            return proto;
         }
     }
 }

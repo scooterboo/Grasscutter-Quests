@@ -11,13 +11,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import emu.grasscutter.net.proto.EquipParamOuterClass.EquipParam;
-import emu.grasscutter.net.proto.MailCollectStateOuterClass.MailCollectState;
-import emu.grasscutter.net.proto.MailDataOuterClass.MailData;
-import emu.grasscutter.net.proto.MailItemOuterClass;
-import emu.grasscutter.net.proto.MailTextContentOuterClass.MailTextContent;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
+import messages.general.Item.EquipParam;
+import messages.mail.MailCollectState;
+import messages.mail.MailData;
+import messages.mail.MailTextContent;
 import org.bson.types.ObjectId;
 
 @Entity(value = "mail", useDiscriminator = false)
@@ -58,17 +58,16 @@ public class Mail {
     }
 
     public MailData toProto(Player player) {
-        return MailData.newBuilder()
-            .setMailId(player.getMailId(this))
-            .setMailTextContent(this.mailContent.toProto())
-            .addAllItemList(this.itemList.stream().map(MailItem::toProto).toList())
-            .setSendTime((int) this.sendTime)
-            .setExpireTime((int) this.expireTime)
-            .setImportance(this.importance)
-            .setIsRead(this.isRead)
-            .setIsAttachmentGot(this.isAttachmentGot)
-            .setCollectState(MailCollectState.MAIL_COLLECT_STATE_NOT_COLLECTIBLE)
-            .build();
+        val proto = new MailData(player.getMailId(this));
+        proto.setMailTextContent(this.mailContent.toProto());
+        proto.setItemList(this.itemList.stream().map(MailItem::toProto).toList());
+        proto.setSendTime((int) this.sendTime);
+        proto.setExpireTime((int) this.expireTime);
+        proto.setImportance(this.importance);
+        proto.setRead(this.isRead);
+        proto.setAttachmentGot(this.isAttachmentGot);
+        proto.setCollectState(MailCollectState.MAIL_NOT_COLLECTIBLE);
+        return proto;
     }
 
 	@Entity
@@ -98,11 +97,7 @@ public class Mail {
         }
 
         public MailTextContent toProto() {
-            return MailTextContent.newBuilder()
-                .setTitle(this.title)
-                .setContent(this.content)
-                .setSender(this.sender)
-                .build();
+            return new MailTextContent(this.title, this.content, this.sender);
         }
     }
 
@@ -130,14 +125,12 @@ public class Mail {
             this.itemLevel = itemLevel;
         }
 
-        public MailItemOuterClass.MailItem toProto() {
-            return MailItemOuterClass.MailItem.newBuilder().setEquipParam(EquipParam.newBuilder()
-                    .setItemId(this.itemId)
-                    .setItemNum(this.itemCount)
-                    .setItemLevel(this.itemLevel)
-                    .setPromoteLevel(0)//mock
-                    .build())
-                .build();
+        public messages.mail.MailItem toProto() {
+            return new messages.mail.MailItem(
+                new EquipParam(this.itemId, this.itemCount, this.itemLevel,
+                    0 //mock promote level
+                    )
+            );
         }
     }
 

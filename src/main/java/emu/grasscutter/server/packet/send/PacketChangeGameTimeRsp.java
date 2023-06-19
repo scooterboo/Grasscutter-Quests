@@ -1,21 +1,16 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ChangeGameTimeRspOuterClass.ChangeGameTimeRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import messages.player.ChangeGameTimeRsp;
 
-public class PacketChangeGameTimeRsp extends BasePacket {
+public class PacketChangeGameTimeRsp extends BaseTypedPackage<ChangeGameTimeRsp> {
 
-	public PacketChangeGameTimeRsp(Player player, int extraDays) {
-		super(PacketOpcodes.ChangeGameTimeRsp);
+    public PacketChangeGameTimeRsp(Player player, int extraDays, boolean result) {
+        super(new ChangeGameTimeRsp());
 
-		ChangeGameTimeRsp proto = ChangeGameTimeRsp.newBuilder()
-				.setCurGameTime(player.getWorld().getGameTime())
-                .setExtraDays(extraDays)
-				.build();
-
-		this.setData(proto);
-	}
+        //TODO handle result
+        proto.setCurGameTime(player.getWorld().getGameTime());
+        proto.setExtraDays(extraDays);
+    }
 }

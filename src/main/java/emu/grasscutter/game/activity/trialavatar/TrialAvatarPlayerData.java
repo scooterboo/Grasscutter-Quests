@@ -2,13 +2,13 @@ package emu.grasscutter.game.activity.trialavatar;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.common.BaseTrialActivityData;
-import emu.grasscutter.net.proto.TrialAvatarActivityDetailInfoOuterClass.TrialAvatarActivityDetailInfo;
-import emu.grasscutter.net.proto.TrialAvatarActivityRewardDetailInfoOuterClass.TrialAvatarActivityRewardDetailInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import messages.activity.trial.TrialAvatarActivityDetailInfo;
+import messages.activity.trial.TrialAvatarActivityRewardDetailInfo;
 
 import java.util.List;
 import java.util.stream.*;
@@ -49,10 +49,9 @@ public class TrialAvatarPlayerData {
     }
 
     public TrialAvatarActivityDetailInfo toProto() {
-        return TrialAvatarActivityDetailInfo.newBuilder()
-            .addAllRewardInfoList(getRewardInfoList().stream()
-                .map(RewardInfoItem::toProto).toList())
-            .build();
+        return new TrialAvatarActivityDetailInfo(getRewardInfoList().stream()
+            .map(RewardInfoItem::toProto)
+            .toList());
     }
 
     public RewardInfoItem getRewardInfo(int trialAvatarIndexId) {
@@ -79,12 +78,12 @@ public class TrialAvatarPlayerData {
         }
 
         public TrialAvatarActivityRewardDetailInfo toProto() {
-            return TrialAvatarActivityRewardDetailInfo.newBuilder()
-                .setTrialAvatarIndexId(getTrialAvatarIndexId())
-                .setRewardId(getRewardId())
-                .setPassedDungeon(isPassedDungeon())
-                .setReceivedReward(isReceivedReward())
-                .build();
+            val proto = new TrialAvatarActivityRewardDetailInfo();
+            proto.setTrialAvatarIndexId(getTrialAvatarIndexId());
+            proto.setRewardId(getRewardId());
+            proto.setPassedDungeon(isPassedDungeon());
+            proto.setReceivedReward(isReceivedReward());
+            return proto;
         }
     }
 }

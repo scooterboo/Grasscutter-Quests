@@ -1,17 +1,15 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketEnterScenePeerNotify;
 import emu.grasscutter.server.packet.send.PacketEnterSceneReadyRsp;
+import messages.scene.EnterSceneReadyReq;
 
-@Opcodes(PacketOpcodes.EnterSceneReadyReq)
-public class HandlerEnterSceneReadyReq extends PacketHandler {
+public class HandlerEnterSceneReadyReq extends TypedPacketHandler<EnterSceneReadyReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) {
+	public void handle(GameSession session, byte[] header, EnterSceneReadyReq req) {
         // This is how official behaves, don't remove, not sure if tower team also behaves the same way
         session.getPlayer().removeTrialAvatarForDungeon();
 		session.send(new PacketEnterScenePeerNotify(session.getPlayer()));

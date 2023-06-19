@@ -1,11 +1,10 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetAllMailResultNotifyOuterClass.GetAllMailResultNotify;
+import emu.grasscutter.net.packet.BaseTypedPackage;
 import emu.grasscutter.utils.Utils;
 import lombok.val;
+import messages.mail.GetAllMailResultNotify;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,29 +12,26 @@ import java.util.List;
 /**
  * Used since 3.0 for mail requests.
  */
-public class PacketGetAllMailResultNotify extends BasePacket {
+public class PacketGetAllMailResultNotify extends BaseTypedPackage<GetAllMailResultNotify> {
 
     public PacketGetAllMailResultNotify(Player player, boolean isGiftMail) {
-        super(PacketOpcodes.GetAllMailResultNotify);
+        super(new GetAllMailResultNotify());
 
-        val packet = GetAllMailResultNotify.newBuilder()
-            .setTransaction(player.getUid() + "-" + Utils.getCurrentSeconds() + "-" + 0)
-            .setIsCollected(isGiftMail)
-            .setPageIndex(1)
-            .setTotalPageCount(1);
+        proto.setTransaction(player.getUid() + "-" + Utils.getCurrentSeconds() + "-" + 0);
+        proto.setCollected(isGiftMail);
+        proto.setPageIndex(1);
+        proto.setTotalPageCount(1);
 
         val inbox = player.getAllMail();
         if (!isGiftMail && inbox.size() > 0) {
-            packet.addAllMailList(inbox.stream()
+            proto.setMailList(inbox.stream()
                 .filter(mail -> mail.stateValue == 1)
                 .filter(mail -> mail.expireTime > Instant.now().getEpochSecond())
                 .map(mail -> mail.toProto(player)).toList());
         } else {
             // Empty mailbox.
             // TODO: Implement the gift mailbox.
-            packet.addAllMailList(List.of());
+            proto.setMailList(List.of());
         }
-
-        this.setData(packet.build());
     }
 }

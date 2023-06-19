@@ -1,20 +1,20 @@
 package emu.grasscutter.server.packet.send;
 
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.*;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import lombok.val;
+import messages.general.item.EquipParam;
+import messages.mail.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketMailChangeNotify extends BasePacket {
+public class PacketMailChangeNotify extends BaseTypedPackage<MailChangeNotify> {
 
     public PacketMailChangeNotify(Player player, Mail message) {
-        this (player, new ArrayList<Mail>() {{add(message);}});
+        this (player, List.of(message));
     }
 
     public PacketMailChangeNotify(Player player, List<Mail> mailList) {
@@ -22,48 +22,46 @@ public class PacketMailChangeNotify extends BasePacket {
     }
 
     public PacketMailChangeNotify(Player player, List<Mail> mailList, List<Integer> delMailIdList) {
-        super(PacketOpcodes.MailChangeNotify);
+        super(new MailChangeNotify());
 
-        MailChangeNotifyOuterClass.MailChangeNotify.Builder proto = MailChangeNotifyOuterClass.MailChangeNotify.newBuilder();
-
+        val protoMailList = new ArrayList<MailData>();
         if (mailList != null) {
             for (Mail message : mailList) {
-                MailTextContentOuterClass.MailTextContent.Builder mailTextContent = MailTextContentOuterClass.MailTextContent.newBuilder();
+                val mailTextContent = new MailTextContent();
                 mailTextContent.setTitle(message.mailContent.title);
                 mailTextContent.setContent(message.mailContent.content);
                 mailTextContent.setSender(message.mailContent.sender);
 
-                List<MailItemOuterClass.MailItem> mailItems = new ArrayList<MailItemOuterClass.MailItem>();
+                val mailItems = new ArrayList<MailItem>();
 
                 for (Mail.MailItem item : message.itemList) {
-                    MailItemOuterClass.MailItem.Builder mailItem = MailItemOuterClass.MailItem.newBuilder();
-                    EquipParamOuterClass.EquipParam.Builder itemParam = EquipParamOuterClass.EquipParam.newBuilder();
+                    val mailItem = new MailItem();
+                    val itemParam = new EquipParam();
                     itemParam.setItemId(item.itemId);
                     itemParam.setItemNum(item.itemCount);
-                    mailItem.setEquipParam(itemParam.build());
+                    mailItem.setEquipParam(itemParam);
 
-                    mailItems.add(mailItem.build());
+                    mailItems.add(mailItem);
                 }
 
-                MailDataOuterClass.MailData.Builder mailData = MailDataOuterClass.MailData.newBuilder();
+                val mailData = new MailData();
                 mailData.setMailId(player.getMailId(message));
-                mailData.setMailTextContent(mailTextContent.build());
-                mailData.addAllItemList(mailItems);
+                mailData.setMailTextContent(mailTextContent);
+                mailData.setItemList(mailItems);
                 mailData.setSendTime((int) message.sendTime);
                 mailData.setExpireTime((int) message.expireTime);
                 mailData.setImportance(message.importance);
-                mailData.setIsRead(message.isRead);
-                mailData.setIsAttachmentGot(message.isAttachmentGot);
-                mailData.setCollectStateValue(message.stateValue);
+                mailData.setRead(message.isRead);
+                mailData.setAttachmentGot(message.isAttachmentGot);
+                mailData.setCollectState(MailCollectState.values()[message.stateValue]);
 
-                proto.addMailList(mailData.build());
+                protoMailList.add(mailData);
             }
         }
+        proto.setMailList(protoMailList);
 
         if (delMailIdList != null) {
-            proto.addAllDelMailIdList(delMailIdList);
+            proto.setDelMailIdList(delMailIdList);
         }
-
-        this.setData(proto.build());
     }
 }

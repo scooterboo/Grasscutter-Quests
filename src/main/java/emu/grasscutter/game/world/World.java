@@ -397,6 +397,17 @@ public class World implements Iterable<Player> {
 
     }
 
+    public boolean changeTime(int targetTime, boolean forced){
+        if(!forced && isGameTimeLocked){
+            return false;
+        }
+        this.currentGameTime = targetTime;
+        this.owner.updatePlayerGameTime(currentGameTime);
+        this.players.forEach(player -> player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_GAME_TIME_TICK,
+            getGameTimeHours()));
+        return true;
+    }
+
     public boolean changeTime(int time, int days, boolean forced) {
         if(!forced && isGameTimeLocked){
             return false;

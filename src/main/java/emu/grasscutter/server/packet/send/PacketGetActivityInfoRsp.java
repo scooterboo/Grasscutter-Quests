@@ -1,22 +1,18 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.activity.ActivityManager;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetActivityInfoRspOuterClass.GetActivityInfoRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import messages.activity.GetActivityInfoRsp;
 
 import java.util.Set;
 
-public class PacketGetActivityInfoRsp extends BasePacket {
+public class PacketGetActivityInfoRsp extends BaseTypedPackage<GetActivityInfoRsp> {
 	public PacketGetActivityInfoRsp(Set<Integer> activityIdList, ActivityManager activityManager) {
-		super(PacketOpcodes.GetActivityInfoRsp);
+		super(new GetActivityInfoRsp());
 
-		var proto = GetActivityInfoRsp.newBuilder();
-
-        activityIdList.stream()
+        proto.setActivityInfoList(activityIdList.stream()
             .map(activityManager::getInfoProtoByActivityId)
-            .forEach(proto::addActivityInfoList);
-
-		this.setData(proto);
+            .toList()
+        );
 	}
 }

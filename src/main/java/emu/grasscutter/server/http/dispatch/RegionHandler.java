@@ -3,8 +3,6 @@ package emu.grasscutter.server.http.dispatch;
 import com.google.protobuf.ByteString;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerRunMode;
-import emu.grasscutter.net.proto.QueryCurrRegionHttpRspOuterClass.QueryCurrRegionHttpRsp;
-import emu.grasscutter.net.proto.RegionInfoOuterClass.RegionInfo;
 import emu.grasscutter.net.proto.RegionSimpleInfoOuterClass.RegionSimpleInfo;
 import emu.grasscutter.server.event.dispatch.QueryAllRegionsEvent;
 import emu.grasscutter.server.event.dispatch.QueryCurrentRegionEvent;
@@ -15,6 +13,9 @@ import emu.grasscutter.utils.Utils;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import lombok.val;
+import messages.VERSION;
+import messages.general.server.RegionInfo;
+import messages.login.QueryCurrRegionHttpRsp;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -81,13 +82,15 @@ public final class RegionHandler implements Router {
             usedNames.add(region.Name); servers.add(identifier);
 
             // Create a region info object.
-            var regionInfo = RegionInfo.newBuilder()
-                    .setGateserverIp(region.Ip).setGateserverPort(region.Port)
-                    .setSecretKey(ByteString.copyFrom(Crypto.DISPATCH_SEED))
-                    .build();
+            var regionInfo = new RegionInfo();
+            regionInfo.setGateserverIp(region.Ip);
+            regionInfo.setGateserverPort(region.Port);
+            regionInfo.setSecretKey(Crypto.DISPATCH_SEED);
+
             // Create an updated region query.
-            var updatedQuery = QueryCurrRegionHttpRsp.newBuilder().setRegionInfo(regionInfo).build();
-            regions.put(region.Name, new RegionData(updatedQuery, Utils.base64Encode(updatedQuery.toByteString().toByteArray())));
+            val updatedQuery = new QueryCurrRegionHttpRsp();
+            updatedQuery.setRegionInfo(regionInfo);
+            regions.put(region.Name, new RegionData(updatedQuery));
         });
 
         // Create a config object.
@@ -163,19 +166,27 @@ public final class RegionHandler implements Router {
         String versionName = ctx.queryParam("version");
         var region = regions.get(regionName);
 
-        // Get region data.
-        String regionData = "CAESGE5vdCBGb3VuZCB2ZXJzaW9uIGNvbmZpZw==";
-        if (ctx.queryParamMap().values().size() > 0) {
-            if (region != null)
-                regionData = region.getBase64();
-        }
-
         String[] versionCode = versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "").split("\\.");
         int versionMajor = Integer.parseInt(versionCode[0]);
         int versionMinor = Integer.parseInt(versionCode[1]);
         int versionFix   = Integer.parseInt(versionCode[2]);
+        val versionId = VERSION.idFromVersion(versionMajor, versionMinor, versionFix);
+        val version = VERSION.fromId(versionId);
 
-        if (versionMajor >= 3 || (versionMajor == 2 && versionMinor == 7 && versionFix >= 50) || (versionMajor == 2 && versionMinor == 8)) {
+        if (version == null){
+            Grasscutter.getLogger().error("Client {} request: query_cur_region/{} with invalid version {}", ctx.ip(), regionName, versionName);
+            return;
+        }
+
+        // Get region data.
+        String regionData = "CAESGE5vdCBGb3VuZCB2ZXJzaW9uIGNvbmZpZw==";
+        if (ctx.queryParamMap().values().size() > 0) {
+            if (region != null)
+                regionData = region.getBase64(version);
+        }
+
+
+        if (versionId > VERSION.V2_7_0.getId()) {
             try {
                 QueryCurrentRegionEvent event = new QueryCurrentRegionEvent(regionData); event.call();
 
@@ -245,19 +256,17 @@ public final class RegionHandler implements Router {
      */
     public static class RegionData {
         private final QueryCurrRegionHttpRsp regionQuery;
-        private final String base64;
 
-        public RegionData(QueryCurrRegionHttpRsp prq, String b64) {
+        public RegionData(QueryCurrRegionHttpRsp prq) {
             this.regionQuery = prq;
-            this.base64 = b64;
         }
 
         public QueryCurrRegionHttpRsp getRegionQuery() {
             return this.regionQuery;
         }
 
-        public String getBase64() {
-            return this.base64;
+        public String getBase64(VERSION version) {
+            return Utils.base64Encode(regionQuery.encodeToByteArray(version));
         }
     }
 

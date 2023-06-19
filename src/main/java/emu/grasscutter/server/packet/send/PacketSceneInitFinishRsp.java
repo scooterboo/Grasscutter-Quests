@@ -1,17 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.SceneInitFinishRspOuterClass.SceneInitFinishRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import messages.scene.SceneInitFinishRsp;
 
-public class PacketSceneInitFinishRsp extends BasePacket {
+public class PacketSceneInitFinishRsp extends BaseTypedPackage<SceneInitFinishRsp> {
 
 	public PacketSceneInitFinishRsp(Player player) {
-		super(PacketOpcodes.SceneInitFinishRsp, 11);
-		
-		SceneInitFinishRsp p = SceneInitFinishRsp.newBuilder().setEnterSceneToken(player.getEnterSceneToken()).build();
-		
-		this.setData(p.toByteArray());
+		super(new SceneInitFinishRsp(player.getEnterSceneToken()), 11);
 	}
 }

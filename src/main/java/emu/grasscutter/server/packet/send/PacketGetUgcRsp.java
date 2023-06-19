@@ -1,40 +1,27 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetUgcReqOuterClass.GetUgcReq;
-import emu.grasscutter.net.proto.GetUgcRspOuterClass.GetUgcRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
-import emu.grasscutter.net.proto.UgcMusicRecordOuterClass.UgcMusicRecord;
+import emu.grasscutter.server.game.GameSession;
+import messages.activity.user_generated_content.GetUgcReq;
+import messages.activity.user_generated_content.GetUgcRsp;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
+import messages.activity.user_generated_content.music_game.UgcMusicRecord;
 
-public class PacketGetUgcRsp extends BasePacket {
+public class PacketGetUgcRsp extends BaseTypedPackage<GetUgcRsp> {
 
     public PacketGetUgcRsp(UgcMusicBriefInfo briefInfo, UgcMusicRecord musicRecord, GetUgcReq req) {
-        super(PacketOpcodes.GetUgcRsp);
-
-        var proto = GetUgcRsp.newBuilder();
-
-        proto
-            .setUgcGuid(briefInfo.getUgcGuid())
-            .setUgcType(req.getUgcType())
-            .setUgcRecordUsageValue(req.getUgcRecordUsageValue())
-            .setMusicRecord(musicRecord)
-            .setMusicBriefInfo(briefInfo);
-
-        this.setData(proto);
+        super(new GetUgcRsp(briefInfo.getUgcGuid(),
+            req.getUgcType(),
+            req.getUgcRecordUsage(),
+            new GetUgcRsp.Record.UgcMusicRecord(musicRecord),
+            new GetUgcRsp.Brief.UgcMusicBriefInfo(briefInfo)));
     }
     public PacketGetUgcRsp(Retcode errorCode, GetUgcReq req) {
-        super(PacketOpcodes.GetUgcRsp);
+        super( new GetUgcRsp(req.getUgcGuid(),
+            req.getUgcType(),
+            req.getUgcRecordUsage()));
 
-        var proto = GetUgcRsp.newBuilder();
-
-        proto
-            .setUgcGuid(req.getUgcGuid())
-            .setUgcType(req.getUgcType())
-            .setUgcRecordUsageValue(req.getUgcRecordUsageValue())
-            .setRetcode(errorCode.getNumber());
-
-        this.setData(proto);
+        proto.setRetcode(errorCode.getNumber());
     }
 }

@@ -4,10 +4,11 @@ import emu.grasscutter.game.activity.ActivityHandler;
 import emu.grasscutter.game.activity.GameActivity;
 import emu.grasscutter.game.activity.PlayerActivityData;
 import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass;
-import emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo;
 import emu.grasscutter.utils.JsonUtils;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
+import lombok.val;
+import messages.activity.ActivityInfo;
+import messages.activity.music_game.MusicGameActivityDetailInfo;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
 
 import java.util.stream.Collectors;
 
@@ -22,22 +23,25 @@ public class MusicGameActivityHandler extends ActivityHandler {
     }
 
     @Override
-    public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfoOuterClass.ActivityInfo.Builder activityInfo) {
+    public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfo activityInfo) {
         MusicGamePlayerData musicGamePlayerData = getMusicGamePlayerData(playerActivityData);
 
-        activityInfo.setMusicGameInfo(MusicGameActivityDetailInfo.newBuilder()
-            .putAllMusicGameRecordMap(
-                musicGamePlayerData.getMusicGameRecord().values().stream()
-                    .collect(Collectors.toMap(MusicGamePlayerData.MusicGameRecord::getMusicId, MusicGamePlayerData.MusicGameRecord::toProto)))
-            .addAllUgcSearchList(musicGamePlayerData.getPersonalCustomBeatmapRecord().values().stream()
+        val musicGameActivityInfo = new MusicGameActivityDetailInfo();
+        musicGameActivityInfo.setMusicGameRecordMap(
+            musicGamePlayerData.getMusicGameRecord().values().stream()
+                .collect(Collectors.toMap(MusicGamePlayerData.MusicGameRecord::getMusicId, MusicGamePlayerData.MusicGameRecord::toProto))
+        );
+        musicGameActivityInfo.setUgcSearchList(
+            musicGamePlayerData.getPersonalCustomBeatmapRecord().values().stream()
                 .map(MusicGamePlayerData.CustomBeatmapRecord::toPersonalBriefProto)
-                .map(UgcMusicBriefInfo.Builder::build)
-                .toList())
-            .addAllUgcRecordList(musicGamePlayerData.getOthersCustomBeatmapRecord().values().stream()
-                .map(MusicGamePlayerData.CustomBeatmapRecord::toOthersBriefProto)
-                .map(UgcMusicBriefInfo.Builder::build)
-                .toList())
-            .build());
+                .toList()
+        );
+
+        musicGameActivityInfo.setUgcRecordList(musicGamePlayerData.getOthersCustomBeatmapRecord().values().stream()
+            .map(MusicGamePlayerData.CustomBeatmapRecord::toOthersBriefProto)
+            .toList());
+
+        activityInfo.setDetail(new ActivityInfo.Detail.MusicGameActivityDetailInfo(musicGameActivityInfo));
     }
 
     public MusicGamePlayerData getMusicGamePlayerData(PlayerActivityData playerActivityData) {

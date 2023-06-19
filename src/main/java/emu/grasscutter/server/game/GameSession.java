@@ -15,10 +15,13 @@ import emu.grasscutter.server.event.game.SendPacketEvent;
 import emu.grasscutter.utils.Crypto;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.Utils;
+import interfaces.PackageIdProvider;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
+import messages.VERSION;
+import package_id.PackageIds;
 
 import static emu.grasscutter.config.Configuration.*;
 import static emu.grasscutter.utils.Language.translate;
@@ -36,6 +39,8 @@ public class GameSession implements GameSessionManager.KcpChannel {
     @Getter private int clientTime;
     @Getter private long lastPingTime;
     private int lastClientSeq = 10;
+    @Getter private VERSION version = VERSION.V3_2_0; // TODO actually get the version from the client
+    @Getter private PackageIdProvider packageIdProvider = PackageIds.getMapper(version);
 
     public GameSession(GameServer server) {
         this.server = server;
@@ -104,14 +109,14 @@ public class GameSession implements GameSessionManager.KcpChannel {
 
     public void send(BasePacket packet) {
         // Test
-        if (packet.getOpcode() <= 0) {
+        if (packet.getOpcode(this) <= 0) {
             Grasscutter.getLogger().warn("Tried to send packet with missing cmd id!");
             return;
         }
 
         // DO NOT REMOVE (unless we find a way to validate code before sending to client which I don't think we can)
         // Stop WindSeedClientNotify from being sent for security purposes.
-        if (PacketOpcodesUtils.BANNED_PACKETS.contains(packet.getOpcode())) {
+        if (PacketOpcodesUtils.BANNED_PACKETS.contains(packet.getOpcode(this))) {
             return;
         }
 
@@ -123,18 +128,18 @@ public class GameSession implements GameSessionManager.KcpChannel {
         // Log
         switch (GAME_INFO.logPackets) {
             case ALL -> {
-                if (!PacketOpcodesUtils.LOOP_PACKETS.contains(packet.getOpcode()) || GAME_INFO.isShowLoopPackets) {
-                    logPacket("SEND", packet.getOpcode(), packet.getData());
+                if (!PacketOpcodesUtils.LOOP_PACKETS.contains(packet.getOpcode(this)) || GAME_INFO.isShowLoopPackets) {
+                    logPacket("SEND", packet.getOpcode(this), packet.getData(version));
                 }
             }
             case WHITELIST -> {
-                if (SERVER.debugWhitelist.contains(packet.getOpcode())) {
-                    logPacket("SEND", packet.getOpcode(), packet.getData());
+                if (SERVER.debugWhitelist.contains(packet.getOpcode(this))) {
+                    logPacket("SEND", packet.getOpcode(this), packet.getData(version));
                 }
             }
             case BLACKLIST -> {
-                if (!SERVER.debugBlacklist.contains(packet.getOpcode())) {
-                    logPacket("SEND", packet.getOpcode(), packet.getData());
+                if (!SERVER.debugBlacklist.contains(packet.getOpcode(this))) {
+                    logPacket("SEND", packet.getOpcode(this), packet.getData(version));
                 }
             }
             default -> {
@@ -145,7 +150,7 @@ public class GameSession implements GameSessionManager.KcpChannel {
         SendPacketEvent event = new SendPacketEvent(this, packet);
         event.call();
         if (!event.isCanceled()) { // If event is not cancelled, continue.
-            tunnel.writeData(event.getPacket().build());
+            tunnel.writeData(event.getPacket().build(this));
         }
     }
 

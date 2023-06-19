@@ -15,13 +15,13 @@ import emu.grasscutter.game.activity.ActivityHandler;
 import emu.grasscutter.game.activity.GameActivity;
 import emu.grasscutter.game.activity.PlayerActivityData;
 import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass.ActivityInfo;
 import emu.grasscutter.server.packet.send.PacketActivityInfoNotify;
 import emu.grasscutter.server.packet.send.PacketScenePlayerLocationNotify;
 import emu.grasscutter.utils.JsonUtils;
 
 import java.util.*;
 import lombok.*;
+import messages.activity.ActivityInfo;
 
 @GameActivity(ActivityType.NEW_ACTIVITY_TRIAL_AVATAR)
 public class TrialAvatarActivityHandler extends ActivityHandler {
@@ -35,8 +35,12 @@ public class TrialAvatarActivityHandler extends ActivityHandler {
     }
 
     @Override
-    public void onProtoBuild(PlayerActivityData playerActivityData, @NonNull ActivityInfo.Builder activityInfo) {
-        activityInfo.setTrialAvatarInfo(getTrialAvatarPlayerData(playerActivityData).toProto());
+    public void onProtoBuild(PlayerActivityData playerActivityData, @NonNull ActivityInfo activityInfo) {
+        activityInfo.setDetail(
+            new ActivityInfo.Detail.TrialAvatarActivityDetailInfo(
+                getTrialAvatarPlayerData(playerActivityData).toProto()
+            )
+        );
     }
 
     @Override
@@ -120,6 +124,8 @@ public class TrialAvatarActivityHandler extends ActivityHandler {
         playerActivityData.setDetail(trialAvatarPlayerData);
         playerActivityData.save();
         val player = Grasscutter.getGameServer().getPlayerByUid(playerActivityData.getUid());
-        player.sendPacket(new PacketActivityInfoNotify(toProto(playerActivityData, player.getActivityManager().getConditionExecutor())));
+        player.sendPacket(new PacketActivityInfoNotify(
+            toProto(playerActivityData, player.getActivityManager().getConditionExecutor())
+        ));
     }
 }

@@ -2,20 +2,17 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.game.dungeons.DungeonManager;
 import emu.grasscutter.game.player.Player.SceneLoadState;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.*;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
+import messages.scene.SceneInitFinishReq;
 
 import java.util.Optional;
 
-@Opcodes(PacketOpcodes.SceneInitFinishReq)
-public class HandlerSceneInitFinishReq extends PacketHandler {
+public class HandlerSceneInitFinishReq extends TypedPacketHandler<SceneInitFinishReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
+	public void handle(GameSession session, byte[] header, SceneInitFinishReq req) throws Exception {
 		// Info packets
 		session.send(new PacketServerTimeNotify());
         Optional.ofNullable(session.getPlayer().getScene().getDungeonManager())

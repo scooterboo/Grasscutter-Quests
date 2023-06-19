@@ -1,34 +1,26 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetUgcBriefInfoRspOuterClass.GetUgcBriefInfoRsp;
+import emu.grasscutter.net.packet.BaseTypedPackage;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
-import emu.grasscutter.net.proto.UgcTypeOuterClass.UgcType;
+import emu.grasscutter.server.game.GameSession;
+import messages.activity.user_generated_content.GetUgcBriefInfoRsp;
+import messages.activity.user_generated_content.UgcType;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
 
-public class PacketGetUgcBriefInfoRsp extends BasePacket {
+public class PacketGetUgcBriefInfoRsp extends BaseTypedPackage<GetUgcBriefInfoRsp> {
 
-	public PacketGetUgcBriefInfoRsp(RetcodeOuterClass.Retcode ret, UgcType unknownEnum1) {
-		super(PacketOpcodes.GetUgcBriefInfoRsp);
+	public PacketGetUgcBriefInfoRsp(RetcodeOuterClass.Retcode ret, UgcType ugcType) {
+		super(new GetUgcBriefInfoRsp());
 
-        var proto = GetUgcBriefInfoRsp.newBuilder();
-
-        proto.setRetcode(ret.getNumber())
-            .setUgcType(unknownEnum1);
-
-        this.setData(proto);
+        proto.setRetcode(ret.getNumber());
+        proto.setUgcType(ugcType);
 	}
 
     public PacketGetUgcBriefInfoRsp(UgcMusicBriefInfo briefInfo, UgcType ugcType) {
-        super(PacketOpcodes.GetUgcBriefInfoRsp);
+        super(new GetUgcBriefInfoRsp());
 
-        var proto = GetUgcBriefInfoRsp.newBuilder();
-
-        proto.setMusicBriefInfo(briefInfo)
-            .setUgcType(ugcType);
-
-        this.setData(proto);
+        proto.setBrief(new GetUgcBriefInfoRsp.Brief.UgcMusicBriefInfo(briefInfo));
+        proto.setUgcType(ugcType);
     }
 
 

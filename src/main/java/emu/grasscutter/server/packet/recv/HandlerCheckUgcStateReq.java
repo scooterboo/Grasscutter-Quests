@@ -1,23 +1,16 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CheckUgcStateReqOuterClass.CheckUgcStateReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCheckUgcStateRsp;
-import lombok.val;
+import messages.activity.user_generated_content.CheckUgcStateReq;
 
-@Opcodes(PacketOpcodes.CheckUgcStateReq)
-public class HandlerCheckUgcStateReq extends PacketHandler {
+public class HandlerCheckUgcStateReq extends TypedPacketHandler<CheckUgcStateReq> {
 
-	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		val req = CheckUgcStateReq.parseFrom(payload);
-
+    @Override
+    public void handle(GameSession session, byte[] header, CheckUgcStateReq payload) throws Exception {
         session.send(new PacketCheckUgcStateRsp(Retcode.RET_SUCC));
-
-	}
+    }
 
 }

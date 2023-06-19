@@ -4,28 +4,20 @@ import com.esotericsoftware.reflectasm.ConstructorAccess;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.DataLoader;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.excels.ActivityCondExcelConfigData;
 import emu.grasscutter.game.activity.condition.*;
-import emu.grasscutter.game.activity.condition.all.UnknownActivityConditionHandler;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActivityType;
 import emu.grasscutter.game.props.WatcherTriggerType;
-import emu.grasscutter.game.quest.enums.LogicType;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass;
 import emu.grasscutter.server.packet.send.PacketActivityScheduleInfoNotify;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
 import lombok.val;
+import messages.activity.ActivityInfo;
 import org.reflections.Reflections;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 
 @Getter
 public class ActivityManager extends BasePlayerManager {
@@ -182,7 +174,7 @@ public class ActivityManager extends BasePlayerManager {
         });
     }
 
-    public ActivityInfoOuterClass.ActivityInfo getInfoProtoByActivityId(int activityId) {
+    public ActivityInfo getInfoProtoByActivityId(int activityId) {
         var activityHandler = activityConfigItemMap.get(activityId).getActivityHandler();
         var activityData = playerActivityDataMap.get(activityId);
 
@@ -209,7 +201,7 @@ public class ActivityManager extends BasePlayerManager {
         return getActivityIdByActivityType(type)
             .map(playerActivityDataMap::get);
     }
-    public Optional<ActivityInfoOuterClass.ActivityInfo> getInfoProtoByActivityType(ActivityType type) {
+    public Optional<ActivityInfo> getInfoProtoByActivityType(ActivityType type) {
        return getActivityIdByActivityType(type)
            .map(this::getInfoProtoByActivityId);
     }

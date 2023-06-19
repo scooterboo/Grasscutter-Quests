@@ -1,19 +1,17 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketPostEnterSceneRsp;
 
 import lombok.val;
+import messages.scene.PostEnterSceneReq;
 
-@Opcodes(PacketOpcodes.PostEnterSceneReq)
-public class HandlerPostEnterSceneReq extends PacketHandler {
+public class HandlerPostEnterSceneReq extends TypedPacketHandler<PostEnterSceneReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
+    public void handle(GameSession session, byte[] header, PostEnterSceneReq req) throws Exception {
         val player = session.getPlayer();
         val sceneId = player.getSceneId();
         val scene = player.getScene();

@@ -1,16 +1,14 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketGetShopmallDataRsp;
+import messages.shop.GetShopmallDataReq;
 
-@Opcodes(PacketOpcodes.GetShopmallDataReq)
-public class HandlerGetShopmallDataReq extends PacketHandler {
-	
+public class HandlerGetShopmallDataReq extends TypedPacketHandler<GetShopmallDataReq> {
+
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
+	public void handle(GameSession session, byte[] header, GetShopmallDataReq rew) throws Exception {
 		// TODO add the correct shops
 		session.send(new PacketGetShopmallDataRsp());
 	}

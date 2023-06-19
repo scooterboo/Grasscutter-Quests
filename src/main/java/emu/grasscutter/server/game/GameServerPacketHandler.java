@@ -2,25 +2,32 @@ package emu.grasscutter.server.game;
 
 import static emu.grasscutter.config.Configuration.*;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import emu.grasscutter.net.packet.*;
 import emu.grasscutter.server.event.game.ReceivePacketEvent;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerDebugMode;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.server.game.GameSession.SessionState;
+import interfaces.ProtoModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unchecked")
 public class GameServerPacketHandler {
     private final Int2ObjectMap<PacketHandler> handlers;
+    private final Map<String, PacketHandler> versionHandlers;
 
     public GameServerPacketHandler(Class<? extends PacketHandler> handlerClass) {
         this.handlers = new Int2ObjectOpenHashMap<>();
+        this.versionHandlers = new HashMap<>();
 
         this.registerHandlers(handlerClass);
     }
@@ -40,20 +47,44 @@ public class GameServerPacketHandler {
             e.printStackTrace();
         }
     }
+    public void registerTypedPacketHandler(Class<TypedPacketHandler<?>> handlerClass) {
+        try {
+            Class<?> modelClass = TypedPacketHandler.getStaticClass(handlerClass);
+            if(modelClass == null){
+                return;
+            }
+            PacketHandler packetHandler = handlerClass.getDeclaredConstructor().newInstance();
+
+            this.versionHandlers.put(modelClass.getSimpleName(), packetHandler);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void registerHandlers(Class<? extends PacketHandler> handlerClass) {
-        Set<?> handlerClasses = Grasscutter.reflector.getSubTypesOf(handlerClass);
+        Set<Class<? extends PacketHandler>> handlerClasses = (Set<Class<? extends PacketHandler>>)(Set<?>) Grasscutter.reflector.getSubTypesOf(handlerClass);
 
-        for (Object obj : handlerClasses) {
-            this.registerPacketHandler((Class<? extends PacketHandler>) obj);
+        for (Class<? extends PacketHandler> obj : handlerClasses) {
+            if(TypedPacketHandler.class.isAssignableFrom(obj)){
+                this.registerTypedPacketHandler((Class<TypedPacketHandler<?>>) obj);
+            } else {
+                this.registerPacketHandler(obj);
+            }
         }
 
         // Debug
-        Grasscutter.getLogger().debug("Registered " + this.handlers.size() + " " + handlerClass.getSimpleName() + "s");
+        Grasscutter.getLogger().debug("Registered {} version handlers and {} legacy handlers for {}", this.versionHandlers.size(), this.handlers.size(), handlerClass.getSimpleName() + "s");
+    }
+
+    @Nullable
+    private PacketHandler getHandler(GameSession session, int opcode) {
+        String name = session.getPackageIdProvider().getPackageName(opcode);
+        PacketHandler handler = this.versionHandlers.get(name);
+        return handler!= null ? handler : this.handlers.get(opcode);
     }
 
     public void handle(GameSession session, int opcode, byte[] header, byte[] payload) {
-        PacketHandler handler = this.handlers.get(opcode);
+        PacketHandler handler = getHandler(session, opcode);
 
         if (handler != null) {
             try {

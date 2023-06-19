@@ -5,7 +5,11 @@ import java.io.IOException;
 
 import com.google.protobuf.GeneratedMessageV3;
 import emu.grasscutter.net.proto.PacketHeadOuterClass.PacketHead;
+import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.utils.Crypto;
+import interfaces.ProtoModel;
+import lombok.val;
+import messages.VERSION;
 
 public class BasePacket {
     private static final int const1 = 17767; // 0x4567
@@ -21,6 +25,8 @@ public class BasePacket {
     private boolean useDispatchKey;
     public boolean shouldEncrypt = true;
 
+    protected BasePacket(){}
+
     public BasePacket(int opcode) {
         this.opcode = opcode;
     }
@@ -35,12 +41,8 @@ public class BasePacket {
         this.shouldBuildHeader = buildHeader;
     }
 
-    public int getOpcode() {
+    public int getOpcode(GameSession session) {
         return opcode;
-    }
-
-    public void setOpcode(int opcode) {
-        this.opcode = opcode;
     }
 
     public boolean useDispatchKey() {
@@ -63,7 +65,7 @@ public class BasePacket {
         return shouldBuildHeader;
     }
 
-    public byte[] getData() {
+    public byte[] getData(VERSION version) {
         return data;
     }
 
@@ -88,16 +90,19 @@ public class BasePacket {
         return this;
     }
 
-    public byte[] build() {
+    public byte[] build(GameSession session) {
         if (getHeader() == null) {
             this.header = new byte[0];
         }
 
-        if (getData() == null) {
-            this.data = new byte[0];
+        var data = getData(session.getVersion());
+        val opcode = getOpcode(session);
+
+        if (data == null) {
+            data = new byte[0];
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(2 + 2 + 2 + 4 + getHeader().length + getData().length + 2);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(2 + 2 + 2 + 4 + getHeader().length + data.length + 2);
 
         this.writeUint16(baos, const1);
         this.writeUint16(baos, opcode);

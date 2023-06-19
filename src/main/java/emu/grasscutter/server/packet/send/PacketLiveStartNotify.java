@@ -1,18 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.LiveStartNotifyOuterClass.LiveStartNotify;
+import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.server.game.GameSession;
+import messages.gadget.LiveStartNotify;
 
-public class PacketLiveStartNotify extends BasePacket {
+public class PacketLiveStartNotify extends BaseTypedPackage<LiveStartNotify> {
 
 	public PacketLiveStartNotify(int live_id) {
-		super(PacketOpcodes.LiveStartNotify);
-
-		LiveStartNotify proto = LiveStartNotify.newBuilder()
-                .setLiveId(live_id)
-				.build();
-
-		this.setData(proto);
+		super(new LiveStartNotify(live_id));
 	}
 }
