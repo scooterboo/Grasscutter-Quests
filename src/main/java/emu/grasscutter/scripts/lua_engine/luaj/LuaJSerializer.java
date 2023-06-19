@@ -1,9 +1,10 @@
-package emu.grasscutter.scripts.serializer;
+package emu.grasscutter.scripts.lua_engine.luaj;
 
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.ScriptUtils;
+import emu.grasscutter.scripts.lua_engine.Serializer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LuaSerializer implements Serializer {
+public class LuaJSerializer implements Serializer {
 
     private final static Map<Class<?>, MethodAccess> methodAccessCache = new ConcurrentHashMap<>();
     private final static Map<Class<?>, ConstructorAccess<?>> constructorCache = new ConcurrentHashMap<>();

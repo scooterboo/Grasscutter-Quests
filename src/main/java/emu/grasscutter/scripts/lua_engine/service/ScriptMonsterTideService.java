@@ -1,4 +1,4 @@
-package emu.grasscutter.scripts.service;
+package emu.grasscutter.scripts.lua_engine.service;
 
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.scripts.SceneScriptManager;

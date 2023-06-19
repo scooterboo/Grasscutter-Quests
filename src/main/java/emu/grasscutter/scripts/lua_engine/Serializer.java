@@ -1,4 +1,4 @@
-package emu.grasscutter.scripts.serializer;
+package emu.grasscutter.scripts.lua_engine;
 
 import java.util.List;
 import java.util.Map;

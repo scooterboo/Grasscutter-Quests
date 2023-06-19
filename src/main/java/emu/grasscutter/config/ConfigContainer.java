@@ -147,6 +147,7 @@ public class ConfigContainer {
         /* Entities within a certain range will be loaded for the player */
         public int loadEntitiesForPlayerRange = 300;
         public boolean enableScriptInBigWorld = true;
+        public boolean useJNLua=false;
         public boolean enableConsole = true;
 
         /* Kcp internal work interval (milliseconds) */

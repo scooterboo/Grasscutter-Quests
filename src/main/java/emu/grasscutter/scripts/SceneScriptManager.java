@@ -19,8 +19,10 @@ import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.*;
-import emu.grasscutter.scripts.service.ScriptMonsterSpawnService;
-import emu.grasscutter.scripts.service.ScriptMonsterTideService;
+import emu.grasscutter.scripts.lua_engine.LuaValue;
+import emu.grasscutter.scripts.lua_engine.mock_results.BooleanLuaValue;
+import emu.grasscutter.scripts.lua_engine.service.ScriptMonsterSpawnService;
+import emu.grasscutter.scripts.lua_engine.service.ScriptMonsterTideService;
 import emu.grasscutter.server.packet.send.PacketGroupSuiteNotify;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.GridPosition;
@@ -32,12 +34,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kotlin.Pair;
 import lombok.val;
 
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.script.ScriptException;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -320,6 +319,10 @@ public class SceneScriptManager {
     public SceneGroup getGroupById(int groupId) {
         for (SceneBlock block : getBlocks().values()) {
             getScene().loadBlock(block);
+            if(block.groups == null){
+                Grasscutter.getLogger().warn("Block {} in scene {} has no groups", block.id, getScene().getId());
+                continue;
+            }
 
             var group = block.groups.get(groupId);
             if (group == null) {
@@ -411,7 +414,11 @@ public class SceneScriptManager {
 
             var visionOptions = Grasscutter.config.server.game.visionOptions;
             meta.blocks.values().forEach(block -> {
-                block.load(sceneId, meta.context);
+                block.load(sceneId);
+                if(block.groups == null){
+                    Grasscutter.getLogger().error("block.groups null for block {}", block.id);
+                    return;
+                }
                 block.groups.values().stream().filter(g -> !g.dynamic_load).forEach(group -> {
                     group.load(this.scene.getId());
 
@@ -489,7 +496,7 @@ public class SceneScriptManager {
     }
 
     public void loadBlockFromScript(SceneBlock block) {
-        block.load(scene.getId(), meta.context);
+        block.load(scene.getId());
     }
 
     public void loadGroupFromScript(SceneGroup group) {
@@ -519,7 +526,7 @@ public class SceneScriptManager {
     public void unregisterGroup(SceneGroup group) {
         this.sceneGroups.remove(group.id);
         this.sceneGroupsInstances.values().removeIf(i -> i.getLuaGroup().equals(group));
-        this.cachedSceneGroupsInstances.values().stream().filter(i -> i.getLuaGroup().equals(group)).forEach(s -> s.setCached(true));
+        this.cachedSceneGroupsInstances.values().stream().filter(i -> Objects.equals(i.getLuaGroup(),group)).forEach(s -> s.setCached(true));
     }
 
     public void checkRegions() {
@@ -680,7 +687,6 @@ public class SceneScriptManager {
 
     private void realCallEvent(@Nonnull ScriptArgs params) {
         try {
-            ScriptLoader.getScriptLib().setSceneScriptManager(this);
             int eventType = params.type;
             Set<SceneTrigger> relevantTriggers = new HashSet<>();
             if (eventType == EventType.EVENT_ENTER_REGION || eventType == EventType.EVENT_LEAVE_REGION) {
@@ -699,19 +705,12 @@ public class SceneScriptManager {
             }
         } catch (Throwable throwable){
             Grasscutter.getLogger().error("Condition Trigger "+ params.type +" triggered exception", throwable);
-        } finally {
-            // make sure it is removed
-            ScriptLoader.getScriptLib().removeSceneScriptManager();
         }
     }
 
     private boolean handleEventForTrigger(ScriptArgs params, SceneTrigger trigger ){
         Grasscutter.getLogger().debug("checking trigger {} for event {}", trigger.getName(), params.type);
         try {
-            // setup execution
-            ScriptLoader.getScriptLib().setCurrentGroup(trigger.currentGroup);
-            ScriptLoader.getScriptLib().setCurrentCallParams(params);
-
             if (evaluateTriggerCondition(trigger, params)) {
                 callTrigger(trigger, params);
                 return true;
@@ -724,20 +723,27 @@ public class SceneScriptManager {
         catch (Throwable ex){
             Grasscutter.getLogger().error("Condition Trigger "+trigger.getName()+" triggered exception", ex);
             return false;
-        }finally {
-            ScriptLoader.getScriptLib().removeCurrentGroup();
         }
     }
 
     private boolean evaluateTriggerCondition(SceneTrigger trigger, ScriptArgs params){
         Grasscutter.getLogger().trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1, params.source_eid, params.target_eid);
-        LuaValue ret = this.callScriptFunc(trigger.getCondition(), trigger.currentGroup, params);
-        return ret.isboolean() && ret.checkboolean();
+        val condition = trigger.getCondition();
+        if(condition == null || condition.isBlank()){
+            return true;
+        }
+        val ret = this.callScriptFunc(trigger.getCondition(), trigger.currentGroup, params);
+        return ret.isBoolean() && ret.asBoolean();
     }
 
     private void callTrigger(SceneTrigger trigger, ScriptArgs params){
-        // the SetGroupVariableValueByGroup in tower need the param to record the first stage time
-        LuaValue ret = this.callScriptFunc(trigger.getAction(), trigger.currentGroup, params);
+        val action = trigger.getAction();
+        LuaValue callResult = BooleanLuaValue.TRUE;
+        if(action != null && !action.isBlank()){
+            // the SetGroupVariableValueByGroup in tower need the param to record the first stage time
+            callResult = this.callScriptFunc(trigger.getAction(), trigger.currentGroup, params);
+        }
+
         val invocationsCounter = triggerInvocations.get(trigger.getName());
         val invocations = invocationsCounter.incrementAndGet();
         Grasscutter.getLogger().trace("Call Action Trigger {}", trigger.getAction());
@@ -762,38 +768,34 @@ public class SceneScriptManager {
             cancelGroupTimerEvent(trigger.currentGroup.id, trigger.getSource());
         }
         // always deregister on error, otherwise only if the count is reached
-        if(ret.isboolean() && !ret.checkboolean() || ret.isint() && ret.checkint()!=0
+        if(callResult.isBoolean() && !callResult.asBoolean() || callResult.isInteger() && callResult.asInteger()!=0
         || trigger.getTrigger_count()>0 && invocations >= trigger.getTrigger_count()) {
             deregisterTrigger(trigger);
         }
     }
 
-    private LuaValue callScriptFunc(String funcName, SceneGroup group, ScriptArgs params) {
-        LuaValue funcLua = null;
-        if (funcName != null && !funcName.isEmpty()) {
-            funcLua = (LuaValue) group.getBindings().get(funcName);
+    private LuaValue callScriptFunc(@Nonnull String funcName, SceneGroup group, ScriptArgs params) {
+        val script = group.getScript();
+        if(script==null){
+            Grasscutter.getLogger().warn("callScriptFunc script is null");
+            return BooleanLuaValue.FALSE;
         }
 
-        LuaValue ret = LuaValue.TRUE;
-
-        if (funcLua != null) {
-            LuaValue args = LuaValue.NIL;
-
-            if (params != null) {
-                args = CoerceJavaToLua.coerce(params);
-            }
-
-            ret = safetyCall(funcName, funcLua, args, group);
+        if(funcName.isEmpty()){
+            Grasscutter.getLogger().warn("callScriptFunc funcName is empty");
+            return BooleanLuaValue.FALSE;
         }
-        return ret;
-    }
+        if(!script.hasMethod(funcName)){
+            Grasscutter.getLogger().warn("callScriptFunc script has no method {}",funcName);
+            return BooleanLuaValue.FALSE;
+        }
 
-    public LuaValue safetyCall(String name, LuaValue func, LuaValue args, SceneGroup group) {
-        try {
-            return func.call(ScriptLoader.getScriptLibLua(), args);
-        }catch (LuaError error) {
-            ScriptLib.logger.error("[LUA] call trigger failed in group {} with {},{}",group.id,name,args,error);
-            return LuaValue.valueOf(-1);
+        val context = script.getEngine().getGroupEventLuaContext(group, params, this);
+        try{
+            return script.callMethod(funcName, context, params);
+        } catch (RuntimeException | ScriptException | NoSuchMethodException error){
+            Grasscutter.getLogger().error("[LUA] call trigger failed in group {} with {},{}",group.id,funcName,params,error);
+            return new BooleanLuaValue(false);
         }
     }
 

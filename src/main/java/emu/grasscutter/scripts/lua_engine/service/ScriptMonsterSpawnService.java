@@ -1,4 +1,4 @@
-package emu.grasscutter.scripts.service;
+package emu.grasscutter.scripts.lua_engine.service;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.MonsterData;
