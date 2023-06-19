@@ -1,8 +1,6 @@
 package emu.grasscutter.game.inventory;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
@@ -29,9 +27,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.val;
+import org.anime_game_servers.game_data_models.data.rewards.RewardData;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 import static emu.grasscutter.config.Configuration.INVENTORY_LIMITS;
 
@@ -162,7 +160,7 @@ public class Inventory extends BasePlayerManager implements Iterable<GameItem> {
     public void addItems(Collection<GameItem> items, ActionReason reason) {
         List<GameItem> changedItems = new ArrayList<>();
         for (var item : items) {
-            if (item.getItemId() == 0) continue;
+            if (item.getItemId() <= 0) continue;
             GameItem result = null;
             try {
                 // putItem might throws exception
@@ -205,6 +203,44 @@ public class Inventory extends BasePlayerManager implements Iterable<GameItem> {
 
     public void addItemParamDatas(Collection<ItemParamData> items, ActionReason reason) {
         addItems(items.stream().map(param -> new GameItem(param.getItemId(), param.getCount())).toList(), reason);
+    }
+    private Collection<GameItem> rewardDataToGameItems(RewardData rewardData){
+        val rewards = new ArrayList<GameItem>(rewardData.getRewardItemList().size());
+        rewards.addAll(rewardData.getRewardItemList().stream().filter(Objects::nonNull)
+            .filter(gainItem -> gainItem.getItemId() > 0)
+            .map(param -> new GameItem(param.getItemId(), param.getCount()))
+            .toList());
+        if(rewardData.getPlayerExp() != 0){
+            rewards.add(new GameItem(102, rewardData.getPlayerExp()));
+        }
+        if(rewardData.getHcoin() > 0){
+            rewards.add(new GameItem(201, rewardData.getHcoin()));
+        }
+        if (rewardData.getScoin() > 0) {
+            rewards.add(new GameItem(202, rewardData.getScoin()));
+        }
+        if(rewardData.getCharacterExp() > 0) {
+            rewards.add(new GameItem(101, rewardData.getCharacterExp()));
+        }
+        if (rewardData.getFriendshipExp() > 0) {
+            rewards.add(new GameItem(105, rewardData.getFriendshipExp()));
+        }
+        if (rewardData.getResin() > 0) {
+            rewards.add(new GameItem(106, rewardData.getResin()));
+        }
+        return rewards;
+    }
+    public void addRewardData(RewardData rewardData, ActionReason reason) {
+        val rewardItems = rewardDataToGameItems(rewardData);
+        addItems(rewardItems, reason);
+    }
+    public List<GameItem> addRewardData(List<RewardData> rewardData, ActionReason reason) {
+        val totalRewards = new ArrayList<GameItem>();
+        for (val reward : rewardData) {
+            totalRewards.addAll(rewardDataToGameItems(reward));
+        }
+        addItems(totalRewards, reason);
+        return totalRewards;
     }
 
     private synchronized GameItem putItem(GameItem item) {

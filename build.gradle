@@ -97,6 +97,7 @@ dependencies {
 
     implementation("org.anime_game_servers:luaj:3.0.3")
     implementation("org.anime_game_servers:JNLua_GC:0.1.0")
+    implementation("org.anime_game_servers:AnimeGameDataModels-jvm:0.1")
 
     implementation group:  'com.esotericsoftware', name : 'reflectasm', version: '1.11.9'
     implementation group:  'com.github.davidmoten', name : 'rtree-multi', version: '0.1'
@@ -286,4 +287,13 @@ processResources {
     dependsOn "generateProto"
 }
 
+sourcesJar {
+    dependsOn "generateProto"
+}
+
 task generateActivityConditions(type: GenerateActivityConditions)
+
+// For terminal interacting in IDEA running
+run {
+    standardInput = System.in
+}

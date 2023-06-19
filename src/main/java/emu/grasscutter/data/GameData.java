@@ -1,11 +1,7 @@
 package emu.grasscutter.data;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.binout.*;
@@ -46,6 +42,21 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Tolerate;
 import lombok.val;
+import org.anime_game_servers.game_data_models.data.activity.ActivityCondData;
+import org.anime_game_servers.game_data_models.data.activity.ActivityData;
+import org.anime_game_servers.game_data_models.data.activity.ActivityShopOverallData;
+import org.anime_game_servers.game_data_models.data.activity.ActivityShopSheetData;
+import org.anime_game_servers.game_data_models.data.quest.TriggerData;
+import org.anime_game_servers.game_data_models.data.rewards.TransPointRewardData;
+import org.anime_game_servers.game_data_models.data.rewards.RewardData;
+import org.anime_game_servers.game_data_models.data.rewards.TowerRewardData;
+import org.anime_game_servers.game_data_models.data.scene.SceneData;
+import org.anime_game_servers.game_data_models.data.scene.SceneTagConfigData;
+import org.anime_game_servers.game_data_models.data.scene.WorldAreaConfigData;
+import org.anime_game_servers.game_data_models.data.shop.ShopGoodsData;
+import org.anime_game_servers.game_data_models.data.talks.TalkData;
+import org.anime_game_servers.game_data_models.data.watcher.ActivityWatcherData;
+import org.anime_game_servers.game_data_models.data.world.WorldLevelData;
 
 import javax.annotation.Nullable;
 
@@ -70,14 +81,15 @@ public class GameData {
     private static final Map<String, AbilityEmbryoEntry> abilityEmbryos = new HashMap<>();
 
     // ExcelConfigs
-    @Getter private static final Int2ObjectMap<ActivityCondExcelConfigData> activityCondExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<ActivityCondData> activityCondExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonPassConfigData> dungeonPassConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonChallengeConfigData> dungeonChallengeConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<Int2ObjectMap<Route>> sceneRouteData = new Int2ObjectOpenHashMap<>();
 
     @Getter private static final ArrayList<CodexReliquaryData> codexReliquaryArrayList = new ArrayList<>();
     @Getter private static final Int2ObjectMap<ActivityData> activityDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<ActivityShopData> activityShopDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<ActivityShopOverallData> activityShopDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<ActivityShopSheetData> activityShopSheetDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ActivityWatcherData> activityWatcherDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<AvatarCostumeData> avatarCostumeDataItemIdMap = new Int2ObjectLinkedOpenHashMap<>();
     @Getter private static final Int2ObjectMap<AvatarCostumeData> avatarCostumeDataMap = new Int2ObjectLinkedOpenHashMap<>();
@@ -145,6 +157,9 @@ public class GameData {
     @Getter private static final Int2ObjectMap<RewardData> rewardDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<RewardPreviewData> rewardPreviewDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<SceneData> sceneDataMap = new Int2ObjectLinkedOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<SceneTagConfigData> sceneTagConfigDataMap = new Int2ObjectLinkedOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<TalkData> talkDataMap = new Int2ObjectLinkedOpenHashMap<>();
+
     @Getter private static final Int2ObjectMap<TowerBuffData> towerBuffDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerFloorData> towerFloorDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerLevelData> towerLevelDataMap = new Int2ObjectOpenHashMap<>();
@@ -155,13 +170,13 @@ public class GameData {
     @Getter private static final Int2ObjectMap<TrialAvatarActivityDataData> trialAvatarActivityDataDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarTemplateData> trialAvatarTemplateDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialReliquaryData> trialReliquaryDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<TriggerExcelConfigData> triggerExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Map<String, TriggerExcelConfigData> triggerDataByNameMap = new HashMap<>();
+    @Getter private static final Int2ObjectMap<TriggerData> triggerExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Map<String, TriggerData> triggerDataByNameMap = new HashMap<>(); // cache
     @Getter private static final Int2ObjectMap<WeaponCurveData> weaponCurveDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WeaponLevelData> weaponLevelDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WeaponPromoteData> weaponPromoteDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WeatherData> weatherDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<WorldAreaData> worldAreaDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<WorldAreaConfigData> worldAreaDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WorldLevelData> worldLevelDataMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<AvatarPromoteData> avatarPromoteDataMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<FetterData> fetterDataMap = new Int2ObjectOpenHashMap<>();
@@ -178,6 +193,7 @@ public class GameData {
     private static final Int2ObjectMap<CodexWeaponData> codexWeaponDataMap = new Int2ObjectOpenHashMap<>();
 
     @Getter private static final Int2ObjectMap<List<DungeonDropEntry>> dungeonDropDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<TransPointRewardData> transPointRewardData = new Int2ObjectOpenHashMap<>();
 
     @Getter @Setter private static ConfigGlobalCombat configGlobalCombat = null;
 
@@ -279,7 +295,6 @@ public class GameData {
     }
 
 
-
     public static int getWeaponExpRequired(int rankLevel, int level) {
         WeaponLevelData levelData = weaponLevelDataMap.get(level);
         if (levelData == null) {
@@ -308,9 +323,9 @@ public class GameData {
     public static Map<Integer, List<ShopGoodsData>> getShopGoodsDataEntries() {
         if (shopGoods.isEmpty()) {
             shopGoodsDataMap.forEach((k, v) -> {
-                if (!shopGoods.containsKey(v.getShopType()))
-                    shopGoods.put(v.getShopType(), new ArrayList<>());
-                shopGoods.get(v.getShopType()).add(v);
+                val shopTypeId = v.getShopType().getIntKey();
+                shopGoods.computeIfAbsent(shopTypeId, key -> new ArrayList<>())
+                    .add(v);
             });
         }
 
@@ -335,7 +350,10 @@ public class GameData {
         return beginCondQuestMap.get(SubQuestData.questConditionKey(questCond, param0, questStr));
     }
 
-    public static TriggerExcelConfigData getQuestTriggerDataByName(int groupId, String triggerName){
+    public static TriggerData getQuestTriggerDataByName(int groupId, String triggerName){
         return triggerDataByNameMap.get(groupId + triggerName);
+    }
+    public static void putQuestTriggerDataCache(TriggerData trigger){
+        triggerDataByNameMap.put(trigger.getGroupId()+trigger.getTriggerName(), trigger);
     }
 }

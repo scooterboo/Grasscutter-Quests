@@ -38,7 +38,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.anime_game_servers.game_data_models.data.world.WorldLevelData;
 import org.jetbrains.annotations.NotNull;
+import org.anime_game_servers.game_data_models.data.scene.SceneData;
+import org.anime_game_servers.game_data_models.data.scene.SceneType;
 
 import javax.annotation.Nullable;
 
@@ -101,7 +104,7 @@ public class Scene {
     }
 
     public SceneType getSceneType() {
-        return this.sceneData.getSceneType();
+        return this.sceneData.getType();
     }
 
     public int getPlayerCount() {

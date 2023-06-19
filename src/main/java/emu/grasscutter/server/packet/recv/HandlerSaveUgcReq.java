@@ -4,7 +4,6 @@ import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.activity.musicgame.MusicGameActivityHandler;
 import emu.grasscutter.game.activity.musicgame.MusicGameBeatmap;
 import emu.grasscutter.game.activity.musicgame.MusicGamePlayerData;
-import emu.grasscutter.game.props.ActivityType;
 import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
@@ -18,6 +17,7 @@ import emu.grasscutter.utils.Utils;
 import lombok.val;
 
 import java.util.Objects;
+import org.anime_game_servers.game_data_models.data.activity.ActivityType;
 
 @Opcodes(PacketOpcodes.SaveUgcReq)
 public class HandlerSaveUgcReq extends PacketHandler {

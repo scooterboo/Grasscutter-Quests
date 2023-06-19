@@ -11,6 +11,7 @@ import emu.grasscutter.net.proto.BlossomScheduleInfoOuterClass.BlossomScheduleIn
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.utils.Position;
 import lombok.*;
+import org.anime_game_servers.game_data_models.data.world.WorldLevelData;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;

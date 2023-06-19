@@ -1,19 +1,16 @@
 package emu.grasscutter.command.commands;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
-import emu.grasscutter.game.activity.PlayerActivityData;
 import emu.grasscutter.game.activity.trialavatar.TrialAvatarActivityHandler;
 import emu.grasscutter.game.activity.trialavatar.TrialAvatarPlayerData;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass.ActivityInfo;
 import emu.grasscutter.server.packet.send.PacketActivityInfoNotify;
 import emu.grasscutter.utils.JsonUtils;
 
 import java.util.List;
 import lombok.val;
+import org.anime_game_servers.game_data_models.data.activity.ActivityType;
 
 import static emu.grasscutter.utils.Language.translate;
 
@@ -118,7 +115,7 @@ public final class TrialAvatarActivityCommand implements CommandHandler {
                     playerData.save();
                     CommandHandler.sendMessage(sender, translate(sender, "commands.trialAvatarActivity.success_reward_all"));
                 }
-            }   
+            }
         }
         targetPlayer.sendPacket(new PacketActivityInfoNotify(handler.toProto(playerData, targetPlayer.getActivityManager().getConditionExecutor())));
     }

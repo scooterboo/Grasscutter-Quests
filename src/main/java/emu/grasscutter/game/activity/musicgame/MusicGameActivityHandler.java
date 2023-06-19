@@ -3,11 +3,11 @@ package emu.grasscutter.game.activity.musicgame;
 import emu.grasscutter.game.activity.ActivityHandler;
 import emu.grasscutter.game.activity.GameActivity;
 import emu.grasscutter.game.activity.PlayerActivityData;
-import emu.grasscutter.game.props.ActivityType;
 import emu.grasscutter.net.proto.ActivityInfoOuterClass;
 import emu.grasscutter.net.proto.MusicGameActivityDetailInfoOuterClass.MusicGameActivityDetailInfo;
 import emu.grasscutter.utils.JsonUtils;
 import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
+import org.anime_game_servers.game_data_models.data.activity.ActivityType;
 
 import java.util.stream.Collectors;
 

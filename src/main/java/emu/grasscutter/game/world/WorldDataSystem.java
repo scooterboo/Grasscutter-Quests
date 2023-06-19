@@ -5,7 +5,6 @@ import emu.grasscutter.data.DataLoader;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.InvestigationMonsterData;
 import emu.grasscutter.data.excels.RewardPreviewData;
-import emu.grasscutter.data.excels.WorldLevelData;
 import emu.grasscutter.game.entity.gadget.chest.BossChestInteractHandler;
 import emu.grasscutter.game.entity.gadget.chest.ChestInteractHandler;
 import emu.grasscutter.game.entity.gadget.chest.NormalChestInteractHandler;
@@ -17,6 +16,7 @@ import emu.grasscutter.server.game.BaseGameSystem;
 import emu.grasscutter.server.game.GameServer;
 import lombok.val;
 import org.luaj.vm2.LuaError;
+import org.anime_game_servers.game_data_models.data.world.WorldLevelData;
 
 import java.util.HashMap;
 import java.util.List;

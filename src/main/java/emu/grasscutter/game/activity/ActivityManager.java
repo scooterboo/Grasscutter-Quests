@@ -4,28 +4,19 @@ import com.esotericsoftware.reflectasm.ConstructorAccess;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.DataLoader;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.excels.ActivityCondExcelConfigData;
 import emu.grasscutter.game.activity.condition.*;
-import emu.grasscutter.game.activity.condition.all.UnknownActivityConditionHandler;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.game.props.WatcherTriggerType;
-import emu.grasscutter.game.quest.enums.LogicType;
 import emu.grasscutter.net.proto.ActivityInfoOuterClass;
 import emu.grasscutter.server.packet.send.PacketActivityScheduleInfoNotify;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
 import lombok.val;
-import org.reflections.Reflections;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
+import org.anime_game_servers.game_data_models.data.activity.ActivityType;
+import org.anime_game_servers.game_data_models.data.watcher.WatcherTriggerType;
 
 @Getter
 public class ActivityManager extends BasePlayerManager {
@@ -45,7 +36,7 @@ public class ActivityManager extends BasePlayerManager {
         // scan activity type handler & watcher type
         var activityHandlerTypeMap = new HashMap<ActivityType, ConstructorAccess<?>>();
         var activityWatcherTypeMap = new HashMap<WatcherTriggerType, ConstructorAccess<?>>();
-        var reflections = new Reflections(ActivityManager.class.getPackage().getName());
+        var reflections = Grasscutter.reflector;
 
         reflections.getSubTypesOf(ActivityHandler.class).forEach(item -> {
             var typeName = item.getAnnotation(GameActivity.class);
@@ -59,12 +50,14 @@ public class ActivityManager extends BasePlayerManager {
         try {
             DataLoader.loadList("ActivityConfig.json", ActivityConfigItem.class).forEach(item -> {
                 item.onLoad();
-                var activityData = GameData.getActivityDataMap().get(item.getActivityId());
+                val activityData = GameData.getActivityDataMap().get(item.getActivityId());
                 if (activityData == null) {
                     Grasscutter.getLogger().warn("activity {} not exist.", item.getActivityId());
                     return;
                 }
-                var activityHandlerType = activityHandlerTypeMap.get(ActivityType.getTypeByName(activityData.getActivityType()));
+
+                // todo handle exception
+                val activityHandlerType = activityHandlerTypeMap.get(activityData.getActivityType());
                 ActivityHandler activityHandler;
 
                 if (activityHandlerType != null) {
