@@ -16,6 +16,7 @@ import emu.grasscutter.game.props.WatcherTriggerType;
 import emu.grasscutter.game.quest.enums.LogicType;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
+import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketDungeonWayPointNotify;
@@ -51,8 +52,6 @@ public class DungeonManager {
     private boolean ended = false;
     private int newestWayPoint = 0;
     @Getter private int startSceneTime = 0;
-
-    DungeonTrialTeam trialTeam = null;
 
     public DungeonManager(@NonNull Scene scene, @NonNull DungeonData dungeonData) {
         this.scene = scene;
@@ -229,30 +228,29 @@ public class DungeonManager {
         if (getDungeonData() == null) return;
 
         switch (getDungeonData().getType()) {
-            // case DUNGEON_PLOT is handled by quest execs
+//            case DUNGEON_PLOT is handled by quest execs
             case DUNGEON_ACTIVITY -> {
                 switch (getDungeonData().getPlayType()) {
                     case DUNGEON_PLAY_TYPE_TRIAL_AVATAR -> {
-                        val activityHandler = player.getActivityManager()
-                            .getActivityHandlerAs(ActivityType.NEW_ACTIVITY_TRIAL_AVATAR, TrialAvatarActivityHandler.class);
-                        activityHandler.ifPresent(trialAvatarActivityHandler ->
-                            this.trialTeam = trialAvatarActivityHandler.getTrialAvatarDungeonTeam());
+                        player.getActivityManager().getActivityHandlerAs(
+                            ActivityType.NEW_ACTIVITY_TRIAL_AVATAR, TrialAvatarActivityHandler.class)
+                        .ifPresent(handler -> player.addTrialAvatarsForDungeon(
+                            handler.getBattleAvatarsList(), GrantReason.GRANT_REASON_BY_TRIAL_AVATAR_ACTIVITY));
                     }
+                    case DUNGEON_PLAY_TYPE_MIST_TRIAL -> {} // TODO
                 }
             }
-            case DUNGEON_ELEMENT_CHALLENGE -> {} // TODO
+            case DUNGEON_ELEMENT_CHALLENGE -> {
+                Optional.ofNullable(GameData.getDungeonElementChallengeDataMap().get(getDungeonData().getId()))
+                    .ifPresent(elementDungeonData -> {
+                        player.addTrialAvatarsForDungeon(elementDungeonData.getTrialAvatarId(),
+                            GrantReason.GRANT_REASON_BY_DUNGEON_ELEMENT_CHALLENGE);
+                    });
+            }
         }
-        if(this.trialTeam != null) {
-            player.addTrialAvatarsForActivity(trialTeam.trialAvatarIds);
+        if (player.getTeamManager().isUseTrialTeam()){
+            player.getTeamManager().updateTeamEntities(false);
         }
-    }
-
-    public void unsetTrialTeam(Player player){
-        if(this.trialTeam==null){
-            return;
-        }
-        player.removeTrialAvatarForActivity();
-        this.trialTeam = null;
     }
 
     public void startDungeon() {
