@@ -548,6 +548,12 @@ public class ScriptLib {
         return 0;
     }
 
+    public int SetGroupLogicStateValue(String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented SetGroupLogicStateValue with {} {}", sgvName, value);
+        //TODO implement
+        return 0;
+    }
+
 	public int GetGroupVariableValueByGroup(String name, int groupId){
 		logger.debug("[LUA] Call GetGroupVariableValueByGroup with {},{}",
 				name,groupId);
@@ -591,6 +597,7 @@ public class ScriptLib {
 				key,value,groupId);
 
 		getSceneScriptManager().getVariables(groupId).put(key, value);
+        // TODO should this maybe trigger a variable changed?
 		return 0;
 	}
 
@@ -977,6 +984,18 @@ public class ScriptLib {
 
     public int SetTeamServerGlobalValue(int sceneUid, String var2, int var3){
         logger.warn("[LUA] Call unimplemented SetTeamServerGlobalValue with {} {} {}", sceneUid, var2, var3);
+        //TODO implement
+        return 0;
+    }
+
+    public int AddTeamServerGlobalValue(int ownerId, String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented AddTeamServerGlobalValue with {} {} {}", ownerId, sgvName, value);
+        //TODO implement
+        return 0;
+    }
+
+    public int GetTeamServerGlobalValue(int ownerId, String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented GetTeamServerGlobalValue with {} {} {}", ownerId, sgvName, value);
         //TODO implement
         return 0;
     }
