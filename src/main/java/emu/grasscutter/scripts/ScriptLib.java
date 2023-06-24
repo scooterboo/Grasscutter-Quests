@@ -391,31 +391,37 @@ public class ScriptLib {
 		return getSceneScriptManager().getVariables(currentGroup.get().id).getOrDefault(var, 0);
 	}
 
-	public int SetGroupVariableValue(String var, int value) {
+	public int SetGroupVariableValue(String varName, int value) {
 		logger.debug("[LUA] Call SetGroupVariableValue with {},{}",
-				var, value);
+            varName, value);
 
         val groupId= currentGroup.get().id;
         val variables = getSceneScriptManager().getVariables(groupId);
 
-        val old = variables.getOrDefault(var, value);
-        variables.put(var, value);
-        getSceneScriptManager().callEvent(new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, value, old));
+        val old = variables.getOrDefault(varName, value);
+        variables.put(varName, value);
+        getSceneScriptManager().callEvent(
+            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, value, old)
+                .setEventSource(varName)
+        );
 		return 0;
 	}
 
-	public LuaValue ChangeGroupVariableValue(String var, int value) {
+	public LuaValue ChangeGroupVariableValue(String varName, int value) {
 		logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
-				var, value);
+            varName, value);
 
         val groupId= currentGroup.get().id;
         val variables = getSceneScriptManager().getVariables(groupId);
 
-        val old = variables.getOrDefault(var, 0);
-        variables.put(var, old + value);
+        val old = variables.getOrDefault(varName, 0);
+        variables.put(varName, old + value);
         logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
             old, old+value);
-        getSceneScriptManager().callEvent(new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, old+value, old));
+        getSceneScriptManager().callEvent(
+            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, old+value, old)
+                .setEventSource(varName)
+        );
 		return LuaValue.ZERO;
 	}
 
@@ -798,17 +804,17 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public int IsPlayerAllAvatarDie(int sceneUid){
+    public boolean IsPlayerAllAvatarDie(int sceneUid){
         logger.warn("[LUA] Call unimplemented IsPlayerAllAvatarDie {}", sceneUid);
         var playerEntities = getSceneScriptManager().getScene().getEntities().values().stream().filter(e -> e.getEntityType() == EntityType.Avatar.getValue()).toList();
         for (GameEntity p : playerEntities){
             var player = (EntityAvatar)p;
             if(player.isAlive()){
-                return 0;
+                return false;
             }
         }
         //TODO check
-        return 1;
+        return true;
     }
 
     public int sendShowCommonTipsToClient(String title, String content, int closeTime) {
