@@ -6,7 +6,6 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.RewardData;
 import emu.grasscutter.game.activity.ActivityWatcher;
 import emu.grasscutter.game.activity.DefaultWatcher;
-import emu.grasscutter.game.dungeons.DungeonTrialTeam;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.props.WatcherTriggerType;
@@ -23,41 +22,36 @@ import emu.grasscutter.utils.JsonUtils;
 import java.util.*;
 import java.util.stream.*;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 @GameActivity(ActivityType.NEW_ACTIVITY_TRIAL_AVATAR)
 public class TrialAvatarActivityHandler extends ActivityHandler {
     @Getter @Setter private int selectedTrialAvatarIndex;
 
     @Override
-    public void onInitPlayerActivityData(PlayerActivityData playerActivityData) {
+    public void onInitPlayerActivityData(@NotNull PlayerActivityData playerActivityData) {
         TrialAvatarPlayerData trialAvatarPlayerData = TrialAvatarPlayerData.create(getActivityConfigItem().getScheduleId());
 
         playerActivityData.setDetail(trialAvatarPlayerData);
     }
 
     @Override
-    public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfo.Builder activityInfo) {
+    public void onProtoBuild(PlayerActivityData playerActivityData, @NotNull ActivityInfo.Builder activityInfo) {
         TrialAvatarPlayerData trialAvatarPlayerData = getTrialAvatarPlayerData(playerActivityData);
 
         activityInfo.setTrialAvatarInfo(trialAvatarPlayerData.toProto());
     }
 
     @Override
-    public void initWatchers(Map<WatcherTriggerType, ConstructorAccess<?>> activityWatcherTypeMap) {
+    public void initWatchers(@NotNull Map<WatcherTriggerType, ConstructorAccess<?>> activityWatcherTypeMap) {
         var watcherType = activityWatcherTypeMap.get(WatcherTriggerType.TRIGGER_FINISH_CHALLENGE);
-        ActivityWatcher watcher;
-        if(watcherType != null){
-            watcher = (ActivityWatcher) watcherType.newInstance();
-        }else{
-            watcher = new DefaultWatcher();
-        }
-
+        ActivityWatcher watcher = watcherType == null ? new DefaultWatcher() : (ActivityWatcher) watcherType.newInstance();
         watcher.setActivityHandler(this);
         getWatchersMap().computeIfAbsent(WatcherTriggerType.TRIGGER_FINISH_CHALLENGE, k -> new ArrayList<>());
         getWatchersMap().get(WatcherTriggerType.TRIGGER_FINISH_CHALLENGE).add(watcher);
     }
 
-    public TrialAvatarPlayerData getTrialAvatarPlayerData(PlayerActivityData playerActivityData) {
+    public TrialAvatarPlayerData getTrialAvatarPlayerData(@NotNull PlayerActivityData playerActivityData) {
         if (playerActivityData.getDetail() == null || playerActivityData.getDetail().isBlank()) {
             onInitPlayerActivityData(playerActivityData);
             playerActivityData.save();
@@ -68,49 +62,37 @@ public class TrialAvatarActivityHandler extends ActivityHandler {
 
     public int getTrialActivityDungeonId(int trialAvatarIndexId) {
         val data = GameData.getTrialAvatarActivityDataByAvatarIndex(trialAvatarIndexId);
-        return data!=null ? data.getDungeonId() : -1;
+        return data != null ? data.getDungeonId() : -1;
     }
 
     public List<String> getTriggerParamList() {
         val data = GameData.getTrialAvatarActivityDataByAvatarIndex(getSelectedTrialAvatarIndex());
-        return data!=null ? data.getTriggerConfig().getParamList() : Collections.emptyList();
+        return data != null ? data.getTriggerConfig().getParamList() : Collections.emptyList();
     }
 
-    public boolean enterTrialDungeon(Player player, int trialAvatarIndexId, int enterPointId) {
+    public boolean enterTrialDungeon(@NotNull Player player, int trialAvatarIndexId, int enterPointId) {
         // TODO, not sure if this will cause problem in MP, since we are entering trial activity dungeon
         player.sendPacket(new PacketScenePlayerLocationNotify(player.getScene())); // official does send this
 
         if (!player.getServer().getDungeonSystem().enterDungeon(
-                player,
-                enterPointId,
-                getTrialActivityDungeonId(trialAvatarIndexId))) return false;
+            player,
+            enterPointId,
+            getTrialActivityDungeonId(trialAvatarIndexId))) return false;
 
         setSelectedTrialAvatarIndex(trialAvatarIndexId);
-
         return true;
     }
 
     public List<Integer> getBattleAvatarsList() {
         val activityData = GameData.getTrialAvatarActivityDataByAvatarIndex(getSelectedTrialAvatarIndex());
         if (activityData == null || activityData.getBattleAvatarsList().isBlank()) return List.of();
+
         return Stream.of(activityData.getBattleAvatarsList().split(",")).map(Integer::parseInt).toList();
     }
 
-    public DungeonTrialTeam getTrialAvatarDungeonTeam(){
-        List<Integer> battleAvatarsList = getBattleAvatarsList();
-        if (battleAvatarsList.isEmpty()) return null;
-
-        return new DungeonTrialTeam(battleAvatarsList, GrantReason.GRANT_REASON_BY_TRIAL_AVATAR_ACTIVITY);
-    }
-
-    public void unsetTrialAvatarTeam(Player player) {
-        if (getSelectedTrialAvatarIndex() <= 0) return;
-        player.removeTrialAvatarForActivity();
-        setSelectedTrialAvatarIndex(0);
-    }
-
-    public boolean getReward(Player player, int trialAvatarIndexId) {
-        val playerActivityData = player.getActivityManager().getPlayerActivityDataByActivityType(ActivityType.NEW_ACTIVITY_TRIAL_AVATAR);
+    public boolean getReward(@NotNull Player player, int trialAvatarIndexId) {
+        val playerActivityData = player.getActivityManager()
+            .getPlayerActivityDataByActivityType(ActivityType.NEW_ACTIVITY_TRIAL_AVATAR);
 
         if(playerActivityData.isEmpty()){
             return false;

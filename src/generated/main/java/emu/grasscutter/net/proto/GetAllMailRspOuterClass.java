@@ -49,10 +49,10 @@ public final class GetAllMailRspOuterClass {
         int index);
 
     /**
-     * <code>bool Unk2700_OPEHLDAGICF = 1;</code>
-     * @return The unk2700OPEHLDAGICF.
+     * <code>bool is_collected = 1;</code>
+     * @return The isCollected.
      */
-    boolean getUnk2700OPEHLDAGICF();
+    boolean getIsCollected();
 
     /**
      * <code>bool is_truncated = 2;</code>
@@ -64,8 +64,7 @@ public final class GetAllMailRspOuterClass {
    * <pre>
    * CmdId: 1475
    * EnetChannelId: 0
-   * EnetIsReliable: false
-   * IsAllowClient: true
+   * EnetIsReliable: true
    * </pre>
    *
    * Protobuf type {@code GetAllMailRsp}
@@ -116,7 +115,7 @@ public final class GetAllMailRspOuterClass {
               break;
             case 8: {
 
-              unk2700OPEHLDAGICF_ = input.readBool();
+              isCollected_ = input.readBool();
               break;
             }
             case 16: {
@@ -224,15 +223,15 @@ public final class GetAllMailRspOuterClass {
       return mailList_.get(index);
     }
 
-    public static final int UNK2700_OPEHLDAGICF_FIELD_NUMBER = 1;
-    private boolean unk2700OPEHLDAGICF_;
+    public static final int IS_COLLECTED_FIELD_NUMBER = 1;
+    private boolean isCollected_;
     /**
-     * <code>bool Unk2700_OPEHLDAGICF = 1;</code>
-     * @return The unk2700OPEHLDAGICF.
+     * <code>bool is_collected = 1;</code>
+     * @return The isCollected.
      */
     @java.lang.Override
-    public boolean getUnk2700OPEHLDAGICF() {
-      return unk2700OPEHLDAGICF_;
+    public boolean getIsCollected() {
+      return isCollected_;
     }
 
     public static final int IS_TRUNCATED_FIELD_NUMBER = 2;
@@ -260,8 +259,8 @@ public final class GetAllMailRspOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (unk2700OPEHLDAGICF_ != false) {
-        output.writeBool(1, unk2700OPEHLDAGICF_);
+      if (isCollected_ != false) {
+        output.writeBool(1, isCollected_);
       }
       if (isTruncated_ != false) {
         output.writeBool(2, isTruncated_);
@@ -281,9 +280,9 @@ public final class GetAllMailRspOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (unk2700OPEHLDAGICF_ != false) {
+      if (isCollected_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(1, unk2700OPEHLDAGICF_);
+          .computeBoolSize(1, isCollected_);
       }
       if (isTruncated_ != false) {
         size += com.google.protobuf.CodedOutputStream
@@ -316,8 +315,8 @@ public final class GetAllMailRspOuterClass {
           != other.getRetcode()) return false;
       if (!getMailListList()
           .equals(other.getMailListList())) return false;
-      if (getUnk2700OPEHLDAGICF()
-          != other.getUnk2700OPEHLDAGICF()) return false;
+      if (getIsCollected()
+          != other.getIsCollected()) return false;
       if (getIsTruncated()
           != other.getIsTruncated()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -337,9 +336,9 @@ public final class GetAllMailRspOuterClass {
         hash = (37 * hash) + MAIL_LIST_FIELD_NUMBER;
         hash = (53 * hash) + getMailListList().hashCode();
       }
-      hash = (37 * hash) + UNK2700_OPEHLDAGICF_FIELD_NUMBER;
+      hash = (37 * hash) + IS_COLLECTED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getUnk2700OPEHLDAGICF());
+          getIsCollected());
       hash = (37 * hash) + IS_TRUNCATED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getIsTruncated());
@@ -442,8 +441,7 @@ public final class GetAllMailRspOuterClass {
      * <pre>
      * CmdId: 1475
      * EnetChannelId: 0
-     * EnetIsReliable: false
-     * IsAllowClient: true
+     * EnetIsReliable: true
      * </pre>
      *
      * Protobuf type {@code GetAllMailRsp}
@@ -492,7 +490,7 @@ public final class GetAllMailRspOuterClass {
         } else {
           mailListBuilder_.clear();
         }
-        unk2700OPEHLDAGICF_ = false;
+        isCollected_ = false;
 
         isTruncated_ = false;
 
@@ -533,7 +531,7 @@ public final class GetAllMailRspOuterClass {
         } else {
           result.mailList_ = mailListBuilder_.build();
         }
-        result.unk2700OPEHLDAGICF_ = unk2700OPEHLDAGICF_;
+        result.isCollected_ = isCollected_;
         result.isTruncated_ = isTruncated_;
         onBuilt();
         return result;
@@ -612,8 +610,8 @@ public final class GetAllMailRspOuterClass {
             }
           }
         }
-        if (other.getUnk2700OPEHLDAGICF() != false) {
-          setUnk2700OPEHLDAGICF(other.getUnk2700OPEHLDAGICF());
+        if (other.getIsCollected() != false) {
+          setIsCollected(other.getIsCollected());
         }
         if (other.getIsTruncated() != false) {
           setIsTruncated(other.getIsTruncated());
@@ -919,33 +917,33 @@ public final class GetAllMailRspOuterClass {
         return mailListBuilder_;
       }
 
-      private boolean unk2700OPEHLDAGICF_ ;
+      private boolean isCollected_ ;
       /**
-       * <code>bool Unk2700_OPEHLDAGICF = 1;</code>
-       * @return The unk2700OPEHLDAGICF.
+       * <code>bool is_collected = 1;</code>
+       * @return The isCollected.
        */
       @java.lang.Override
-      public boolean getUnk2700OPEHLDAGICF() {
-        return unk2700OPEHLDAGICF_;
+      public boolean getIsCollected() {
+        return isCollected_;
       }
       /**
-       * <code>bool Unk2700_OPEHLDAGICF = 1;</code>
-       * @param value The unk2700OPEHLDAGICF to set.
+       * <code>bool is_collected = 1;</code>
+       * @param value The isCollected to set.
        * @return This builder for chaining.
        */
-      public Builder setUnk2700OPEHLDAGICF(boolean value) {
+      public Builder setIsCollected(boolean value) {
         
-        unk2700OPEHLDAGICF_ = value;
+        isCollected_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool Unk2700_OPEHLDAGICF = 1;</code>
+       * <code>bool is_collected = 1;</code>
        * @return This builder for chaining.
        */
-      public Builder clearUnk2700OPEHLDAGICF() {
+      public Builder clearIsCollected() {
         
-        unk2700OPEHLDAGICF_ = false;
+        isCollected_ = false;
         onChanged();
         return this;
       }
@@ -1047,11 +1045,11 @@ public final class GetAllMailRspOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\023GetAllMailRsp.proto\032\016MailData.proto\"q\n" +
+      "\n\023GetAllMailRsp.proto\032\016MailData.proto\"j\n" +
       "\rGetAllMailRsp\022\017\n\007retcode\030\010 \001(\005\022\034\n\tmail_" +
-      "list\030\016 \003(\0132\t.MailData\022\033\n\023Unk2700_OPEHLDA" +
-      "GICF\030\001 \001(\010\022\024\n\014is_truncated\030\002 \001(\010B\033\n\031emu." +
-      "grasscutter.net.protob\006proto3"
+      "list\030\016 \003(\0132\t.MailData\022\024\n\014is_collected\030\001 " +
+      "\001(\010\022\024\n\014is_truncated\030\002 \001(\010B\033\n\031emu.grasscu" +
+      "tter.net.protob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1063,7 +1061,7 @@ public final class GetAllMailRspOuterClass {
     internal_static_GetAllMailRsp_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_GetAllMailRsp_descriptor,
-        new java.lang.String[] { "Retcode", "MailList", "Unk2700OPEHLDAGICF", "IsTruncated", });
+        new java.lang.String[] { "Retcode", "MailList", "IsCollected", "IsTruncated", });
     emu.grasscutter.net.proto.MailDataOuterClass.getDescriptor();
   }
 

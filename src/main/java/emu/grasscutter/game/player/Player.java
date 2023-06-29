@@ -4,7 +4,6 @@ import dev.morphia.annotations.*;
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigLevelEntity;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.*;
@@ -15,6 +14,7 @@ import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.activity.ActivityManager;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.avatar.AvatarStorage;
+import emu.grasscutter.game.avatar.TrialAvatar;
 import emu.grasscutter.game.battlepass.BattlePassManager;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.GameEntity;
@@ -81,13 +81,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -203,9 +203,10 @@ public class Player {
     @Getter @Setter private long springLastUsed;
     private HashMap<String, MapMark> mapMarks;  // Getter makes an empty hashmap - maybe do this elsewhere?
     @Getter @Setter private int nextResinRefresh;
+    @Getter @Setter private int resinBuyCount;
     @Getter @Setter private int lastDailyReset;
     @Getter private transient MpSettingType mpSetting = MpSettingType.MP_SETTING_TYPE_ENTER_AFTER_APPLY;  // TODO
-    @Getter private long playerGameTime = 0;
+    @Getter private long playerGameTime = 540;
 
     @Getter private PlayerProgress playerProgress;
     @Getter private Set<Integer> activeQuestTimers;
@@ -590,12 +591,15 @@ public class Player {
     }
 
     public void onEnterRegion(SceneRegion region) {
+        val enterRegionName = "ENTER_REGION_"+ region.config_id;
         getQuestManager().forEachActiveQuest(quest -> {
-            if (quest.getTriggerData() != null && quest.getTriggers().containsKey("ENTER_REGION_"+ region.config_id)) {
+            val triggerData = quest.getTriggerByName(enterRegionName);
+            if (triggerData != null && triggerData.getGroupId() == region.getGroupId()) {
                 // If trigger hasn't been fired yet
-                if (!Boolean.TRUE.equals(quest.getTriggers().put("ENTER_REGION_"+ region.config_id, true))) {
+                if (!Boolean.TRUE.equals(quest.getTriggers().put(enterRegionName, true))) {
                     //getSession().send(new PacketServerCondMeetQuestListUpdateNotify());
-                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE, quest.getTriggerData().get("ENTER_REGION_"+ region.config_id).getId(),0);
+                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE,
+                        triggerData.getId(),0);
                 }
             }
         });
@@ -603,12 +607,15 @@ public class Player {
     }
 
     public void onLeaveRegion(SceneRegion region) {
+        val leaveRegionName = "LEAVE_REGION_"+ region.config_id;
         getQuestManager().forEachActiveQuest(quest -> {
-            if (quest.getTriggers().containsKey("LEAVE_REGION_"+ region.config_id)) {
+            val triggerData = quest.getTriggerByName(leaveRegionName);
+            if (triggerData != null && triggerData.getGroupId() == region.getGroupId()) {
                 // If trigger hasn't been fired yet
-                if (!Boolean.TRUE.equals(quest.getTriggers().put("LEAVE_REGION_"+ region.config_id, true))) {
+                if (!Boolean.TRUE.equals(quest.getTriggers().put(leaveRegionName, true))) {
                     getSession().send(new PacketServerCondMeetQuestListUpdateNotify());
-                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE, quest.getTriggerData().get("LEAVE_REGION_"+ region.config_id).getId(),0);
+                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE,
+                        triggerData.getId(),0);
                 }
             }
         });
@@ -621,6 +628,9 @@ public class Player {
         return playerProfile;
     }
 
+    public boolean setProperty(PlayerProperty prop, boolean value) {
+        return setPropertyWithSanityCheck(prop, value ? 1:0, true);
+    }
     public boolean setProperty(PlayerProperty prop, int value) {
         return setPropertyWithSanityCheck(prop, value, true);
     }
@@ -631,6 +641,9 @@ public class Player {
 
     public int getProperty(PlayerProperty prop) {
         return getProperties().get(prop.getId());
+    }
+    public boolean getBoolProperty(PlayerProperty prop) {
+        return getProperties().get(prop.getId()) == 1;
     }
 
     public synchronized Int2ObjectMap<CoopRequest> getCoopRequests() {
@@ -819,38 +832,25 @@ public class Player {
         addAvatar(new Avatar(avatarId), true);
     }
 
-    public List<Integer> getTrialAvatarParam (int trialAvatarId) {
-        if (GameData.getTrialAvatarCustomData().isEmpty()) { // use default data if custom data not available
-            if (GameData.getTrialAvatarDataMap().get(trialAvatarId) == null) return List.of();
-
-            return GameData.getTrialAvatarDataMap().get(trialAvatarId)
-                .getTrialAvatarParamList();
-        }
-        // use custom data
-        if (GameData.getTrialAvatarCustomData().get(trialAvatarId) == null) return List.of();
-
-        val trialCustomParams = GameData.getTrialAvatarCustomData().get(trialAvatarId).getTrialAvatarParamList();
-        return trialCustomParams.isEmpty() ? List.of() : Stream.of(trialCustomParams.get(0).split(";")).map(Integer::parseInt).toList();
-    }
-
     public boolean addTrialAvatar(int trialAvatarId, GrantReason reason, int questMainId){
-        List<Integer> trialAvatarBasicParam = getTrialAvatarParam(trialAvatarId);
+        List<Integer> trialAvatarBasicParam = TrialAvatar.getTrialAvatarParam(trialAvatarId);
         if (trialAvatarBasicParam.isEmpty()) return false;
 
-        Avatar avatar = new Avatar(trialAvatarBasicParam.get(0));
-        if (avatar.getAvatarData() == null || !hasSentLoginPackets()) return false;
+        TrialAvatar trialAvatar = new TrialAvatar(trialAvatarBasicParam, trialAvatarId, reason, questMainId);
+        if (trialAvatar.getAvatarData() == null || !hasSentLoginPackets()) return false;
 
-        avatar.setOwner(this);
-        // Add trial weapons and relics
-        avatar.setTrialAvatarInfo(trialAvatarBasicParam.get(1), trialAvatarId, reason, questMainId);
-        avatar.equipTrialItems();
+        // add trial avatar to storage
+        boolean result = this.getAvatars().addAvatar(trialAvatar);
+        if (!result) return false;
+
+        trialAvatar.equipTrialItems();
         // Recalc stats
-        avatar.recalcStats();
+        trialAvatar.recalcStats();
 
         // Packet, mimic official server behaviour, add to player's bag but not saving to db
-        sendPacket(new PacketAvatarAddNotify(avatar, false));
+        sendPacket(new PacketAvatarAddNotify(trialAvatar, false));
         // add to avatar to temporary trial team
-        getTeamManager().addAvatarToTrialTeam(avatar);
+        getTeamManager().addAvatarToTrialTeam(trialAvatar);
         return true;
     }
 
@@ -860,36 +860,52 @@ public class Player {
             trialAvatarId,
             GrantReason.GRANT_REASON_BY_QUEST,
             questMainId)) return false;
-        getTeamManager().trialAvatarTeamPostUpdate();
-        // Packet, mimic official server behaviour, neccessary to stop player from modifying team
+        // Packet, mimic official server behaviour, necessary to stop player from modifying team
         sendPacket(new PacketAvatarTeamUpdateNotify(this));
+
+        getTeamManager().updateTeamEntities(false);
         return true;
     }
 
-    public void addTrialAvatarsForActivity(List<Integer> trialAvatarIds) {
-        getTeamManager().setupTrialAvatarTeamForActivity();
-        trialAvatarIds.forEach(trialAvatarId -> addTrialAvatar(
-            trialAvatarId,
-            GrantReason.GRANT_REASON_BY_TRIAL_AVATAR_ACTIVITY,
-            0));
-        getTeamManager().trialAvatarTeamPostUpdate(0);
+    public void addTrialAvatarsForDungeon(@NotNull List<Integer> trialAvatarIds, GrantReason reason) {
+        getTeamManager().setupTrialAvatarTeamForDungeon();
+        trialAvatarIds.forEach(trialAvatarId -> addTrialAvatar(trialAvatarId, reason, 0));
     }
 
     public boolean removeTrialAvatarForQuest(int trialAvatarId) {
         if (!getTeamManager().isUseTrialTeam()) return false;
 
-        sendPacket(new PacketAvatarDelNotify(List.of(getTeamManager().getTrialAvatarGuid(trialAvatarId))));
-        getTeamManager().removeTrialAvatarTeamForQuest(trialAvatarId);
+        List<Integer> trialAvatarBasicParam = TrialAvatar.getTrialAvatarParam(trialAvatarId);
+        if (trialAvatarBasicParam.isEmpty()) return false;
+
+        // allows player to modify team again
         sendPacket(new PacketAvatarTeamUpdateNotify());
+
+        long trialAvatarGuid = getTeamManager().getEntityGuids().get(trialAvatarBasicParam.get(0));
+
+        // remove trial avatar from storage
+        this.getAvatars().removeAvatarByGuid(trialAvatarGuid);
+
+        // remove trial avatar entities
+        getTeamManager().removeTrialAvatarTeam();
+
+        // send remove packets
+        sendPacket(new PacketAvatarDelNotify(List.of(trialAvatarGuid)));
         return true;
     }
 
-    public void removeTrialAvatarForActivity() {
+    public void removeTrialAvatarForDungeon() {
         if (!getTeamManager().isUseTrialTeam()) return;
+        List<Long> tempGuids = getTeamManager().getEntityGuids().values().stream().toList();
 
-        sendPacket(new PacketAvatarDelNotify(getTeamManager().getActiveTeam().stream()
-            .map(x -> x.getAvatar().getGuid()).toList()));
-        getTeamManager().removeTrialAvatarTeamForActivity();
+        // remove trial avatar from storage
+        tempGuids.forEach(guid -> this.getAvatars().removeAvatarByGuid(guid));
+
+        // remove trial avatar entities
+        getTeamManager().removeTrialAvatarTeam();
+
+        // send remove packets
+        sendPacket(new PacketAvatarDelNotify(tempGuids));
     }
 
     public void addFlycloak(int flycloakId) {
@@ -1259,6 +1275,8 @@ public class Player {
         if (currentDate.getDayOfWeek() == DayOfWeek.MONDAY) {
             this.getBattlePassManager().resetWeeklyMissions();
         }
+        // Reset resin-buying count.
+        this.setResinBuyCount(0);
 
         // Done. Update last reset time.
         this.setLastDailyReset(currentTime);
@@ -1477,26 +1495,29 @@ public class Player {
         }
     }
 
-    private boolean setPropertyWithSanityCheck(PlayerProperty prop, int value, boolean sendPacket) {
+    public boolean isValueInPropBounds(PlayerProperty prop, int value){
         int min = this.getPropertyMin(prop);
         int max = this.getPropertyMax(prop);
-        if (min <= value && value <= max) {
-            int currentValue = this.properties.get(prop.getId());
-            this.properties.put(prop.getId(), value);
-            if (sendPacket) {
-                // Update player with packet
-                this.sendPacket(new PacketPlayerPropNotify(this, prop));
-                this.sendPacket(new PacketPlayerPropChangeNotify(this, prop, value - currentValue));
+        return min <= value && value <= max;
+    }
 
-                // Make the Adventure EXP pop-up show on screen.
-                if (prop == PlayerProperty.PROP_PLAYER_EXP) {
-                    this.sendPacket(new PacketPlayerPropChangeReasonNotify(this, prop, currentValue, value, PropChangeReason.PROP_CHANGE_REASON_PLAYER_ADD_EXP));
-                }
-            }
-            return true;
-        } else {
+    private boolean setPropertyWithSanityCheck(PlayerProperty prop, int value, boolean sendPacket) {
+        if(!isValueInPropBounds(prop, value)){
             return false;
         }
+        int currentValue = this.properties.get(prop.getId());
+        this.properties.put(prop.getId(), value);
+        if (sendPacket) {
+            // Update player with packet
+            this.sendPacket(new PacketPlayerPropNotify(this, prop));
+            this.sendPacket(new PacketPlayerPropChangeNotify(this, prop, value - currentValue));
+
+            // Make the Adventure EXP pop-up show on screen.
+            if (prop == PlayerProperty.PROP_PLAYER_EXP) {
+                this.sendPacket(new PacketPlayerPropChangeReasonNotify(this, prop, currentValue, value, PropChangeReason.PROP_CHANGE_REASON_PLAYER_ADD_EXP));
+            }
+        }
+        return true;
     }
 
 }

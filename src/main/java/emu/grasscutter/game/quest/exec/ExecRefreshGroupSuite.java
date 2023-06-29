@@ -1,17 +1,17 @@
 package emu.grasscutter.game.quest.exec;
 
-import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
+import emu.grasscutter.data.common.quest.SubQuestData.QuestExecParam;
 import lombok.val;
 
 @QuestValueExec(QuestExec.QUEST_EXEC_REFRESH_GROUP_SUITE)
 public class ExecRefreshGroupSuite extends QuestExecHandler {
 
     @Override
-    public boolean execute(GameQuest quest, QuestData.QuestExecParam condition, String... paramStr) {
+    public boolean execute(GameQuest quest, QuestExecParam condition, String... paramStr) {
         val sceneId = Integer.parseInt(paramStr[0]);
         val entries = paramStr[1].split(";");
         val scriptManager = quest.getOwner().getWorld().getSceneById(sceneId).getScriptManager();

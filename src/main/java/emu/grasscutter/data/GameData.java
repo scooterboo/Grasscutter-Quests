@@ -14,6 +14,8 @@ import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
 import emu.grasscutter.data.binout.config.ConfigGlobalCombat;
 import emu.grasscutter.data.binout.config.ConfigLevelEntity;
+import emu.grasscutter.data.common.quest.MainQuestData;
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.binout.routes.Route;
 import emu.grasscutter.data.custom.*;
 import emu.grasscutter.data.server.ActivityCondGroup;
@@ -102,6 +104,7 @@ public class GameData {
     @Getter private static final Int2ObjectMap<CompoundData> compoundDataMap=new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DailyDungeonData> dailyDungeonDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonData> dungeonDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<DungeonElementChallengeData> dungeonElementChallengeDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonEntryData> dungeonEntryDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<EnvAnimalGatherConfigData> envAnimalGatherConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<EquipAffixData> equipAffixDataMap = new Int2ObjectOpenHashMap<>();
@@ -126,7 +129,7 @@ public class GameData {
     @Getter private static final Int2ObjectMap<PersonalLineData> personalLineDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<PlayerLevelData> playerLevelDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ProudSkillData> proudSkillDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<QuestData> questDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<SubQuestData> questDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ReliquaryAffixData> reliquaryAffixDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ReliquaryMainPropData> reliquaryMainPropDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ReliquarySetData> reliquarySetDataMap = new Int2ObjectOpenHashMap<>();
@@ -186,7 +189,7 @@ public class GameData {
     protected static Int2ObjectMap<IntSet> proudSkillGroupLevels = new Int2ObjectOpenHashMap<>();
     protected static Int2IntMap proudSkillGroupMaxLevels = new Int2IntOpenHashMap();
     protected static Int2ObjectMap<IntSet> avatarSkillLevels = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Map<String, List<QuestData>> beginCondQuestMap = new HashMap<>(); // cache filled by QuestData
+    @Getter private static final Map<String, List<SubQuestData>> beginCondQuestMap = new HashMap<>(); // cache filled by QuestData
     @Getter private static final Map<Integer, Integer> questTalkMap = new HashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarCustomData> trialAvatarCustomData = new Int2ObjectOpenHashMap<>();
     @Getter private static final Map<Integer, TrialAvatarActivityCustomData> trialAvatarActivityCustomData = new HashMap<>();
@@ -311,7 +314,7 @@ public class GameData {
     }
 
     @Nullable
-    public static List<QuestData> getQuestDataByConditions(QuestCond questCond, int param0, String questStr){
-        return beginCondQuestMap.get(QuestData.questConditionKey(questCond, param0, questStr));
+    public static List<SubQuestData> getQuestDataByConditions(QuestCond questCond, int param0, String questStr){
+        return beginCondQuestMap.get(SubQuestData.questConditionKey(questCond, param0, questStr));
     }
 }

@@ -1,10 +1,8 @@
 package emu.grasscutter.game.quest;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.data.excels.QuestData;
-import emu.grasscutter.data.excels.QuestData.QuestAcceptCondition;
-import emu.grasscutter.data.excels.QuestData.QuestContentCondition;
-import emu.grasscutter.data.excels.QuestData.QuestExecParam;
+import emu.grasscutter.data.common.quest.SubQuestData.*;
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.conditions.BaseCondition;
 import emu.grasscutter.game.quest.content.BaseContent;
@@ -15,7 +13,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.reflections.Reflections;
 
-@SuppressWarnings("unchecked")
 public class QuestSystem extends BaseGameSystem {
     private final Int2ObjectMap<BaseCondition> condHandlers;
     private final Int2ObjectMap<BaseContent> contHandlers;
@@ -48,7 +45,7 @@ public class QuestSystem extends BaseGameSystem {
 
     public <T> void registerPacketHandler(Int2ObjectMap<T> map, Class<? extends T> handlerClass) {
         try {
-            int value = 0;
+            int value;
             if (handlerClass.isAnnotationPresent(QuestValueExec.class)) {
                 QuestValueExec opcode = handlerClass.getAnnotation(QuestValueExec.class);
                 value = opcode.value().getValue();
@@ -74,7 +71,7 @@ public class QuestSystem extends BaseGameSystem {
 
     // TODO make cleaner
 
-    public boolean triggerCondition(Player owner, QuestData questData, QuestAcceptCondition condition, String paramStr, int... params) {
+    public boolean triggerCondition(Player owner, SubQuestData questData, QuestAcceptCondition condition, String paramStr, int... params) {
         BaseCondition handler = condHandlers.get(condition.getType().getValue());
 
         if (handler == null || questData == null) {
@@ -97,6 +94,10 @@ public class QuestSystem extends BaseGameSystem {
     }
 
     public void triggerExec(GameQuest quest, QuestExecParam execParam, String... params) {
+        if(execParam.getType() == null) {
+            Grasscutter.getLogger().error("execParam.getType() is null {}", quest.getSubQuestId());
+            return;
+        }
         QuestExecHandler handler = execHandlers.get(execParam.getType().getValue());
 
         if (handler == null || quest.getQuestData() == null) {

@@ -10,7 +10,6 @@ import org.reflections.Reflections;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.RepeatedFieldBuilder;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;

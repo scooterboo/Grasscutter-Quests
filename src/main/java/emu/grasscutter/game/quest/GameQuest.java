@@ -4,8 +4,8 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Transient;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.excels.ChapterData;
-import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.data.excels.TriggerExcelConfigData;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.player.Player;
@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
+import javax.annotation.Nullable;
 import javax.script.Bindings;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ import java.util.Map;
 @Entity
 public class GameQuest {
     @Transient @Getter @Setter private GameMainQuest mainQuest;
-    @Transient @Getter private QuestData questData;
+    @Transient @Getter private SubQuestData questData;
 
     @Getter private int subQuestId;
     @Getter private int mainQuestId;
@@ -54,9 +55,9 @@ public class GameQuest {
     @Deprecated // Morphia only. Do not use.
     public GameQuest() {}
 
-    public GameQuest(GameMainQuest mainQuest, QuestData questData) {
+    public GameQuest(GameMainQuest mainQuest, SubQuestData questData) {
         this.mainQuest = mainQuest;
-        this.subQuestId = questData.getId();
+        this.subQuestId = questData.getSubId();
         this.mainQuestId = questData.getMainId();
         this.questData = questData;
         this.state = QuestState.QUEST_STATE_UNSTARTED;
@@ -117,12 +118,20 @@ public class GameQuest {
         return "";
     }
 
+    @Nullable
+    public TriggerExcelConfigData getTriggerByName(String name) {
+        if(triggerData==null){
+            return null;
+        }
+        return triggerData.get(name);
+    }
+
     public Player getOwner() {
         return this.getMainQuest().getOwner();
     }
 
-    public void setConfig(QuestData config) {
-        if (config == null || getSubQuestId() != config.getId()) return;
+    public void setConfig(SubQuestData config) {
+        if (config == null || getSubQuestId() != config.getSubId()) return;
         this.questData = config;
     }
 
@@ -158,7 +167,12 @@ public class GameQuest {
         return true;
     }
 
+
     public void finish() {
+        finish(false);
+    }
+
+    public void finish(boolean isManualFinish) {
         this.state = QuestState.QUEST_STATE_FINISHED;
         this.finishTime = Utils.getCurrentSeconds();
 
@@ -166,7 +180,7 @@ public class GameQuest {
 
         if (getQuestData().isFinishParent()) {
             // This quest finishes the questline - the main quest will also save the quest to db, so we don't have to call save() here
-            getMainQuest().finish();
+            getMainQuest().finish(isManualFinish);
         }
 
         getQuestData().getFinishExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
@@ -185,9 +199,11 @@ public class GameQuest {
             ));
         }
 
-        // hard coding to give amber
-        if(getQuestData().getSubId() == 35402){
-            getOwner().getInventory().addItem(1021, 1, ActionReason.QuestItem); // amber item id
+        val gainItems = questData.getGainItems();
+        if(gainItems != null && gainItems.size() > 0){
+            gainItems.forEach(item -> {
+                getOwner().getInventory().addItem(item.getItemId(), item.getCount(), ActionReason.QuestItem);
+            });
         }
 
         save();
@@ -213,7 +229,7 @@ public class GameQuest {
         }
         Grasscutter.getLogger().debug("Quest {} is failed", subQuestId);
 
- 
+
     }
 
     // Return true if it did the rewind

@@ -2,6 +2,7 @@ package emu.grasscutter.data.common;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.data.excels.ProudSkillData;
@@ -16,10 +17,11 @@ public class DynamicFloat {
     public static DynamicFloat ONE = new DynamicFloat(1f);
 
     public static class StackOp {
-        enum Op {CONSTANT, KEY, ADD, SUB, MUL, DIV};
+        enum Op {CONSTANT, KEY, ADD, SUB, MUL, DIV, NEXBOOLEAN}
         public Op op;
         public float fValue;
         public String sValue;
+        public boolean bValue;
         public boolean negative = false;
 
         public StackOp(String s) {
@@ -41,6 +43,11 @@ public class DynamicFloat {
             }
         }
 
+        public StackOp(boolean b) {
+            this.op = Op.NEXBOOLEAN;
+            this.bValue = Boolean.parseBoolean(String.valueOf(b));
+        }
+
         public StackOp(float f) {
             this.op = Op.CONSTANT;
             this.fValue = f;
@@ -57,6 +64,11 @@ public class DynamicFloat {
     public DynamicFloat(String key) {
         this.dynamic = true;
         this.ops = List.of(new StackOp(key));
+    }
+
+    public DynamicFloat(boolean b) {
+        this.dynamic = true;
+        this.ops = List.of(new StackOp(String.valueOf(b)));
     }
 
     public DynamicFloat(List<StackOp> ops) {
@@ -93,6 +105,7 @@ public class DynamicFloat {
                 case SUB -> fl.push(-fl.popFloat() + fl.popFloat());  // [f0, f1, f2] -> [f0, f1-f2]  (opposite of RPN order)
                 case MUL -> fl.push(fl.popFloat() * fl.popFloat());
                 case DIV -> fl.push((1f/fl.popFloat()) * fl.popFloat());  // [f0, f1, f2] -> [f0, f1/f2]
+                case NEXBOOLEAN -> fl.push(props.getOrDefault(Optional.of(op.bValue), 0f));
             }
         }
         try {

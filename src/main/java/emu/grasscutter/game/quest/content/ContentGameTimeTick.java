@@ -1,8 +1,9 @@
 package emu.grasscutter.game.quest.content;
 
-import emu.grasscutter.data.excels.QuestData;
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueContent;
+import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
 import lombok.val;
 
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_GAME_TIME_TICK;
@@ -11,12 +12,16 @@ import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_GAME_T
 public class ContentGameTimeTick extends BaseContent {
 
     @Override
-    public boolean execute(GameQuest quest, QuestData.QuestContentCondition condition, String paramStr, int... params) {
+    public boolean execute(GameQuest quest, QuestContentCondition condition, String paramStr, int... params) {
+        if(condition.getParamString()==null) {
+            Grasscutter.getLogger().warn("Quest {} has no param string for QUEST_CONTENT_GAME_TIME_TICK!", quest.getSubQuestId());
+            return false;
+        }
         val daysSinceStart = quest.getOwner().getWorld().getTotalGameTimeDays() - quest.getStartGameDay();
         val currentHour = quest.getOwner().getWorld().getGameTimeHours();
 
         // params[0] is days since start, str is hours of day
-        val range = condition.getParamStr().split(",");
+        val range = condition.getParamString().split(",");
         val from = Integer.parseInt(range[0]);
         val to = Integer.parseInt(range[1]);
 

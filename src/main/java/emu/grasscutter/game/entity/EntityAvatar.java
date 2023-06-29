@@ -57,16 +57,17 @@ public class EntityAvatar extends GameEntity {
         super(scene);
         this.avatar = avatar;
         this.avatar.setCurrentEnergy();
-        if (scene != null)
+        if (scene != null) {
             this.id = getScene().getWorld().getNextEntityId(EntityIdType.AVATAR);
 
-        GameItem weapon = this.getAvatar().getWeapon();
-        if (weapon != null) {
-            if(!(weapon.getWeaponEntity() != null && weapon.getWeaponEntity().getScene() == scene)) {
-                weapon.setWeaponEntity(new EntityWeapon(getPlayer().getScene(), weapon.getItemData().getGadgetId()));
-                scene.getWeaponEntities().put(weapon.getWeaponEntity().getId(), weapon.getWeaponEntity());
+            GameItem weapon = this.getAvatar().getWeapon();
+            if (weapon != null) {
+                if (!(weapon.getWeaponEntity() != null && weapon.getWeaponEntity().getScene() == scene)) {
+                    weapon.setWeaponEntity(new EntityWeapon(getPlayer().getScene(), weapon.getItemData().getGadgetId()));
+                    scene.getWeaponEntities().put(weapon.getWeaponEntity().getId(), weapon.getWeaponEntity());
+                }
+                //weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
             }
-            //weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
         }
 
         initAbilities();

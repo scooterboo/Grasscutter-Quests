@@ -354,6 +354,31 @@ public class ScriptLib {
 		return 0;
 	}
 
+    public int StopChallenge(int challengeId, int result) {
+        logger.debug("[LUA] Call StopChallenge with ");
+        var challenge = getSceneScriptManager().getScene().getChallenge();
+        if(challenge == null){
+            return 1;
+        }
+        if(challenge.getChallengeId() != challengeId){
+            return 2;
+        }
+
+        switch (result){
+            case 0:
+                challenge.fail();
+                break;
+            case 1:
+                challenge.done();
+                break;
+            default:
+                logger.warn("[LUA] Call StopChallenge with unsupported result {}", result);
+                return 3;
+
+        }
+        return 0;
+    }
+
 	public int GetGroupMonsterCountByGroupId(int groupId) {
 		logger.debug("[LUA] Call GetGroupMonsterCountByGroupId with {}",
 				groupId);
@@ -391,31 +416,37 @@ public class ScriptLib {
 		return getSceneScriptManager().getVariables(currentGroup.get().id).getOrDefault(var, 0);
 	}
 
-	public int SetGroupVariableValue(String var, int value) {
+	public int SetGroupVariableValue(String varName, int value) {
 		logger.debug("[LUA] Call SetGroupVariableValue with {},{}",
-				var, value);
+            varName, value);
 
         val groupId= currentGroup.get().id;
         val variables = getSceneScriptManager().getVariables(groupId);
 
-        val old = variables.getOrDefault(var, value);
-        variables.put(var, value);
-        getSceneScriptManager().callEvent(new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, value, old));
+        val old = variables.getOrDefault(varName, value);
+        variables.put(varName, value);
+        getSceneScriptManager().callEvent(
+            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, value, old)
+                .setEventSource(varName)
+        );
 		return 0;
 	}
 
-	public LuaValue ChangeGroupVariableValue(String var, int value) {
+	public LuaValue ChangeGroupVariableValue(String varName, int value) {
 		logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
-				var, value);
+            varName, value);
 
         val groupId= currentGroup.get().id;
         val variables = getSceneScriptManager().getVariables(groupId);
 
-        val old = variables.getOrDefault(var, 0);
-        variables.put(var, old + value);
+        val old = variables.getOrDefault(varName, 0);
+        variables.put(varName, old + value);
         logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
             old, old+value);
-        getSceneScriptManager().callEvent(new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, old+value, old));
+        getSceneScriptManager().callEvent(
+            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, old+value, old)
+                .setEventSource(varName)
+        );
 		return LuaValue.ZERO;
 	}
 
@@ -524,6 +555,12 @@ public class ScriptLib {
         return 0;
     }
 
+    public int SetGroupLogicStateValue(String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented SetGroupLogicStateValue with {} {}", sgvName, value);
+        //TODO implement
+        return 0;
+    }
+
 	public int GetGroupVariableValueByGroup(String name, int groupId){
 		logger.debug("[LUA] Call GetGroupVariableValueByGroup with {},{}",
 				name,groupId);
@@ -567,6 +604,7 @@ public class ScriptLib {
 				key,value,groupId);
 
 		getSceneScriptManager().getVariables(groupId).put(key, value);
+        // TODO should this maybe trigger a variable changed?
 		return 0;
 	}
 
@@ -575,12 +613,13 @@ public class ScriptLib {
 				printTable(table));
 		var configId = table.get("config_id").toint();
 		var delayTime = table.get("delay_time").toint();
+        val group = getCurrentGroup();
 
-		if(getCurrentGroup().isEmpty()){
+		if(group.isEmpty()){
 			return 1;
 		}
 
-		getSceneScriptManager().spawnMonstersByConfigId(getCurrentGroup().get(), configId, delayTime);
+		getSceneScriptManager().spawnMonstersByConfigId(group.get(), configId, delayTime);
 		return 0;
 	}
 
@@ -694,6 +733,21 @@ public class ScriptLib {
         return entity.getEntityType();
     }
 
+    public int GetSceneOwnerUid(){
+        return getSceneScriptManager().getScene().getWorld().getHost().getUid();
+    }
+
+    public int GetHostQuestState(int questId){
+        val player = getSceneScriptManager().getScene().getWorld().getHost();
+
+        val quest = player.getQuestManager().getQuestById(questId);
+        if(quest == null){
+            return QuestState.QUEST_STATE_NONE.getValue();
+        }
+
+        return quest.getState().getValue();
+    }
+
     public int GetQuestState(int entityId, int questId){
         val player = getSceneScriptManager().getScene().getWorld().getHost();
 
@@ -793,17 +847,17 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public int IsPlayerAllAvatarDie(int sceneUid){
+    public boolean IsPlayerAllAvatarDie(int sceneUid){
         logger.warn("[LUA] Call unimplemented IsPlayerAllAvatarDie {}", sceneUid);
         var playerEntities = getSceneScriptManager().getScene().getEntities().values().stream().filter(e -> e.getEntityType() == EntityIdType.AVATAR.getId()).toList();
         for (GameEntity p : playerEntities){
             var player = (EntityAvatar)p;
             if(player.isAlive()){
-                return 0;
+                return false;
             }
         }
         //TODO check
-        return 1;
+        return true;
     }
 
     public int sendShowCommonTipsToClient(String title, String content, int closeTime) {
@@ -937,6 +991,18 @@ public class ScriptLib {
 
     public int SetTeamServerGlobalValue(int sceneUid, String var2, int var3){
         logger.warn("[LUA] Call unimplemented SetTeamServerGlobalValue with {} {} {}", sceneUid, var2, var3);
+        //TODO implement
+        return 0;
+    }
+
+    public int AddTeamServerGlobalValue(int ownerId, String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented AddTeamServerGlobalValue with {} {} {}", ownerId, sgvName, value);
+        //TODO implement
+        return 0;
+    }
+
+    public int GetTeamServerGlobalValue(int ownerId, String sgvName, int value){
+        logger.warn("[LUA] Call unimplemented GetTeamServerGlobalValue with {} {} {}", ownerId, sgvName, value);
         //TODO implement
         return 0;
     }
@@ -1200,6 +1266,12 @@ public class ScriptLib {
         return 0;
     }
 
+    public int EnterWeatherArea(int weatherAreaId){
+        logger.warn("[LUA] Call unimplemented EnterWeatherArea with {}", weatherAreaId);
+        //TODO implement
+        return 0;
+    }
+
     //TODO check
     public boolean CheckIsInMpMode(){
         logger.debug("[LUA] Call CheckIsInMpMode");
@@ -1412,6 +1484,13 @@ public class ScriptLib {
             return 0;
         }
         return ((EntityMonster) entity).getMonsterData().getId();
+    }
+    public int GetMonsterConfigId(int entityId){
+        var entity = getSceneScriptManager().getScene().getEntityById(entityId);
+        if(!(entity instanceof EntityMonster)){
+            return 0;
+        }
+        return entity.getConfigId();
     }
     public int GetMonsterID(int var1){
         //TODO implement var1 type

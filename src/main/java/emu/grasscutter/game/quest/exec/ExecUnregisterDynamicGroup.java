@@ -1,21 +1,18 @@
 package emu.grasscutter.game.quest.exec;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
-import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.SceneBlock;
-import emu.grasscutter.scripts.data.SceneGroup;
+import emu.grasscutter.data.common.quest.SubQuestData.QuestExecParam;
 import lombok.val;
 
 @QuestValueExec(QuestExec.QUEST_EXEC_UNREGISTER_DYNAMIC_GROUP)
 public class ExecUnregisterDynamicGroup extends QuestExecHandler {
 
     @Override
-    public boolean execute(GameQuest quest, QuestData.QuestExecParam condition, String... paramStr) {
+    public boolean execute(GameQuest quest, QuestExecParam condition, String... paramStr) {
         val groupId = Integer.parseInt(paramStr[0]);
         val unknownParam = Integer.parseInt(paramStr[1]); //TODO: Goes from 0 to 1, maybe is a boolean. Investigate
         val scene = quest.getOwner().getScene();

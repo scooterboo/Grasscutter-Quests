@@ -9,6 +9,7 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.props.EntityIdType;
+import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.props.SceneType;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.data.TeleportProperties;
@@ -35,24 +36,25 @@ import java.util.stream.Collectors;
 import static emu.grasscutter.server.event.player.PlayerTeleportEvent.TeleportType.SCRIPT;
 
 public class World implements Iterable<Player> {
-    private final GameServer server;
-    private final Player owner;
-    private final List<Player> players;
-    private final Int2ObjectMap<Scene> scenes;
+    @Getter private final GameServer server;
+    @Getter private final Player owner;
+    @Getter private final List<Player> players;
+    @Getter private final Int2ObjectMap<Scene> scenes;
 
     @Getter private EntityWorld entity;
     private int nextEntityId = 0;
     private int nextPeerId = 0;
-    private int worldLevel;
+    @Getter private int worldLevel;
 
-    private boolean isMultiplayer;
+    @Getter private boolean isMultiplayer;
 
 
-    @Getter
-    private int tickCount = 0;
+    @Getter private int tickCount = 0;
     @Getter private boolean isPaused = false;
+    @Getter private boolean isGameTimeLocked = false;
     private long lastUpdateTime;
     @Getter private long currentWorldTime = 0;
+    @Getter private long currentGameTime = 540;
 
     @Getter private Random worldRandomGenerator;
 
@@ -71,20 +73,28 @@ public class World implements Iterable<Player> {
         this.worldLevel = player.getWorldLevel();
         this.isMultiplayer = isMultiplayer;
         this.lastUpdateTime = System.currentTimeMillis();
-        this.currentWorldTime = owner.getPlayerGameTime();
+        this.currentGameTime = owner.getPlayerGameTime();
+        this.isGameTimeLocked = owner.getBoolProperty(PlayerProperty.PROP_IS_GAME_TIME_LOCKED);
 
         this.worldRandomGenerator = new Random();
 
         this.owner.getServer().registerWorld(this);
     }
 
+    public boolean setGameTimeLocked(boolean gameTimeLocked) {
+        if(isMultiplayer()){
+            // todo maybe build logic to overwrite a property temporarily for multiplayer?
+            return false;
+        }
+        isGameTimeLocked = gameTimeLocked;
+        getPlayers().forEach(p -> p.setProperty(PlayerProperty.PROP_IS_GAME_TIME_LOCKED, gameTimeLocked));
+        return true;
+    }
+
     public Player getHost() {
         return owner;
     }
 
-    public GameServer getServer() {
-        return server;
-    }
 
     public int getLevelEntityId() {
         return entity.getId();
@@ -101,20 +111,8 @@ public class World implements Iterable<Player> {
         return ++this.nextPeerId;
     }
 
-    public int getWorldLevel() {
-        return worldLevel;
-    }
-
     public void setWorldLevel(int worldLevel) {
         this.worldLevel = worldLevel;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Int2ObjectMap<Scene> getScenes() {
-        return this.scenes;
     }
 
     public Scene getSceneById(int sceneId) {
@@ -124,7 +122,7 @@ public class World implements Iterable<Player> {
             return scene;
         }
 
-        // Create scene from scene data if it doesnt exist
+        // Create scene from scene data if it doesn't exist
         SceneData sceneData = GameData.getSceneDataMap().get(sceneId);
         if (sceneData != null) {
             scene = new Scene(this, sceneData);
@@ -137,10 +135,6 @@ public class World implements Iterable<Player> {
 
     public int getPlayerCount() {
         return this.getPlayers().size();
-    }
-
-    public boolean isMultiplayer() {
-        return isMultiplayer;
     }
 
     public int getNextEntityId(EntityIdType idType) {
@@ -351,7 +345,7 @@ public class World implements Iterable<Player> {
 
     private void updatePlayerInfos(Player paramPlayer) {
         for (Player player : this.getPlayers()) {
-            // Dont send packets if player is logging in and filter out joining player
+            // Don't send packets if player is logging in and filter out joining player
             if (!player.hasSentLoginPackets() || player == paramPlayer) {
                 continue;
             }
@@ -359,10 +353,10 @@ public class World implements Iterable<Player> {
             // Update team of all players since max players has been changed - Probably not the best way to do it
             if (this.isMultiplayer()) {
                 player.getTeamManager().getMpTeam().copyFrom(player.getTeamManager().getMpTeam(), player.getTeamManager().getMaxTeamSize());
-                player.getTeamManager().updateTeamEntities(null);
+                player.getTeamManager().updateTeamEntities(true);
             }
 
-            // Dont send packets if player is loading into the scene
+            // Don't send packets if player is loading into the scene
             if (player.getSceneLoadState().getValue() < SceneLoadState.INIT.getValue() ) {
                 // World player info packets
                 player.getSession().send(new PacketWorldPlayerInfoNotify(this));
@@ -386,16 +380,23 @@ public class World implements Iterable<Player> {
     // Returns true if the world should be deleted
     public boolean onTick() {
         if (this.getPlayerCount() == 0) return true;
-        this.scenes.forEach((k, scene) -> scene.onTick());
+        this.scenes.values().stream()
+            .filter(scene -> scene.getPlayerCount() > 0)
+            .forEach(Scene::onTick);
+
+        if(!isGameTimeLocked && !isPaused){
+            currentGameTime++;
+        }
 
 
         // sync time every 10 seconds
         if(tickCount%10 == 0){
             players.forEach(p -> p.sendPacket(new PacketPlayerGameTimeNotify(p)));
+            isGameTimeLocked = getHost().getBoolProperty(PlayerProperty.PROP_IS_GAME_TIME_LOCKED);
         }
         // store updated world time every 60 seconds (ingame hour)
         if(tickCount%60 == 0){
-            this.owner.updatePlayerGameTime(currentWorldTime);
+            this.owner.updatePlayerGameTime(currentGameTime);
         }
         tickCount++;
         return false;
@@ -405,17 +406,21 @@ public class World implements Iterable<Player> {
 
     }
 
-    public void changeTime(int time, int days) {
+    public boolean changeTime(int time, int days, boolean forced) {
+        if(!forced && isGameTimeLocked){
+            return false;
+        }
         val currentTime = getGameTime();
         var diff = time - currentTime;
         if(diff < 0){
             diff = 1440 + diff;
         }
-        this.currentWorldTime += days * 1440 * 1000L + diff * 1000L;
-        this.owner.updatePlayerGameTime(currentWorldTime);
+        this.currentGameTime += days * 1440L + diff;
+        this.owner.updatePlayerGameTime(currentGameTime);
         this.players.forEach(player -> player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_GAME_TIME_TICK,
             getGameTimeHours(), // hours
             days)); //days
+        return true;
     }
 
     public void setPaused(boolean paused) {
@@ -440,7 +445,7 @@ public class World implements Iterable<Player> {
      * Returns the current in game days world time in ingame minutes (0-1439)
      */
     public int getGameTime() {
-        return (int)(getTotalGameTimeMinutes() % 1440);
+        return (int)(currentGameTime % 1440);
     }
 
     /**
@@ -468,7 +473,7 @@ public class World implements Iterable<Player> {
      * Returns the total amount of ingame minutes that got completed since the beginning of the game
      */
     public long getTotalGameTimeMinutes() {
-        return getWorldTime()/1000;
+        return currentGameTime;
     }
 
     /**

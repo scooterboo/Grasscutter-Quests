@@ -553,6 +553,7 @@ public class SceneScriptManager {
                 callEvent(new ScriptArgs(region.getGroupId(), EventType.EVENT_ENTER_REGION, region.getConfigId())
                     .setSourceEntityId(region.getId())
                     .setTargetEntityId(targetID)
+                    .setGroupId(region.getGroupId())
                 );
 
                 region.resetNewEntities();
@@ -568,6 +569,7 @@ public class SceneScriptManager {
                 callEvent(new ScriptArgs(region.getGroupId(), EventType.EVENT_LEAVE_REGION, region.getConfigId())
                     .setSourceEntityId(region.getId())
                     .setTargetEntityId(region.getFirstEntityId())
+                    .setGroupId(region.getGroupId())
                 );
 
                 region.resetNewEntities();

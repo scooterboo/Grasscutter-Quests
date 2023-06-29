@@ -1,19 +1,19 @@
 package emu.grasscutter.game.quest.exec;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.data.excels.QuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
+import emu.grasscutter.data.common.quest.SubQuestData.QuestExecParam;
 import emu.grasscutter.game.world.Scene;
 
 @QuestValueExec(QuestExec.QUEST_EXEC_REGISTER_DYNAMIC_GROUP)
 public class ExecRegisterDynamicGroup extends QuestExecHandler {
 
     @Override
-    public boolean execute(GameQuest quest, QuestData.QuestExecParam condition, String... paramStr) {
+    public boolean execute(GameQuest quest, QuestExecParam condition, String... paramStr) {
         var sceneId = Integer.parseInt(paramStr[0]);
         var groupId = Integer.parseInt(paramStr[1]);
 
