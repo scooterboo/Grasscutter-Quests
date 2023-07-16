@@ -51,7 +51,6 @@ public class EntityTeam extends GameEntity {
 
     @Override
     public Position getPosition() {
-        // TODO Auto-generated method stub
         return new Position(0, 0, 0);
     }
 

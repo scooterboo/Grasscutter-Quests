@@ -420,6 +420,7 @@ public class SceneScriptManager {
             var visionOptions = Grasscutter.config.server.game.visionOptions;
             meta.blocks.values().forEach(block -> {
                 block.load(sceneId, meta.context);
+                Grasscutter.getLogger().debug("Loading block grid " + block.id);
                 block.groups.values().stream().filter(g -> !g.dynamic_load).forEach(group -> {
                     group.load(this.scene.getId());
 
