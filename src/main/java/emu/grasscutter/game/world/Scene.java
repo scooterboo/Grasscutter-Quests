@@ -759,8 +759,11 @@ public class Scene {
 
         if(GameData.getGroupReplacements().containsKey(group_id)) onRegisterGroups();
 
-        if (group.init_config == null) return -1;
-        return group.init_config.suite;
+        SceneGroupInstance instance = getScriptManager().getGroupInstanceById(group_id);
+        if(instance != null)
+            return instance.getActiveSuiteId();
+
+        return -1;
     }
 
     public boolean unregisterDynamicGroup(int groupId){
