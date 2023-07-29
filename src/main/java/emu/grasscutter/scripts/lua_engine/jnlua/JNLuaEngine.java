@@ -1,25 +1,19 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.game.entity.EntityGadget;
-import emu.grasscutter.scripts.SceneScriptManager;
 import emu.grasscutter.scripts.constants.IntValueEnum;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.ScriptArgs;
-import emu.grasscutter.scripts.lua_engine.*;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
+import emu.grasscutter.scripts.lua_engine.LuaScript;
+import emu.grasscutter.scripts.lua_engine.ScriptType;
 import emu.grasscutter.scripts.lua_engine.Serializer;
-import emu.grasscutter.scripts.lua_engine.luaj.ControllerLuaJContext;
-import emu.grasscutter.scripts.lua_engine.luaj.GroupEventLuaJContext;
-import emu.grasscutter.scripts.lua_engine.luaj.LuaJScript;
 import emu.grasscutter.utils.FileUtils;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-import org.luaj.vm2.LuaTable;
 import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.LuaState;
-import org.terasology.jnlua.script.LuaBindings;
 
-import javax.script.*;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -30,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JNLuaEngine implements LuaEngine {
-    @Getter private final ScriptEngineManager manager;
+    @Getter
+    private final ScriptEngineManager manager;
     @Getter(onMethod = @__(@Override))
     private final Serializer serializer;
-    //@Getter(onMethod = @__(@Override))
-    //private final ScriptEngine engine;
-    @Getter private final SimpleBindings bindings;
+    @Getter
+    private final SimpleBindings bindings;
 
     public JNLuaEngine() {
         manager = new ScriptEngineManager();
@@ -57,7 +51,6 @@ public class JNLuaEngine implements LuaEngine {
             table.put(e.name().toUpperCase(), e.ordinal());
         });
         bindings.put(name, table);
-        //ScriptBinding.coerce(engine, name, table);
         return true;
     }
 
@@ -69,7 +62,6 @@ public class JNLuaEngine implements LuaEngine {
             table.put(e.name().toUpperCase(), e.getValue());
         });
         bindings.put(name, table);
-        //ScriptBinding.coerce(engine, name, table);
         return true;
     }
 
@@ -77,7 +69,6 @@ public class JNLuaEngine implements LuaEngine {
     public boolean addGlobalStaticClass(String name, Class<?> staticClass) {
         try {
             bindings.put(name, staticClass.getConstructor().newInstance());
-            //ScriptBinding.coerce(engine, name, staticClass.getConstructor().newInstance());
             return true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
@@ -89,9 +80,9 @@ public class JNLuaEngine implements LuaEngine {
     @Override
     public boolean addObject(String name, Object object) {
         bindings.put(name, object);
-        //ScriptBinding.coerce(engine, name, object);
         return false;
     }
+
     @Nullable
     @Override
     public LuaScript getScript(String scriptName, ScriptType scriptType) {
@@ -100,21 +91,9 @@ public class JNLuaEngine implements LuaEngine {
 
         try {
             return new JNLuaScript(this, scriptPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ScriptException e) {
+        } catch (IOException | ScriptException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public ControllerLuaContext getControllerLuaContext(EntityGadget gadget) {
-        return new ControllerLuaJContext(this, gadget);
-    }
-
-    @Override
-    public GroupEventLuaContext getGroupEventLuaContext(SceneGroup sceneGroupInstance, ScriptArgs args, SceneScriptManager scriptManager) {
-        return new GroupEventLuaJContext(this, sceneGroupInstance, args, scriptManager);
     }
 
     @Override
@@ -124,6 +103,6 @@ public class JNLuaEngine implements LuaEngine {
 
     @Override
     public emu.grasscutter.scripts.lua_engine.LuaTable createTable() {
-        return new JNLuaTable((AbstractMap<?, ?>) new HashMap<>());
+        return new JNLuaTable(new HashMap<>());
     }
 }

@@ -1,12 +1,10 @@
 package emu.grasscutter.scripts.lua_engine.luaj;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.game.entity.EntityGadget;
-import emu.grasscutter.scripts.SceneScriptManager;
 import emu.grasscutter.scripts.constants.IntValueEnum;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.ScriptArgs;
-import emu.grasscutter.scripts.lua_engine.*;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
+import emu.grasscutter.scripts.lua_engine.LuaScript;
+import emu.grasscutter.scripts.lua_engine.ScriptType;
 import emu.grasscutter.utils.FileUtils;
 import lombok.Getter;
 import lombok.val;
@@ -17,7 +15,6 @@ import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.*;
@@ -28,17 +25,16 @@ import java.util.Arrays;
 
 public class LuaJEngine implements LuaEngine {
     private final ScriptEngineManager manager;
-    private final ScriptEngineFactory factory;
     private final LuajContext context;
 
-    @Getter private final ScriptEngine engine;
+    @Getter
+    private final ScriptEngine engine;
     @Getter(onMethod = @__(@Override))
     private final LuaJSerializer serializer;
 
     public LuaJEngine() {
         manager = new ScriptEngineManager();
         engine = manager.getEngineByName("luaj");
-        factory = getEngine().getFactory();
 
         serializer = new LuaJSerializer();
         context = (LuajContext) engine.getContext();
@@ -115,21 +111,9 @@ public class LuaJEngine implements LuaEngine {
 
         try {
             return new LuaJScript(this, scriptPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ScriptException e) {
+        } catch (IOException | ScriptException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public ControllerLuaContext getControllerLuaContext(EntityGadget gadget) {
-        return new ControllerLuaJContext(this, gadget);
-    }
-
-    @Override
-    public GroupEventLuaContext getGroupEventLuaContext(SceneGroup sceneGroupInstance, ScriptArgs args, SceneScriptManager scriptManager) {
-        return new GroupEventLuaJContext(this, sceneGroupInstance, args, scriptManager);
     }
 
     @Override

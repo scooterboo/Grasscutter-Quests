@@ -29,7 +29,6 @@ import emu.grasscutter.scripts.lua_engine.ControllerLuaContext;
 import emu.grasscutter.scripts.lua_engine.GroupEventLuaContext;
 import emu.grasscutter.scripts.lua_engine.LuaContext;
 import emu.grasscutter.scripts.lua_engine.LuaTable;
-import emu.grasscutter.scripts.lua_engine.luaj.GroupEventLuaJContext;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Position;
 import lombok.val;
@@ -641,7 +640,7 @@ public class ScriptLib {
 		return 0;
 	}
 
-	public static int CreateMonster(GroupEventLuaJContext context, Object rawTable){
+	public static int CreateMonster(GroupEventLuaContext context, Object rawTable){
         val table = context.getEngine().getTable(rawTable);
 		logger.debug("[LUA] Call CreateMonster with {}",
 				printTable(table));
@@ -1510,18 +1509,22 @@ public class ScriptLib {
 
     private static int killGroupEntityWithTable(SceneScriptManager sceneScriptManager, SceneGroup group, LuaTable lists){
         // get targets
-        var monsterList = lists.getTable("monsters");
-        var gadgetList = lists.getTable("gadgets");
+        val monsterList = lists.getTable("monsters");
+        val gadgetList = lists.getTable("gadgets");
         val monsterSize = monsterList != null ? monsterList.getSize() : 0;
         val gadgetSize = gadgetList != null ? gadgetList.getSize() : 0;
 
         int[] targets = new int[monsterSize + gadgetSize];
         int targetsIndex = 0;
-        for (int i = 1; i<=monsterSize; i++, targetsIndex++){
-            targets[targetsIndex] = monsterList.optInt(i, -1);
+        if(monsterList != null) {
+            for (int i = 1; i <= monsterSize; i++, targetsIndex++) {
+                targets[targetsIndex] = monsterList.optInt(i, -1);
+            }
         }
-        for (int i = 1; i<=gadgetSize; i++, targetsIndex++){
-            targets[targetsIndex] = gadgetList.optInt(i, -1);
+        if(gadgetList != null) {
+            for (int i = 1; i <= gadgetSize; i++, targetsIndex++) {
+                targets[targetsIndex] = gadgetList.optInt(i, -1);
+            }
         }
 
         // kill targets if exists

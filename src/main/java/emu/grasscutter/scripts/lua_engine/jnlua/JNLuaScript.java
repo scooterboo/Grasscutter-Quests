@@ -2,7 +2,6 @@ package emu.grasscutter.scripts.lua_engine.jnlua;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.ScriptLib;
-import emu.grasscutter.scripts.lua_engine.LuaContext;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
 import emu.grasscutter.scripts.lua_engine.LuaValue;
@@ -61,23 +60,21 @@ public class JNLuaScript implements LuaScript {
 
             @Override
             public void convertJavaObject(LuaState luaState, Object o) {
-                if(o instanceof Map<?,?>){
-                    val fields = (Map<?, ?>) o;
+                if (o instanceof Map<?, ?> fields) {
                     val first = fields.entrySet().stream().findFirst();
-                    if(first.isPresent() && first.get().getKey() instanceof String && first.get().getValue() instanceof Integer){
+                    if (first.isPresent() && first.get().getKey() instanceof String && first.get().getValue() instanceof Integer) {
                         luaState.newTable();
                         for (var entry : fields.entrySet()) {
-                            luaState.pushInteger((Integer)entry.getValue());
+                            luaState.pushInteger((Integer) entry.getValue());
                             luaState.setField(-2, (String) entry.getKey());
                         }
                         return;
                     }
-                } else if (o instanceof ScriptLib){
+                } else if (o instanceof ScriptLib lib) {
                     luaState.newTable();
-                    val lib = (ScriptLib) o;
                     val methods = lib.getClass().getMethods();
                     Arrays.stream(methods).forEach(m -> {
-                            val isStatic =  Modifier.isStatic(m.getModifiers());
+                            val isStatic = Modifier.isStatic(m.getModifiers());
                             class TempFunc implements NamedJavaFunction {
                                 @Override
                                 public String getName() {
@@ -105,8 +102,8 @@ public class JNLuaScript implements LuaScript {
                                 }
                             }
                             val func = new TempFunc();
-                        luaState.pushJavaFunction(func);
-                        luaState.setField(-2, func.getName());
+                            luaState.pushJavaFunction(func);
+                            luaState.setField(-2, func.getName());
                         }
                     );
 
@@ -122,7 +119,7 @@ public class JNLuaScript implements LuaScript {
 
         binding.put("require", (JavaFunction) luaState -> {
             val requriedName = luaState.checkString(1);
-            val path = "Common/"+requriedName + ".lua";
+            val path = "Common/" + requriedName + ".lua";
             val includePath = FileUtils.getScriptPath(path);
             if (!Files.exists(includePath)) {
                 Grasscutter.getLogger().error("Require script not found. {}", path);
@@ -136,11 +133,12 @@ public class JNLuaScript implements LuaScript {
                 //((LuaBindings)context.getBindings(ScriptContext.ENGINE_SCOPE)).getLuaState().call(0, 0);
             } catch (IOException | ScriptException e) {
                 Grasscutter.getLogger().error("Error on loading require script. {}", path, e);
-                 return 2;
+                return 2;
             }
             return 0;
         });
     }
+
     @Override
     public boolean hasMethod(@NotNull String methodName) {
         return binding.containsKey(methodName);
@@ -149,10 +147,10 @@ public class JNLuaScript implements LuaScript {
     @Nullable
     @Override
     public LuaValue callMethod(@NotNull String methodName, Object... args) throws ScriptException, NoSuchMethodException {
-        val result = ((Invocable)scriptEngine).invokeFunction(methodName, args);
-        if(result instanceof Boolean){
+        val result = ((Invocable) scriptEngine).invokeFunction(methodName, args);
+        if (result instanceof Boolean) {
             return ((Boolean) result) ? BooleanLuaValue.TRUE : BooleanLuaValue.FALSE;
-        } else if(result instanceof Integer){
+        } else if (result instanceof Integer) {
             return new IntLuaValue((Integer) result);
         }
         //TODO

@@ -1,26 +1,35 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
-import com.esotericsoftware.reflectasm.ConstructorAccess;
-import com.esotericsoftware.reflectasm.MethodAccess;
-import emu.grasscutter.scripts.ScriptUtils;
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.lua_engine.Serializer;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
 import org.terasology.jnlua.LuaValueProxy;
 import org.terasology.jnlua.util.AbstractTableMap;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class JNLuaSerializer implements Serializer {
-
-	private final static Map<Class<?>, MethodAccess> methodAccessCache = new ConcurrentHashMap<>();
-	private final static Map<Class<?>, ConstructorAccess<?>> constructorCache = new ConcurrentHashMap<>();
-	private final static Map<Class<?>, Map<String, FieldMeta>> fieldMetaCache = new ConcurrentHashMap<>();
+public class JNLuaSerializer extends Serializer {
 
     private final ReentrantLock lock = new ReentrantLock();
+
+    public static Integer getInt(Object value) {
+        if (value instanceof Integer l) {
+            return l.intValue();
+        } else if (value instanceof Double d) {
+            return d.intValue();
+        }
+        return 0;
+    }
+
+    public static Float getFloat(Object value) {
+        if (value instanceof Double l) {
+            return l.floatValue();
+        } else if (value instanceof Integer l) {
+            return l.floatValue();
+        }
+        return 0f;
+    }
+
     // ...
     @Override
     public <T> List<T> toList(Class<T> type, Object obj) {
@@ -33,24 +42,25 @@ public class JNLuaSerializer implements Serializer {
     }
 
     @Override
-    public <T> Map<String,T> toMap(Class<T> type, Object obj) {return serializeMap(type ,(LuaValueProxy) obj);}
-
-    public static Integer getInt(Object value){
-        if(value instanceof Integer l){
-            return l.intValue();
-        } else if(value instanceof Double d){
-            return d.intValue();
-        }
-        return 0;
+    public <T> Map<String, T> toMap(Class<T> type, Object obj) {
+        return serializeMap(type, (LuaValueProxy) obj);
     }
 
-    public static Float getFloat(Object value){
-        if(value instanceof Double l){
-            return l.floatValue();
-        } else if(value instanceof Integer l) {
-            return l.floatValue();
+    private <T> T objectToClass(Class<T> type, Object value) {
+        T object = null;
+
+        if (value instanceof Integer) {
+            object = (T) getInt(value);
+        } else if (value instanceof Double) {
+            object = (T) getFloat(value);
+        } else if (value instanceof String) {
+            object = (T) value;
+        } else if (value instanceof Boolean) {
+            object = (T) value;
+        } else {
+            object = serialize(type, (LuaValueProxy) value);
         }
-        return 0f;
+        return object;
     }
 
     public <T> List<T> serializeList(Class<T> type, LuaValueProxy table) {
@@ -66,19 +76,7 @@ public class JNLuaSerializer implements Serializer {
                 try {
                     var keyValue = k.getValue();
 
-                    T object = null;
-
-                    if (keyValue instanceof Integer) {
-                        object = (T) getInt(keyValue);
-                    } else if (keyValue instanceof Double) {
-                        object = (T) getFloat(keyValue);
-                    } else if (keyValue instanceof String) {
-                        object = (T) keyValue;
-                    } else if (keyValue instanceof Boolean) {
-                        object = (T) keyValue;
-                    } else {
-                        object = serialize(type, (LuaValueProxy) keyValue);
-                    }
+                    T object = objectToClass(type, keyValue);
 
                     if (object != null) {
                         list.add(object);
@@ -88,7 +86,7 @@ public class JNLuaSerializer implements Serializer {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Grasscutter.getLogger().error("Exception serializing list", e);
         }
 
         return list;
@@ -102,7 +100,7 @@ public class JNLuaSerializer implements Serializer {
                 Class<T> listType = (Class<T>) type.getTypeParameters()[0].getClass();
                 return (T) serializeList(listType, table);
             } catch (Exception e) {
-                e.printStackTrace();
+                Grasscutter.getLogger().error("Exception serializing", e);
                 return null;
             }
         }
@@ -125,7 +123,7 @@ public class JNLuaSerializer implements Serializer {
             var tableObj = (AbstractTableMap<String>) table;
             for (var k : tableObj.entrySet()) {
                 try {
-                    var keyName = k.getKey().toString();
+                    var keyName = k.getKey();
                     if (!fieldMetaMap.containsKey(keyName)) {
                         continue;
                     }
@@ -133,37 +131,35 @@ public class JNLuaSerializer implements Serializer {
                     var fieldMeta = fieldMetaMap.get(keyName);
                     var keyValue = k.getValue();
                     if (fieldMeta.getType().equals(float.class)) {
-                        methodAccess.invoke(object, fieldMeta.index, getFloat(keyValue));
+                        methodAccess.invoke(object, fieldMeta.getIndex(), getFloat(keyValue));
                     } else if (fieldMeta.getType().equals(double.class)) {
-                        methodAccess.invoke(object, fieldMeta.index, (keyValue));
+                        methodAccess.invoke(object, fieldMeta.getIndex(), (keyValue));
                     } else if (fieldMeta.getType().equals(int.class)) {
-                        methodAccess.invoke(object, fieldMeta.index, getInt(keyValue));
+                        methodAccess.invoke(object, fieldMeta.getIndex(), getInt(keyValue));
                     } else if (fieldMeta.getType().equals(String.class)) {
-                        methodAccess.invoke(object, fieldMeta.index, keyValue);
+                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue);
                     } else if (fieldMeta.getType().equals(boolean.class)) {
-                        methodAccess.invoke(object, fieldMeta.index, keyValue);
-                    } else if(fieldMeta.getType().equals(List.class)) {
+                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue);
+                    } else if (fieldMeta.getType().equals(List.class)) {
                         List<T> listObj = tableObj.get(k.getKey(), List.class);
-                        methodAccess.invoke(object, fieldMeta.index, listObj);
+                        methodAccess.invoke(object, fieldMeta.getIndex(), listObj);
                     } else {
-                        methodAccess.invoke(object, fieldMeta.index, serialize(fieldMeta.getType(), (LuaValueProxy) keyValue));
+                        methodAccess.invoke(object, fieldMeta.getIndex(), serialize(fieldMeta.getType(), (LuaValueProxy) keyValue));
                         //methodAccess.invoke(object, fieldMeta.index, keyValue);
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
-                    continue;
+                    Grasscutter.getLogger().error("Exception serializing", ex);
                 }
             }
         } catch (Exception e) {
-            //Grasscutter.getLogger().info(ScriptSys.ScriptUtils.toMap(table).toString());
-            e.printStackTrace();
+            Grasscutter.getLogger().error("Exception serializing", e);
         }
 
         return object;
     }
 
-    public <T> Map<String,T> serializeMap(Class<T> type, LuaValueProxy table) {
-        Map<String,T> map = new HashMap<>();
+    public <T> Map<String, T> serializeMap(Class<T> type, LuaValueProxy table) {
+        Map<String, T> map = new HashMap<>();
 
         if (table == null) {
             return map;
@@ -176,95 +172,19 @@ public class JNLuaSerializer implements Serializer {
                 try {
                     var keyValue = k.getValue();
 
-                    T object = null;
-
-                    if (keyValue instanceof Integer) {
-                        object = (T) getInt(keyValue);
-                    } else if (keyValue instanceof Double) {
-                        object = (T) getFloat(keyValue);
-                    } else if (keyValue instanceof String) {
-                        object = (T) keyValue;
-                    } else if (keyValue instanceof Boolean) {
-                        object = (T) keyValue;
-                    } else {
-                        object = serialize(type, (LuaValueProxy) keyValue);
-                    }
+                    T object = objectToClass(type, keyValue);
 
                     if (object != null) {
-                        map.put(k.getKey(),object);
+                        map.put(k.getKey(), object);
                     }
                 } catch (Exception ex) {
 
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Grasscutter.getLogger().error("Exception serializing map", e);
         }
 
         return map;
-    }
-
-    public <T> Map<String, FieldMeta> cacheType(Class<T> type) {
-        if (fieldMetaCache.containsKey(type)) {
-            return fieldMetaCache.get(type);
-        }
-        if (!constructorCache.containsKey(type)) {
-            constructorCache.putIfAbsent(type, ConstructorAccess.get(type));
-        }
-        var methodAccess = Optional.ofNullable(methodAccessCache.get(type)).orElse(MethodAccess.get(type));
-        methodAccessCache.putIfAbsent(type, methodAccess);
-
-        var fieldMetaMap = new HashMap<String, FieldMeta>();
-        var methodNameSet = new HashSet<>(Arrays.stream(methodAccess.getMethodNames()).toList());
-
-        Arrays.stream(type.getDeclaredFields())
-            .filter(field -> methodNameSet.contains(getSetterName(field.getName())))
-            .forEach(field -> {
-                var setter = getSetterName(field.getName());
-                var index = methodAccess.getIndex(setter);
-                fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), setter, index, field.getType()));
-            });
-
-        Arrays.stream(type.getFields())
-            .filter(field -> !fieldMetaMap.containsKey(field.getName()))
-            .filter(field -> methodNameSet.contains(getSetterName(field.getName())))
-            .forEach(field -> {
-                var setter = getSetterName(field.getName());
-                var index = methodAccess.getIndex(setter);
-                fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), setter, index, field.getType()));
-            });
-
-        fieldMetaCache.put(type, fieldMetaMap);
-        return fieldMetaMap;
-    }
-
-    public String getSetterName(String fieldName) {
-        if (fieldName == null || fieldName.length() == 0) {
-            return null;
-        }
-        if (fieldName.length() == 1) {
-            return "set" + fieldName.toUpperCase();
-        }
-        return "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-    }
-
-    @Data
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    static class FieldMeta {
-        String name;
-        String setter;
-        int index;
-        Class<?> type;
-
-        public FieldMeta(String name, String setter, int index, Class<?> type) {
-            this.name = name;
-            this.setter = setter;
-            this.index = index;
-            this.type = type;
-        }
-
-        Class<?> getType() {
-            return type;
-        }
     }
 }

@@ -1,5 +1,10 @@
 package emu.grasscutter.scripts.lua_engine;
 
+import emu.grasscutter.game.entity.EntityGadget;
+import emu.grasscutter.scripts.SceneScriptManager;
+import emu.grasscutter.scripts.data.SceneGroup;
+import emu.grasscutter.scripts.data.ScriptArgs;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.script.ScriptException;
@@ -21,4 +26,12 @@ public interface LuaScript {
     <T> Map<String, T> getGlobalVariableMap(String name, Class<T> type);
 
     LuaEngine getEngine();
+
+    default ControllerLuaContext getControllerLuaContext(EntityGadget gadget){
+        return new ControllerLuaContext(getEngine(), gadget);
+    }
+
+    default GroupEventLuaContext getGroupEventLuaContext(SceneGroup sceneGroupInstance, ScriptArgs args, SceneScriptManager scriptManager){
+        return new GroupEventLuaContext(getEngine(), sceneGroupInstance, args, scriptManager);
+    }
 }

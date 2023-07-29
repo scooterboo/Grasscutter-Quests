@@ -2,7 +2,7 @@ package emu.grasscutter.scripts.lua_engine.mock_results;
 
 import emu.grasscutter.scripts.lua_engine.LuaValue;
 
-public class IntLuaValue implements LuaValue {
+public class IntLuaValue extends MockLuaValue {
     public static final IntLuaValue ZERO = new IntLuaValue(0);
     public static final IntLuaValue ONE = new IntLuaValue(1);
     public static final IntLuaValue N_ONE = new IntLuaValue(-1);
@@ -15,43 +15,8 @@ public class IntLuaValue implements LuaValue {
     }
 
     @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
-    public boolean isBoolean() {
-        return false;
-    }
-
-    @Override
     public boolean isInteger() {
         return true;
-    }
-
-    @Override
-    public boolean isLong() {
-        return false;
-    }
-
-    @Override
-    public boolean isDouble() {
-        return false;
-    }
-
-    @Override
-    public boolean isFloat() {
-        return false;
-    }
-
-    @Override
-    public boolean isString() {
-        return false;
-    }
-
-    @Override
-    public boolean isTable() {
-        return false;
     }
 
     @Override
@@ -86,6 +51,8 @@ public class IntLuaValue implements LuaValue {
 
     @Override
     public <T> T asObject(Class<T> type) {
+        if(type == Number.class)
+            return type.cast(value);
         return null;
     }
 }

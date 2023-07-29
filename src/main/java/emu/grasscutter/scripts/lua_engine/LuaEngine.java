@@ -24,10 +24,6 @@ public interface LuaEngine {
     @Nullable
     LuaScript getScript(String scriptName, ScriptType scriptType);
 
-    ControllerLuaContext getControllerLuaContext(EntityGadget gadget);
-
-    GroupEventLuaContext getGroupEventLuaContext(SceneGroup sceneGroupInstance, ScriptArgs args, SceneScriptManager scriptManager);
-
     LuaTable getTable(Object table);
 
     LuaTable createTable();

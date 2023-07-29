@@ -12,6 +12,7 @@ import emu.grasscutter.scripts.lua_engine.mock_results.IntLuaValue;
 
 import javax.annotation.Nonnull;
 import javax.script.ScriptException;
+import java.util.Arrays;
 
 public class EntityController {
     private transient LuaScript entityController;
@@ -47,18 +48,19 @@ public class EntityController {
 
         if (entityController.hasMethod(funcName)) {
             try {
-                //ScriptLoader.getScriptLib().setCurrentEntity(entity);
-                ControllerLuaContext context = entityController.getEngine().getControllerLuaContext((EntityGadget) entity);
+                ControllerLuaContext context = entityController.getControllerLuaContext((EntityGadget) entity);
                 Object[] newArgs = new Object[args.length + 1];
                 newArgs[0] = context;
                 System.arraycopy(args, 0, newArgs, 1, args.length);
                 return entityController.callMethod(funcName, newArgs);
-            }catch (RuntimeException | ScriptException | NoSuchMethodException error) {
-                ScriptLib.logger.error("[LUA] call function failed in gadget {} with {} ,{}", entity.getEntityTypeId(), funcName, args.toString(), error);
+            } catch (RuntimeException | ScriptException | NoSuchMethodException error) {
+                ScriptLib.logger.error("[LUA] call function failed in gadget {} with {} ,{}",
+                    entity.getEntityTypeId(), funcName, Arrays.toString(args), error);
                 ret = IntLuaValue.N_ONE;
             }
-        } else if(!funcName.equals("OnTimer")) {
-            ScriptLib.logger.error("[LUA] unknown func in gadget {} with {} {}", entity.getEntityTypeId(), funcName, args.toString());
+        } else if (!funcName.equals("OnTimer")) {
+            ScriptLib.logger.error("[LUA] unknown func in gadget {} with {} {}",
+                entity.getEntityTypeId(), funcName, Arrays.toString(args));
         }
         return ret;
     }

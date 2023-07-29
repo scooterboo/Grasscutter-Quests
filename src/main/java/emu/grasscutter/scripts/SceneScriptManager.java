@@ -790,7 +790,7 @@ public class SceneScriptManager {
             return BooleanLuaValue.FALSE;
         }
 
-        val context = script.getEngine().getGroupEventLuaContext(group, params, this);
+        val context = script.getGroupEventLuaContext(group, params, this);
         try{
             return script.callMethod(funcName, context, params);
         } catch (RuntimeException | ScriptException | NoSuchMethodException error){
