@@ -18,7 +18,10 @@ import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.EnterTypeOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.constants.temporary.FlowSuiteOperatePolicy;
 import emu.grasscutter.scripts.constants.GroupKillPolicy;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreType;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreUIType;
 import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneObject;
 import emu.grasscutter.scripts.data.ScriptArgs;
@@ -48,6 +51,9 @@ public class ScriptLib {
 	public ScriptLib() {
 	}
 
+    /**
+     * Helpers
+     */
 	private static String printTable(LuaTable table){
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -58,8 +64,56 @@ public class ScriptLib {
 		return sb.toString();
 	}
 
+    private static void printLog(@Nullable LuaContext context, String source, String msg){
+        if(context instanceof GroupEventLuaContext){
+            var group = ((GroupEventLuaContext) context).getCurrentGroup();
+            logger.debug("[LUA] {} {} {}", source, group.id, msg);
+            return;
+        } else {
+            logger.debug("[LUA] {} {}", source, msg);
+        }
+    }
 
-	public static int SetGadgetStateByConfigId(GroupEventLuaContext context, int configId, int gadgetState) {
+
+    private static GameEntity createGadget(SceneScriptManager sceneScriptManager, int configId, SceneGroup group){
+        var gadget = group.gadgets.get(configId);
+        var entity = sceneScriptManager.createGadget(group.id, group.block_id, gadget);
+        if(entity==null){
+            logger.warn("[LUA] Create gadget null with cid: {} gid: {} bid: {}", configId, group.id, group.block_id);
+            return null;
+        }
+
+        sceneScriptManager.addEntity(entity);
+        return entity;
+    }
+
+
+    /**
+     * Context free functions
+     */
+
+    public static void PrintLog(String msg) {
+        printLog(null, "PrintLog", msg);
+    }
+
+    public static int GetEntityType(int entityId){
+        return entityId >> 24;
+    }
+
+
+    /**
+     * Context independent functions
+     */
+    public static void PrintContextLog(LuaContext context, String msg) {
+        printLog(context , "PrintContextLog", msg);
+    }
+
+
+    /**
+     * GroupEventLuaContext functions
+     */
+
+    public static int SetGadgetStateByConfigId(GroupEventLuaContext context, int configId, int gadgetState) {
 		logger.debug("[LUA] Call SetGadgetStateByConfigId with {},{}",
 				configId,gadgetState);
 		GameEntity entity = context.getSceneScriptManager().getScene().getEntityByConfigId(configId);
@@ -200,6 +254,35 @@ public class ScriptLib {
 		return 0;
 	}
 
+    public static int GoToGroupSuite(GroupEventLuaContext context, int groupId, int suite) {
+        logger.debug("[LUA] Call GoToGroupSuite with {},{}",
+            groupId,suite);
+        val scriptManager = context.getSceneScriptManager();
+        SceneGroup group = scriptManager.getGroupById(groupId);
+        SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(groupId);
+        if (group == null || groupInstance == null || group.monsters == null) {
+            return 1;
+        }
+        var suiteData = group.getSuiteByIndex(suite);
+        if(suiteData == null){
+            return 1;
+        }
+
+		/*for(var suiteItem : group.suites){
+			if(suiteData == suiteItem){
+				continue;
+			}
+			this.getSceneScriptManager().removeGroupSuite(group, suiteItem);
+		}*/
+        if(groupInstance.getActiveSuiteId() == 0 || groupInstance.getActiveSuiteId() != suite) {
+            groupInstance.getDeadEntities().clear();
+            scriptManager.addGroupSuite(groupInstance, suiteData);
+            groupInstance.setActiveSuiteId(suite);
+        }
+
+        return 0;
+    }
+
 	public static int AddExtraGroupSuite(GroupEventLuaContext context, int groupId, int suite) {
 		logger.debug("[LUA] Call AddExtraGroupSuite with {},{}",
 				groupId,suite);
@@ -216,34 +299,6 @@ public class ScriptLib {
 			return 1;
 		}
 		scriptManager.addGroupSuite(groupInstance, suiteData);
-
-		return 0;
-	}
-	public static int GoToGroupSuite(GroupEventLuaContext context, int groupId, int suite) {
-		logger.debug("[LUA] Call GoToGroupSuite with {},{}",
-				groupId,suite);
-        val scriptManager = context.getSceneScriptManager();
-		SceneGroup group = scriptManager.getGroupById(groupId);
-        SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(groupId);
-		if (group == null || groupInstance == null || group.monsters == null) {
-			return 1;
-		}
-		var suiteData = group.getSuiteByIndex(suite);
-		if(suiteData == null){
-			return 1;
-		}
-
-		/*for(var suiteItem : group.suites){
-			if(suiteData == suiteItem){
-				continue;
-			}
-			this.getSceneScriptManager().removeGroupSuite(group, suiteItem);
-		}*/
-        if(groupInstance.getActiveSuiteId() == 0 || groupInstance.getActiveSuiteId() != suite) {
-            groupInstance.getDeadEntities().clear();
-		    scriptManager.addGroupSuite(groupInstance, suiteData);
-            groupInstance.setActiveSuiteId(suite);
-        }
 
 		return 0;
 	}
@@ -281,7 +336,26 @@ public class ScriptLib {
 
 		return 0;
 	}
-	// param3 (probably time limit for timed dungeons)
+
+    public static int AddExtraFlowSuite(GroupEventLuaContext context, int groupId, int suiteId, int flowSuitePolicy){
+        val policy = FlowSuiteOperatePolicy.values()[flowSuitePolicy];
+        logger.warn("[LUA] Call unimplemented AddExtraFlowSuite with {} {} {} ({})", groupId, suiteId, policy.name(), flowSuitePolicy);
+        // TODO: implement
+        return 0;
+    }
+    public static int RemoveExtraFlowSuite(GroupEventLuaContext context, int groupId, int suiteId, int flowSuitePolicy){
+        val policy = FlowSuiteOperatePolicy.values()[flowSuitePolicy];
+        logger.warn("[LUA] Call unimplemented RemoveExtraFlowSuite with {} {} {} ({})", groupId, suiteId, policy.name(), flowSuitePolicy);
+        // TODO: implement
+        return 0;
+    }
+    public static int KillExtraFlowSuite(GroupEventLuaContext context, int groupId, int suiteId, int flowSuitePolicy){
+        val policy = FlowSuiteOperatePolicy.values()[flowSuitePolicy];
+        logger.warn("[LUA] Call unimplemented KillExtraFlowSuite with {} {} {} ({})", groupId, suiteId, policy.name(), flowSuitePolicy);
+        // TODO: implement
+        return 0;
+    }
+
 	public static int ActiveChallenge(GroupEventLuaContext context, int challengeId, int challengeIndex, int timeLimitOrGroupId, int groupId, int objectiveKills, int param5) {
 		logger.debug("[LUA] Call ActiveChallenge with {},{},{},{},{},{}",
 				challengeId,challengeIndex,timeLimitOrGroupId,groupId,objectiveKills,param5);
@@ -321,19 +395,40 @@ public class ScriptLib {
             return 2;
         }
 
-        switch (result){
-            case 0:
-                challenge.fail();
-                break;
-            case 1:
-                challenge.done();
-                break;
-            default:
+        switch (result) {
+            case 0 -> challenge.fail();
+            case 1 -> challenge.done();
+            default -> {
                 logger.warn("[LUA] Call StopChallenge with unsupported result {}", result);
                 return 3;
-
+            }
         }
         return 0;
+    }
+
+    /**
+     * Adds or removed time from the challenge
+     * TODO verify and implement
+     * @param context
+     * @param challengeId The active target challenges id
+     * @param duration The duration to add or remove
+     * @return 0 if success, 1 if no challenge is active, 2 if the challenge id doesn't match the active challenge,
+     * 3 if modifying the duration failed
+     */
+    public static int AddChallengeDuration(GroupEventLuaContext context, int challengeId, int duration) {
+        logger.warn("[LUA] Call unimplemented AddChallengeDuration with {},{}", challengeId, duration);
+        var challenge = context.getSceneScriptManager().getScene().getChallenge();
+        if(challenge == null){
+            return 1;
+        }
+        if(challenge.getChallengeId() != challengeId){
+            return 2;
+        }
+        /*if(!challenge.addDuration(duration)){
+            return 3;
+        }*/
+        return 0;
+
     }
 
 	public static int GetGroupMonsterCountByGroupId(GroupEventLuaContext context, int groupId) {
@@ -446,22 +541,6 @@ public class ScriptLib {
 		return (int) region.getEntities().stream().filter(e -> e >> 24 == entityType).count();
 	}
 
-    private static void printLog(@Nullable LuaContext context, String source, String msg){
-        if(context instanceof GroupEventLuaContext){
-            var group = ((GroupEventLuaContext) context).getCurrentGroup();
-            logger.debug("[LUA] {} {} {}", source, group.id, msg);
-            return;
-        } else {
-            logger.debug("[LUA] {} {}", source, msg);
-        }
-    }
-
-	public static void PrintContextLog(LuaContext context, String msg) {
-        printLog(context , "PrintContextLog", msg);
-	}
-	public static void PrintLog(String msg) {
-        printLog(null, "PrintLog", msg);
-	}
 
 	public static int TowerCountTimeStatus(GroupEventLuaContext context, int isDone, int var2){
 		logger.debug("[LUA] Call TowerCountTimeStatus with {},{}",
@@ -596,18 +675,6 @@ public class ScriptLib {
 		return 0;
 	}
 
-    private static GameEntity createGadget(SceneScriptManager sceneScriptManager, int configId, SceneGroup group){
-        var gadget = group.gadgets.get(configId);
-        var entity = sceneScriptManager.createGadget(group.id, group.block_id, gadget);
-        if(entity==null){
-            logger.warn("[LUA] Create gadget null with cid: {} gid: {} bid: {}", configId, group.id, group.block_id);
-            return null;
-        }
-
-        sceneScriptManager.addEntity(entity);
-        return entity;
-    }
-
 	public static int CheckRemainGadgetCountByGroupId(GroupEventLuaContext context, Object rawTable) {
         val table = context.getEngine().getTable(rawTable);
 		logger.debug("[LUA] Call CheckRemainGadgetCountByGroupId with {}",
@@ -639,13 +706,13 @@ public class ScriptLib {
 		return 0;
 	}
 
-	public static int AddQuestProgress(GroupEventLuaContext context, String var1){
+	public static int AddQuestProgress(GroupEventLuaContext context, String eventNotifyName){
 		logger.debug("[LUA] Call AddQuestProgress with {}",
-				var1);
+            eventNotifyName);
 
         for(var player : context.getSceneScriptManager().getScene().getPlayers()){
-            player.getQuestManager().queueEvent(QuestCond.QUEST_COND_LUA_NOTIFY, var1);
-            player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_LUA_NOTIFY, var1);
+            player.getQuestManager().queueEvent(QuestCond.QUEST_COND_LUA_NOTIFY, eventNotifyName);
+            player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_LUA_NOTIFY, eventNotifyName);
         }
 
 		return 0;
@@ -674,9 +741,6 @@ public class ScriptLib {
 		return 1;
 	}
 
-    public static int GetEntityType(int entityId){
-        return entityId >> 24;
-    }
 
     public static int GetSceneOwnerUid(GroupEventLuaContext context){
         return context.getSceneScriptManager().getScene().getWorld().getHost().getUid();
@@ -935,7 +999,7 @@ public class ScriptLib {
         return 0;
     }
     public static int EndTimeAxis(GroupEventLuaContext context, String var1){
-        logger.warn("[LUA] Call unimplemented EndTimeAxis with {} {} {}", var1);
+        logger.warn("[LUA] Call unimplemented EndTimeAxis with {}", var1);
         //TODO implement var1 == name?
         return 0;
     }
@@ -1023,6 +1087,36 @@ public class ScriptLib {
         val var2 = context.getEngine().getTable(var2Table);
         logger.warn("[LUA] Call unimplemented UpdatePlayerGalleryScore with {} {}", galleryId, printTable(var2));
         //TODO implement var2 contains int uid
+        return 0;
+    }
+    public static int InitGalleryProgressScore(GroupEventLuaContext context, String name, int galleryId, Object progressTable,
+                                               int scoreUiTypeIndex, int scoreTypeIndex) {
+        val progress = context.getEngine().getTable(progressTable);
+        val uiScoreType = GalleryProgressScoreUIType.values()[scoreUiTypeIndex];
+        val scoreType = GalleryProgressScoreType.values()[scoreTypeIndex];
+        logger.warn("[LUA] Call unimplemented InitGalleryProgressScore with {} {} {} {}({}) {}({})", name, galleryId, printTable(progress),
+            uiScoreType.name(), scoreUiTypeIndex, scoreType.name(), scoreTypeIndex);
+        //TODO implement
+        return 0;
+    }
+    public static int InitGalleryProgressWithScore(GroupEventLuaContext context, String name, int galleryId, Object progressTable,
+                                               int maxProgress, int scoreUiTypeIndex, int scoreTypeIndex) {
+        val progress = context.getEngine().getTable(progressTable);
+        val uiScoreType = GalleryProgressScoreUIType.values()[scoreUiTypeIndex];
+        val scoreType = GalleryProgressScoreType.values()[scoreTypeIndex];
+        logger.warn("[LUA] Call unimplemented InitGalleryProgressWithScore with {} {} {} {} {}({}) {}({})", name, galleryId, printTable(progress),
+            maxProgress, uiScoreType.name(), scoreUiTypeIndex, scoreType.name(), scoreTypeIndex);
+        //TODO implement
+        return 0;
+    }
+    public static int AddGalleryProgressScore(GroupEventLuaContext context, String name, int galleryId, int score) {
+        logger.warn("[LUA] Call unimplemented AddGalleryProgressScore with {} {} {}", name, galleryId, score);
+        //TODO implement
+        return 0;
+    }
+    public static int GetGalleryProgressScore(GroupEventLuaContext context, String name, int galleryId) {
+        logger.warn("[LUA] Call unimplemented GetGalleryProgressScore with {} {}", name, galleryId);
+        //TODO implement
         return 0;
     }
     public static int SetHandballGalleryBallPosAndRot(GroupEventLuaContext context, int galleryId, Object positionTable, Object rotationTable){
@@ -1229,13 +1323,19 @@ public class ScriptLib {
         return 0;
     }
 
-    public static int ActivateDungeonCheckPoint(GroupEventLuaContext context, int var1){
-        logger.warn("[LUA] Call untested ActivateDungeonCheckPoint with {}", var1);
+    /**
+     * Activates a dungeon checkpoint.
+     * @param context a group event lua context
+     * @param pointId the scene point id of the dungeon checkpoint
+     * @return 0 if successful, 1 if dungeon manager is null, 2 if dungeon manager failed to activate the checkpoint
+     */
+    public static int ActivateDungeonCheckPoint(GroupEventLuaContext context, int pointId){
+        logger.debug("[LUA] Call untested ActivateDungeonCheckPoint with {}", pointId);
         var dungeonManager = context.getSceneScriptManager().getScene().getDungeonManager();
         if(dungeonManager == null){
             return 1;
         }
-        return dungeonManager.activateRespawnPoint(var1) ? 0:2;
+        return dungeonManager.activateRespawnPoint(pointId) ? 0:2;
     }
 
     //TODO check
@@ -1530,9 +1630,170 @@ public class ScriptLib {
         return context.getSceneScriptManager().getScene().getWorld().getGameTimeHours();
     }
 
+    public static int ActivateGroupLinkBundle(GroupEventLuaContext context, int groupId){
+        logger.warn("[LUA] Call unimplemented ActivateGroupLinkBundle with {}", groupId);
+        //TODO implement
+        return 0;
+    }
+    public static int ActivateGroupLinkBundleByBundleId(GroupEventLuaContext context, int bundleId){
+        logger.warn("[LUA] Call unimplemented ActivateGroupLinkBundleByBundleId with {}", bundleId);
+        //TODO implement
+        return 0;
+    }
+
     /**
-     * Methods used in EntityControllers
-      */
+     * TODO implement
+     * @param context
+     * @param givingId The id if the giving element found in [GivingData]
+     * @param groupId The groupdId of the group containing the gadget
+     * @param gadgetCfgId The gadgets target configId
+     * @return 0 if success, something else if failed
+     */
+    public static int ActiveGadgetItemGiving(GroupEventLuaContext context, int givingId, int groupId, int gadgetCfgId){
+        logger.warn("[LUA] Call unimplemented ActiveGadgetItemGiving with {} {} {}", givingId, groupId, gadgetCfgId);
+        return 0;
+    }
+
+    public static int AddChessBuildingPoints(GroupEventLuaContext context, int groupId, int param2, int uid, int pointsToAdd){
+        logger.warn("[LUA] Call unimplemented AddChessBuildingPoints with {} {} {} {}", groupId, param2, uid, pointsToAdd);
+        //TODO implement
+        return 0;
+    }
+
+    public static int AddEntityGlobalFloatValueByConfigId(GroupEventLuaContext context, Object param1Table, String param2, int param3){
+        val param1 = context.getEngine().getTable(param1Table);
+        logger.warn("[LUA] Call unimplemented AddEntityGlobalFloatValueByConfigId with {} {} {}", printTable(param1), param2, param3);
+        //TODO implement
+        return 0;
+    }
+
+    /**
+     * TODO implement
+     * @param context
+     * @param uid
+     * @param param2  probably the name of the data field
+     * @param param3
+     * @return
+     */
+    public static int AddExhibitionAccumulableData(GroupEventLuaContext context, int uid, String param2, int param3){
+        logger.warn("[LUA] Call unimplemented AddExhibitionAccumulableData with {} {} {}", uid, param2, param3);
+        return 0;
+    }
+
+    /**
+     * TODO implement
+     * @param context
+     * @param uid
+     * @param param2 probably the name of the data field
+     * @param param3
+     * @param param4Table contains the fields "play_type" is part of the enum [ExhibitionPlayType] and "gallery_id"
+     * @return
+     */
+    public static int AddExhibitionAccumulableDataAfterSuccess(GroupEventLuaContext context, int uid, String param2, int param3, Object param4Table){
+        val param4 = context.getEngine().getTable(param4Table);
+        logger.warn("[LUA] Call unimplemented AddExhibitionAccumulableDataAfterSuccess with {} {} {} {}", uid, param2, param3, printTable(param4));
+        return 0;
+    }
+
+    /**
+     * TODO implement
+     * @param context
+     * @param uid
+     * @param param2  probably the name of the data field
+     * @param param3
+     * @return
+     */
+    public static int AddExhibitionReplaceableData(GroupEventLuaContext context, int uid, String param2, int param3){
+        logger.warn("[LUA] Call unimplemented AddExhibitionReplaceableData with {} {} {}", uid, param2, param3);
+        return 0;
+    }
+
+    /**
+     * TODO implement
+     * @param context
+     * @param uid
+     * @param param2 probably the name of the data field
+     * @param param3
+     * @param param4Table contains the fields "play_type" is part of the enum [ExhibitionPlayType] and "gallery_id"
+     * @return
+     */
+    public static int AddExhibitionReplaceableDataAfterSuccess(GroupEventLuaContext context, int uid, String param2, int param3, Object param4Table){
+        val param4 = context.getEngine().getTable(param4Table);
+        logger.warn("[LUA] Call unimplemented AddExhibitionReplaceableDataAfterSuccess with {} {} {} {}", uid, param2, param3, printTable(param4));
+        return 0;
+    }
+
+    public static int AddFleurFairMultistagePlayBuffEnergy(GroupEventLuaContext context, int groupId, int param2, int uid, int bonusId){
+        logger.warn("[LUA] Call unimplemented AddFleurFairMultistagePlayBuffEnergy with {} {} {} {}", groupId, param2, uid, bonusId);
+        //TODO implement
+        return 0;
+    }
+
+    public static int AddGadgetPlayProgress(GroupEventLuaContext context, int param1, int param2, int progressChange){
+        logger.warn("[LUA] Call unimplemented AddGadgetPlayProgress with {} {} {}", param1, param2, progressChange);
+        //TODO implement
+        return 0;
+    }
+
+    public static int AddIrodoriChessBuildingPoints(GroupEventLuaContext context, int groupId, int param2, int points){
+        logger.warn("[LUA] Call unimplemented AddIrodoriChessBuildingPoints with {} {} {}", groupId, param2, points);
+        //TODO implement
+        return 0;
+    }
+    public static int AddIrodoriChessTowerServerGlobalValue(GroupEventLuaContext context, int groupId, int param2, int param3, int delta){
+        logger.warn("[LUA] Call unimplemented AddIrodoriChessTowerServerGlobalValue with {} {} {} {}", groupId, param2, param3, delta);
+        //TODO implement
+        return 0;
+    }
+    public static int AddMechanicusBuildingPoints(GroupEventLuaContext context, int groupId, int param2, int uid, int delta){
+        logger.warn("[LUA] Call unimplemented AddIrodoriChessTowerServerGlobalValue with {} {} {} {}", groupId, param2, uid, delta);
+        //TODO implement
+        return 0;
+    }
+
+    public static int AddRegionRecycleProgress(GroupEventLuaContext context, int regionId, int delta){
+        logger.warn("[LUA] Call unimplemented AddRegionRecycleProgress with {} {}", regionId, delta);
+        //TODO implement
+        return 0;
+    }
+    public static int AddRegionSearchProgress(GroupEventLuaContext context, int regionId, int delta){
+        logger.warn("[LUA] Call unimplemented AddRegionSearchProgress with {} {}", regionId, delta);
+        //TODO implement
+        return 0;
+    }
+    public static int AddRegionalPlayVarValue(GroupEventLuaContext context, int uid, int regionId, int delta){
+        logger.warn("[LUA] Call unimplemented AddRegionalPlayVarValue with {} {} {}", uid, regionId, delta);
+        //TODO implement
+        return 0;
+    }
+    public static int AddSceneMultiStagePlayUidValue(GroupEventLuaContext context, int groupId, int param2, String param3, int uid, int param5){
+        logger.warn("[LUA] Call unimplemented AddSceneMultiStagePlayUidValue with {} {} {} {} {}", groupId, param2, param3, uid, param5);
+        //TODO implement
+        return 0;
+    }
+    public static int AddScenePlayBattleProgress(GroupEventLuaContext context, int groupId, int progress){
+        logger.warn("[LUA] Call unimplemented AddScenePlayBattleProgress with {} {}", groupId, progress);
+        //TODO implement
+        return 0;
+    }
+
+    /**
+     * TODO implement
+     * @param context
+     * @param param1Table contains the following fields: param_index:int, param_list:Table, param_uid_list:Table,
+     *                    duration:int, target_uid_list:Table
+     * @return
+     */
+    public static int AssignPlayerUidOpNotify(GroupEventLuaContext context, Object param1Table){
+        val param1 = context.getEngine().getTable(param1Table);
+        logger.warn("[LUA] Call unimplemented AssignPlayerUidOpNotify with {}", printTable(param1));
+        return 0;
+    }
+
+
+    /**
+     * Methods used in EntityControllers/using ControllerLuaContext
+     */
 
     public static int SetGadgetState(ControllerLuaContext context, int gadgetState) {
         EntityGadget gadget = context.getEntity();

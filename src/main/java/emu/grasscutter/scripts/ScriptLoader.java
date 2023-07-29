@@ -7,6 +7,10 @@ import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.scripts.constants.*;
+import emu.grasscutter.scripts.constants.temporary.ExhibitionPlayType;
+import emu.grasscutter.scripts.constants.temporary.FlowSuiteOperatePolicy;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreType;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreUIType;
 import emu.grasscutter.scripts.data.SceneMeta;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
@@ -54,6 +58,10 @@ public class ScriptLoader {
         luaEngine.addGlobalEnumByOrdinal("FatherChallengeProperty", FatherChallengeProperty.values());
         luaEngine.addGlobalEnumByOrdinal("ChallengeEventMarkType", ChallengeEventMarkType.values());
         luaEngine.addGlobalEnumByOrdinal("VisionLevelType", VisionLevelType.values());
+        luaEngine.addGlobalEnumByOrdinal("ExhibitionPlayType", ExhibitionPlayType.values());
+        luaEngine.addGlobalEnumByOrdinal("FlowSuiteOperatePolicy", FlowSuiteOperatePolicy.values());
+        luaEngine.addGlobalEnumByOrdinal("GalleryProgressScoreUIType", GalleryProgressScoreUIType.values());
+        luaEngine.addGlobalEnumByOrdinal("GalleryProgressScoreType", GalleryProgressScoreType.values());
 
         luaEngine.addGlobalStaticClass("EventType", EventType.class);
         luaEngine.addGlobalStaticClass("GadgetState", ScriptGadgetState.class);
