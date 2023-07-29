@@ -29,7 +29,7 @@ public class EventType {
 	public static final int EVENT_MONSTER_BATTLE = 22;
 	public static final int EVENT_CITY_LEVELUP = 23;
 	public static final int EVENT_CUTSCENE_END = 24;
-	public static final int EVENT_AVATAR_NEAR_PLATFORM = 25;
+	public static final int EVENT_AVATAR_NEAR_PLATFORM = 25; // also send by the client
 	public static final int EVENT_PLATFORM_REACH_POINT = 26;
 	public static final int EVENT_UNLOCK_TRANS_POINT = 27;
 	public static final int EVENT_QUEST_START = 28;
