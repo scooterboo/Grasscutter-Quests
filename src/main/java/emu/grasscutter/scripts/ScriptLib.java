@@ -618,18 +618,29 @@ public class ScriptLib {
         val table = context.getEngine().getTable(rawTable);
 		logger.debug("[LUA] Call KillEntityByConfigId with {}",
 				printTable(table));
-		var configId = table.optInt("config_id", -1);
-		if(configId == -1){
-			return 1;
-		}
-
-		var entity = context.getSceneScriptManager().getScene().getEntityByConfigId(configId);
-		if(entity == null){
-			return 0;
-		}
-        context.getSceneScriptManager().getScene().killEntity(entity, 0);
-		return 0;
+        return killEntityByConfigId(context.getSceneScriptManager().getScene().getScriptManager(), table);
 	}
+
+	public static int KillEntityByConfigId(ControllerLuaContext context, Object rawTable) {
+        val table = context.getEngine().getTable(rawTable);
+		logger.debug("[LUA] Call KillEntityByConfigId with {} on Controller",
+				printTable(table));
+        return killEntityByConfigId(context.getGadget().getScene().getScriptManager(), table);
+	}
+
+    private static int killEntityByConfigId(SceneScriptManager scriptManager, LuaTable luaTable){
+        var configId = luaTable.optInt("config_id", -1);
+        if(configId == -1){
+            return 1;
+        }
+
+        var entity = scriptManager.getScene().getEntityByConfigId(configId);
+        if(entity == null){
+            return 0;
+        }
+        scriptManager.getScene().killEntity(entity, 0);
+        return 0;
+    }
 
 	public static int SetGroupVariableValueByGroup(GroupEventLuaContext context, String key, int value, int groupId){
 		logger.debug("[LUA] Call SetGroupVariableValueByGroup with {},{},{}",

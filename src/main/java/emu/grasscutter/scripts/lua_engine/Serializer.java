@@ -72,7 +72,7 @@ public abstract class Serializer {
     @Data
     @AllArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    protected class FieldMeta {
+    protected static class FieldMeta {
         String name;
         String setter;
         int index;
