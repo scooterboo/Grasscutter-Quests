@@ -5,6 +5,10 @@ import emu.grasscutter.scripts.lua_engine.Serializer;
 import org.terasology.jnlua.LuaValueProxy;
 import org.terasology.jnlua.util.AbstractTableMap;
 
+import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -38,7 +42,7 @@ public class JNLuaSerializer extends Serializer {
 
     @Override
     public <T> T toObject(Class<T> type, Object obj) {
-        return serialize(type, (LuaValueProxy) obj);
+        return serialize(type, null, (LuaValueProxy) obj);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class JNLuaSerializer extends Serializer {
         } else if (value instanceof Boolean) {
             object = (T) value;
         } else {
-            object = serialize(type, (LuaValueProxy) value);
+            object = serialize(type, null, (LuaValueProxy) value);
         }
         return object;
     }
@@ -92,12 +96,24 @@ public class JNLuaSerializer extends Serializer {
         return list;
     }
 
-    public <T> T serialize(Class<T> type, LuaValueProxy table) {
+    private Class<?> getListType(Class<?> type, @Nullable Field field){
+        if(field == null){
+            return type.getTypeParameters()[0].getClass();
+        }
+        Type fieldType = field.getGenericType();
+        if(fieldType instanceof ParameterizedType){
+            return (Class<?>) ((ParameterizedType) fieldType).getActualTypeArguments()[0];
+        }
+
+        return null;
+    }
+
+    public <T> T serialize(Class<T> type, @Nullable Field field, LuaValueProxy table) {
         T object = null;
 
         if (type == List.class) {
             try {
-                Class<T> listType = (Class<T>) type.getTypeParameters()[0].getClass();
+                Class<?> listType = getListType(type, field);
                 return (T) serializeList(listType, table);
             } catch (Exception e) {
                 Grasscutter.getLogger().error("Exception serializing", e);
@@ -106,11 +122,9 @@ public class JNLuaSerializer extends Serializer {
         }
 
         try {
-            lock.lock();
             if (!methodAccessCache.containsKey(type)) {
                 cacheType(type);
             }
-            lock.unlock();
             var methodAccess = methodAccessCache.get(type);
             var fieldMetaMap = fieldMetaCache.get(type);
 
@@ -141,10 +155,12 @@ public class JNLuaSerializer extends Serializer {
                     } else if (fieldMeta.getType().equals(boolean.class)) {
                         methodAccess.invoke(object, fieldMeta.getIndex(), keyValue);
                     } else if (fieldMeta.getType().equals(List.class)) {
-                        List<T> listObj = tableObj.get(k.getKey(), List.class);
+                        LuaValueProxy objTable = (LuaValueProxy) tableObj.get(k.getKey());
+                        Class<?> listType = getListType(type, fieldMeta.getField());
+                        List<?> listObj = serializeList(listType, objTable);
                         methodAccess.invoke(object, fieldMeta.getIndex(), listObj);
                     } else {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), serialize(fieldMeta.getType(), (LuaValueProxy) keyValue));
+                        methodAccess.invoke(object, fieldMeta.getIndex(), serialize(fieldMeta.getType(), fieldMeta.getField(), (LuaValueProxy) keyValue));
                         //methodAccess.invoke(object, fieldMeta.index, keyValue);
                     }
                 } catch (Exception ex) {
