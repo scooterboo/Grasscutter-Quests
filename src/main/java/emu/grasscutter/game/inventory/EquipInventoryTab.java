@@ -6,7 +6,7 @@ import java.util.Set;
 public class EquipInventoryTab implements InventoryTab {
 	private final Set<GameItem> items;
 	private final int maxCapacity;
-	
+
 	public EquipInventoryTab(int maxCapacity) {
 		this.items = new HashSet<GameItem>();
 		this.maxCapacity = maxCapacity;
@@ -16,6 +16,11 @@ public class EquipInventoryTab implements InventoryTab {
 	public GameItem getItemById(int id) {
 		return null;
 	}
+
+    @Override
+    public int getItemCountById(int itemId) {
+        return (int) items.stream().filter(item -> item.getItemId() == itemId).count();
+    }
 
 	@Override
 	public void onAddItem(GameItem item) {

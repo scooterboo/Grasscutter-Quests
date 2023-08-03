@@ -28,7 +28,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.val;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import static emu.grasscutter.config.Configuration.INVENTORY_LIMITS;
@@ -69,8 +71,28 @@ public class Inventory extends BasePlayerManager implements Iterable<GameItem> {
         this.getInventoryTypes().put(type.getValue(), tab);
     }
 
-    public GameItem getItemByGuid(long id) {
-        return this.getItems().get(id);
+    public GameItem getItemByGuid(long guid) {
+        return this.getItems().get(guid);
+    }
+
+    @Nullable
+    public InventoryTab getInventoryTabByItemId(int itemId){
+        val itemData = GameData.getItemDataMap().get(itemId);
+        if (itemData == null || itemData.getItemType() == null) {
+            return null;
+        }
+        return getInventoryTab(itemData.getItemType());
+    }
+
+    @Nullable
+    public GameItem getItemById(int itemId) {
+        val inventoryTab = getInventoryTabByItemId(itemId);
+        return inventoryTab!=null ? inventoryTab.getItemById(itemId) : null;
+    }
+
+    public int getItemCountById(int itemId){
+        val inventoryTab = getInventoryTabByItemId(itemId);
+        return inventoryTab!=null ? inventoryTab.getItemCountById(itemId) : 0;
     }
 
     public boolean addItem(int itemId) {
