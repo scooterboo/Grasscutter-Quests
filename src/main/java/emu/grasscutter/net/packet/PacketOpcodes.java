@@ -1792,7 +1792,7 @@ public class PacketOpcodes {
     public static final int Unk3000_EDGJEBLODLF = 416;
     public static final int Unk3000_EHJALCDEBKK = 23381;
     public static final int Unk3000_EMGMOECAJDK = 6092;
-    public static final int Unk3000_EOLNDBMGCBP = 4473;
+    public static final int GetHomeExchangeWoodInfoReq = 4473;
     public static final int GetAllMailNotify = 1497;
     public static final int Unk3000_FAPNAHAEPBF = 21880;
     public static final int Unk3000_FIPHHGCJIMO = 23678;
@@ -1823,7 +1823,7 @@ public class PacketOpcodes {
     public static final int Unk3000_LHEMAMBKEKI = 6107;
     public static final int Unk3000_LJIMEHHNHJA = 3152;
     public static final int Unk3000_LLBCFCDMCID = 24312;
-    public static final int Unk3000_MEFJDDHIAOK = 6135;
+    public static final int ToTheMoonEnterSceneReq = 6135;
     public static final int Unk3000_MFCAIADEPGJ = 6198;
     public static final int Unk3000_MFHOOFLHNPH = 419;
     public static final int Unk3000_MOIPPIJMIJC = 3323;
