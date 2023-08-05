@@ -6,8 +6,10 @@ import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.GadgetData;
+import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.entity.gadget.*;
 import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
+import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.PlayerProperty;
@@ -47,10 +49,11 @@ import lombok.ToString;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @ToString(callSuper = true)
-public class EntityGadget extends EntityBaseGadget {
+public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataAbilityEntity {
     @Getter private final GadgetData gadgetData;
     @Getter(onMethod = @__(@Override)) @Setter
     private int gadgetId;
@@ -115,22 +118,16 @@ public class EntityGadget extends EntityBaseGadget {
         initAbilities(); //TODO: move this
     }
 
-    private void addConfigAbility(ConfigAbilityData abilityData){
 
-        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
-        if(data != null)
-            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
-                this, data);
+    //TODO: handle predynamic, static and dynamic here
+    @Override
+    public Collection<ConfigAbilityData> getAbilityData() {
+        return this.configGadget != null ? this.configGadget.getAbilities() : null;
     }
 
     @Override
-    public void initAbilities() {
-        //TODO: handle predynamic, static and dynamic here
-        if(this.configGadget != null && this.configGadget.getAbilities() != null) {
-            for (var ability : this.configGadget.getAbilities()) {
-                addConfigAbility(ability);
-            }
-        }
+    public AbilityManager getAbilityTargetManager() {
+        return getWorld().getHost().getAbilityManager();
     }
 
     public void setInteractEnabled(boolean enable) {

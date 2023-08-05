@@ -2,6 +2,8 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityData;
+import emu.grasscutter.game.ability.AbilityManager;
+import emu.grasscutter.game.entity.interfaces.StringAbilityEntity;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.World;
@@ -10,7 +12,9 @@ import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 
-public class EntityWorld extends GameEntity {
+import java.util.Collection;
+
+public class EntityWorld extends GameEntity implements StringAbilityEntity {
 
     private World world;
 
@@ -33,14 +37,13 @@ public class EntityWorld extends GameEntity {
     }
 
     @Override
-    public void initAbilities() {
-        //Load abilities from levelElementAbilities
-        for(var ability : GameData.getConfigGlobalCombat().getDefaultAbilities().getDefaultMPLevelAbilities()) {
-            AbilityData data =  GameData.getAbilityData(ability);
-            if(data != null)
-                world.getHost().getAbilityManager().addAbilityToEntity(
-                    this, data);
-        }
+    public AbilityManager getAbilityTargetManager() {
+        return world.getHost().getAbilityManager();
+    }
+
+    @Override
+    public Collection<String> getAbilityData() {
+        return GameData.getConfigGlobalCombat().getDefaultAbilities().getDefaultMPLevelAbilities();
     }
 
     @Override

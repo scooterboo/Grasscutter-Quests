@@ -79,10 +79,4 @@ public class EntityRegion extends GameEntity{
     public int getFirstEntityId() {
         return entities.stream().findFirst().orElse(0);
     }
-
-    @Override
-    public void initAbilities() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'initAbilities'");
-    }
 }

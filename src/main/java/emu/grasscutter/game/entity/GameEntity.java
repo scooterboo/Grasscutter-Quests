@@ -1,14 +1,8 @@
 package emu.grasscutter.game.entity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityModifier;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.ability.AbilityModifierController;
 import emu.grasscutter.game.player.Player;
@@ -32,10 +26,9 @@ import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 public abstract class GameEntity {
     @Getter private final Scene scene;
@@ -64,8 +57,6 @@ public abstract class GameEntity {
         this.scene = scene;
         this.motionState = MotionState.MOTION_STATE_NONE;
     }
-
-    public abstract void initAbilities();
 
     public int getEntityType() {
         return this.getId() >> 24;

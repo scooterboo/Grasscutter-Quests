@@ -6,6 +6,8 @@ import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.GadgetData;
+import emu.grasscutter.game.ability.AbilityManager;
+import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.world.Scene;
@@ -28,7 +30,9 @@ import emu.grasscutter.utils.ProtoHelper;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
 
-public class EntityClientGadget extends EntityBaseGadget {
+import java.util.Collection;
+
+public class EntityClientGadget extends EntityBaseGadget implements ConfigAbilityDataAbilityEntity {
     @Getter private final Player owner;
 
     @Getter(onMethod = @__(@Override))
@@ -68,19 +72,13 @@ public class EntityClientGadget extends EntityBaseGadget {
     }
 
     @Override
-    public void initAbilities() {
-        if(this.configGadget != null && this.configGadget.getAbilities() != null) {
-            for (var ability : this.configGadget.getAbilities()) {
-                addConfigAbility(ability);
-            }
-        }
+    public Collection<ConfigAbilityData> getAbilityData() {
+        return this.configGadget != null ? this.configGadget.getAbilities() : null;
     }
 
-    private void addConfigAbility(ConfigAbilityData abilityData){
-        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
-        if(data != null)
-            owner.getAbilityManager().addAbilityToEntity(
-                this, data);
+    @Override
+    public AbilityManager getAbilityTargetManager() {
+        return this.owner.getAbilityManager();
     }
 
     @Override

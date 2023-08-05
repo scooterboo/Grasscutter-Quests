@@ -2,9 +2,6 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityData;
-import emu.grasscutter.data.binout.config.ConfigLevelEntity;
-import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.AvatarData;
 import emu.grasscutter.data.excels.AvatarSkillDepotData;
 import emu.grasscutter.game.avatar.Avatar;
@@ -69,8 +66,6 @@ public class EntityAvatar extends GameEntity {
                 //weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
             }
         }
-
-        initAbilities();
     }
 
     @Override
@@ -124,17 +119,6 @@ public class EntityAvatar extends GameEntity {
         this.killedType = dieType;
         this.killedBy = killerId;
         clearEnergy(ChangeEnergyReason.CHANGE_ENERGY_REASON_NONE);
-    }
-
-    @Override
-    public void initAbilities() {
-    }
-
-    private void addConfigAbility(String abilityName){
-        AbilityData data = GameData.getAbilityData(abilityName);
-        if(data != null)
-            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
-                this, data);
     }
 
     @Override

@@ -8,6 +8,8 @@ import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.GadgetData;
+import emu.grasscutter.game.ability.AbilityManager;
+import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
@@ -19,8 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
+
 @ToString(callSuper = true)
-public class EntityWeapon extends EntityBaseGadget {
+public class EntityWeapon extends EntityBaseGadget implements ConfigAbilityDataAbilityEntity {
     @Getter private final GadgetData gadgetData;
     @Getter(onMethod = @__(@Override)) @Setter
     private int gadgetId;
@@ -60,21 +64,15 @@ public class EntityWeapon extends EntityBaseGadget {
         initAbilities();
     }
 
-    private void addConfigAbility(ConfigAbilityData abilityData){
-        AbilityData data =  GameData.getAbilityData(abilityData.getAbilityName());
-        if(data != null)
-            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
-                this, data);
+    @Override
+    public AbilityManager getAbilityTargetManager() {
+        return getWorld().getHost().getAbilityManager();
     }
 
     @Override
-    public void initAbilities() {
+    public Collection<ConfigAbilityData> getAbilityData() {
         //TODO: handle predynamic, static and dynamic here
-        if(this.configGadget != null && this.configGadget.getAbilities() != null) {
-            for (var ability : this.configGadget.getAbilities()) {
-                addConfigAbility(ability);
-            }
-        }
+        return this.configGadget != null ? this.configGadget.getAbilities() : null;
     }
 
     @Override

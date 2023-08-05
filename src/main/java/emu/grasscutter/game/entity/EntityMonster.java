@@ -3,11 +3,16 @@ package emu.grasscutter.game.entity;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
+import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.common.PropGrowCurve;
 import emu.grasscutter.data.excels.EnvAnimalGatherConfigData;
+import emu.grasscutter.data.excels.MonsterAffixData;
 import emu.grasscutter.data.excels.MonsterCurveData;
 import emu.grasscutter.data.excels.MonsterData;
+import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
+import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
+import emu.grasscutter.game.entity.interfaces.StringAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.enums.QuestContent;
@@ -36,14 +41,15 @@ import emu.grasscutter.utils.ProtoHelper;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
 
-public class EntityMonster extends GameEntity {
+public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Getter(onMethod = @__(@Override))
     private final Int2FloatOpenHashMap fightProperties;
 
@@ -92,85 +98,92 @@ public class EntityMonster extends GameEntity {
         initAbilities();
     }
 
-    private void addConfigAbility(String name){
-        AbilityData data =  GameData.getAbilityData(name);
-        if(data != null)
-            getScene().getWorld().getHost().getAbilityManager().addAbilityToEntity(
-                this, data);
+    @Nullable
+    private List<MonsterAffixData> getAffixes(@Nullable SceneGroup group){
+        List<Integer> affixes = null;
+        if(group != null) {
+            SceneMonster monster = group.monsters.get(getConfigId());
+            if(monster != null) affixes = monster.affix;
+        }
+
+        if(monsterData != null) {
+            //TODO: Research if group affixes goes first
+            if(affixes == null) affixes = monsterData.getAffix();
+            else affixes.addAll(monsterData.getAffix());
+        }
+        return affixes != null ?
+            affixes.stream()
+                .map( value -> GameData.getMonsterAffixDataMap().get((int) value))
+                .collect(Collectors.toList())
+            : null;
     }
 
     @Override
-    public void initAbilities() {
-        if(configEntityMonster != null) {
-            //Affix abilities
-            Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
-            List<Integer> affixes = null;
-            if(optionalGroup.isPresent()) {
-                var group = optionalGroup.get();
+    public AbilityManager getAbilityTargetManager() {
+        return getWorld().getHost().getAbilityManager();
+    }
 
-                SceneMonster monster = group.monsters.get(getConfigId());
-                if(monster != null) affixes = monster.affix;
+    @Override
+    public Collection<String> getAbilityData() {
+        if(configEntityMonster == null)
+            return null;
+
+        ArrayList<String> abilityNames = new ArrayList<>();
+        val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
+        //Affix abilities
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
+        List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
+
+        // first add pre add affix abilities
+        if(affixes != null) {
+            for(val affix : affixes) {
+                if(!affix.isPreAdd()) continue;
+
+                //Add the ability
+                abilityNames.addAll(Arrays.asList(affix.getAbilityName()));
             }
-
-            if(monsterData != null) {
-                //TODO: Research if group affixes goes first
-                if(affixes == null) affixes = monsterData.getAffix();
-                else affixes.addAll(monsterData.getAffix());
-            }
-
-            if(affixes != null) {
-                for(var affixId : affixes) {
-                    var affix = GameData.getMonsterAffixDataMap().get(affixId.intValue());
-                    if(!affix.isPreAdd()) continue;
-
-                    //Add the ability
-                    for(var name : affix.getAbilityName()) {
-                        addConfigAbility(name);
-                    }
-                }
-            }
-
-            //TODO: Research if any monster is non humanoid
-            for(var ability : GameData.getConfigGlobalCombat().getDefaultAbilities().getNonHumanoidMoveAbilities()) {
-                addConfigAbility(ability);
-            }
-
-            if(configEntityMonster.getAbilities() != null)
-                for(var configAbilityData : configEntityMonster.getAbilities()) {
-                    addConfigAbility(configAbilityData.abilityName);
-                }
-
-            if(optionalGroup.isPresent()) {
-                var group = optionalGroup.get();
-                SceneMonster monster = group.monsters.get(getConfigId());
-                if(monster != null && monster.isElite) {
-                    addConfigAbility(GameData.getConfigGlobalCombat().getDefaultAbilities().getMonterEliteAbilityName());
-                }
-            }
-
-            if(affixes != null) {
-                for(var affixId : affixes) {
-                    var affix = GameData.getMonsterAffixDataMap().get(affixId.intValue());
-                    if(affix.isPreAdd()) continue;
-
-                    //Add the ability
-                    for(var name : affix.getAbilityName()) {
-                        addConfigAbility(name);
-                    }
-                }
-            }
-
-            String levelEntityConfig = getScene().getSceneData().getLevelEntityConfig();
-            var config = GameData.getConfigLevelEntityDataMap().get(levelEntityConfig);
-            if (config == null){
-                return;
-            }
-
-            if(config.getMonsterAbilities() != null)
-                for(var monsterAbility : config.getMonsterAbilities()) {
-                    addConfigAbility(monsterAbility.abilityName);
-                }
         }
+
+        //TODO: Research if any monster is non humanoid
+        abilityNames.addAll(defaultAbilities.getNonHumanoidMoveAbilities());
+
+        if(configEntityMonster.getAbilities() != null){
+            abilityNames.addAll(
+                configEntityMonster.getAbilities().stream()
+                    .map(ConfigAbilityData::getAbilityName)
+                    .toList()
+            );
+        }
+
+        optionalGroup.ifPresent(group -> {
+            val monster = group.monsters.get(getConfigId());
+            if(monster != null && monster.isElite) {
+                abilityNames.add(defaultAbilities.getMonterEliteAbilityName());
+            }
+        });
+
+        if(affixes != null) {
+            for(val affix : affixes) {
+                if(affix.isPreAdd()) continue;
+
+                //Add the ability
+                abilityNames.addAll(List.of(affix.getAbilityName()));
+            }
+        }
+
+        val sceneData = getScene().getSceneData();
+        if(sceneData!=null) {
+            val config = GameData.getConfigLevelEntityDataMap().get(sceneData.getLevelEntityConfig());
+            if(config != null && config.getMonsterAbilities() != null) {
+                val configAbilitiesList = config.getMonsterAbilities().stream()
+                    .map(ConfigAbilityData::getAbilityName)
+                    .toList();
+                abilityNames.addAll(configAbilitiesList);
+            }
+        }
+
+
+        return abilityNames;
     }
 
     @Override
