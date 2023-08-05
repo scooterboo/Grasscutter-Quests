@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 
 import java.util.Collection;
 
-public class EntityTeam extends GameEntity implements StringAbilityEntity {
+public class EntityTeam extends MetaGameEntity implements StringAbilityEntity {
 
     private Player player;
 
@@ -42,27 +42,6 @@ public class EntityTeam extends GameEntity implements StringAbilityEntity {
     @Override
     public int getEntityTypeId() {
         return EntityIdType.TEAM.getId();
-    }
-
-    @Override
-    public Int2FloatMap getFightProperties() {
-        //TODO
-        return new Int2FloatArrayMap();
-    }
-
-    @Override
-    public Position getPosition() {
-        return new Position(0, 0, 0);
-    }
-
-    @Override
-    public Position getRotation() {
-        return new Position(0, 0, 0);
-    }
-
-    @Override
-    public SceneEntityInfo toProto() {
-        return null;
     }
 
 }

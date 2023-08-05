@@ -38,6 +38,7 @@ import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.ProtoHelper;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -294,7 +295,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         float hpPercent = this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP) <= 0 ? 1f : this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP) / this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
 
         // Clear properties
-        this.getFightProperties().clear();
+        this.getFightPropertiesOpt().ifPresent(Int2FloatMap::clear);
 
         // Base stats
         MonsterData.definedFightProperties.forEach(prop -> this.setFightProperty(prop, data.getFightProperty(prop)));

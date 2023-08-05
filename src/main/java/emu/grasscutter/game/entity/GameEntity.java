@@ -30,6 +30,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
+import javax.annotation.Nullable;
+
 public abstract class GameEntity {
     @Getter private final Scene scene;
     @Getter protected int id;
@@ -76,36 +78,50 @@ public abstract class GameEntity {
         return this.isAlive() ? LifeState.LIFE_ALIVE : LifeState.LIFE_DEAD;
     }
 
+    @Nullable
     public abstract Int2FloatMap getFightProperties();
+    public Optional<Int2FloatMap> getFightPropertiesOpt() {
+        return Optional.ofNullable(this.getFightProperties());
+    }
 
     public abstract Position getPosition();
 
     public abstract Position getRotation();
 
     public void setFightProperty(FightProperty prop, float value) {
-        this.getFightProperties().put(prop.getId(), value);
+        this.setFightProperty(prop.getId(), value);
     }
 
     public void setFightProperty(int id, float value) {
-        this.getFightProperties().put(id, value);
+        this.getFightPropertiesOpt().ifPresent(
+            props -> props.put(id, value)
+        );
     }
 
     public void addFightProperty(FightProperty prop, float value) {
-        this.getFightProperties().put(prop.getId(), this.getFightProperty(prop) + value);
+        this.getFightPropertiesOpt().ifPresent(
+            props -> props.put(prop.getId(), props.getOrDefault(prop.getId(), 0f) + value)
+        );
     }
 
     public float getFightProperty(FightProperty prop) {
-        return this.getFightProperties().getOrDefault(prop.getId(), 0f);
+        val props = this.getFightProperties();
+        if(props == null) return 0f;
+        return props.get(prop.getId());
     }
 
     public boolean hasFightProperty(FightProperty prop) {
-        return this.getFightProperties().containsKey(prop.getId());
+        val props = this.getFightProperties();
+        if(props == null) return false;
+        return props.containsKey(prop.getId());
     }
 
     public void addAllFightPropsToEntityInfo(SceneEntityInfo.Builder entityInfo) {
-        this.getFightProperties().forEach((key, value) -> {
-            if (key == 0) return;
-            entityInfo.addFightPropList(FightPropPair.newBuilder().setPropType(key).setPropValue(value).build());
+        this.getFightPropertiesOpt().ifPresent(map -> {
+            map.forEach((key, value) -> {
+                if (key == 0) return;
+                entityInfo.addFightPropList(FightPropPair.newBuilder().setPropType(key).setPropValue(value).build());
+            });
         });
     }
 
@@ -154,7 +170,7 @@ public abstract class GameEntity {
 
     public void damage(float amount, int killerId, ElementType attackType) {
         // Check if the entity has properties.
-        if (this.getFightProperties() == null || !hasFightProperty(FightProperty.FIGHT_PROP_CUR_HP)) {
+        if (!hasFightProperty(FightProperty.FIGHT_PROP_CUR_HP)) {
             return;
         }
 

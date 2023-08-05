@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 
 import java.util.Collection;
 
-public class EntityScene extends GameEntity implements StringAbilityEntity {
+public class EntityScene extends MetaGameEntity implements StringAbilityEntity {
 
     public EntityScene(Scene scene) {
         super(scene);
@@ -34,28 +34,6 @@ public class EntityScene extends GameEntity implements StringAbilityEntity {
     @Override
     public int getEntityTypeId() {
         return 0x13;
-    }
-
-    @Override
-    public Int2FloatMap getFightProperties() {
-        //TODO
-        return new Int2FloatArrayMap();
-    }
-
-    @Override
-    public Position getPosition() {
-        // TODO Auto-generated method stub
-        return new Position(0, 0, 0);
-    }
-
-    @Override
-    public Position getRotation() {
-        return new Position(0, 0, 0);
-    }
-
-    @Override
-    public SceneEntityInfo toProto() {
-        return null;
     }
 
 }
