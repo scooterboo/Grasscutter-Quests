@@ -22,8 +22,8 @@ public class GuardTrigger extends ChallengeTrigger {
         if(gadget.getConfigId() != entityToProtectCFGId){
             return;
         }
-        var curHp = gadget.getFightProperties().get(FightProperty.FIGHT_PROP_CUR_HP.getId());
-        var maxHp = gadget.getFightProperties().get(FightProperty.FIGHT_PROP_BASE_HP.getId());
+        var curHp = gadget.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
+        var maxHp = gadget.getFightProperty(FightProperty.FIGHT_PROP_BASE_HP);
         int percent = (int) (curHp / maxHp);
 
         if(percent!=lastSendPercent) {

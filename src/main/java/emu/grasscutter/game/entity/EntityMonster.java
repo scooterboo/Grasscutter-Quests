@@ -1,11 +1,18 @@
 package emu.grasscutter.game.entity;
 
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.binout.AbilityData;
+import emu.grasscutter.data.binout.config.ConfigEntityMonster;
+import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.common.PropGrowCurve;
 import emu.grasscutter.data.excels.EnvAnimalGatherConfigData;
+import emu.grasscutter.data.excels.MonsterAffixData;
 import emu.grasscutter.data.excels.MonsterCurveData;
 import emu.grasscutter.data.excels.MonsterData;
+import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
+import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
+import emu.grasscutter.game.entity.interfaces.StringAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.enums.QuestContent;
@@ -25,20 +32,25 @@ import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SceneMonsterInfoOuterClass.SceneMonsterInfo;
 import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneMonster;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.ProtoHelper;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
 
-public class EntityMonster extends GameEntity {
+public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Getter(onMethod = @__(@Override))
     private final Int2FloatOpenHashMap fightProperties;
 
@@ -47,11 +59,14 @@ public class EntityMonster extends GameEntity {
     @Getter(onMethod = @__(@Override))
     private final Position rotation;
     @Getter private final MonsterData monsterData;
+    @Getter private final ConfigEntityMonster configEntityMonster;
     @Getter private final Position bornPos;
     @Getter private final int level;
-    @Getter private int weaponEntityId;
+    @Getter private EntityWeapon weaponEntity;
     @Getter @Setter private int poseId;
     @Getter @Setter private int aiId = -1;
+
+    @Getter private List<Player> playerOnBattle;
 
     @Getter @Setter private SceneMonster metaMonster;
 
@@ -64,13 +79,112 @@ public class EntityMonster extends GameEntity {
         this.rotation = new Position();
         this.bornPos = getPosition().clone();
         this.level = level;
+        this.playerOnBattle = new ArrayList<>();
+
+        if(GameData.getMonsterMappingMap().containsKey(getMonsterId())) {
+            this.configEntityMonster = GameData.getMonsterConfigData().get(GameData.getMonsterMappingMap().get(getMonsterId()).getMonsterJson());
+        } else {
+            this.configEntityMonster = null;
+        }
 
         // Monster weapon
         if (getMonsterWeaponId() > 0) {
-            this.weaponEntityId = getWorld().getNextEntityId(EntityIdType.WEAPON);
+            this.weaponEntity = new EntityWeapon(scene, getMonsterWeaponId());
+            scene.getWeaponEntities().put(this.weaponEntity.getId(), this.weaponEntity);
+            //this.weaponEntityId = getWorld().getNextEntityId(EntityIdType.WEAPON);
         }
 
         this.recalcStats();
+
+        initAbilities();
+    }
+
+    @Nullable
+    private List<MonsterAffixData> getAffixes(@Nullable SceneGroup group){
+        List<Integer> affixes = null;
+        if(group != null) {
+            SceneMonster monster = group.monsters.get(getConfigId());
+            if(monster != null) affixes = monster.affix;
+        }
+
+        if(monsterData != null) {
+            //TODO: Research if group affixes goes first
+            if(affixes == null) affixes = monsterData.getAffix();
+            else affixes.addAll(monsterData.getAffix());
+        }
+        return affixes != null ?
+            affixes.stream()
+                .map( value -> GameData.getMonsterAffixDataMap().get((int) value))
+                .collect(Collectors.toList())
+            : null;
+    }
+
+    @Override
+    public AbilityManager getAbilityTargetManager() {
+        return getWorld().getHost().getAbilityManager();
+    }
+
+    @Override
+    public Collection<String> getAbilityData() {
+        if(configEntityMonster == null)
+            return null;
+
+        ArrayList<String> abilityNames = new ArrayList<>();
+        val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
+        //Affix abilities
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
+        List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
+
+        // first add pre add affix abilities
+        if(affixes != null) {
+            for(val affix : affixes) {
+                if(!affix.isPreAdd()) continue;
+
+                //Add the ability
+                abilityNames.addAll(Arrays.asList(affix.getAbilityName()));
+            }
+        }
+
+        //TODO: Research if any monster is non humanoid
+        abilityNames.addAll(defaultAbilities.getNonHumanoidMoveAbilities());
+
+        if(configEntityMonster.getAbilities() != null){
+            abilityNames.addAll(
+                configEntityMonster.getAbilities().stream()
+                    .map(ConfigAbilityData::getAbilityName)
+                    .toList()
+            );
+        }
+
+        optionalGroup.ifPresent(group -> {
+            val monster = group.monsters.get(getConfigId());
+            if(monster != null && monster.isElite) {
+                abilityNames.add(defaultAbilities.getMonterEliteAbilityName());
+            }
+        });
+
+        if(affixes != null) {
+            for(val affix : affixes) {
+                if(affix.isPreAdd()) continue;
+
+                //Add the ability
+                abilityNames.addAll(List.of(affix.getAbilityName()));
+            }
+        }
+
+        val sceneData = getScene().getSceneData();
+        if(sceneData!=null) {
+            val config = GameData.getConfigLevelEntityDataMap().get(sceneData.getLevelEntityConfig());
+            if(config != null && config.getMonsterAbilities() != null) {
+                val configAbilitiesList = config.getMonsterAbilities().stream()
+                    .map(ConfigAbilityData::getAbilityName)
+                    .toList();
+                abilityNames.addAll(configAbilitiesList);
+            }
+        }
+
+
+        return abilityNames;
     }
 
     @Override
@@ -181,7 +295,7 @@ public class EntityMonster extends GameEntity {
         float hpPercent = this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP) <= 0 ? 1f : this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP) / this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
 
         // Clear properties
-        this.getFightProperties().clear();
+        this.getFightPropertiesOpt().ifPresent(Int2FloatMap::clear);
 
         // Base stats
         MonsterData.definedFightProperties.forEach(prop -> this.setFightProperty(prop, data.getFightProperty(prop)));
@@ -248,7 +362,7 @@ public class EntityMonster extends GameEntity {
 
         if (this.getMonsterWeaponId() > 0) {
             SceneWeaponInfo weaponInfo = SceneWeaponInfo.newBuilder()
-                .setEntityId(this.weaponEntityId)
+                .setEntityId(this.getWeaponEntity() != null ? this.getWeaponEntity().getId() : 0)
                 .setGadgetId(this.getMonsterWeaponId())
                 .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
                 .build();

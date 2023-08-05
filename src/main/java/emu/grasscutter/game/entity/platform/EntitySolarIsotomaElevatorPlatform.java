@@ -27,11 +27,13 @@ public class EntitySolarIsotomaElevatorPlatform extends EntityGadget {
         if (combatProperties.isUseCreatorProperty()) {
             //If useCreatorProperty == true, use owner's property;
             GameEntity ownerEntity = getOwner();
-            if (ownerEntity != null) {
+            if (ownerEntity != null && ownerEntity.getFightProperties() != null && getFightProperties() != null) {
                 getFightProperties().putAll(ownerEntity.getFightProperties());
                 return;
             } else {
-                Grasscutter.getLogger().warn("Why gadget owner is null?");
+                if(ownerEntity == null) {
+                    Grasscutter.getLogger().warn("Why gadget owner is null?");
+                }
             }
         }
 

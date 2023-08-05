@@ -1,5 +1,6 @@
 package emu.grasscutter.data.excels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import emu.grasscutter.data.GameData;
@@ -56,6 +57,7 @@ public class AvatarData extends GameResource {
     private float[] defenseGrowthCurve;
     @Getter private AvatarSkillDepotData skillDepot;
     @Getter private IntList abilities;
+    @Getter private List<String> abilitieNames = new ArrayList<>();
 
     @Getter private List<Integer> fetters;
     @Getter private int nameCardRewardId;
@@ -165,6 +167,7 @@ public class AvatarData extends GameResource {
                 this.abilities = new IntArrayList(info.getAbilities().length);
                 for (String ability : info.getAbilities()) {
                     this.abilities.add(Utils.abilityHash(ability));
+                    abilitieNames.add(ability);
                 }
             }
         }

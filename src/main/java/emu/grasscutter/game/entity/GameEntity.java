@@ -1,10 +1,10 @@
 package emu.grasscutter.game.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.ability.Ability;
+import emu.grasscutter.game.ability.AbilityModifierController;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.props.FightProperty;
@@ -26,10 +26,11 @@ import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
+
+import javax.annotation.Nullable;
 
 public abstract class GameEntity {
     @Getter private final Scene scene;
@@ -50,21 +51,13 @@ public abstract class GameEntity {
     @Getter @Setter private EntityController entityController;
     @Getter private ElementType lastAttackType = ElementType.None;
 
-    // Abilities
-    private Object2FloatMap<String> metaOverrideMap;
-    private Int2ObjectMap<String> metaModifiers;
-    private Map<Integer, Integer> instanceToHash;
-    private Int2ObjectMap<String> instanceToName;
-
-    private Map<String, Ability> abilities = new HashMap<>();
+    @Getter private List<Ability> instancedAbilities = new ArrayList<>();
+    @Getter private Int2ObjectMap<AbilityModifierController> instancedModifiers = new Int2ObjectOpenHashMap<>();
+    @Getter private Map<String, Float> globalAbilityValues = new HashMap<>();
 
     public GameEntity(Scene scene) {
         this.scene = scene;
         this.motionState = MotionState.MOTION_STATE_NONE;
-    }
-
-    public Map<String, Ability> getAbilities() {
-        return abilities;
     }
 
     public int getEntityType() {
@@ -85,64 +78,50 @@ public abstract class GameEntity {
         return this.isAlive() ? LifeState.LIFE_ALIVE : LifeState.LIFE_DEAD;
     }
 
-    public Object2FloatMap<String> getMetaOverrideMap() {
-        if (this.metaOverrideMap == null) {
-            this.metaOverrideMap = new Object2FloatOpenHashMap<>();
-        }
-        return this.metaOverrideMap;
-    }
-
-    public Int2ObjectMap<String> getMetaModifiers() {
-        if (this.metaModifiers == null) {
-            this.metaModifiers = new Int2ObjectOpenHashMap<>();
-        }
-        return this.metaModifiers;
-    }
-
-    public Map<Integer, Integer> getInstanceToHash() {
-        if (this.instanceToHash == null) {
-            this.instanceToHash = new HashMap<>();
-        }
-        return this.instanceToHash;
-    }
-
-    public Int2ObjectMap<String> getInstanceToName() {
-        if (this.instanceToName == null) {
-            this.instanceToName = new Int2ObjectOpenHashMap<>();
-        }
-        return this.instanceToName;
-    }
-
+    @Nullable
     public abstract Int2FloatMap getFightProperties();
+    public Optional<Int2FloatMap> getFightPropertiesOpt() {
+        return Optional.ofNullable(this.getFightProperties());
+    }
 
     public abstract Position getPosition();
 
     public abstract Position getRotation();
 
     public void setFightProperty(FightProperty prop, float value) {
-        this.getFightProperties().put(prop.getId(), value);
+        this.setFightProperty(prop.getId(), value);
     }
 
     public void setFightProperty(int id, float value) {
-        this.getFightProperties().put(id, value);
+        this.getFightPropertiesOpt().ifPresent(
+            props -> props.put(id, value)
+        );
     }
 
     public void addFightProperty(FightProperty prop, float value) {
-        this.getFightProperties().put(prop.getId(), this.getFightProperty(prop) + value);
+        this.getFightPropertiesOpt().ifPresent(
+            props -> props.put(prop.getId(), props.getOrDefault(prop.getId(), 0f) + value)
+        );
     }
 
     public float getFightProperty(FightProperty prop) {
-        return this.getFightProperties().getOrDefault(prop.getId(), 0f);
+        val props = this.getFightProperties();
+        if(props == null) return 0f;
+        return props.get(prop.getId());
     }
 
     public boolean hasFightProperty(FightProperty prop) {
-        return this.getFightProperties().containsKey(prop.getId());
+        val props = this.getFightProperties();
+        if(props == null) return false;
+        return props.containsKey(prop.getId());
     }
 
     public void addAllFightPropsToEntityInfo(SceneEntityInfo.Builder entityInfo) {
-        this.getFightProperties().forEach((key, value) -> {
-            if (key == 0) return;
-            entityInfo.addFightPropList(FightPropPair.newBuilder().setPropType(key).setPropValue(value).build());
+        this.getFightPropertiesOpt().ifPresent(map -> {
+            map.forEach((key, value) -> {
+                if (key == 0) return;
+                entityInfo.addFightPropList(FightPropPair.newBuilder().setPropType(key).setPropValue(value).build());
+            });
         });
     }
 
@@ -158,6 +137,10 @@ public abstract class GameEntity {
     }
 
     public float heal(float amount) {
+        return heal(amount, false);
+    }
+
+    public float heal(float amount, boolean mute) {
         if (this.getFightProperties() == null) {
             return 0f;
         }
@@ -187,7 +170,7 @@ public abstract class GameEntity {
 
     public void damage(float amount, int killerId, ElementType attackType) {
         // Check if the entity has properties.
-        if (this.getFightProperties() == null || !hasFightProperty(FightProperty.FIGHT_PROP_CUR_HP)) {
+        if (!hasFightProperty(FightProperty.FIGHT_PROP_CUR_HP)) {
             return;
         }
 
@@ -231,7 +214,7 @@ public abstract class GameEntity {
     }
 
     public void callAbilityBeHurt(EntityDamageEvent event) {
-        abilities.values().forEach(ability -> ability.onBeingHit(event));
+        //instancedAbilities.forEach(ability -> ability.onBeingHit(event));
     }
 
     /**
@@ -265,6 +248,78 @@ public abstract class GameEntity {
 
     public void onRemoved() {
 
+    }
+
+    private int[] parseCountRange(String range) {
+        var split = range.split(";");
+        if(split.length == 1) return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[0])};
+        return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[1])};
+    }
+
+    public boolean dropSubfieldItem(int dropId) {
+        var drop = GameData.getDropSubfieldMappingMap().get(dropId);
+        if(drop == null) return false;
+        var dropTableEntry = GameData.getDropTableExcelConfigDataMap().get(drop.getItemId());
+        if(dropTableEntry == null) return false;
+
+        var dropRandom = getScene().getWorld().getWorldRandomGenerator();
+
+        Int2ObjectMap<Integer> itemsToDrop = new Int2ObjectOpenHashMap<>();
+        switch(dropTableEntry.getRandomType()) {
+            case 0: //select one
+                {
+                    int weightCount = 0;
+                    for(var entry : dropTableEntry.getDropVec()) weightCount += entry.getWeight();
+
+                    int randomValue = dropRandom.nextInt(weightCount);
+
+                    weightCount = 0;
+                    for(var entry : dropTableEntry.getDropVec()) {
+                        if(randomValue >= weightCount && randomValue < (weightCount + entry.getWeight())) {
+                            var countRange = parseCountRange(entry.getCountRange());
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((dropRandom.nextBoolean() ? countRange[0] : countRange[1])));
+                        }
+                    }
+                }
+                break;
+            case 1: //Select various
+                {
+                    for(var entry : dropTableEntry.getDropVec()) {
+                        if(entry.getWeight() < dropRandom.nextInt(10000)) {
+                            var countRange = parseCountRange(entry.getCountRange());
+                            itemsToDrop.put(entry.getItemId(), Integer.valueOf((dropRandom.nextBoolean() ? countRange[0] : countRange[1])));
+                        }
+                    }
+                }
+                break;
+        }
+
+        for (var entry : itemsToDrop.int2ObjectEntrySet()) {
+            EntityItem item = new EntityItem(
+                scene,
+                null,
+                GameData.getItemDataMap().get(entry.getIntKey()),
+                getPosition().nearby2d(1f).addY(0.5f),
+                entry.getValue(),
+                true);
+
+            scene.addEntity(item);
+        }
+
+        return true;
+    }
+
+    public boolean dropSubfield(String subfieldName) {
+        var subfieldMapping = GameData.getSubfieldMappingMap().get(getEntityTypeId());
+        if(subfieldMapping == null || subfieldMapping.getSubfields() == null) return false;
+
+        for(var entry : subfieldMapping.getSubfields()) {
+            if(entry.getSubfieldName().compareTo(subfieldName) == 0) {
+                return dropSubfieldItem(entry.getDrop_id());
+            }
+        }
+
+        return false;
     }
 
     public void onTick(int sceneTime) {

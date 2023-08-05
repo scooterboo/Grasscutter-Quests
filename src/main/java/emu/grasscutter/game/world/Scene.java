@@ -22,6 +22,7 @@ import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
 import emu.grasscutter.net.proto.EnterTypeOuterClass;
+import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SelectWorktopOptionReqOuterClass;
 import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
 import emu.grasscutter.scripts.SceneIndexManager;
@@ -34,7 +35,10 @@ import emu.grasscutter.server.event.player.PlayerTeleportEvent;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.KahnsSort;
 import emu.grasscutter.utils.Position;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -53,6 +57,7 @@ public class Scene {
     @Getter private final SceneData sceneData;
     @Getter private final List<Player> players;
     @Getter private final Map<Integer, GameEntity> entities;
+    @Getter private final Map<Integer, GameEntity> weaponEntities;
     @Getter private final Set<SpawnDataEntry> spawnedEntities;
     @Getter private final Set<SpawnDataEntry> deadSpawnedEntities;
     @Getter private final Set<SceneBlock> loadedBlocks;
@@ -76,11 +81,14 @@ public class Scene {
     @Getter private int tickCount = 0;
     @Getter private boolean isPaused = false;
 
+    @Getter private GameEntity sceneEntity;
+
     public Scene(World world, SceneData sceneData) {
         this.world = world;
         this.sceneData = sceneData;
         this.players = new CopyOnWriteArrayList<>();
         this.entities = new ConcurrentHashMap<>();
+        this.weaponEntities = new ConcurrentHashMap<>();
 
         this.prevScene = 3;
         this.sceneRoutes = GameData.getSceneRoutes(getId());
@@ -96,6 +104,10 @@ public class Scene {
         this.scriptManager = new SceneScriptManager(this);
         this.blossomManager = new BlossomManager(this);
         this.unlockedForces = new HashSet<>();
+
+        //Create scene entity
+
+        this.sceneEntity = new EntityScene(this);
     }
 
     public int getId() {
@@ -111,7 +123,23 @@ public class Scene {
     }
 
     public GameEntity getEntityById(int id) {
-        return this.entities.get(id);
+        if(id == 0x13800001) return sceneEntity;
+        else if(id == getWorld().getLevelEntityId()) return getWorld().getEntity();
+
+        var teamEntityPlayer = players.stream().filter(p -> p.getTeamManager().getEntity().getId() == id).findAny();
+        if(teamEntityPlayer.isPresent()) return teamEntityPlayer.get().getTeamManager().getEntity();
+
+        var entity = this.entities.get(id);
+        if(entity == null) entity = this.weaponEntities.get(id);
+        if(entity == null && (id >> 24) == EntityIdType.AVATAR.getId()) {
+            for (var player : getPlayers()) {
+                for (var avatar : player.getTeamManager().getActiveTeam()) {
+                    if(avatar.getId() == id) return avatar;
+                }
+            }
+        }
+
+        return entity;
     }
 
     public GameEntity getEntityByConfigId(int configId) {
@@ -261,6 +289,14 @@ public class Scene {
         addEntities(entities, VisionType.VISION_TYPE_BORN);
     }
 
+    public void updateEntity(GameEntity entity) {
+        this.broadcastPacket(new PacketSceneEntityUpdateNotify(entity));
+    }
+
+    public void updateEntity(GameEntity entity, VisionType type) {
+        this.broadcastPacket(new PacketSceneEntityUpdateNotify(Arrays.asList(entity), type));
+    }
+
     private static <T> List<List<T>> chopped(List<T> list, final int L) {
         List<List<T>> parts = new ArrayList<List<T>>();
         final int N = list.size();
@@ -290,6 +326,14 @@ public class Scene {
         if (removed != null) {
             removed.onRemoved();//Call entity remove event
         }
+
+        //if(entity instanceof EntityWeapon) {
+        //    Grasscutter.getLogger().warn("Weapon removed {}: ", entity.getId());
+//
+        //    for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+        //        Grasscutter.getLogger().warn(ste.toString());
+        //    }
+        //}
         return removed;
     }
 
@@ -614,7 +658,7 @@ public class Scene {
 
         for (GameEntity entity : this.getEntities().values()) {
             var spawnEntry = entity.getSpawnEntry();
-            if (spawnEntry != null && !visible.contains(spawnEntry)) {
+            if (spawnEntry != null && !(entity instanceof EntityWeapon) && !visible.contains(spawnEntry)) {
                 toRemove.add(entity);
                 spawnedEntities.remove(spawnEntry);
             }
@@ -703,8 +747,11 @@ public class Scene {
 
         if(GameData.getGroupReplacements().containsKey(group_id)) onRegisterGroups();
 
-        if (group.init_config == null) return -1;
-        return group.init_config.suite;
+        SceneGroupInstance instance = getScriptManager().getGroupInstanceById(group_id);
+        if(instance != null)
+            return instance.getActiveSuiteId();
+
+        return -1;
     }
 
     public boolean unregisterDynamicGroup(int groupId){

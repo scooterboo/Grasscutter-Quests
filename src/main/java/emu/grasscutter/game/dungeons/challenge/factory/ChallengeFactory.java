@@ -20,6 +20,7 @@ public class ChallengeFactory {
         challengeFactoryHandlers.add(new KillMonsterTimeChallengeFactoryHandler());
         challengeFactoryHandlers.add(new SurviveChallengeFactoryHandler());
         challengeFactoryHandlers.add(new TriggerInTimeChallengeFactoryHandler());
+        challengeFactoryHandlers.add(new KillMonsterCountInTimeIncChallengeFactoryHandler());
     }
 
     public static WorldChallenge getChallenge(int localChallengeId, int challengeDataId, int param3, int param4, int param5, int param6, Scene scene, SceneGroup group){

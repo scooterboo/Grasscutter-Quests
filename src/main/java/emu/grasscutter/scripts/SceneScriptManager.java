@@ -11,7 +11,7 @@ import emu.grasscutter.data.server.Grid;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
-import emu.grasscutter.game.props.EntityType;
+import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.world.Scene;
@@ -191,9 +191,15 @@ public class SceneScriptManager {
         //}
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite) {
-        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null);
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null, false);
+    }
+    public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, boolean dontLoad) {
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, null, dontLoad);
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded) {
+        return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, entitiesAdded, false);
+    }
+    public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded, boolean dontLoad) {
         SceneGroup group = groupInstance.getLuaGroup();
         if(suiteIndex == 0) {
             if(excludePrevSuite) {
@@ -229,11 +235,13 @@ public class SceneScriptManager {
 
         groupInstance.setTargetSuiteId(0);
 
-		if(prevSuiteData != null) {
-			removeGroupSuite(group, prevSuiteData);
-		} //Remove old group suite
+        if(!dontLoad) {
+            if(prevSuiteData != null) {
+                removeGroupSuite(group, prevSuiteData);
+            } //Remove old group suite
 
-		addGroupSuite(groupInstance, suiteData, entitiesAdded);
+            addGroupSuite(groupInstance, suiteData, entitiesAdded);
+        }
 
         //Refesh variables here
         group.variables.forEach(variable -> {
@@ -251,13 +259,13 @@ public class SceneScriptManager {
         if (targetGroupInstance == null) {
             getGroupById(groupId); //Load the group, this ensures an instance is created and the if neccesary unloaded, but the suite data is stored
             targetGroupInstance = getGroupInstanceById(groupId);
+            suiteId = refreshGroup(targetGroupInstance, suiteId, false, true); //If suiteId is zero, the value of suiteId changes
             Grasscutter.getLogger().debug("trying to regresh group suite {} in an unloaded and uncached group {} in scene {}", suiteId, groupId, getScene().getId());
         } else {
             Grasscutter.getLogger().debug("Refreshing group {} suite {}", groupId, suiteId);
             suiteId = refreshGroup(targetGroupInstance, suiteId, false); //If suiteId is zero, the value of suiteId changes
-            scene.broadcastPacket(new PacketGroupSuiteNotify(groupId, suiteId));
         }
-
+        scene.broadcastPacket(new PacketGroupSuiteNotify(groupId, suiteId));
 
         return true;
     }
@@ -412,6 +420,7 @@ public class SceneScriptManager {
             var visionOptions = Grasscutter.config.server.game.visionOptions;
             meta.blocks.values().forEach(block -> {
                 block.load(sceneId, meta.context);
+                Grasscutter.getLogger().debug("Loading block grid " + block.id);
                 block.groups.values().stream().filter(g -> !g.dynamic_load).forEach(group -> {
                     group.load(this.scene.getId());
 
@@ -531,7 +540,7 @@ public class SceneScriptManager {
             // currently all condition_ENTER_REGION Events check for avatar, so we have no necessary to add other types of entity
             var entities = getScene().getEntities().values()
                 .stream()
-                .filter(e -> e.getEntityType() == EntityType.Avatar.getValue() && region.getMetaRegion().contains(e.getPosition()))
+                .filter(e -> e.getEntityType() == EntityIdType.AVATAR.getId() && region.getMetaRegion().contains(e.getPosition()))
                 .toList();
             entities.forEach(region::addEntity);
 

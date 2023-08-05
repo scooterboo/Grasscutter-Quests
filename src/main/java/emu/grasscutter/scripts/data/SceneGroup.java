@@ -164,7 +164,7 @@ public class SceneGroup {
                     if(i == exclude_index) continue;
 
                     var suite = suites.get(i);
-                    for(int j = 0; j < suite.rand_weight; j++) randSuiteList.add(Integer.valueOf(i));
+                    for(int j = 0; j < suite.rand_weight; j++) randSuiteList.add(Integer.valueOf(i + 1));
                 }
                 return randSuiteList.get(new Random().nextInt(randSuiteList.size()));
             }

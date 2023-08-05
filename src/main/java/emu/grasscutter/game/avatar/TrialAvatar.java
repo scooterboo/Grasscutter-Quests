@@ -6,6 +6,7 @@ import emu.grasscutter.data.common.BaseTrialAvatarData;
 import emu.grasscutter.data.common.BaseTrialAvatarTemplateData;
 import emu.grasscutter.data.excels.AvatarCostumeData;
 import emu.grasscutter.data.excels.TrialReliquaryData;
+import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.inventory.EquipType;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.props.EntityIdType;
@@ -122,7 +123,10 @@ public class TrialAvatar extends Avatar{
             item.setEquipCharacter(getAvatarId());
             item.setOwner(getPlayer());
             if (item.getItemData().getEquipType() == EquipType.EQUIP_WEAPON && getPlayer().getWorld() != null) {
-                item.setWeaponEntityId(this.getPlayer().getWorld().getNextEntityId(EntityIdType.WEAPON));
+                if(!(item.getWeaponEntity() != null && item.getWeaponEntity().getScene() == getPlayer().getScene())) {
+                    item.setWeaponEntity(new EntityWeapon(this.getPlayer().getScene(), item.getItemData().getGadgetId()));
+                    getPlayer().getScene().getWeaponEntities().put(item.getWeaponEntity().getId(), item.getWeaponEntity());
+                }
                 getPlayer().sendPacket(new PacketAvatarEquipChangeNotify(this, item));
             }
         });
