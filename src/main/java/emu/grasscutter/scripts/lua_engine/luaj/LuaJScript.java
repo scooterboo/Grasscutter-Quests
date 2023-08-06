@@ -47,7 +47,7 @@ public class LuaJScript implements LuaScript {
 
         luaArgs = new org.luaj.vm2.LuaValue[args.length];
         for (int i = 0; i < args.length; i++)
-            luaArgs[i + 1] = CoerceJavaToLua.coerce(args[i]);
+            luaArgs[i] = CoerceJavaToLua.coerce(args[i]);
 
         return new LuaJValue(engine, function.invoke(luaArgs).arg1());
     }
