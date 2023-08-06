@@ -622,28 +622,29 @@ public class ScriptLib {
 		return 0;
 	}
 
-	public static int KillEntityByConfigId(GroupEventLuaContext context, Object rawTable) {
-        val table = context.getEngine().getTable(rawTable);
-		logger.debug("[LUA] Call KillEntityByConfigId with {}",
-				printTable(table));
-        return killEntityByConfigId(context.getSceneScriptManager().getScene().getScriptManager(), table);
-	}
+    public static int KillEntityByConfigId(LuaContext context, Object rawTable) {
+        val luaTable = context.getEngine().getTable(rawTable);
+        logger.debug("[LUA] Call KillEntityByConfigId with {}",
+            printTable(luaTable));
 
-	public static int KillEntityByConfigId(ControllerLuaContext context, Object rawTable) {
-        val table = context.getEngine().getTable(rawTable);
-		logger.debug("[LUA] Call KillEntityByConfigId with {} on Controller",
-				printTable(table));
-        return killEntityByConfigId(context.getGadget().getScene().getScriptManager(), table);
-	}
-
-    private static int killEntityByConfigId(SceneScriptManager scriptManager, LuaTable luaTable){
-        var configId = luaTable.optInt("config_id", -1);
-        if(configId == -1){
+        SceneScriptManager scriptManager;
+        if (context instanceof ControllerLuaContext controllerLuaContext) {
+            scriptManager = controllerLuaContext.getGadget().getScene().getScriptManager();
+        } else if (context instanceof GroupEventLuaContext groupEventLuaContext) {
+            scriptManager = groupEventLuaContext.getSceneScriptManager();
+        } else {
+            logger.warn("[LUA] Call KillEntityByConfigId with {} on unknown context",
+                printTable(luaTable));
             return 1;
         }
 
+        var configId = luaTable.optInt("config_id", -1);
+        if (configId == -1) {
+            return 2;
+        }
+
         var entity = scriptManager.getScene().getEntityByConfigId(configId);
-        if(entity == null){
+        if (entity == null) {
             return 0;
         }
         scriptManager.getScene().killEntity(entity, 0);
