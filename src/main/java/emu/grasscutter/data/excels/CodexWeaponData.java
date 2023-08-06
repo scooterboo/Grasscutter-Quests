@@ -18,6 +18,10 @@ public class CodexWeaponData extends GameResource {
         return weaponId;
     }
 
+    public int getGadgetId() {
+        return getWeaponId();
+    }
+
     public int getId() {
         return Id;
     }

@@ -59,7 +59,11 @@ public class EntityAvatar extends GameEntity {
 
             GameItem weapon = this.getAvatar().getWeapon();
             if (weapon != null) {
-                weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
+                if (!(weapon.getWeaponEntity() != null && weapon.getWeaponEntity().getScene() == scene)) {
+                    weapon.setWeaponEntity(new EntityWeapon(getPlayer().getScene(), weapon.getItemData().getGadgetId()));
+                    scene.getWeaponEntities().put(weapon.getWeaponEntity().getId(), weapon.getWeaponEntity());
+                }
+                //weapon.setWeaponEntityId(getScene().getWorld().getNextEntityId(EntityIdType.WEAPON));
             }
         }
     }
@@ -94,8 +98,8 @@ public class EntityAvatar extends GameEntity {
     }
 
     public int getWeaponEntityId() {
-        if (getAvatar().getWeapon() != null) {
-            return getAvatar().getWeapon().getWeaponEntityId();
+        if (getAvatar().getWeapon() != null && getAvatar().getWeapon().getWeaponEntity() != null) {
+            return getAvatar().getWeapon().getWeaponEntity().getId();
         }
         return 0;
     }
@@ -118,21 +122,26 @@ public class EntityAvatar extends GameEntity {
     }
 
     @Override
-    public float heal(float amount) {
+    public float heal(float amount, boolean mute) {
         // Do not heal character if they are dead
         if (!this.isAlive()) {
             return 0f;
         }
 
-        float healed = super.heal(amount);
+        float healed = super.heal(amount, mute);
 
         if (healed > 0f) {
             getScene().broadcastPacket(
-                new PacketEntityFightPropChangeReasonNotify(this, FightProperty.FIGHT_PROP_CUR_HP, healed, PropChangeReason.PROP_CHANGE_REASON_ABILITY, ChangeHpReason.CHANGE_HP_REASON_ADD_ABILITY)
+                new PacketEntityFightPropChangeReasonNotify(this, FightProperty.FIGHT_PROP_CUR_HP, healed, mute ? PropChangeReason.PROP_CHANGE_REASON_NONE : PropChangeReason.PROP_CHANGE_REASON_ABILITY, ChangeHpReason.CHANGE_HP_REASON_ADD_ABILITY)
             );
         }
 
         return healed;
+    }
+
+    @Override
+    public float heal(float amount) {
+        return this.heal(amount, false);
     }
 
     public void clearEnergy(ChangeEnergyReason reason) {

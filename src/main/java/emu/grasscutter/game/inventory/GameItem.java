@@ -8,6 +8,7 @@ import emu.grasscutter.data.excels.ItemData;
 import emu.grasscutter.data.excels.ReliquaryAffixData;
 import emu.grasscutter.data.excels.ReliquaryMainPropData;
 import emu.grasscutter.database.DatabaseHelper;
+import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
@@ -57,7 +58,7 @@ public class GameItem {
     @Getter private List<Integer> appendPropIdList;
 
     @Getter @Setter private int equipCharacter;
-    @Transient @Getter @Setter private int weaponEntityId;
+    @Transient @Getter @Setter private EntityWeapon weaponEntity;
     @Transient @Getter private boolean newItem = false;
 
     public GameItem() {
@@ -270,7 +271,7 @@ public class GameItem {
 
     public SceneWeaponInfo createSceneWeaponInfo() {
         SceneWeaponInfo.Builder weaponInfo = SceneWeaponInfo.newBuilder()
-                .setEntityId(this.getWeaponEntityId())
+                .setEntityId(this.getWeaponEntity() != null ? this.getWeaponEntity().getId() : 0)
                 .setItemId(this.getItemId())
                 .setGuid(this.getGuid())
                 .setLevel(this.getLevel())

@@ -31,7 +31,10 @@ public class AbilityModifier implements Serializable {
     public AbilityModifierAction[] onHeal;
     public AbilityModifierAction[] onBeingHealed;
     public DynamicFloat duration = DynamicFloat.ZERO;
+    public DynamicFloat thinkInterval = DynamicFloat.ZERO;
     public String stacking;
+
+    public AbilityMixinData[] modifierMixins;
 
     public ElementType elementType;
     public DynamicFloat elementDurability = DynamicFloat.ZERO;
@@ -96,21 +99,62 @@ public class AbilityModifier implements Serializable {
         @SerializedName("$type")
         public Type type;
         public String target;
-        @SerializedName(value = "amount", alternate = "PDLLIFICICJ")
+        @SerializedName(value = "amount", alternate = {"PDLLIFICICJ", "cdRatio"})
         public DynamicFloat amount = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterAttackRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByCasterCurrentHPRatio = DynamicFloat.ZERO;
+        @SerializedName(value = "amountByCasterMaxHPRatio", alternate = {"HFNJHOGGFKB", "GEJGGCIOLKN"})
         public DynamicFloat amountByCasterMaxHPRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByGetDamage = DynamicFloat.ZERO;
         public DynamicFloat amountByTargetCurrentHPRatio = DynamicFloat.ZERO;
         public DynamicFloat amountByTargetMaxHPRatio = DynamicFloat.ZERO;
+        public DynamicFloat limboByTargetMaxHPRatio = DynamicFloat.ZERO;
+        public DynamicFloat healRatio = DynamicFloat.ONE;
         @SerializedName(value = "ignoreAbilityProperty", alternate = "HHFGADCJJDI")
         public boolean ignoreAbilityProperty;
         public String modifierName;
 
+        public boolean enableLockHP;
+        public boolean disableWhenLoading;
+        public boolean lethal = true;
+
+        public boolean muteHealEffect = false;
+
+        public boolean byServer;
+        public boolean lifeByOwnerIsAlive;
+        public String campTargetType;
+        public int campID;
+        public int gadgetID;
+        public boolean ownerIsTarget;
+
+        public boolean isFromOwner;
+        public String globalValueKey;
+        public String abilityFormula;
+
+        public int skillID;
+
+        public AbilityModifierAction[] actions;
+        public AbilityModifierAction[] successActions;
+        public AbilityModifierAction[] failActions;
+
+        public DropType dropType = DropType.LevelControl;
+        public DynamicFloat baseEnergy;
+        public DynamicFloat ratio = DynamicFloat.ONE;
+        public int configID;
+
+        public DynamicFloat valueRangeMin;
+        public DynamicFloat valueRangeMax;
+        public String overrideMapKey;
+
         public int param1;
         public int param2;
         public int param3;
+
+        public enum DropType {
+            LevelControl,
+            BigWorldOnly,
+            ForceDrop
+        }
     }
 
     //The following should be implemented into DynamicFloat if older resource formats need to be supported

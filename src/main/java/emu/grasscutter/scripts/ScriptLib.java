@@ -11,6 +11,7 @@ import emu.grasscutter.game.entity.gadget.GadgetWorktop;
 import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.entity.gadget.platform.PointArrayRoute;
 import emu.grasscutter.game.props.ClimateType;
+import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
@@ -294,7 +295,7 @@ public class ScriptLib {
 		}
 		var suiteData = group.getSuiteByIndex(suite);
 		if(suiteData == null){
-            Grasscutter.getLogger().warn("trying to get suite that doesn't exist: {} {}", groupId, suite);
+            logger.warn("trying to get suite that doesn't exist: {} {}", groupId, suite);
 			return 1;
 		}
 		scriptManager.addGroupSuite(groupInstance, suiteData);
@@ -540,7 +541,6 @@ public class ScriptLib {
 		return (int) region.getEntities().stream().filter(e -> e >> 24 == entityType).count();
 	}
 
-
 	public static int TowerCountTimeStatus(GroupEventLuaContext context, int isDone, int var2){
 		logger.debug("[LUA] Call TowerCountTimeStatus with {},{}",
 				isDone,var2);
@@ -560,6 +560,14 @@ public class ScriptLib {
 		logger.debug("[LUA] Call SetMonsterBattleByGroup with {} {}",
             configId,groupId);
 		// TODO implement scene50008_group250008057.lua uses incomplete group numbers
+
+        val scene = context.getSceneScriptManager().getScene();
+        // -> MonsterForceAlertNotify
+        var entity = scene.getEntityByConfigId(configId, groupId);
+        if(entity != null && entity instanceof EntityMonster monster) {
+            scene.broadcastPacket(new PacketMonsterForceAlertNotify(monster.getId()));
+        }
+
 		return 0;
 	}
 
@@ -750,7 +758,6 @@ public class ScriptLib {
 
 		return 1;
 	}
-
 
     public static int GetSceneOwnerUid(GroupEventLuaContext context){
         return context.getSceneScriptManager().getScene().getWorld().getHost().getUid();
@@ -1887,14 +1894,32 @@ public class ScriptLib {
         return gadget.getGroupId();
     }
 
+    public static int SetGadgetEnableInteract(ControllerLuaContext context, int groupId, int configId, boolean enable) {
+        val gadget = context.getEntity();
+        if(gadget.getGroupId() != groupId || gadget.getConfigId() != configId) return -1;
+
+        gadget.setInteractEnabled(enable);
+
+        return 0;
+    }
+
+    public static int DropSubfield(ControllerLuaContext context, Object paramsTable) {
+        val gadget = context.getEntity();
+        val params = context.getEngine().getTable(paramsTable);
+        String subfield_name = params.getString("subfield_name");
+
+        gadget.dropSubfield(subfield_name);
+
+        return -1;
+    }
+
     public static int[] GetGatherConfigIdList(ControllerLuaContext context) {
-        EntityGadget gadget = context.getEntity();
+        val gadget = context.getEntity();
+        val children = gadget.getChildren();
 
-        GameEntity[] children = (GameEntity[]) gadget.getChildren().toArray();
-
-        int[] configIds = new int[children.length + 1];
-        for(int i = 0; i < children.length; i++) {
-            configIds[i] = children[i].getConfigId();
+        val configIds = new int[children.size()];
+        for(int i = 0; i < children.size(); i++) {
+            configIds[i] = children.get(i).getConfigId();
         }
 
         return configIds;

@@ -29,7 +29,7 @@ public class JNLuaScript implements LuaScript {
 
     JNLuaScript(JNLuaEngine engine, Path scriptPath) throws ScriptException, IOException {
         this.engine = engine;
-        this.scriptEngine = (LuaScriptEngine) engine.getManager().getEngineByName("Lua");
+        this.scriptEngine = (LuaScriptEngine) engine.getManager().getEngineByName("jnlua");
         context.setBindings(engine.getBindings(), ScriptContext.GLOBAL_SCOPE);
         this.binding = (LuaBindings) scriptEngine.createBindings();
         context.setBindings(binding, ScriptContext.ENGINE_SCOPE);
