@@ -56,7 +56,8 @@ public abstract class EntityBaseGadget extends GameEntity {
         getScene().getScriptManager().callEvent(new ScriptArgs(this.getGroupId(), EVENT_SPECIFIC_GADGET_HP_CHANGE, getConfigId(), getGadgetId())
             .setSourceEntityId(getId())
             .setParam3((int) this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP))
-            .setEventSource(Integer.toString(getConfigId())));
+            .setEventSource(getConfigId())
+        );
     }
 
     protected void fillFightProps(ConfigEntityGadget configGadget) {

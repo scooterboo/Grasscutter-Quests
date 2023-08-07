@@ -176,10 +176,7 @@ public class ScriptLib {
         val entity = scene.getEntityById(eid);
 
 
-        int[] worktopOptions = new int[table.getSize()];
-        for(int i = 1 ;i<=table.getSize() ;i++){
-            worktopOptions[i-1] = table.getInt(i);
-        }
+        int[] worktopOptions = table.getAsIntArray();
         if(!(entity instanceof EntityGadget gadget)|| worktopOptions.length == 0){
             return 2;
         }
@@ -1322,6 +1319,12 @@ public class ScriptLib {
         }
 
         context.getSceneScriptManager().getScene().broadcastPacket(new PacketBeginCameraSceneLookNotify(cameraParams));
+        return 0;
+    }
+
+    public int ClearPlayerEyePoint(GroupEventLuaContext context, int var1){
+        logger.warn("[LUA] Call unimplemented ClearPlayerEyePoint with {}", var1);
+        //TODO implement
         return 0;
     }
 
