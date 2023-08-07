@@ -5,6 +5,8 @@ import java.util.List;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @ToString
 @Setter
 public class SceneMonster extends SceneObject{

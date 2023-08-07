@@ -68,6 +68,7 @@ public class TeamManager extends BasePlayerDataManager {
         this.temporaryTeam = new ArrayList<>();
         this.trialAvatarTeam = new TeamInfo();
         this.entityGuids = new LinkedHashMap<>();
+        if(currentTeamId == 0) currentTeamId = 1;
     }
 
     public TeamManager(Player player) {
@@ -102,7 +103,15 @@ public class TeamManager extends BasePlayerDataManager {
     }
 
     public TeamInfo getCurrentSinglePlayerTeamInfo() {
-        return getTeams().get(getCurrentTeamId());
+        val team = getTeams().get(getCurrentTeamId());
+        if (team == null) {
+            val first = getTeams().entrySet().stream().findFirst();
+            if (first.isPresent()) {
+                setCurrentTeamId(first.get().getKey());
+                return first.get().getValue();
+            }
+        }
+        return team;
     }
 
     public void setCurrentCharacterIndex(int index) {
@@ -111,6 +120,12 @@ public class TeamManager extends BasePlayerDataManager {
     }
 
     public EntityAvatar getCurrentAvatarEntity() {
+        if(getActiveTeam().isEmpty()) {
+            val mainChar = player.getAvatars().getAvatars().get(player.getMainCharacterId());
+            if(mainChar == null) return null;
+            addAvatarToCurrentTeam(mainChar);
+        }
+
         if (getActiveTeam().isEmpty() || getCurrentCharacterIndex() < 0) return null;
 
         if(getCurrentCharacterIndex() >= getActiveTeam().size()) return getActiveTeam().get(0);

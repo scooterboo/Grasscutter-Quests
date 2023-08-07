@@ -697,20 +697,19 @@ public class ResourceLoader {
         // Load from BinOutput
         val pattern = Pattern.compile("Q(.+?)\\ShareConfig.lua");
 
-        Bindings bindings = ScriptLoader.getEngine().createBindings();
         try(val stream = Files.newDirectoryStream(getResourcePath("Scripts/Quest/Share/"), "Q*ShareConfig.lua")) {
             stream.forEach(path -> {
                 val matcher = pattern.matcher(path.getFileName().toString());
                 if (!matcher.find()) return;
 
-                CompiledScript cs = ScriptLoader.getScript("Quest/Share/"+path.getFileName().toString());
+                val cs = ScriptLoader.getScript("Quest/Share/"+path.getFileName().toString());
                 if (cs == null) return;
 
                 try{
-                    cs.eval(bindings);
+                    cs.evaluate();
                     // these are Map<String, class>
-                    var teleportDataMap = ScriptLoader.getSerializer().toMap(TeleportData.class, bindings.get("quest_data"));
-                    var rewindDataMap = ScriptLoader.getSerializer().toMap(RewindData.class, bindings.get("rewind_data"));
+                    val teleportDataMap = cs.getGlobalVariableMap("quest_data", TeleportData.class);
+                    val rewindDataMap = cs.getGlobalVariableMap("rewind_data", RewindData.class);
                     // convert them to Map<Integer, class> and cache
                     GameData.getTeleportDataMap().putAll(teleportDataMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getKey()), Entry::getValue)));
                     GameData.getRewindDataMap().putAll(rewindDataMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getKey()), Entry::getValue)));
@@ -835,18 +834,17 @@ public class ResourceLoader {
     }
 
     private static void loadGroupReplacements(){
-        Bindings bindings = ScriptLoader.getEngine().createBindings();
 
-        CompiledScript cs = ScriptLoader.getScript("Scene/groups_replacement.lua");
+        val cs = ScriptLoader.getScript("Scene/groups_replacement.lua");
         if (cs == null) {
             Grasscutter.getLogger().error("Error while loading Group Replacements: file not found");
             return;
         }
 
         try{
-            cs.eval(bindings);
+            cs.evaluate();
             // these are Map<String, class>
-            var replacementsMap = ScriptLoader.getSerializer().toMap(GroupReplacementData.class, bindings.get("replacements"));
+            var replacementsMap = cs.getGlobalVariableMap("replacements", GroupReplacementData.class);
             // convert them to Map<Integer, class> and cache
             GameData.getGroupReplacements().putAll(replacementsMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getValue().getId()), Entry::getValue)));
 

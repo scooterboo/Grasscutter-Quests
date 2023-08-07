@@ -7,102 +7,66 @@ import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.props.EntityType;
 import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.scripts.constants.*;
+import emu.grasscutter.scripts.constants.temporary.ExhibitionPlayType;
+import emu.grasscutter.scripts.constants.temporary.FlowSuiteOperatePolicy;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreType;
+import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreUIType;
 import emu.grasscutter.scripts.data.SceneMeta;
-import emu.grasscutter.scripts.serializer.LuaSerializer;
-import emu.grasscutter.scripts.serializer.Serializer;
-import emu.grasscutter.utils.FileUtils;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
+import emu.grasscutter.scripts.lua_engine.LuaScript;
+import emu.grasscutter.scripts.lua_engine.ScriptType;
+import emu.grasscutter.scripts.lua_engine.jnlua.JNLuaEngine;
+import emu.grasscutter.scripts.lua_engine.luaj.LuaJEngine;
 import lombok.Getter;
 
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.script.LuajContext;
-
-import javax.script.*;
-import java.io.File;
-import java.io.FileReader;
 import java.lang.ref.SoftReference;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ScriptLoader {
-    private static ScriptEngineManager sm;
-    @Getter private static ScriptEngine engine;
-    private static ScriptEngineFactory factory;
-    @Getter private static Serializer serializer;
-    @Getter private static ScriptLib scriptLib;
-    @Getter private static LuaValue scriptLibLua;
+    @Getter private static LuaEngine luaEngine;
     /**
      * suggest GC to remove it if the memory is less
      */
-    private static Map<String, SoftReference<CompiledScript>> scriptsCache = new ConcurrentHashMap<>();
+    private static Map<String, SoftReference<LuaScript>> scriptsCache = new ConcurrentHashMap<>();
     /**
      * sceneId - SceneMeta
      */
     private static Map<Integer, SoftReference<SceneMeta>> sceneMetaCache = new ConcurrentHashMap<>();
 
     public synchronized static void init() throws Exception {
-        if (sm != null) {
+        if (luaEngine != null) {
             throw new Exception("Script loader already initialized");
         }
 
         // Create script engine
-        sm = new ScriptEngineManager();
-        engine = sm.getEngineByName("luaj");
-        factory = getEngine().getFactory();
+        if(Grasscutter.getConfig().server.game.useJNLua){
+            Grasscutter.getLogger().info("Using JNLua");
+            luaEngine = new JNLuaEngine();
+        } else {
+            Grasscutter.getLogger().info("Using LuaJ");
+            luaEngine = new LuaJEngine();
+        }
 
-        // Lua stuff
-        serializer = new LuaSerializer();
+        luaEngine.addGlobalEnumByIntValue("EntityType", EntityType.values());
+        luaEngine.addGlobalEnumByIntValue("QuestState", QuestState.values());
+        luaEngine.addGlobalEnumByIntValue("ElementType", ElementType.values());
 
-        // Set engine to replace require as a temporary fix to missing scripts
-        LuajContext ctx = (LuajContext) engine.getContext();
-        ctx.globals.set("require", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg0) {
-                return LuaValue.ZERO;
-            }
-        });
+        luaEngine.addGlobalEnumByOrdinal("GroupKillPolicy", GroupKillPolicy.values());
+        luaEngine.addGlobalEnumByOrdinal("SealBattleType", SealBattleType.values());
+        luaEngine.addGlobalEnumByOrdinal("FatherChallengeProperty", FatherChallengeProperty.values());
+        luaEngine.addGlobalEnumByOrdinal("ChallengeEventMarkType", ChallengeEventMarkType.values());
+        luaEngine.addGlobalEnumByOrdinal("VisionLevelType", VisionLevelType.values());
+        luaEngine.addGlobalEnumByOrdinal("ExhibitionPlayType", ExhibitionPlayType.values());
+        luaEngine.addGlobalEnumByOrdinal("FlowSuiteOperatePolicy", FlowSuiteOperatePolicy.values());
+        luaEngine.addGlobalEnumByOrdinal("GalleryProgressScoreUIType", GalleryProgressScoreUIType.values());
+        luaEngine.addGlobalEnumByOrdinal("GalleryProgressScoreType", GalleryProgressScoreType.values());
 
-        addEnumByIntValue(ctx, EntityType.values(), "EntityType");
-        addEnumByIntValue(ctx, QuestState.values(), "QuestState");
-        addEnumByIntValue(ctx, ElementType.values(), "ElementType");
-
-        addEnumByOrdinal(ctx, GroupKillPolicy.values(), "GroupKillPolicy");
-        addEnumByOrdinal(ctx, SealBattleType.values(), "SealBattleType");
-        addEnumByOrdinal(ctx, FatherChallengeProperty.values(), "FatherChallengeProperty");
-        addEnumByOrdinal(ctx, ChallengeEventMarkType.values(), "ChallengeEventMarkType");
-        addEnumByOrdinal(ctx, VisionLevelType.values(), "VisionLevelType");
-
-        ctx.globals.set("EventType", CoerceJavaToLua.coerce(new EventType())); // TODO - make static class to avoid instantiating a new class every scene
-        ctx.globals.set("GadgetState", CoerceJavaToLua.coerce(new ScriptGadgetState()));
-        ctx.globals.set("RegionShape", CoerceJavaToLua.coerce(new ScriptRegionShape()));
-
-        scriptLib = new ScriptLib();
-        scriptLibLua = CoerceJavaToLua.coerce(scriptLib);
-        ctx.globals.set("ScriptLib", scriptLibLua);
-    }
-
-    private static <T extends Enum<T>> void addEnumByOrdinal(LuajContext ctx, T[] enumArray, String name){
-        LuaTable table = new LuaTable();
-        Arrays.stream(enumArray).forEach(e -> {
-            table.set(e.name(), e.ordinal());
-            table.set(e.name().toUpperCase(), e.ordinal());
-        });
-        ctx.globals.set(name, table);
-    }
-
-    private static <T extends Enum<T> & IntValueEnum> void addEnumByIntValue(LuajContext ctx, T[] enumArray, String name){
-        LuaTable table = new LuaTable();
-        Arrays.stream(enumArray).forEach(e -> {
-            table.set(e.name(), e.getValue());
-            table.set(e.name().toUpperCase(), e.getValue());
-        });
-        ctx.globals.set(name, table);
+        luaEngine.addGlobalStaticClass("EventType", EventType.class);
+        luaEngine.addGlobalStaticClass("GadgetState", ScriptGadgetState.class);
+        luaEngine.addGlobalStaticClass("RegionShape", ScriptRegionShape.class);
+        luaEngine.addGlobalStaticClass("ScriptLib", ScriptLib.class);
     }
 
     public static <T> Optional<T> tryGet(SoftReference<T> softReference) {
@@ -113,42 +77,18 @@ public class ScriptLoader {
         }
     }
 
-    @Deprecated(forRemoval = true)
-    public static CompiledScript getScriptByPath(String path) {
+    public static LuaScript getScript(String path) {
         var sc = tryGet(scriptsCache.get(path));
         if (sc.isPresent()) {
             return sc.get();
         }
-
-        //Grasscutter.getLogger().debug("Loading script " + path);
-
-        File file = new File(path);
-
-        if (!file.exists()) return null;
-
-        try (FileReader fr = new FileReader(file)) {
-            var script = ((Compilable) getEngine()).compile(fr);
-            scriptsCache.put(path, new SoftReference<>(script));
-            return script;
-        } catch (Exception e) {
-            Grasscutter.getLogger().error("Loading script {} failed!", path, e);
-            return null;
-        }
-
-    }
-
-    public static CompiledScript getScript(String path) {
-        var sc = tryGet(scriptsCache.get(path));
-        if (sc.isPresent()) {
-            return sc.get();
-        }
-
-        //Grasscutter.getLogger().debug("Loading script " + path);
-        final Path scriptPath = FileUtils.getScriptPath(path);
-        if (!Files.exists(scriptPath)) return null;
 
         try {
-            var script = ((Compilable) getEngine()).compile(Files.newBufferedReader(scriptPath));
+            var script = luaEngine.getScript(path, ScriptType.SCENE);
+            if(script == null) {
+                Grasscutter.getLogger().error("Loading script {} failed! - {}", path, "script is null");
+                return null;
+            }
             scriptsCache.put(path, new SoftReference<>(script));
             return script;
         } catch (Exception e) {

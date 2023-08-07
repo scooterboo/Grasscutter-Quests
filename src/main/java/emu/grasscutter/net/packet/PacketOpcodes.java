@@ -1792,7 +1792,7 @@ public class PacketOpcodes {
     public static final int Unk3000_EDGJEBLODLF = 416;
     public static final int Unk3000_EHJALCDEBKK = 23381;
     public static final int Unk3000_EMGMOECAJDK = 6092;
-    public static final int Unk3000_EOLNDBMGCBP = 4473;
+    public static final int GetHomeExchangeWoodInfoReq = 4473;
     public static final int GetAllMailNotify = 1497;
     public static final int Unk3000_FAPNAHAEPBF = 21880;
     public static final int Unk3000_FIPHHGCJIMO = 23678;
