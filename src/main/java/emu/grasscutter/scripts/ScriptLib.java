@@ -462,45 +462,68 @@ public class ScriptLib {
         //TODO implement var1 type
 		return 0;
 	}
+
+    private static int getGroupVariableValue(SceneScriptManager sceneScriptManager, int groupId, String varName){
+        return sceneScriptManager.getVariables(groupId).getOrDefault(varName, 0);
+    }
+
+    private static int modifyGroupVariableValue(SceneScriptManager sceneScriptManager, int groupId, String varName, int value,
+                                                boolean isSet){
+        val variables = sceneScriptManager.getVariables(groupId);
+
+        val old = variables.getOrDefault(varName, value);
+        val newValue = isSet ? value : old + value;
+        variables.put(varName, newValue);
+        sceneScriptManager.callEvent(
+            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, newValue, old)
+                .setEventSource(varName)
+        );
+        return 0;
+    }
+
 	public static int GetGroupVariableValue(GroupEventLuaContext context, String var) {
 		logger.debug("[LUA] Call GetGroupVariableValue with {}",
 				var);
-		return context.getSceneScriptManager().getVariables(context.getCurrentGroup().id).getOrDefault(var, 0);
+		return getGroupVariableValue(context.getSceneScriptManager(), context.getCurrentGroup().id, var);
 	}
+
+    public static int GetGroupVariableValueByGroup(GroupEventLuaContext context, String name, int groupId){
+        logger.debug("[LUA] Call GetGroupVariableValueByGroup with {},{}",
+            name,groupId);
+
+        return getGroupVariableValue(context.getSceneScriptManager(), groupId, name);
+    }
 
 	public static int SetGroupVariableValue(GroupEventLuaContext context, String varName, int value) {
 		logger.debug("[LUA] Call SetGroupVariableValue with {},{}",
             varName, value);
 
-        val groupId= context.getCurrentGroup().id;
-        val variables = context.getSceneScriptManager().getVariables(groupId);
-
-        val old = variables.getOrDefault(varName, value);
-        variables.put(varName, value);
-        context.getSceneScriptManager().callEvent(
-            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, value, old)
-                .setEventSource(varName)
-        );
-		return 0;
+        val groupId = context.getCurrentGroup().id;
+		return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, varName, value, true);
 	}
+
+    public static int SetGroupVariableValueByGroup(GroupEventLuaContext context, String key, int value, int groupId){
+        logger.debug("[LUA] Call SetGroupVariableValueByGroup with {},{},{}",
+            key,value,groupId);
+
+        return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, key, value, true);
+    }
 
 	public static int ChangeGroupVariableValue(GroupEventLuaContext context, String varName, int value) {
 		logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
             varName, value);
 
-        val groupId= context.getCurrentGroup().id;
-        val variables = context.getSceneScriptManager().getVariables(groupId);
-
-        val old = variables.getOrDefault(varName, 0);
-        variables.put(varName, old + value);
-        logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
-            old, old+value);
-        context.getSceneScriptManager().callEvent(
-            new ScriptArgs(groupId, EventType.EVENT_VARIABLE_CHANGE, old+value, old)
-                .setEventSource(varName)
-        );
-		return 0;
+        val groupId = context.getCurrentGroup().id;
+		return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, varName, value, false);
 	}
+
+    public static int ChangeGroupVariableValueByGroup(GroupEventLuaContext context, String name, int value, int groupId){
+        logger.debug("[LUA] Call ChangeGroupVariableValueByGroup with {},{}",
+            name,groupId);
+
+        return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, name, value, false);
+    }
+
 
 	/**
 	 * Set the actions and triggers to designated group
@@ -600,20 +623,6 @@ public class ScriptLib {
         return 0;
     }
 
-	public static int GetGroupVariableValueByGroup(GroupEventLuaContext context, String name, int groupId){
-		logger.debug("[LUA] Call GetGroupVariableValueByGroup with {},{}",
-				name,groupId);
-
-		return context.getSceneScriptManager().getVariables(groupId).getOrDefault(name, 0);
-	}
-	public static int ChangeGroupVariableValueByGroup(GroupEventLuaContext context, String name, int value, int groupId){
-		logger.debug("[LUA] Call ChangeGroupVariableValueByGroup with {},{}",
-				name,groupId);
-        //TODO test
-        context.getSceneScriptManager().getVariables(groupId).put(name, value);
-		return 0;
-	}
-
 	public static int SetIsAllowUseSkill(GroupEventLuaContext context, int canUse){
 		logger.debug("[LUA] Call SetIsAllowUseSkill with {}",
 				canUse);
@@ -650,15 +659,6 @@ public class ScriptLib {
         scriptManager.getScene().killEntity(entity, 0);
         return 0;
     }
-
-	public static int SetGroupVariableValueByGroup(GroupEventLuaContext context, String key, int value, int groupId){
-		logger.debug("[LUA] Call SetGroupVariableValueByGroup with {},{},{}",
-				key,value,groupId);
-
-        context.getSceneScriptManager().getVariables(groupId).put(key, value);
-        // TODO should this maybe trigger a variable changed?
-		return 0;
-	}
 
 	public static int CreateMonster(GroupEventLuaContext context, Object rawTable){
         val table = context.getEngine().getTable(rawTable);
