@@ -209,8 +209,11 @@ public class LuaJTable implements LuaTable {
 
     @Override
     public int[] getAsIntArray() {
-        // TODO
-        return new int[0];
+        val array = new int[table.length()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = table.get(i + 1).optint(0);
+        }
+        return array;
     }
 
     @Override
