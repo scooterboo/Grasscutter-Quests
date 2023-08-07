@@ -328,6 +328,10 @@ public final class AbilityManager extends BasePlayerManager {
         }
 
         var entity = this.player.getScene().getEntityById(invoke.getEntityId());
+        if(entity == null){
+            logger.warn("Entity not found: {}", invoke.getEntityId());
+            return;
+        }
 
         if(modChange.getAction() == ModifierAction.ADDED) {
             AbilityData instancedAbilityData = null;
