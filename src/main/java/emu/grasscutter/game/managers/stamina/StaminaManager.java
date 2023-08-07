@@ -387,7 +387,8 @@ public class StaminaManager extends BasePlayerManager {
         if (notifyEntityId != currentAvatarEntityId && notifyEntityId != vehicleId) {
             return;
         }
-        currentState = motionState;
+        this.previousState = currentState;
+        this.currentState = motionState;
         // logger.trace(currentState + "\t" + (notifyEntityId == currentAvatarEntityId ? "character" : "vehicle"));
         Vector posVector = motionInfo.getPos();
         Position newPos = new Position(posVector.getX(), posVector.getY(), posVector.getZ());
@@ -413,6 +414,10 @@ public class StaminaManager extends BasePlayerManager {
     // Internal handler
 
     private void handleImmediateStamina(GameSession session, @NotNull MotionState motionState) {
+        // Don't double dip on sustained stamina start costs
+        if (previousState == currentState) {
+            return;
+        }
         if (currentState == motionState) {
             if (motionState.equals(MotionState.MOTION_STATE_CLIMB_JUMP)) {
                 updateStaminaRelative(session, new Consumption(ConsumptionType.CLIMB_JUMP), true);
