@@ -131,7 +131,7 @@ public class Scene {
 
         var entity = this.entities.get(id);
         if(entity == null) entity = this.weaponEntities.get(id);
-        if(entity == null && (id >> 24) == EntityIdType.AVATAR.getId()) {
+        if(entity == null && EntityIdType.idFromEntityId(id) == EntityIdType.AVATAR.getId()) {
             for (var player : getPlayers()) {
                 for (var avatar : player.getTeamManager().getActiveTeam()) {
                     if(avatar.getId() == id) return avatar;

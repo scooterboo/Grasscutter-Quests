@@ -572,7 +572,7 @@ public class SceneScriptManager {
 
     private void callRegionEvent(EntityRegion region, int eventType, GameEntity entity) {
         callEvent(new ScriptArgs(region.getGroupId(), eventType, region.getConfigId())
-            .setEventSource(entity.getEntityType())
+            .setEventSource(entity.getEntityType().getValue())
             .setSourceEntityId(region.getId())
             .setTargetEntityId(entity.getId())
         );

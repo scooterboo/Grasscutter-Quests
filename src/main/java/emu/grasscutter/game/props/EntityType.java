@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import emu.grasscutter.scripts.constants.IntValueEnum;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
+
 
 public enum EntityType implements IntValueEnum{
     None (0),
@@ -84,6 +86,7 @@ public enum EntityType implements IntValueEnum{
     CoinCollectLevelGadget (72),
     PlaceHolder (99);
 
+    @Getter
     private final int value;
     private static final Int2ObjectMap<EntityType> map = new Int2ObjectOpenHashMap<>();
     private static final Map<String, EntityType> stringMap = new HashMap<>();
@@ -99,9 +102,6 @@ public enum EntityType implements IntValueEnum{
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
 
     public static EntityType getTypeByValue(int value) {
         return map.getOrDefault(value, None);

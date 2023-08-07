@@ -6,9 +6,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.ability.AbilityModifierController;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.props.ElementType;
-import emu.grasscutter.game.props.FightProperty;
-import emu.grasscutter.game.props.LifeState;
+import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SpawnDataEntry;
 import emu.grasscutter.game.world.World;
@@ -60,8 +58,8 @@ public abstract class GameEntity {
         this.motionState = MotionState.MOTION_STATE_NONE;
     }
 
-    public int getEntityType() {
-        return this.getId() >> 24;
+    public EntityType getEntityType() {
+        return EntityIdType.fromEntityId(this.getId()).getType();
     }
 
     public abstract int getEntityTypeId();
