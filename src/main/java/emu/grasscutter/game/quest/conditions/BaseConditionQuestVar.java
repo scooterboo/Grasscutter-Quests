@@ -4,6 +4,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.common.quest.SubQuestData.*;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.QuestSystem;
 import lombok.val;
 
 public abstract class BaseConditionQuestVar extends BaseCondition {
@@ -16,7 +17,7 @@ public abstract class BaseConditionQuestVar extends BaseCondition {
         val targetValue = condition.getParam()[1];
         val questVarValue = getQuestVar(owner, questData, index);
 
-        Grasscutter.getLogger().debug("questVar {} : {}", index, questVarValue);
+        QuestSystem.getLogger().debug("questVar {} : {}", index, questVarValue);
 
         if (questVarValue < 0) {
             return false;
@@ -27,12 +28,12 @@ public abstract class BaseConditionQuestVar extends BaseCondition {
     protected int getQuestVar(Player owner, SubQuestData questData, int index) {
         val mainQuest = owner.getQuestManager().getMainQuestById(questData.getMainId());
         if (mainQuest == null) {
-            Grasscutter.getLogger().debug("mainQuest for quest var not available yet");
+            QuestSystem.getLogger().debug("mainQuest for quest var not available yet");
             return -1;
         }
         val questVars = mainQuest.getQuestVars();
         if (index >= questVars.length) {
-            Grasscutter.getLogger().error("questVar out of bounds for {} index {} size {}", questData.getSubId(), index, questVars.length);
+            QuestSystem.getLogger().error("questVar out of bounds for {} index {} size {}", questData.getSubId(), index, questVars.length);
             return -2;
         }
         return questVars[index];

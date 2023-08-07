@@ -184,20 +184,20 @@ public class QuestManager extends BasePlayerManager {
 
     public void setQuestGlobalVarValue(Integer variable, Integer value) {
         Integer previousValue = getPlayer().getQuestGlobalVariables().put(variable,value);
-        Grasscutter.getLogger().debug("Changed questGlobalVar {} value from {} to {}", variable, previousValue==null ? 0: previousValue, value);
+        QuestSystem.getLogger().debug("Changed questGlobalVar {} value from {} to {}", variable, previousValue==null ? 0: previousValue, value);
     }
     public void incQuestGlobalVarValue(Integer variable, Integer inc) {
         //
         Integer previousValue = getPlayer().getQuestGlobalVariables().getOrDefault(variable,0);
         getPlayer().getQuestGlobalVariables().put(variable,previousValue + inc);
-        Grasscutter.getLogger().debug("Incremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue + inc);
+        QuestSystem.getLogger().debug("Incremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue + inc);
     }
     //In MainQuest 998, dec is passed as a positive integer
     public void decQuestGlobalVarValue(Integer variable, Integer dec) {
         //
         Integer previousValue = getPlayer().getQuestGlobalVariables().getOrDefault(variable,0);
         getPlayer().getQuestGlobalVariables().put(variable,previousValue - dec);
-        Grasscutter.getLogger().debug("Decremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue - dec);
+        QuestSystem.getLogger().debug("Decremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue - dec);
     }
 
     public GameMainQuest getMainQuestById(int mainQuestId) {
@@ -334,7 +334,7 @@ public class QuestManager extends BasePlayerManager {
     //QUEST_EXEC are handled directly by each subQuest
 
     public void triggerEvent(QuestCond condType, String paramStr, int... params) {
-        Grasscutter.getLogger().debug("Trigger Event {}, {}, {}", condType, paramStr, params);
+        QuestSystem.getLogger().debug("Trigger Event {}, {}, {}", condType, paramStr, params);
         val potentialQuests = GameData.getQuestDataByConditions(condType, params[0], paramStr);
         if(potentialQuests == null){
             return;
@@ -358,7 +358,7 @@ public class QuestManager extends BasePlayerManager {
 
             if (shouldAccept){
                 GameQuest quest = owner.getQuestManager().addQuest(questData);
-                Grasscutter.getLogger().debug("Added quest {} result {}", questData.getSubId(), quest !=null);
+                QuestSystem.getLogger().debug("Added quest {} result {}", questData.getSubId(), quest !=null);
             }
         });
     }
@@ -372,7 +372,7 @@ public class QuestManager extends BasePlayerManager {
     }
 
     public void triggerEvent(QuestContent condType, String paramStr, int... params) {
-        Grasscutter.getLogger().debug("Trigger Event {}, {}, {}", condType, paramStr, params);
+        QuestSystem.getLogger().debug("Trigger Event {}, {}, {}", condType, paramStr, params);
         List<GameMainQuest> checkMainQuests = this.getMainQuests().values().stream()
             .filter(i -> i.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED)
             .toList();
@@ -389,26 +389,22 @@ public class QuestManager extends BasePlayerManager {
      */
     public void checkQuestAlreadyFullfilled(GameQuest quest){
         Grasscutter.getGameServer().getScheduler().scheduleDelayedTask(() -> {
-            for(var condition : quest.getQuestData().getFinishCond()){
-                switch (condition.getType()) {
-                    case QUEST_CONTENT_OBTAIN_ITEM, QUEST_CONTENT_ITEM_LESS_THAN -> {
-                        //check if we already own enough of the item
-                        var item = getPlayer().getInventory().getItemByGuid(condition.getParam()[0]);
-                        queueEvent(condition.getType(), condition.getParam()[0], item != null ? item.getCount() : 0);
-                    }
-                    case QUEST_CONTENT_UNLOCK_TRANS_POINT -> {
-                        var scenePoints = getPlayer().getUnlockedScenePoints().get(condition.getParam()[0]);
-                        if (scenePoints != null && scenePoints.contains(condition.getParam()[1])) {
-                            queueEvent(condition.getType(), condition.getParam()[0], condition.getParam()[1]);
-                        }
-                    }
-                    case QUEST_CONTENT_UNLOCK_AREA -> {
-                        var sceneAreas = getPlayer().getUnlockedSceneAreas().get(condition.getParam()[0]);
-                        if (sceneAreas != null && sceneAreas.contains(condition.getParam()[1])) {
-                            queueEvent(condition.getType(), condition.getParam()[0], condition.getParam()[1]);
-                        }
-                    }
-                    case QUEST_CONTENT_PLAYER_LEVEL_UP -> queueEvent(condition.getType(), player.getLevel());
+            val questSystem = getPlayer().getServer().getQuestSystem();
+            val questData = quest.getQuestData();
+            if (questData == null) {
+                QuestSystem.getLogger().error("Quest {} has no data", quest.getSubQuestId());
+                return;
+            }
+
+            val shouldFinish = questSystem.initialCheckContent(quest, quest.getFinishProgressList(), questData.getFinishCond(), questData.getFinishCondComb());
+            if (shouldFinish) {
+                quest.finish(false);
+                return;
+            }
+            if(!questData.getFailCond().isEmpty()) {
+                val shouldFail = questSystem.initialCheckContent(quest, quest.getFailProgressList(), questData.getFailCond(), questData.getFailCondComb());
+                if (shouldFail) {
+                    quest.fail();
                 }
             }
         }, 1);

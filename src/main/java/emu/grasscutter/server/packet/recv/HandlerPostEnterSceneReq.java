@@ -14,22 +14,28 @@ public class HandlerPostEnterSceneReq extends PacketHandler {
 
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        val sceneId = session.getPlayer().getSceneId();
-        val questManager = session.getPlayer().getQuestManager();
-        switch (session.getPlayer().getScene().getSceneType()){
+        val player = session.getPlayer();
+        val sceneId = player.getSceneId();
+        val scene = player.getScene();
+        val questManager = player.getQuestManager();
+        switch (scene.getSceneType()){
             case SCENE_ROOM -> questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_ROOM, sceneId,0);
             case SCENE_WORLD -> {
                 questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_MY_WORLD, sceneId);
                 questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_MY_WORLD_SCENE, sceneId);
             }
             case SCENE_DUNGEON -> {
-                val dungeonManager = session.getPlayer().getScene().getDungeonManager();
+                val dungeonManager = scene.getDungeonManager();
                 if (dungeonManager != null) dungeonManager.startDungeon();
             }
         }
 
+        if(scene.getPrevScene() != sceneId){
+            questManager.queueEvent(QuestContent.QUEST_CONTENT_LEAVE_SCENE, scene.getPrevScene());
+        }
 
-        session.send(new PacketPostEnterSceneRsp(session.getPlayer()));
+
+        session.send(new PacketPostEnterSceneRsp(player));
     }
 
 }

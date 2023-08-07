@@ -2,6 +2,7 @@ package emu.grasscutter.game.quest.exec;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
@@ -17,7 +18,7 @@ public class ExecUnregisterDynamicGroup extends QuestExecHandler {
         val unknownParam = Integer.parseInt(paramStr[1]); //TODO: Goes from 0 to 1, maybe is a boolean. Investigate
         val scene = quest.getOwner().getScene();
 
-        Grasscutter.getLogger().warn("Unregistering group {}", groupId);
+        QuestSystem.getLogger().info("Unregistering group {}", groupId);
 
         if(!scene.unregisterDynamicGroup(groupId)){
             return false;
@@ -26,7 +27,7 @@ public class ExecUnregisterDynamicGroup extends QuestExecHandler {
         //Remove suites if they are registered
         quest.getMainQuest().getQuestGroupSuites().removeIf(gs -> gs.getGroup() == groupId && gs.getScene() == scene.getId());
 
-        Grasscutter.getLogger().warn("Unregistered group {} in scene {}", groupId, scene.getId());
+        QuestSystem.getLogger().debug("Unregistered group {} in scene {}", groupId, scene.getId());
 
         return true;
     }

@@ -3,6 +3,7 @@ package emu.grasscutter.game.quest.exec;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
@@ -21,11 +22,11 @@ public class ExecChangeAvatarElemet extends QuestExecHandler {
         val mainAvatar = owner.getAvatars().getAvatarById(owner.getMainCharacterId());
 
         if(mainAvatar == null){
-            Grasscutter.getLogger().error("Failed to get main avatar for use {}", quest.getOwner().getUid());
+            QuestSystem.getLogger().error("Failed to get main avatar for use {}", quest.getOwner().getUid());
             return false;
         }
 
-        Grasscutter.getLogger().info("Changing avatar element to {} for quest {}", targetElement.name(), quest.getSubQuestId());
+        QuestSystem.getLogger().info("Changing avatar element to {} for quest {}", targetElement.name(), quest.getSubQuestId());
         return mainAvatar.changeElement(targetElement);
     }
 }

@@ -37,6 +37,7 @@ import emu.grasscutter.game.world.SpawnDataEntry.SpawnGroupEntry;
 import emu.grasscutter.scripts.EntityControllerScriptManager;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.ScriptLoader;
+import emu.grasscutter.scripts.data.DummyPoint;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.JsonUtils;
 import emu.grasscutter.utils.TsvUtils;
@@ -50,7 +51,9 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -138,12 +141,11 @@ public class ResourceLoader {
         cacheTalentLevelSets();
         // Load special ability in certain scene/dungeon
         loadConfigLevelEntityData();
-        loadQuestShareConfig();
+        loadScriptData();
         loadGadgetMappings();
         loadSubfieldMappings();
         loadMonsterMappings();
         loadActivityCondGroups();
-        loadGroupReplacements();
         loadTrialAvatarCustomData();
         loadGlobalCombatConfig();
         EntityControllerScriptManager.load();
@@ -749,9 +751,14 @@ public class ResourceLoader {
             logger.error("No config level entity loaded!");
         }
     }
+    private static void loadScriptData(){
+        loadQuestShareConfig();
+        loadGroupReplacements();
+        loadDummyPoints();
+    }
 
     private static void loadQuestShareConfig(){
-        // Load from BinOutput
+        // Load from Shared Quest scripts
         val pattern = Pattern.compile("Q(.+?)\\ShareConfig.lua");
 
         try(val stream = Files.newDirectoryStream(getResourcePath("Scripts/Quest/Share/"), "Q*ShareConfig.lua")) {
@@ -782,6 +789,38 @@ public class ResourceLoader {
         if (GameData.getTeleportDataMap() == null || GameData.getTeleportDataMap().isEmpty()
             || GameData.getRewindDataMap() == null || GameData.getRewindDataMap().isEmpty()) {
             logger.error("No Quest Share Config loaded!");
+        }
+    }
+
+    private static void loadDummyPoints(){
+        // Load from scene scripts
+
+        try(val stream = Files.newDirectoryStream(getResourcePath("Scripts/Scene/"), p -> Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS))) {
+            stream.forEach(path -> {
+                int sceneId = Integer.parseInt(path.getFileName().toString());
+                val targetScript = "Scene/"+sceneId+"/scene"+sceneId+"_dummy_points.lua";
+                val targetPath = FileUtils.getScriptPath(targetScript);
+                if(Files.notExists(targetPath)) return;
+                val cs =  ScriptLoader.getScript(targetScript);
+                if (cs == null) return;
+
+                try{
+                    cs.evaluate();
+                    val teleportDataMap = cs.getGlobalVariableMap("dummy_points",DummyPoint.class);
+                    GameData.getDummyPointMap().put(sceneId, teleportDataMap);
+                    logger.info("Loaded {} dummy points for scene {}.", teleportDataMap.size(), sceneId);
+                } catch (Throwable e){
+                    logger.error("Error while loading Quest Share Config: {}", path.getFileName().toString());
+                }
+            });
+        } catch (IOException e) {
+            logger.error("Error loading Quest Share Config: no files found");
+            return;
+        }
+        if (GameData.getDummyPointMap() == null || GameData.getDummyPointMap().isEmpty()) {
+            logger.error("No scene dummy points loaded!");
+        } else {
+            logger.info("Loaded dummy points for {} scenes.", GameData.getDummyPointMap().size());
         }
     }
 

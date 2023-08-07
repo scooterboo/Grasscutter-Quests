@@ -1,5 +1,6 @@
 package emu.grasscutter.game.quest.content;
 
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueContent;
 import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
@@ -11,13 +12,14 @@ import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_ADD_QU
 public class ContentAddQuestProgress extends BaseContent {
 
     @Override
-    public boolean execute(GameQuest quest, QuestContentCondition condition, String paramStr, int... params) {
+    public int initialCheck(GameQuest quest, SubQuestData questData, QuestContentCondition condition) {
         val progressId = condition.getParam()[0];
-        val currentCount = quest.getOwner().getPlayerProgress().getCurrentProgress(progressId);
-
-        // if the condition count is 0 I think it is safe to assume that the
-        // condition count from EXEC only needs to be 1
-        return currentCount >= condition.getCount();
+        return quest.getOwner().getPlayerProgress().getCurrentProgress(progressId);
     }
 
+    @Override
+    public int updateProgress(GameQuest quest, int currentProgress, QuestContentCondition condition,
+                              String paramStr, int... params) {
+        return params[1];
+    }
 }

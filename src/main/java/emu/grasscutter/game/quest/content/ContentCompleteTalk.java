@@ -1,5 +1,6 @@
 package emu.grasscutter.game.quest.content;
 
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueContent;
 import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
@@ -11,14 +12,14 @@ import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_COMPLE
 public class ContentCompleteTalk extends BaseContent {
 
     @Override
-    public boolean execute(GameQuest quest, QuestContentCondition condition, String paramStr, int... params) {
+    public int initialCheck(GameQuest quest, SubQuestData questData, QuestContentCondition condition) {
         val talkId = condition.getParam()[0];
         val checkMainQuest = quest.getOwner().getQuestManager().getMainQuestByTalkId(talkId);
-        if (checkMainQuest == null) {
-            return false;
+        if (checkMainQuest == null || checkMainQuest.getParentQuestId() != questData.getMainId()) {
+            return 0;
         }
 
         val talkData = checkMainQuest.getTalks().get(talkId);
-        return talkData != null;
+        return talkData != null? 1 : 0;
     }
 }

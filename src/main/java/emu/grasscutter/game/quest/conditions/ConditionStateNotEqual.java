@@ -4,6 +4,7 @@ import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.common.quest.SubQuestData.*;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueCond;
 import lombok.val;
 
@@ -21,7 +22,7 @@ public class ConditionStateNotEqual extends BaseCondition {
             /*
             Will spam the console
             */
-            //Grasscutter.getLogger().debug("Warning: quest {} hasn't been started yet!", condition.getParam()[0]);
+            //QuestSystem.getLogger().debug("Warning: quest {} hasn't been started yet!", condition.getParam()[0]);
 
             return false;
         }
