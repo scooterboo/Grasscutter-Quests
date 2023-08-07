@@ -564,6 +564,17 @@ public class ScriptLib {
 		return (int) region.getEntities().stream().filter(e -> e.getEntityType().getValue() == entityType).count();
 	}
 
+    public int GetRegionConfigId(GroupEventLuaContext context, Object rawTable){
+        val table = context.getEngine().getTable(rawTable);
+        logger.debug("[LUA] Call GetRegionConfigId with {}", printTable(table));
+        val regionEid = table.getInt("region_eid");
+        val region = context.getSceneScriptManager().getRegionById(regionEid);
+        if (region == null){
+            return -1;
+        }
+        return region.getConfigId();
+    }
+
 	public static int TowerCountTimeStatus(GroupEventLuaContext context, int isDone, int var2){
 		logger.debug("[LUA] Call TowerCountTimeStatus with {},{}",
 				isDone,var2);
