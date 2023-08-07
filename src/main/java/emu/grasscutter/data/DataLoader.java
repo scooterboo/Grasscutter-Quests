@@ -1,12 +1,14 @@
 package emu.grasscutter.data;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.server.http.handlers.GachaHandler;
 import emu.grasscutter.tools.Tools;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.JsonUtils;
 import emu.grasscutter.utils.TsvUtils;
 import lombok.val;
+import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DataLoader {
+    private static final Logger logger = Loggers.getResourceSystem();
 
     /**
      * Load a data file by its name. If the file isn't found within the /data directory then it will fallback to the default within the jar resources
@@ -92,7 +95,7 @@ public class DataLoader {
 
     public static <T> List<T> loadTableToList(String resourcePath, Class<T> classType) throws IOException {
         val path = FileUtils.getDataPathTsjJsonTsv(resourcePath);
-        Grasscutter.getLogger().info("Loading data table from: "+path);
+        logger.info("Loading data table from: "+path);
         return switch (FileUtils.getFileExtension(path)) {
             case "json" -> JsonUtils.loadToList(path, classType);
             case "tsj" -> TsvUtils.loadTsjToListSetField(path, classType);
@@ -106,14 +109,14 @@ public class DataLoader {
             List<Path> filenames = FileUtils.getPathsFromResource("/defaults/data/");
 
             if (filenames == null) {
-                Grasscutter.getLogger().error("We were unable to locate your default data files.");
+                logger.error("We were unable to locate your default data files.");
             } //else for (Path file : filenames) {
             //     String relativePath = String.valueOf(file).split("defaults[\\\\\\/]data[\\\\\\/]")[1];
 
             //     checkAndCopyData(relativePath);
             // }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("An error occurred while trying to check the data folder.", e);
+            logger.error("An error occurred while trying to check the data folder.", e);
         }
 
         generateGachaMappings();
@@ -126,9 +129,9 @@ public class DataLoader {
         if (!Files.exists(filePath)) {
             var root = filePath.getParent();
             if (root.toFile().mkdirs())
-                Grasscutter.getLogger().info("Created data folder '" + root + "'");
+                logger.info("Created data folder '" + root + "'");
 
-            Grasscutter.getLogger().info("Creating default '" + name + "' data");
+            logger.info("Creating default '" + name + "' data");
             FileUtils.copyResource("/defaults/data/" + name, filePath.toString());
         }
     }
@@ -137,10 +140,10 @@ public class DataLoader {
         var path = GachaHandler.getGachaMappingsPath();
         if (!Files.exists(path)) {
             try {
-                Grasscutter.getLogger().info("Creating default '" + path.toString() + "' data");
+                logger.info("Creating default '" + path.toString() + "' data");
                 Tools.createGachaMappings(path);
             } catch (Exception exception) {
-                Grasscutter.getLogger().warn("Failed to create gacha mappings. \n" + exception);
+                logger.warn("Failed to create gacha mappings. \n" + exception);
             }
         }
     }

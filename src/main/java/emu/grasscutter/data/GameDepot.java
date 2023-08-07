@@ -7,6 +7,7 @@ import java.util.Map;
 
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.excels.ReliquaryAffixData;
 import emu.grasscutter.data.excels.ReliquaryMainPropData;
 import emu.grasscutter.game.managers.blossom.BlossomConfig;
@@ -47,7 +48,7 @@ public class GameDepot {
         }
         // Let the server owner know if theyre missing weights
         if (relicMainPropDepot.size() == 0 || relicAffixDepot.size() == 0) {
-            Grasscutter.getLogger().error("Relic properties are missing weights! Please check your ReliquaryMainPropExcelConfigData or ReliquaryAffixExcelConfigData files in your ExcelBinOutput folder.");
+            Loggers.getResourceSystem().error("Relic properties are missing weights! Please check your ReliquaryMainPropExcelConfigData or ReliquaryAffixExcelConfigData files in your ExcelBinOutput folder.");
         }
     }
 

@@ -1,6 +1,5 @@
 package emu.grasscutter.game.managers.stamina;
 
-import ch.qos.logback.classic.Logger;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
@@ -21,6 +20,7 @@ import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Position;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 

@@ -25,7 +25,7 @@ public class ActionSetRandomOverrideMapValue extends AbilityActionHandler {
         float valueRangeMax = action.valueRangeMax.get(ability);
 
         if(value < valueRangeMin || value > valueRangeMax) {
-            Grasscutter.getLogger().warn("Tried setting value out of range: {} inside [{}, {}]", value, valueRangeMin, valueRangeMax);
+            logger.warn("Tried setting value out of range: {} inside [{}, {}]", value, valueRangeMin, valueRangeMax);
             return true;
         }
 

@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
 import emu.grasscutter.scripts.ScriptLib;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -64,8 +65,7 @@ public class JNLuaConverter implements Converter {
                                 Object ret = m.invoke(caller, args.toArray());
                                 luaState.pushJavaObject(ret);
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                System.out.println("Error on invoking binding function. " + e);
+                                LuaEngine.logger.error("Error on invoking binding function. ", e);
                                 throw e;
                             }
                             return 1;

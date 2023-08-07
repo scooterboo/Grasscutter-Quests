@@ -4,6 +4,7 @@ import com.github.davidmoten.rtreemulti.RTree;
 import com.github.davidmoten.rtreemulti.geometry.Geometry;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.MonsterData;
 import emu.grasscutter.data.excels.WorldLevelData;
@@ -33,6 +34,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kotlin.Pair;
 import lombok.val;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
 import static emu.grasscutter.scripts.constants.EventType.*;
 
 public class SceneScriptManager {
+    private static final Logger logger = Loggers.getScriptSystem();
     private final Scene scene;
     private final Map<String, Integer> variables;
     private SceneMeta meta;
@@ -134,7 +137,7 @@ public class SceneScriptManager {
     public void registerTrigger(SceneTrigger trigger) {
         triggerInvocations.put(trigger.getName(), new AtomicInteger(0));
         getTriggersByEvent(trigger.getEvent()).add(trigger);
-        Grasscutter.getLogger().debug("Registered trigger {}", trigger.getName());
+        logger.debug("Registered trigger {}", trigger.getName());
     }
 
     public void deregisterTrigger(List<SceneTrigger> triggers) {
@@ -142,7 +145,7 @@ public class SceneScriptManager {
     }
     public void deregisterTrigger(SceneTrigger trigger) {
         getTriggersByEvent(trigger.getEvent()).remove(trigger);
-        Grasscutter.getLogger().debug("deregistered trigger {}", trigger.getName());
+        logger.debug("deregistered trigger {}", trigger.getName());
     }
 
     public void resetTriggers(int eventId) {
@@ -150,10 +153,10 @@ public class SceneScriptManager {
     }
 
     public void resetTriggersForGroupSuite(SceneGroup group, int suiteIndex) {
-        Grasscutter.getLogger().debug("reset triggers for group {} suite {}", group.id, suiteIndex);
+        logger.debug("reset triggers for group {} suite {}", group.id, suiteIndex);
         var suite = group.getSuiteByIndex(suiteIndex);
         if (suite == null) {
-            Grasscutter.getLogger().warn("Trying to load null suite Triggers for group {} with suiteindex {}", group.id, suiteIndex);
+            logger.warn("Trying to load null suite Triggers for group {} with suiteindex {}", group.id, suiteIndex);
             return;
         }
 
@@ -210,7 +213,7 @@ public class SceneScriptManager {
 
         var suiteData = group.getSuiteByIndex(suiteIndex);
         if (suiteData == null) {
-            Grasscutter.getLogger().warn("Group {} suite {} not found", group.id, suiteIndex);
+            logger.warn("Group {} suite {} not found", group.id, suiteIndex);
             return 0;
         }
 
@@ -228,7 +231,7 @@ public class SceneScriptManager {
 
         if(waitForOne && (groupInstance.getTargetSuiteId() == 0 || prevSuiteIndex != groupInstance.getTargetSuiteId())) {
             groupInstance.setTargetSuiteId(suiteIndex);
-            Grasscutter.getLogger().debug("Group {} suite {} wating one more refresh", group.id, suiteIndex);
+            logger.debug("Group {} suite {} wating one more refresh", group.id, suiteIndex);
             return 0;
         }
 
@@ -259,9 +262,9 @@ public class SceneScriptManager {
             getGroupById(groupId); //Load the group, this ensures an instance is created and the if neccesary unloaded, but the suite data is stored
             targetGroupInstance = getGroupInstanceById(groupId);
             suiteId = refreshGroup(targetGroupInstance, suiteId, false, true); //If suiteId is zero, the value of suiteId changes
-            Grasscutter.getLogger().debug("trying to regresh group suite {} in an unloaded and uncached group {} in scene {}", suiteId, groupId, getScene().getId());
+            logger.debug("trying to regresh group suite {} in an unloaded and uncached group {} in scene {}", suiteId, groupId, getScene().getId());
         } else {
-            Grasscutter.getLogger().debug("Refreshing group {} suite {}", groupId, suiteId);
+            logger.debug("Refreshing group {} suite {}", groupId, suiteId);
             suiteId = refreshGroup(targetGroupInstance, suiteId, false); //If suiteId is zero, the value of suiteId changes
         }
         scene.broadcastPacket(new PacketGroupSuiteNotify(groupId, suiteId));
@@ -284,7 +287,7 @@ public class SceneScriptManager {
     public boolean refreshGroupMonster(int groupId) {
         var groupInstance = getGroupInstanceById(groupId);
         if (groupInstance == null) {
-            Grasscutter.getLogger().warn("trying to refesh monster group in unloaded and uncached group {} in scene {}", groupId, getScene().getId());
+            logger.warn("trying to refesh monster group in unloaded and uncached group {} in scene {}", groupId, getScene().getId());
             return false;
         }
 
@@ -306,7 +309,7 @@ public class SceneScriptManager {
 
     public void registerRegion(EntityRegion region) {
         regions.put(region.getId(), region);
-        Grasscutter.getLogger().debug("Registered region {} from group {}", region.getMetaRegion().config_id, region.getGroupId());
+        logger.debug("Registered region {} from group {}", region.getMetaRegion().config_id, region.getGroupId());
     }
     public void registerRegionInGroupSuite(SceneGroup group, SceneSuite suite) {
         suite.sceneRegions.stream().map(region -> new EntityRegion(this.getScene(), region))
@@ -328,7 +331,7 @@ public class SceneScriptManager {
         for (SceneBlock block : getBlocks().values()) {
             getScene().loadBlock(block);
             if(block.groups == null){
-                Grasscutter.getLogger().warn("Block {} in scene {} has no groups", block.id, getScene().getId());
+                logger.warn("Block {} in scene {} has no groups", block.id, getScene().getId());
                 continue;
             }
 
@@ -402,7 +405,7 @@ public class SceneScriptManager {
     public List<Grid> getGroupGrids() {
         int sceneId = scene.getId();
         if (groupGridsCache.containsKey(sceneId) && groupGridsCache.get(sceneId) != null) {
-            Grasscutter.getLogger().debug("Hit cache for scene {}",sceneId);
+            logger.debug("Hit cache for scene {}",sceneId);
             return groupGridsCache.get(sceneId);
         } else {
             var path = FileUtils.getCachePath("scene" + sceneId + "_grid.json");
@@ -412,7 +415,7 @@ public class SceneScriptManager {
                     groupGridsCache.put(sceneId, groupGrids);
                     if(groupGrids != null) return groupGrids;
                 } catch (IOException e) {
-                    Grasscutter.getLogger().error("exception during group grid loading: {}", e);
+                    logger.error("exception during group grid loading: {}", e);
                 }
             }
 
@@ -424,10 +427,10 @@ public class SceneScriptManager {
             meta.blocks.values().forEach(block -> {
                 block.load(sceneId);
                 if(block.groups == null){
-                    Grasscutter.getLogger().error("block.groups null for block {}", block.id);
+                    logger.error("block.groups null for block {}", block.id);
                     return;
                 }
-                Grasscutter.getLogger().debug("Loading block grid " + block.id);
+                logger.debug("Loading block grid " + block.id);
                 block.groups.values().stream().filter(g -> !g.dynamic_load).forEach(group -> {
                     group.load(this.scene.getId());
 
@@ -440,7 +443,7 @@ public class SceneScriptManager {
                             vision_levels.add(m.vision_level);
                         });
                     } else {
-                        Grasscutter.getLogger().error("group.monsters null for group {}", group.id);
+                        logger.error("group.monsters null for group {}", group.id);
                     }
                     if (group.gadgets != null) {
                         group.gadgets.values().forEach(g -> {
@@ -449,19 +452,19 @@ public class SceneScriptManager {
                             vision_levels.add(vision_level);
                         });
                     } else {
-                        Grasscutter.getLogger().error("group.gadgets null for group {}", group.id);
+                        logger.error("group.gadgets null for group {}", group.id);
                     }
 
                     if (group.npcs != null) {
                         group.npcs.values().forEach(n -> addGridPositionToMap(groupPositions.get(n.vision_level), group.id, n.vision_level, n.pos));
                     } else {
-                        Grasscutter.getLogger().error("group.npcs null for group {}", group.id);
+                        logger.error("group.npcs null for group {}", group.id);
                     }
 
                     if (group.regions != null) {
                         group.regions.values().forEach(r -> addGridPositionToMap(groupPositions.get(0), group.id, 0, r.pos));
                     } else {
-                        Grasscutter.getLogger().error("group.regions null for group {}", group.id);
+                        logger.error("group.regions null for group {}", group.id);
                     }
 
                     if (group.garbages != null && group.garbages.gadgets != null)
@@ -492,9 +495,9 @@ public class SceneScriptManager {
             } catch (IOException ignored) {}
             try (var file = new FileWriter(path.toFile())) {
                 file.write(JsonUtils.encode(groupGrids));
-                Grasscutter.getLogger().info("Scene {} saved grid file.", getScene().getId());
+                logger.info("Scene {} saved grid file.", getScene().getId());
             } catch (Exception e) {
-                Grasscutter.getLogger().error("Scene {} unable to save grid file.", getScene().getId(), e);
+                logger.error("Scene {} unable to save grid file.", getScene().getId(), e);
             }
             return groupGrids;
         }
@@ -557,7 +560,7 @@ public class SceneScriptManager {
             }
 
             if (region.hasNewEntities()) {
-                Grasscutter.getLogger().trace("Call EVENT_ENTER_REGION_{}",region.getMetaRegion().config_id);
+                logger.trace("Call EVENT_ENTER_REGION_{}",region.getMetaRegion().config_id);
                 callEvent(new ScriptArgs(region.getGroupId(), EventType.EVENT_ENTER_REGION, region.getConfigId())
                     .setSourceEntityId(region.getId())
                     .setTargetEntityId(targetID)
@@ -670,14 +673,14 @@ public class SceneScriptManager {
         // TODO delay
         var entity = scene.getEntityByConfigId(configId);
         if(entity!=null && entity.getGroupId() == group.id){
-            Grasscutter.getLogger().debug("entity already exists failed in group {} with config {}", group.id, configId);
+            logger.debug("entity already exists failed in group {} with config {}", group.id, configId);
             return;
         }
         entity = createMonster(group.id, group.block_id, group.monsters.get(configId));
         if(entity!=null){
             getScene().addEntity(entity);
         } else {
-            Grasscutter.getLogger().warn("failed to create entity with group {} and config {}", group.id, configId);
+            logger.warn("failed to create entity with group {} and config {}", group.id, configId);
         }
     }
     // Events
@@ -713,30 +716,30 @@ public class SceneScriptManager {
                 handleEventForTrigger(params, trigger);
             }
         } catch (Throwable throwable){
-            Grasscutter.getLogger().error("Condition Trigger "+ params.type +" triggered exception", throwable);
+            logger.error("Condition Trigger "+ params.type +" triggered exception", throwable);
         }
     }
 
     private boolean handleEventForTrigger(ScriptArgs params, SceneTrigger trigger ){
-        Grasscutter.getLogger().debug("checking trigger {} for event {}", trigger.getName(), params.type);
+        logger.debug("checking trigger {} for event {}", trigger.getName(), params.type);
         try {
             if (evaluateTriggerCondition(trigger, params)) {
                 callTrigger(trigger, params);
                 return true;
             } else {
-                Grasscutter.getLogger().debug("Condition Trigger {} returned false", trigger.getCondition());
+                logger.debug("Condition Trigger {} returned false", trigger.getCondition());
             }
             //TODO some ret do not bool
             return false;
         }
         catch (Throwable ex){
-            Grasscutter.getLogger().error("Condition Trigger "+trigger.getName()+" triggered exception", ex);
+            logger.error("Condition Trigger "+trigger.getName()+" triggered exception", ex);
             return false;
         }
     }
 
     private boolean evaluateTriggerCondition(SceneTrigger trigger, ScriptArgs params){
-        Grasscutter.getLogger().trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1, params.source_eid, params.target_eid);
+        logger.trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1, params.source_eid, params.target_eid);
         val condition = trigger.getCondition();
         if(condition == null || condition.isBlank()){
             return true;
@@ -755,7 +758,7 @@ public class SceneScriptManager {
 
         val invocationsCounter = triggerInvocations.get(trigger.getName());
         val invocations = invocationsCounter.incrementAndGet();
-        Grasscutter.getLogger().trace("Call Action Trigger {}", trigger.getAction());
+        logger.trace("Call Action Trigger {}", trigger.getAction());
 
 
         val activeChallenge = scene.getChallenge();
@@ -786,16 +789,16 @@ public class SceneScriptManager {
     private LuaValue callScriptFunc(@Nonnull String funcName, SceneGroup group, ScriptArgs params) {
         val script = group.getScript();
         if(script==null){
-            Grasscutter.getLogger().warn("callScriptFunc script is null");
+            logger.warn("callScriptFunc script is null");
             return BooleanLuaValue.FALSE;
         }
 
         if(funcName.isEmpty()){
-            Grasscutter.getLogger().warn("callScriptFunc funcName is empty");
+            logger.warn("callScriptFunc funcName is empty");
             return BooleanLuaValue.FALSE;
         }
         if(!script.hasMethod(funcName)){
-            Grasscutter.getLogger().warn("callScriptFunc script has no method {}",funcName);
+            logger.warn("callScriptFunc script has no method {}",funcName);
             return BooleanLuaValue.FALSE;
         }
 
@@ -803,7 +806,7 @@ public class SceneScriptManager {
         try{
             return script.callMethod(funcName, context, params);
         } catch (RuntimeException | ScriptException | NoSuchMethodException error){
-            Grasscutter.getLogger().error("[LUA] call trigger failed in group {} with {},{}",group.id,funcName,params,error);
+            logger.error("[LUA] call trigger failed in group {} with {},{}",group.id,funcName,params,error);
             return new BooleanLuaValue(false);
         }
     }
@@ -965,14 +968,14 @@ public class SceneScriptManager {
         //TODO also remove timers when refreshing and test
         var group = getGroupById(groupID);
         if(group == null || group.triggers == null){
-            Grasscutter.getLogger().warn("trying to create a timer for unknown group with id {} and source {}", groupID, source);
+            logger.warn("trying to create a timer for unknown group with id {} and source {}", groupID, source);
             return 1;
         }
-        Grasscutter.getLogger().info("creating group timer event for group {} with source {} and time {}",
+        logger.info("creating group timer event for group {} with source {} and time {}",
             groupID, source, time);
         for(SceneTrigger trigger : group.triggers.values()){
             if(trigger.getEvent() == EVENT_TIMER_EVENT &&trigger.getSource().equals(source)){
-                Grasscutter.getLogger().warn("[LUA] Found timer trigger with source {} for group {} : {}",
+                logger.warn("[LUA] Found timer trigger with source {} for group {} : {}",
                     source, groupID, trigger.getName());
                 cancelGroupTimerEvent(groupID, source);
                 var taskIdentifier = Grasscutter.getGameServer().getScheduler().scheduleDelayedRepeatingTask(() ->
@@ -998,7 +1001,7 @@ public class SceneScriptManager {
             }
         }
 
-        Grasscutter.getLogger().warn("trying to cancel a timer that's not active {} {}", groupID, source);
+        logger.warn("trying to cancel a timer that's not active {} {}", groupID, source);
         return 1;
     }
 

@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.activity.ActivityManager;
 import emu.grasscutter.game.dungeons.challenge.DungeonChallenge;
@@ -32,6 +33,7 @@ import emu.grasscutter.scripts.lua_engine.LuaContext;
 import emu.grasscutter.scripts.lua_engine.LuaTable;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Position;
+import lombok.Getter;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -46,7 +48,8 @@ import static emu.grasscutter.scripts.constants.GroupKillPolicy.*;
 
 @SuppressWarnings("unused")
 public class ScriptLib {
-	public static final Logger logger = LoggerFactory.getLogger(ScriptLib.class);
+    @Getter
+	private static final Logger logger = Loggers.getScriptSystem();
 
 	public ScriptLib() {
 	}

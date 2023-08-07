@@ -1,9 +1,8 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.utils.FileUtils;
 import lombok.val;
-import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.NamedJavaFunction;
 
@@ -19,7 +18,7 @@ public class JNLuaRequireCommonFunction implements NamedJavaFunction {
         val path = "Common/" + requiredName + ".lua";
         val includePath = FileUtils.getScriptPath(path);
         if (!Files.exists(includePath)) {
-            Grasscutter.getLogger().error("Require script not found. {}", path);
+            LuaEngine.logger.error("Require script not found. {}", path);
             return 1;
         }
         try {
@@ -27,7 +26,7 @@ public class JNLuaRequireCommonFunction implements NamedJavaFunction {
             luaState.load(includeScript, requiredName, "t");
             luaState.call(0, 0);
         } catch (IOException e) {
-            Grasscutter.getLogger().error("Error on loading require script. {}", path, e);
+            LuaEngine.logger.error("Error on loading require script. {}", path, e);
             return 2;
         }
         return 0;

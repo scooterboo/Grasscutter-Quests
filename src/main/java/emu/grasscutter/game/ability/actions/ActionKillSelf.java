@@ -13,7 +13,7 @@ public class ActionKillSelf extends AbilityActionHandler {
     public boolean execute(Ability ability, AbilityModifierAction action, ByteString abilityData, GameEntity target) {
         //KillSelf should not have a target field, so target it's the actual entity to be applied, TODO: Check if this is always true
         if(target == null) {
-            Grasscutter.getLogger().warn("Tried killing null target");
+            logger.warn("Tried killing null target");
             return false;
         }
 

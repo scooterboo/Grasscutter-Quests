@@ -2,7 +2,6 @@ package emu.grasscutter.game.activity.condition;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.excels.ActivityCondExcelConfigData;
-import emu.grasscutter.game.quest.handlers.QuestBaseHandler;
 import org.reflections.Reflections;
 
 import java.util.AbstractMap;

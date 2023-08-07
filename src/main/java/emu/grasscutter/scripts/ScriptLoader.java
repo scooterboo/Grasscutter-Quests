@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.game.dungeons.challenge.enums.ChallengeEventMarkType;
 import emu.grasscutter.game.dungeons.challenge.enums.FatherChallengeProperty;
 import emu.grasscutter.game.props.ElementType;
@@ -18,6 +19,7 @@ import emu.grasscutter.scripts.lua_engine.ScriptType;
 import emu.grasscutter.scripts.lua_engine.jnlua.JNLuaEngine;
 import emu.grasscutter.scripts.lua_engine.luaj.LuaJEngine;
 import lombok.Getter;
+import org.slf4j.Logger;
 
 import java.lang.ref.SoftReference;
 import java.util.Map;
@@ -26,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ScriptLoader {
     @Getter private static LuaEngine luaEngine;
+    private static final Logger logger = Loggers.getScriptSystem();
     /**
      * suggest GC to remove it if the memory is less
      */
@@ -42,10 +45,10 @@ public class ScriptLoader {
 
         // Create script engine
         if(Grasscutter.getConfig().server.game.useJNLua){
-            Grasscutter.getLogger().info("Using JNLua");
+            logger.info("Using JNLua");
             luaEngine = new JNLuaEngine();
         } else {
-            Grasscutter.getLogger().info("Using LuaJ");
+            logger.info("Using LuaJ");
             luaEngine = new LuaJEngine();
         }
 
@@ -86,13 +89,13 @@ public class ScriptLoader {
         try {
             var script = luaEngine.getScript(path, ScriptType.SCENE);
             if(script == null) {
-                Grasscutter.getLogger().error("Loading script {} failed! - {}", path, "script is null");
+                logger.error("Loading script {} failed! - {}", path, "script is null");
                 return null;
             }
             scriptsCache.put(path, new SoftReference<>(script));
             return script;
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Loading script {} failed! - {}", path, e.getLocalizedMessage());
+            logger.error("Loading script {} failed! - {}", path, e.getLocalizedMessage());
             return null;
         }
     }

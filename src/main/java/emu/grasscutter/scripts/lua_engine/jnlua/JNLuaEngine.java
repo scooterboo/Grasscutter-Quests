@@ -1,6 +1,5 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.constants.IntValueEnum;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
@@ -37,7 +36,7 @@ public class JNLuaEngine implements LuaEngine {
         this.serializer = new JNLuaSerializer();
 
         bindings.put("print", (JavaFunction) luaState -> {
-            Grasscutter.getLogger().debug("[LUA] print {} ", luaState.checkString(1));
+            logger.debug("[LUA] print {} ", luaState.checkString(1));
             return 1;
         });
 
@@ -72,7 +71,7 @@ public class JNLuaEngine implements LuaEngine {
             return true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            Grasscutter.getLogger().error("Failed to add static class to lua engine: " + name, e);
+            logger.error("Failed to add static class to lua engine: " + name, e);
         }
         return false;
     }

@@ -3,6 +3,7 @@ package emu.grasscutter.game.ability;
 import java.util.Map;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.binout.AbilityMixinData;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
 
@@ -83,7 +84,7 @@ public class AbilityLocalIdGenerator {
             case MODIFIER_MIXIN:
                 return (long)type.value + (ModifierIndex << 3) + (MixinIndex << 9) + (ConfigIndex << 15) + (ActionIndex << 21);
             case NONE:
-                Grasscutter.getLogger().error("Ability local id generator using NONE type.");
+                Loggers.getAbilitySystem().error("Ability local id generator using NONE type.");
                 break;
         }
 

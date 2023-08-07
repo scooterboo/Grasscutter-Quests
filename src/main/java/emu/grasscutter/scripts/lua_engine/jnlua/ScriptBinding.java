@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * TODO remove?
+ */
 public class ScriptBinding {
     final static Map<Class<?>, MethodAccess> methodAccessCache = new ConcurrentHashMap<>();
 

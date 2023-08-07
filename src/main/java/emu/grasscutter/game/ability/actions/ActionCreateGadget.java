@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.entity.EntityGadget;
@@ -18,7 +19,7 @@ public class ActionCreateGadget extends AbilityActionHandler {
     @Override
     public boolean execute(Ability ability, AbilityModifierAction action, ByteString abilityData, GameEntity target) {
         if(!action.byServer) {
-            Grasscutter.getLogger().debug("Action not executed by server");
+            logger.debug("Action not executed by server");
 
             return true;
         }
@@ -39,7 +40,7 @@ public class ActionCreateGadget extends AbilityActionHandler {
 
         entity.getScene().addEntity(entityCreated);
 
-        Grasscutter.getLogger().info("Gadget {} created at pos {} rot {}", action.gadgetID, entityCreated.getPosition(), entityCreated.getRotation());
+        logger.info("Gadget {} created at pos {} rot {}", action.gadgetID, entityCreated.getPosition(), entityCreated.getRotation());
 
         return true;
     }

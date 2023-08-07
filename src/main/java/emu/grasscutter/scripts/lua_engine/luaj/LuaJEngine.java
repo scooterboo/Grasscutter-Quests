@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts.lua_engine.luaj;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.constants.IntValueEnum;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
@@ -13,6 +14,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
+import org.slf4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -48,10 +50,10 @@ public class LuaJEngine implements LuaEngine {
                     try {
                         return new FileInputStream(targetFile);
                     } catch (FileNotFoundException e) {
-                        Grasscutter.getLogger().error("[LuaJ] exception while reading file {}:", filename, e);
+                        logger.error("[LuaJ] exception while reading file {}:", filename, e);
                     }
                 } else {
-                    Grasscutter.getLogger().warn("trying to load non existent lua file {}", filename);
+                    logger.warn("trying to load non existent lua file {}", filename);
                 }
                 return new ByteArrayInputStream(new byte[0]);
             }
@@ -92,7 +94,7 @@ public class LuaJEngine implements LuaEngine {
             return true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            Grasscutter.getLogger().error("Failed to add static class to lua engine: " + name, e);
+            logger.error("Failed to add static class to lua engine: " + name, e);
         }
         return false;
     }

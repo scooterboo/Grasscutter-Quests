@@ -5,7 +5,9 @@ import ch.qos.logback.classic.Logger;
 import emu.grasscutter.BuildConfig;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerRunMode;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.net.packet.PacketOpcodesUtils;
+import lombok.val;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
@@ -89,12 +91,18 @@ public final class StartupArguments {
             DISPATCH_INFO.logRequests = DEBUG_MODE_INFO.logRequests;
         }
 
+        val loggers = DEBUG_MODE_INFO.debugLogging;
+
         // Set the main logger to debug.
-        Grasscutter.getLogger().setLevel(DEBUG_MODE_INFO.serverLoggerLevel);
+        Loggers.getDefaultLogger().setLevel(loggers.serverLoggerLevel);
+        Loggers.getAbilitySystem().setLevel(loggers.abilityLevel);
+        Loggers.getQuestSystem().setLevel(loggers.questLevel);
+        Loggers.getResourceSystem().setLevel(loggers.resourceLevel);
+        Loggers.getScriptSystem().setLevel(loggers.scriptLevel);
         Grasscutter.getLogger().debug("The logger is now running in debug mode.");
 
         // Log level to other third-party services
-        Level loggerLevel = DEBUG_MODE_INFO.servicesLoggersLevel;
+        Level loggerLevel = loggers.servicesLoggersLevel;
 
         // Change loggers to debug.
         ((Logger) LoggerFactory.getLogger("io.javalin"))

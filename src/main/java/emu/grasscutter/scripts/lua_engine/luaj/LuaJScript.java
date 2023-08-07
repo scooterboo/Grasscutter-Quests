@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts.lua_engine.luaj;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
 import emu.grasscutter.scripts.lua_engine.LuaValue;
@@ -8,6 +9,7 @@ import emu.grasscutter.scripts.lua_engine.mock_results.BooleanLuaValue;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.slf4j.Logger;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -39,7 +41,7 @@ public class LuaJScript implements LuaScript {
     public LuaValue callMethod(@NotNull String methodName, Object... args) {
         val function = (org.luaj.vm2.LuaValue) binding.get(methodName);
         if (function == null || !function.isfunction()) {
-            Grasscutter.getLogger().warn("Attempted to call method {} on script {} but it does not exist or is not a function", methodName, this);
+            LuaEngine.logger.warn("Attempted to call method {} on script {} but it does not exist or is not a function", methodName, this);
             return BooleanLuaValue.FALSE;
         }
 

@@ -2,6 +2,7 @@ package emu.grasscutter.scripts.lua_engine.luaj;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.ScriptUtils;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.Serializer;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -48,7 +49,7 @@ public class LuaJSerializer extends Serializer {
             object = (T) keyValue;
         }
         if (object == null) {
-            Grasscutter.getLogger().warn("Can't serialize value: {} to type: {}", keyValue, type);
+            LuaEngine.logger.warn("Can't serialize value: {} to type: {}", keyValue, type);
         }
         return object;
     }
@@ -75,7 +76,7 @@ public class LuaJSerializer extends Serializer {
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Exception while serializing map", e);
+            LuaEngine.logger.error("Exception while serializing map", e);
         }
 
         return map;
@@ -104,7 +105,7 @@ public class LuaJSerializer extends Serializer {
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Exception while serializing list", e);
+            LuaEngine.logger.error("Exception while serializing list", e);
         }
 
         return list;
@@ -130,7 +131,7 @@ public class LuaJSerializer extends Serializer {
                 Class<?> listType = getListType(type, field);
                 return (T) serializeList(listType, table);
             } catch (Exception e) {
-                Grasscutter.getLogger().error("Exception while serializing {}", type.getName(), e);
+                LuaEngine.logger.error("Exception while serializing {}", type.getName(), e);
                 return null;
             }
         }
@@ -172,12 +173,12 @@ public class LuaJSerializer extends Serializer {
                         methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.tojstring());
                     }
                 } catch (Exception ex) {
-                    Grasscutter.getLogger().error("Exception serializing", ex);
+                    LuaEngine.logger.error("Exception serializing", ex);
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().info(ScriptUtils.toMap(table).toString());
-            Grasscutter.getLogger().error("Exception while serializing {}", type.getName(), e);
+            LuaEngine.logger.info(ScriptUtils.toMap(table).toString());
+            LuaEngine.logger.error("Exception while serializing {}", type.getName(), e);
         }
 
         return object;

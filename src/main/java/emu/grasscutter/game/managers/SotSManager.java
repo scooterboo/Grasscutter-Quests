@@ -1,6 +1,5 @@
 package emu.grasscutter.game.managers;
 
-import ch.qos.logback.classic.Logger;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.player.BasePlayerManager;
@@ -11,6 +10,7 @@ import emu.grasscutter.net.proto.ChangeHpReasonOuterClass.ChangeHpReason;
 import emu.grasscutter.net.proto.PropChangeReasonOuterClass.PropChangeReason;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropChangeReasonNotify;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropUpdateNotify;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Timer;

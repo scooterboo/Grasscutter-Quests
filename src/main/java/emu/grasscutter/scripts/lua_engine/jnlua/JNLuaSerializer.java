@@ -1,6 +1,6 @@
 package emu.grasscutter.scripts.lua_engine.jnlua;
 
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.Serializer;
 import org.terasology.jnlua.LuaValueProxy;
 import org.terasology.jnlua.util.AbstractTableMap;
@@ -90,7 +90,7 @@ public class JNLuaSerializer extends Serializer {
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Exception serializing list", e);
+            LuaEngine.logger.error("Exception serializing list", e);
         }
 
         return list;
@@ -116,7 +116,7 @@ public class JNLuaSerializer extends Serializer {
                 Class<?> listType = getListType(type, field);
                 return (T) serializeList(listType, table);
             } catch (Exception e) {
-                Grasscutter.getLogger().error("Exception serializing", e);
+                LuaEngine.logger.error("Exception serializing", e);
                 return null;
             }
         }
@@ -164,11 +164,11 @@ public class JNLuaSerializer extends Serializer {
                         //methodAccess.invoke(object, fieldMeta.index, keyValue);
                     }
                 } catch (Exception ex) {
-                    Grasscutter.getLogger().error("Exception serializing", ex);
+                    LuaEngine.logger.error("Exception serializing", ex);
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Exception serializing", e);
+            LuaEngine.logger.error("Exception serializing", e);
         }
 
         return object;
@@ -198,7 +198,7 @@ public class JNLuaSerializer extends Serializer {
                 }
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().error("Exception serializing map", e);
+            LuaEngine.logger.error("Exception serializing map", e);
         }
 
         return map;
