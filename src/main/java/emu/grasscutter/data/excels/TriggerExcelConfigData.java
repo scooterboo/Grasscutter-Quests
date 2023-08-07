@@ -1,5 +1,6 @@
 package emu.grasscutter.data.excels;
 
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.GameResource;
 import emu.grasscutter.data.ResourceType;
 import lombok.Getter;
@@ -10,4 +11,10 @@ public class TriggerExcelConfigData extends GameResource {
     private int sceneId;
     private int groupId;
     private String triggerName;
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        GameData.getTriggerDataByNameMap().put(groupId+triggerName, this);
+    }
 }

@@ -16,7 +16,9 @@ public class EntityRegion extends GameEntity{
     private final Position position;
     private boolean hasNewEntities;
     private boolean entityLeave;
-    private final Set<Integer> entities; // Ids of entities inside this region
+    private final Set<GameEntity> entities; // Ids of entities inside this region
+    private final Set<GameEntity> newEntities; // Ids that entered this region since the last check
+    private final Set<GameEntity> leftEntities; // Ids that left this region since the last check
     private final SceneRegion metaRegion;
 
     public EntityRegion(Scene scene, SceneRegion region) {
@@ -27,14 +29,17 @@ public class EntityRegion extends GameEntity{
         setConfigId(region.config_id);
         this.position = region.pos.clone();
         this.entities = ConcurrentHashMap.newKeySet();
+        this.newEntities = ConcurrentHashMap.newKeySet();
+        this.leftEntities = ConcurrentHashMap.newKeySet();
         this.metaRegion = region;
     }
 
     public void addEntity(GameEntity entity) {
-        if (this.getEntities().contains(entity.getId())) {
+        if (this.getEntities().contains(entity)) {
             return;
         }
-        this.getEntities().add(entity.getId());
+        this.getEntities().add(entity);
+        this.getNewEntities().add(entity);
         this.hasNewEntities = true;
     }
 
@@ -49,15 +54,17 @@ public class EntityRegion extends GameEntity{
 
     public void resetNewEntities() {
         hasNewEntities = false;
+        newEntities.clear();
     }
 
     public void removeEntity(int entityId) {
-        this.getEntities().remove(entityId);
+        this.getEntities().removeIf(e-> e.getId() == entityId);
         this.entityLeave = true;
     }
 
     public void removeEntity(GameEntity entity) {
-        this.getEntities().remove(entity.getId());
+        this.getEntities().remove(entity);
+        this.getLeftEntities().add(entity);
         this.entityLeave = true;
     }
     public boolean entityLeave() {return this.entityLeave;}
@@ -74,9 +81,5 @@ public class EntityRegion extends GameEntity{
          * The Region Entity would not be sent to client.
          */
         return null;
-    }
-
-    public int getFirstEntityId() {
-        return entities.stream().findFirst().orElse(0);
     }
 }

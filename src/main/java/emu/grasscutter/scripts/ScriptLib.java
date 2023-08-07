@@ -561,7 +561,7 @@ public class ScriptLib {
 			return 0;
 		}
 
-		return (int) region.getEntities().stream().filter(e -> e >> 24 == entityType).count();
+		return (int) region.getEntities().stream().filter(e -> e.getEntityType() == entityType).count();
 	}
 
 	public static int TowerCountTimeStatus(GroupEventLuaContext context, int isDone, int var2){

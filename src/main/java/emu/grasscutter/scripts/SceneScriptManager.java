@@ -15,6 +15,7 @@ import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
+import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
@@ -547,45 +548,34 @@ public class SceneScriptManager {
         }
 
         for (var region : this.regions.values()) {
+            val metaRegion = region.getMetaRegion();
             // currently all condition_ENTER_REGION Events check for avatar, so we have no necessary to add other types of entity
-            var entities = getScene().getEntities().values()
-                .stream()
-                .filter(e -> e.getEntityType() == EntityIdType.AVATAR.getId() && region.getMetaRegion().contains(e.getPosition()))
-                .toList();
-            entities.forEach(region::addEntity);
 
-            int targetID = 0;
-            if (entities.size() > 0) {
-                targetID = entities.get(0).getId();
-            }
+            getScene().getEntities().values().stream()
+                .filter(e -> metaRegion.contains(e.getPosition()) && !region.getEntities().contains(e))
+                .forEach(region::addEntity);
 
-            if (region.hasNewEntities()) {
-                logger.trace("Call EVENT_ENTER_REGION_{}",region.getMetaRegion().config_id);
-                callEvent(new ScriptArgs(region.getGroupId(), EventType.EVENT_ENTER_REGION, region.getConfigId())
-                    .setSourceEntityId(region.getId())
-                    .setTargetEntityId(targetID)
-                    .setGroupId(region.getGroupId())
-                );
 
-                region.resetNewEntities();
-            }
+            region.getEntities().stream()
+                .filter(e -> !metaRegion.contains(e.getPosition()))
+                .forEach(region::removeEntity);
 
-            for (int entityId : region.getEntities()) {
-                if (getScene().getEntityById(entityId) == null || !region.getMetaRegion().contains(getScene().getEntityById(entityId).getPosition())) {
-                    region.removeEntity(entityId);
+            // call enter region events for new entities
+            region.getNewEntities().forEach(entity -> callRegionEvent(region, EventType.EVENT_ENTER_REGION, entity));
+            region.resetNewEntities();
 
-                }
-            }
-            if (region.entityLeave()) {
-                callEvent(new ScriptArgs(region.getGroupId(), EventType.EVENT_LEAVE_REGION, region.getConfigId())
-                    .setSourceEntityId(region.getId())
-                    .setTargetEntityId(region.getFirstEntityId())
-                    .setGroupId(region.getGroupId())
-                );
-
-                region.resetNewEntities();
-            }
+            // call leave region events for left entities
+            region.getLeftEntities().forEach(entity -> callRegionEvent(region, EventType.EVENT_LEAVE_REGION, entity));
+            region.resetEntityLeave();
         }
+    }
+
+    private void callRegionEvent(EntityRegion region, int eventType, GameEntity entity) {
+        callEvent(new ScriptArgs(region.getGroupId(), eventType, region.getConfigId())
+            .setEventSource(entity.getEntityType())
+            .setSourceEntityId(region.getId())
+            .setTargetEntityId(entity.getId())
+        );
     }
 
     public List<EntityGadget> getGadgetsInGroupSuite(SceneGroupInstance groupInstance, SceneSuite suite) {
@@ -700,18 +690,13 @@ public class SceneScriptManager {
     private void realCallEvent(@Nonnull ScriptArgs params) {
         try {
             int eventType = params.type;
-            Set<SceneTrigger> relevantTriggers = new HashSet<>();
-            if (eventType == EventType.EVENT_ENTER_REGION || eventType == EventType.EVENT_LEAVE_REGION) {
-                relevantTriggers = this.getTriggersByEvent(eventType).stream()
-                    .filter(t -> t.getCondition().contains(String.valueOf(params.param1)) &&
-                        (t.getSource().isEmpty() || t.getSource().equals(params.getEventSource())))
-                    .collect(Collectors.toSet());
-            } else {
-                relevantTriggers = this.getTriggersByEvent(eventType).stream()
-                    .filter(t -> params.getGroupId() == 0 || t.getCurrentGroup().id == params.getGroupId())
-                    .filter(t ->  (t.getSource().isEmpty() || t.getSource().equals(params.getEventSource())))
-                    .collect(Collectors.toSet());
-            }
+            // TODO maybe find a better way to allow for event specific logic?
+            Set<SceneTrigger> relevantTriggers = this.getTriggersByEvent(eventType).stream()
+                .filter(t -> params.getGroupId() == 0 || t.getCurrentGroup().id == params.getGroupId())
+                .filter(t ->  (t.getSource().isEmpty() || t.getSource().equals(params.getEventSource())))
+                .filter(t-> t.getEvent()!= EVENT_ENTER_REGION && t.getEvent()!= EVENT_LEAVE_REGION || (t.getCondition().endsWith("_"+params.param1)))
+                .collect(Collectors.toSet());
+
             for (SceneTrigger trigger : relevantTriggers) {
                 handleEventForTrigger(params, trigger);
             }
@@ -766,14 +751,12 @@ public class SceneScriptManager {
             activeChallenge.onGroupTriggerDeath(trigger);
         }
 
-        if (trigger.getEvent() == EventType.EVENT_ENTER_REGION) {
-            EntityRegion region = this.regions.values().stream().filter(p -> p.getConfigId() == params.param1).toList().get(0);
-            getScene().getPlayers().forEach(p -> p.onEnterRegion(region.getMetaRegion()));
-            deregisterRegion(region.getMetaRegion());
-        } else if (trigger.getEvent() == EventType.EVENT_LEAVE_REGION) {
-            EntityRegion region = this.regions.values().stream().filter(p -> p.getConfigId() == params.param1).toList().get(0);
-            getScene().getPlayers().forEach(p -> p.onLeaveRegion(region.getMetaRegion()));
-            deregisterRegion(region.getMetaRegion());
+        val triggerData = GameData.getQuestTriggerDataByName(params.getGroupId(), trigger.getName());
+        if (triggerData != null && triggerData.getGroupId() == params.getGroupId()) {
+            getScene().getPlayers().forEach(p -> {
+                p.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE,
+                    triggerData.getId(), 0);
+            });
         }
 
         if(trigger.getEvent() == EVENT_TIMER_EVENT){

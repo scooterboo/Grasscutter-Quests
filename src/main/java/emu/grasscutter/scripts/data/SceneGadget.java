@@ -3,6 +3,8 @@ package emu.grasscutter.scripts.data;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @ToString
 @Setter
 public class SceneGadget extends SceneObject{
@@ -20,6 +22,7 @@ public class SceneGadget extends SceneObject{
     public boolean persistent = false;
     public boolean showcutscene;
     public Explore explore;
+    public List<Integer> arguments;
 
     public void setIsOneoff(boolean isOneoff) {
         this.isOneoff = isOneoff;

@@ -242,6 +242,7 @@ public class PlayerProgressManager extends BasePlayerDataManager {
         // Give primogems  and Adventure EXP for unlocking.
         this.player.getInventory().addItem(201, 5, ActionReason.UnlockPointReward);
         this.player.getInventory().addItem(102, isStatue ? 50 : 10, ActionReason.UnlockPointReward);
+        // TODO use TransPointREwardConfigData
 
         // this.player.sendPacket(new PacketPlayerPropChangeReasonNotify(this.player.getProperty(PlayerProperty.PROP_PLAYER_EXP), PlayerProperty.PROP_PLAYER_EXP, PropChangeReason.PROP_CHANGE_REASON_PLAYER_ADD_EXP));
 

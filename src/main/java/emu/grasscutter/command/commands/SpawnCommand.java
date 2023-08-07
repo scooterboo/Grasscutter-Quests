@@ -147,6 +147,7 @@ public final class SpawnCommand implements CommandHandler {
             if (param.state != -1) {
                 ((EntityGadget) entity).setState(param.state);
             }
+            ((EntityGadget)entity).buildContent();
         }
 
         return entity;
