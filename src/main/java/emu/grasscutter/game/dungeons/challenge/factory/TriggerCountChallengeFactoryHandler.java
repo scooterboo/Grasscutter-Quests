@@ -4,29 +4,28 @@ import emu.grasscutter.game.dungeons.challenge.ChallengeInfo;
 import emu.grasscutter.game.dungeons.challenge.ChallengeScoreInfo;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.challenge.enums.ChallengeType;
-import emu.grasscutter.game.dungeons.challenge.trigger.TimeTrigger;
+import emu.grasscutter.game.dungeons.challenge.trigger.TriggerGroupTriggerTrigger;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.scripts.data.SceneGroup;
 
 import java.util.List;
 
-import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_SURVIVE;
+import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_TRIGGER_COUNT;
 
-@ChallengeTypeValue(type = CHALLENGE_SURVIVE)
-public class SurviveChallengeFactoryHandler implements ChallengeFactoryHandler {
+@ChallengeTypeValue(type = CHALLENGE_TRIGGER_COUNT)
+public class TriggerCountChallengeFactoryHandler implements ChallengeFactoryHandler {
     /**
      * Build a new challenge
-     * @param params: [timeToSurvive, unused1, unused2, unused3]
-     * grp 201055005
-     * ActiveChallenge with 100, 56, 60, 0, 0, 0
+     * @param params: [unused1, triggerTag, triggerCount]
+     * AttachChildChallenge with 100, 1001, 65, { 2,998,2 }
      */
     @Override
     public WorldChallenge build(ChallengeType type, ChallengeInfo header, List<Integer> params, ChallengeScoreInfo scoreInfo, Scene scene, SceneGroup group) {
         return new WorldChallenge(
             scene, group,
             header,
-            List.of(params.get(0)), // parameters
-            List.of(new TimeTrigger(1, params.get(0), false)),
+            List.of(params.get(2)), // parameters
+            List.of(new TriggerGroupTriggerTrigger(1, params.get(2), params.get(1))),
             scoreInfo
         );
     }

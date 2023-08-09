@@ -223,6 +223,9 @@
       "description": "添加或完成任务",
       "enabled": "Questing enabled."
     },
+    "gadget": {
+      "description": "更改小工具行为"
+    },
     "group": {
       "invalid_groupid": "Invalid group ID.",
       "invalid_suiteid": "Invalid suite ID.",

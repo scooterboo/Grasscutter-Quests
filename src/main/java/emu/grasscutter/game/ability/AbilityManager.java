@@ -1,19 +1,20 @@
 package emu.grasscutter.game.ability;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import emu.grasscutter.Loggers;
-import emu.grasscutter.game.quest.QuestSystem;
+import emu.grasscutter.game.props.ElementReactionType;
+import emu.grasscutter.net.proto.AbilityMetaTriggerElementReactionOuterClass.AbilityMetaTriggerElementReaction;
 import org.reflections.Reflections;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.AbilityMixinData;
@@ -36,7 +37,6 @@ import io.netty.util.concurrent.FastThreadLocalThread;
 import lombok.Getter;
 import emu.grasscutter.net.proto.AbilityMetaAddAbilityOuterClass.AbilityMetaAddAbility;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class AbilityManager extends BasePlayerManager {
     @Getter
@@ -148,6 +148,7 @@ public final class AbilityManager extends BasePlayerManager {
             case ABILITY_INVOKE_ARGUMENT_META_GLOBAL_FLOAT_VALUE -> this.handleGlobalFloatValue(invoke);
             case ABILITY_INVOKE_ARGUMENT_META_MODIFIER_DURABILITY_CHANGE -> this.handleModifierDurabilityChange(invoke);
             case ABILITY_INVOKE_ARGUMENT_META_ADD_NEW_ABILITY -> this.handleAddNewAbility(invoke);
+            case ABILITY_INVOKE_ARGUMENT_META_TRIGGER_ELEMENT_REACTION -> this.handleTriggerElementReaction(invoke);
             default -> {}
         }
     }
@@ -465,6 +466,23 @@ public final class AbilityManager extends BasePlayerManager {
         entity.getInstancedAbilities().add(new Ability(ability, entity, player));
 
         logger.info("Ability added to entity {} at index {}", entity.getId(), entity.getInstancedAbilities().size());
+    }
+
+    /**
+     * Invoked when an entity triggered an elemental reaction.
+     * @param invoke Holds information of elemental reaction, attacker and target.
+     */
+    private void handleTriggerElementReaction(AbilityInvokeEntry invoke) throws InvalidProtocolBufferException {
+        if (getPlayer().getScene() == null) return;
+
+        AbilityMetaTriggerElementReaction data = AbilityMetaTriggerElementReaction.parseFrom(invoke.getAbilityData());
+        GameEntity targetEntity = getPlayer().getScene().getEntityById(invoke.getEntityId());
+        if (targetEntity == null) return;
+
+        ElementReactionType reactionType = ElementReactionType.getTypeByValue(data.getElementReactionType());
+        // Challenge related action
+        Optional.ofNullable(getPlayer().getScene().getChallenge())
+            .ifPresent(sceneChallenge -> sceneChallenge.onElementReaction(targetEntity, reactionType));
     }
 
     public void addAbilityToEntity(GameEntity entity, String name) {

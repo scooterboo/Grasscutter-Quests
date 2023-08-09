@@ -4,8 +4,6 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.MonsterData;
 import emu.grasscutter.data.excels.WorldLevelData;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
-import emu.grasscutter.game.dungeons.challenge.trigger.ChallengeTrigger;
-import emu.grasscutter.game.dungeons.challenge.trigger.KillMonsterCountTrigger;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.game.props.FightProperty;
@@ -43,15 +41,15 @@ public class BlossomActivity {
         this.goal = monsters.size();
         this.candidateMonsters.addAll(monsters);
         this.worldLevel = worldLevel;
-        ArrayList<ChallengeTrigger> challengeTriggers = new ArrayList<>();
-        this.challenge = new WorldChallenge(entityGadget.getScene(),
-            tempSceneGroup,
-            1,
-            1,
-            List.of(goal, timeout),
-            timeout,
-            goal, challengeTriggers);
-        challengeTriggers.add(new KillMonsterCountTrigger());
+        this.challenge = null;
+//        ArrayList<ChallengeTrigger> challengeTriggers = new ArrayList<>();
+//        this.challenge = new WorldChallenge(entityGadget.getScene(),
+//            tempSceneGroup,
+//            List.of(1, 1, 0),
+//            List.of(goal, timeout), timeout, goal, // parameters, time limit, goal
+//            challengeTriggers,
+//            0, 0); // success count, fail count
+//        challengeTriggers.add(new KillMonsterCountTrigger(1));
         //this.challengeTriggers.add(new InTimeTrigger());
     }
     public WorldChallenge getChallenge() {

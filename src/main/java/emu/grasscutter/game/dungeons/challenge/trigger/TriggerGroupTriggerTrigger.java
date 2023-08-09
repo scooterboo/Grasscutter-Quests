@@ -1,30 +1,23 @@
 package emu.grasscutter.game.dungeons.challenge.trigger;
 
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
-import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.scripts.data.SceneTrigger;
-import emu.grasscutter.server.packet.send.PacketChallengeDataNotify;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class TriggerGroupTriggerTrigger extends ChallengeTrigger{
-    String triggerTag;
+    private final String TRIGGER_TAG;
 
-    @Override
-    public void onBegin(WorldChallenge challenge) {
-        challenge.getScene().broadcastPacket(new PacketChallengeDataNotify(challenge, 2, challenge.getScore().get()));
+    public TriggerGroupTriggerTrigger(int paramIndex, int goal, int triggerTag){
+        super(paramIndex, goal);
+        this.TRIGGER_TAG = String.valueOf(triggerTag);
     }
 
     @Override
     public void onGroupTrigger(WorldChallenge challenge, SceneTrigger trigger) {
-        if(!triggerTag.equals(trigger.getTag())) {
-            return;
-        }
+        if(!this.TRIGGER_TAG.equals(trigger.getTag())) return;
 
-        var newScore = challenge.increaseScore();
-        challenge.getScene().broadcastPacket(new PacketChallengeDataNotify(challenge, 2, newScore));
-        if(newScore >= challenge.getGoal()){
-            challenge.done();
-        }
+        int newScore = getScore().incrementAndGet();
+        onBegin(challenge);
+
+        if(newScore >= getGoal().get()) challenge.done();
     }
 }

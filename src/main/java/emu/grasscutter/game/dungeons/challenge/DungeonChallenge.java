@@ -14,12 +14,13 @@ public class DungeonChallenge extends WorldChallenge {
      */
     private boolean stage;
 
+    // header: currentChallengeIndex, currentChallengeId, fatherChallengeIndex
     public DungeonChallenge(Scene scene, SceneGroup group,
-                            int challengeId, int challengeIndex,
+                            ChallengeInfo header,
                             List<Integer> paramList,
-                            int timeLimit, int goal,
-                            List<ChallengeTrigger> challengeTriggers) {
-        super(scene, group, challengeId, challengeIndex, paramList, timeLimit, goal, challengeTriggers);
+                            List<ChallengeTrigger> challengeTriggers,
+                            ChallengeScoreInfo scoreInfo) {
+        super(scene, group, header, paramList, challengeTriggers, scoreInfo);
     }
 
     public boolean isStage() {
@@ -33,7 +34,7 @@ public class DungeonChallenge extends WorldChallenge {
     @Override
     public void done() {
         super.done();
-        getScene().triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_FINISH_CHALLENGE, getChallengeId(), getChallengeIndex());
+        getScene().triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_FINISH_CHALLENGE, getInfo().challengeId(), getInfo().getChallengeIndex());
         if (this.isSuccess()) {
             // Settle
             settle();

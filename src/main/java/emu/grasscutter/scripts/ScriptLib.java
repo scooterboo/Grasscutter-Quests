@@ -4,7 +4,10 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.activity.ActivityManager;
+import emu.grasscutter.game.dungeons.challenge.ChallengeInfo;
+import emu.grasscutter.game.dungeons.challenge.ChallengeScoreInfo;
 import emu.grasscutter.game.dungeons.challenge.DungeonChallenge;
+import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.challenge.enums.FatherChallengeProperty;
 import emu.grasscutter.game.dungeons.challenge.factory.ChallengeFactory;
 import emu.grasscutter.game.entity.*;
@@ -356,42 +359,56 @@ public class ScriptLib {
         return 0;
     }
 
-	public static int ActiveChallenge(GroupEventLuaContext context, int challengeId, int challengeIndex, int timeLimitOrGroupId, int groupId, int objectiveKills, int param5) {
-		logger.debug("[LUA] Call ActiveChallenge with {},{},{},{},{},{}",
-				challengeId,challengeIndex,timeLimitOrGroupId,groupId,objectiveKills,param5);
+	public static int ActiveChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, int timeLimitOrGroupId, int groupId, int objectiveKills, int param5) {
+        logger.debug("[LUA] Call ActiveChallenge with {},{},{},{},{},{}",
+            challengeIndex, challengeId, timeLimitOrGroupId,groupId,objectiveKills,param5);
 
-		var challenge = ChallengeFactory.getChallenge(
-				challengeId,
-				challengeIndex,
-				timeLimitOrGroupId,
-				groupId,
-				objectiveKills,
-				param5,
-				context.getSceneScriptManager().getScene(),
-				context.getCurrentGroup()
-				);
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, 0),
+            List.of(timeLimitOrGroupId, groupId, objectiveKills, param5),
+            new ChallengeScoreInfo(0, 0),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
 
-		if(challenge == null){
-			return 1;
-		}
+        if(challenge == null) return 1;
 
-		if(challenge instanceof DungeonChallenge dungeonChallenge){
-			// set if tower first stage (6-1)
-			dungeonChallenge.setStage(context.getSceneScriptManager().getVariables(groupId).getOrDefault("stage", -1) == 0);
-		}
+        if(challenge instanceof DungeonChallenge dungeonChallenge){
+            // set if tower first stage (6-1)
+            dungeonChallenge.setStage(Objects.requireNonNull(
+                context.getSceneScriptManager().getVariables(groupId)).getOrDefault("stage", -1) == 0);
+        }
 
-		context.getSceneScriptManager().getScene().setChallenge(challenge);
-		challenge.start();
-		return 0;
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
+        challenge.start();
+        return 0;
 	}
 
-    public static int StopChallenge(GroupEventLuaContext context, int challengeId, int result) {
+    public static int StartChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, Object challengeParams) {
+        logger.info("[LUA] Call StartChallenge with {},{},{}", challengeIndex, challengeId, challengeParams);
+        val conditionParamTable = context.getEngine().getTable(challengeParams);
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, 0),
+            Arrays.stream(conditionParamTable.getAsIntArray()).boxed().toList(),
+            new ChallengeScoreInfo(0, 0),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        if(challenge == null) return 1;
+
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
+        challenge.start();
+        return 0;
+    }
+
+    public static int StopChallenge(GroupEventLuaContext context, int challengeIndex, int result) {
         logger.debug("[LUA] Call StopChallenge with ");
         var challenge = context.getSceneScriptManager().getScene().getChallenge();
         if(challenge == null){
             return 1;
         }
-        if(challenge.getChallengeId() != challengeId){
+        if(challenge.getInfo().getChallengeIndex() != challengeIndex){
             return 2;
         }
 
@@ -421,7 +438,7 @@ public class ScriptLib {
         if(challenge == null){
             return 1;
         }
-        if(challenge.getChallengeId() != challengeId){
+        if(challenge.getInfo().getChallengeId() != challengeId){
             return 2;
         }
         /*if(!challenge.addDuration(duration)){
@@ -913,15 +930,31 @@ public class ScriptLib {
         return 0;
     }
 
-    public static int CreateFatherChallenge(GroupEventLuaContext context, int var1, int var2, int var3, Object var4Table){
-        val var4 = context.getEngine().getTable(var4Table);
-        logger.warn("[LUA] Call unimplemented CreateFatherChallenge with {} {} {} {}", var1, var2, var3, var4);
-        //TODO implement var4 object has int success, int fail, bool fail_on_wipe
+    public static int CreateFatherChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, int timeLimit, Object conditionTable){
+        val conditionLuaTable = context.getEngine().getTable(conditionTable);
+
+        logger.debug("[LUA] Call CreateFatherChallenge with {} {} {} {}",
+            challengeIndex, challengeId, timeLimit, conditionTable);
+
+        WorldChallenge challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, challengeIndex),
+            List.of(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail"), timeLimit),
+            new ChallengeScoreInfo(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail")),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        if (challenge == null) return 1;
+
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
         return 0;
     }
-    public static int StartFatherChallenge(GroupEventLuaContext context, int var1){
-        logger.warn("[LUA] Call unimplemented StartFatherChallenge with {}", var1);
-        //TODO implement
+    public static int StartFatherChallenge(GroupEventLuaContext context, int challengeIndex){
+        logger.debug("[LUA] Call StartFatherChallenge with {}", challengeIndex);
+        WorldChallenge challenge = context.getSceneScriptManager().getScene().getChallenge();
+        if (challenge == null || challenge.getInfo().getChallengeIndex() != challengeIndex) return 1;
+
+        challenge.start();
         return 0;
     }
     public static int ModifyFatherChallengeProperty(GroupEventLuaContext context, int challengeId, int propertyTypeIndex, int value){
@@ -930,13 +963,28 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public static int AttachChildChallenge(GroupEventLuaContext context, int var1, int var2, int var3, Object var4Tabke, Object var5Table, Object var6Table){
-        val var4 = context.getEngine().getTable(var4Tabke);
+    public static int AttachChildChallenge(GroupEventLuaContext context, int fatherChallengeIndex, int childChallengeIndex,
+                                           int childChallengeId, Object var4Table, Object var5Table, Object var6Table){
+        val conditionArray = context.getEngine().getTable(var4Table);
         val var5 = context.getEngine().getTable(var5Table);
-        val var6 = context.getEngine().getTable(var6Table);
-        logger.warn("[LUA] Call unimplemented AttachChildChallenge with {} {} {} {} {} {}", var1, var2, var3,
-            printTable(var4), printTable(var5), printTable(var6));
-        //TODO implement var6 object has int success, int fail, bool fail_on_wipe
+        val conditionTable = context.getEngine().getTable(var6Table);
+        logger.warn("[LUA] Call unimplemented AttachChildChallenge with {} {} {} {} {} {}",
+            fatherChallengeIndex, childChallengeIndex, childChallengeId,
+            printTable(conditionArray), printTable(var5), printTable(conditionTable));
+
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(childChallengeIndex, childChallengeId, fatherChallengeIndex),
+            Arrays.stream(conditionArray.getAsIntArray()).boxed().toList(),
+            new ChallengeScoreInfo(conditionTable.getInt("success"), conditionTable.getInt("fail")),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        val sceneChallenge = context.getSceneScriptManager().getScene().getChallenge();
+        if (sceneChallenge == null || challenge == null
+            || sceneChallenge.getInfo().getChallengeIndex() != fatherChallengeIndex) return 1;
+
+        sceneChallenge.attachChild(challenge);
         return 0;
     }
     public static int CreateEffigyChallengeMonster(GroupEventLuaContext context, int var1, Object var2Table){
