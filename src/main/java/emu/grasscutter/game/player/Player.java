@@ -16,6 +16,8 @@ import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.avatar.AvatarStorage;
 import emu.grasscutter.game.avatar.TrialAvatar;
 import emu.grasscutter.game.battlepass.BattlePassManager;
+import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryItem;
+import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryManager;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.expedition.ExpeditionInfo;
@@ -172,6 +174,7 @@ public class Player {
     @Getter private transient PlayerBuffManager buffManager;
     @Getter private transient PlayerProgressManager progressManager;
     @Getter private transient BlossomManager blossomManager;
+    @Getter private transient DungeonEntryManager dungeonEntryManager;
 
     @Getter @Setter private transient Position lastCheckedPosition = null;
 
@@ -211,6 +214,7 @@ public class Player {
     @Getter private long playerGameTime = 540;
 
     @Getter private PlayerProgress playerProgress;
+    @Getter private final DungeonEntryItem dungeonEntryItem;
     @Getter private Set<Integer> activeQuestTimers;
 
     @Deprecated
@@ -257,6 +261,7 @@ public class Player {
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();
         this.playerProgress = new PlayerProgress();
+        this.dungeonEntryItem = new DungeonEntryItem();
         this.activeQuestTimers = new HashSet<>();
 
         this.attackResults = new LinkedBlockingQueue<>();
@@ -284,6 +289,7 @@ public class Player {
         this.cookingManager = new CookingManager(this);
         this.cookingCompoundManager=new CookingCompoundManager(this);
         this.blossomManager = new BlossomManager(this);
+        this.dungeonEntryManager = new DungeonEntryManager(this);
     }
 
     // On player creation
@@ -320,6 +326,7 @@ public class Player {
         this.cookingManager = new CookingManager(this);
         this.cookingCompoundManager=new CookingCompoundManager(this);
         this.blossomManager = new BlossomManager(this);
+        this.dungeonEntryManager = new DungeonEntryManager(this);
     }
 
     public void updatePlayerGameTime(long gameTime){
@@ -1365,6 +1372,9 @@ public class Player {
         // Rewind active quests, and put the player to a rewind position it finds (if any) of an active quest
         getQuestManager().onLogin();
 
+        // find out any new dungeon plot entries
+        getDungeonEntryManager().onLogin();
+
         // Packets
         session.send(new PacketPlayerDataNotify(this)); // Player data
         session.send(new PacketStoreWeightLimitNotify());
@@ -1428,8 +1438,8 @@ public class Player {
             // stop stamina calculation
             getStaminaManager().stopSustainedStaminaHandler();
 
-            // force to leave the dungeon (inside has a "if")
-            this.getServer().getDungeonSystem().exitDungeon(this);
+            // force to leave the dungeon (inside has an "if")
+            this.getServer().getDungeonSystem().exitDungeon(this, true);
 
             // Leave world
             if (this.getWorld() != null) {

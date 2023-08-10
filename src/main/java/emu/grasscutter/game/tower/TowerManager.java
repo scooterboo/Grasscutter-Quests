@@ -2,8 +2,8 @@ package emu.grasscutter.game.tower;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.TowerLevelData;
-import emu.grasscutter.game.dungeons.DungeonSettleListener;
-import emu.grasscutter.game.dungeons.TowerDungeonSettleListener;
+import emu.grasscutter.game.dungeons.settle_listeners.DungeonSettleListener;
+import emu.grasscutter.game.dungeons.settle_listeners.TowerDungeonSettleListener;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.server.packet.send.*;
@@ -36,7 +36,7 @@ public class TowerManager extends BasePlayerManager {
     public int getCurrentLevel() {
         return getTowerData().currentLevel + 1;
     }
-    private static final List<DungeonSettleListener> towerDungeonSettleListener = List.of(new TowerDungeonSettleListener());
+    private static final DungeonSettleListener towerDungeonSettleListener = new TowerDungeonSettleListener();
 
     public Map<Integer, TowerLevelRecord> getRecordMap() {
         Map<Integer, TowerLevelRecord> recordMap = getTowerData().recordMap;
@@ -74,8 +74,7 @@ public class TowerManager extends BasePlayerManager {
         notifyCurLevelRecordChange();
         // use team user choose
         player.getTeamManager().useTemporaryTeam(0);
-        player.getServer().getDungeonSystem().handoffDungeon(player, dungeonId,
-                towerDungeonSettleListener);
+        player.getServer().getDungeonSystem().enterDungeon(player, dungeonId, enterPointId, towerDungeonSettleListener);
 
         // make sure user can exit dungeon correctly
         player.getScene().setPrevScene(getTowerData().entryScene);

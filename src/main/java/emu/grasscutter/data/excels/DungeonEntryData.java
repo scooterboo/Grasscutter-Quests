@@ -6,14 +6,14 @@ import emu.grasscutter.game.dungeons.enums.DungeonEntrySatisfiedConditionType;
 import emu.grasscutter.game.dungeons.enums.DungunEntryType;
 import emu.grasscutter.game.quest.enums.LogicType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @ResourceType(name = "DungeonEntryExcelConfigData.json")
-@Getter
-@Setter  // TODO: remove this next API break
+@EqualsAndHashCode(callSuper = false)
+@Data  // TODO: remove this next API break
 public class DungeonEntryData extends GameResource {
     @Getter(onMethod = @__(@Override))
     private int id;
@@ -28,7 +28,7 @@ public class DungeonEntryData extends GameResource {
 
     @Data
     public static class SatisfiedCond{
-        DungeonEntrySatisfiedConditionType type;
-        int param1;
+        private DungeonEntrySatisfiedConditionType type;
+        private int param1;
     }
 }

@@ -26,11 +26,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static emu.grasscutter.server.event.player.PlayerTeleportEvent.TeleportType.SCRIPT;
@@ -224,43 +220,46 @@ public class World implements Iterable<Player> {
         this.getScenes().values().forEach(Scene::saveGroups);
     }
 
-    public boolean transferPlayerToScene(Player player, int sceneId, Position pos) {
-        return this.transferPlayerToScene(player, sceneId, TeleportType.INTERNAL, null, pos);
+    public boolean transferPlayerToScene(Player player, int sceneId, Position pos, Position rot) {
+        return this.transferPlayerToScene(player, sceneId, TeleportType.INTERNAL, null, pos, rot);
     }
 
-    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, Position pos) {
-        return this.transferPlayerToScene(player, sceneId, teleportType, null, pos);
+    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, Position pos, Position rot) {
+        return this.transferPlayerToScene(player, sceneId, teleportType, null, pos, rot);
     }
 
     public boolean transferPlayerToScene(Player player, int sceneId, DungeonData data) {
-        return this.transferPlayerToScene(player, sceneId, TeleportType.DUNGEON, data, null);
+        return this.transferPlayerToScene(player, sceneId, TeleportType.DUNGEON, data, null, null);
     }
 
-    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, DungeonData dungeonData, Position teleportTo) {
+    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, DungeonData dungeonData, Position teleportTo, Position newRot) {
         EnterReason enterReason = switch (teleportType) {
             // shouldn't affect the teleportation, but its clearer when inspecting the packets
             // TODO add more conditions for different reason.
-            case INTERNAL -> EnterReason.TransPoint;
-            case WAYPOINT -> EnterReason.TransPoint;
-            case MAP -> EnterReason.TransPoint;
+            case INTERNAL, WAYPOINT, MAP -> EnterReason.TransPoint;
             case COMMAND -> EnterReason.Gm;
             case SCRIPT -> EnterReason.Lua;
             case CLIENT -> EnterReason.ClientTransmit;
             case DUNGEON -> EnterReason.DungeonEnter;
             default -> EnterReason.None;
         };
-        return transferPlayerToScene(player, sceneId, teleportType, enterReason, dungeonData, teleportTo);
+        return transferPlayerToScene(player, sceneId, teleportType, enterReason, dungeonData, teleportTo, newRot);
     }
 
 
-    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, EnterReason enterReason, DungeonData dungeonData, Position teleportTo) {
+    public boolean transferPlayerToScene(Player player, int sceneId, TeleportType teleportType, EnterReason enterReason, DungeonData dungeonData, Position teleportTo, Position newRot) {
         // Get enter types
         val teleportProps = TeleportProperties.builder()
             .sceneId(sceneId)
             .teleportType(teleportType)
             .enterReason(enterReason)
             .teleportTo(teleportTo)
-            .enterType(EnterType.ENTER_TYPE_JUMP);
+            .teleportRot(newRot)
+            .enterType(EnterType.ENTER_TYPE_JUMP)
+            .dungeonId(Optional.ofNullable(dungeonData).map(DungeonData::getId).orElse(0))
+            .prevPos(player.getPosition())
+            .prevSceneId(player.getSceneId())
+            .worldType(Optional.ofNullable(dungeonData).map(data -> 13).orElse(14)); // TODO find out more
 
         val sceneData = GameData.getSceneDataMap().get(sceneId);
         if (dungeonData != null) {
@@ -312,21 +311,13 @@ public class World implements Iterable<Player> {
         // }
         SceneConfig config = newScene.getScriptManager().getConfig();
         if (teleportProperties.getTeleportTo() == null && config != null) {
-            if (config.born_pos != null) {
-                teleportProperties.setTeleportTo(newScene.getScriptManager().getConfig().born_pos);
-            }
-            if (config.born_rot != null) {
-                teleportProperties.setTeleportRot(config.born_rot);
-            }
+            Optional.ofNullable(config.born_pos).ifPresent(teleportProperties::setTeleportTo);
+            Optional.ofNullable(config.born_rot).ifPresent(teleportProperties::setTeleportRot);
         }
 
         // Set player position and rotation
-        if(teleportProperties.getTeleportTo() != null) {
-            player.getPosition().set(teleportProperties.getTeleportTo());
-        }
-        if(teleportProperties.getTeleportRot()!=null) {
-            player.getRotation().set(teleportProperties.getTeleportRot());
-        }
+        Optional.ofNullable(teleportProperties.getTeleportTo()).ifPresent(player.getPosition()::set);
+        Optional.ofNullable(teleportProperties.getTeleportRot()).ifPresent(player.getRotation()::set);
 
         if (oldScene != null && newScene != oldScene) {
             newScene.setPrevScene(oldScene.getId());

@@ -26,7 +26,7 @@ public final class ServerTaskScheduler {
      */
     public void runTasks() {
         // Skip if there are no tasks.
-        if(this.tasks.size() == 0)
+        if(this.tasks.isEmpty())
             return;
 
         // Run all tasks.
@@ -127,7 +127,7 @@ public final class ServerTaskScheduler {
      * @return The ID of the task.
      */
     public int scheduleRepeatingTask(Runnable runnable, int period) {
-        return this.scheduleDelayedRepeatingTask(runnable, period, 0);
+        return this.scheduleDelayedRepeatingTask(runnable, period, -1);
     }
 
     /**

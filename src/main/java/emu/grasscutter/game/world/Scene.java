@@ -8,7 +8,7 @@ import emu.grasscutter.data.binout.routes.Route;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.dungeons.DungeonManager;
-import emu.grasscutter.game.dungeons.DungeonSettleListener;
+import emu.grasscutter.game.dungeons.settle_listeners.DungeonSettleListener;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.*;
@@ -72,6 +72,7 @@ public class Scene {
     @Getter @Setter private int prevScene; // id of the previous scene
     @Getter @Setter private int prevScenePoint;
     @Getter @Setter private int killedMonsterCount;
+    @Getter @Setter private int killChestCount;
     private Set<SceneNpcBornEntry> npcBornEntrySet = ConcurrentHashMap.newKeySet();
     @Getter private boolean finishedLoading = false;
     @Getter private int tickCount = 0;
@@ -365,10 +366,7 @@ public class Scene {
                 avatarAttacker.getPlayer().getCodex().checkAnimal(target, CodexAnimalData.CountType.CODEX_COUNT_TYPE_KILL);
             }
 
-            // Reward drop, don't really want to give reward if attacker is null
-            if (target instanceof EntityMonster && getSceneType() != SceneType.SCENE_DUNGEON) {
-                this.world.getServer().getDropSystem().callDrop((EntityMonster) target);
-            }
+
         }
 
         // Packet
@@ -379,7 +377,17 @@ public class Scene {
 
         // Death event
         target.onDeath(attackerId);
-        triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_MONSTER_COUNT, ++this.killedMonsterCount);
+        // Reward drop
+        if (target instanceof EntityMonster monster) {
+            if (getSceneType() != SceneType.SCENE_DUNGEON && attacker != null) {
+                getWorld().getServer().getDropSystem().callDrop(monster);
+            }
+            triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_MONSTER_COUNT, ++this.killedMonsterCount);
+        } else if (target instanceof EntityGadget gadget) {
+            Optional.ofNullable(gadget.getGadgetData())
+                .filter(data -> data.getType() == EntityType.Chest)
+                .ifPresent(data -> this.killChestCount++);
+        }
     }
 
     public void onTick() {
@@ -446,10 +454,14 @@ public class Scene {
         // todo should probably respawn the player at the last valid location
         return this.world.transferPlayerToScene(player, TeleportProperties.builder()
             .sceneId(getId())
+            .prevSceneId(getId())
+            .prevPos(player.getPosition())
             .teleportTo(getRespawnLocation(player))
             .teleportRot(getRespawnRotation(player))
             .teleportType(PlayerTeleportEvent.TeleportType.INTERNAL)
+            .worldType(Optional.ofNullable(this.dungeonManager).map(data -> 13).orElse(14))
             .enterType(EnterTypeOuterClass.EnterType.ENTER_TYPE_GOTO)
+            .dungeonId(Optional.ofNullable(this.dungeonManager).map(DungeonManager::getDungeonData).map(DungeonData::getId).orElse(0))
             .enterReason(this.dungeonManager != null ? EnterReason.DungeonReviveOnWaypoint : EnterReason.Revival)
             .build());
     }
