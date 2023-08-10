@@ -184,6 +184,9 @@ public class SceneScriptManager {
         triggersByGroupScene.put(group.id+"_"+suiteIndex, groupSceneTriggers);
     }
 
+    public void refreshGroup(int groupId, int suiteIndex, boolean excludePrevSuite) {
+        refreshGroup(getGroupInstanceById(groupId));
+    }
     public void refreshGroup(SceneGroupInstance groupInstance) {
         if(groupInstance == null || groupInstance.getLuaGroup().suites==null){
             return;

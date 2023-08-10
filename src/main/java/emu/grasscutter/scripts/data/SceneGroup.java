@@ -1,6 +1,7 @@
 package emu.grasscutter.scripts.data;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
 import emu.grasscutter.utils.Position;
@@ -8,17 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.val;
-import org.luaj.vm2.LuaValue;
+import emu.grasscutter.game.world.GroupReplacementData;
 
-import javax.script.Bindings;
-import javax.script.CompiledScript;
-import javax.script.ScriptException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ToString
@@ -169,10 +162,22 @@ public class SceneGroup {
     }
 
     public Optional<SceneBossChest> searchBossChestInGroup() {
-        return this.gadgets.values().stream()
-                .filter(g -> g.boss_chest != null && g.boss_chest.monster_config_id > 0)
-                .map(g -> g.boss_chest)
-                .findFirst();
+        return this.gadgets.values().stream().map(g -> g.boss_chest).filter(Objects::nonNull)
+            .filter(bossChest -> bossChest.monster_config_id > 0)
+            .findFirst();
     }
 
+    public List<SceneGroup> getReplaceableGroups(Collection<SceneGroup> loadedGroups){
+        return this.is_replaceable == null ? List.of() :
+            Optional.ofNullable(GameData.getGroupReplacements().get(this.id)).stream()
+                .map(GroupReplacementData::getReplace_groups)
+                .flatMap(List::stream)
+                .map(replacementId -> loadedGroups.stream().filter(g -> g.id == replacementId).findFirst())
+                .filter(Optional::isPresent).map(Optional::get)
+                .filter(replacementGroup -> replacementGroup.is_replaceable != null)
+                .filter(replacementGroup -> (replacementGroup.is_replaceable.value
+                    && replacementGroup.is_replaceable.version <= this.is_replaceable.version)
+                    || replacementGroup.is_replaceable.new_bin_only)
+                .toList();
+    }
 }
