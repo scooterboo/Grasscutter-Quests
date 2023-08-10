@@ -2,7 +2,6 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.excels.GadgetData;
@@ -29,7 +28,6 @@ import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
 import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import emu.grasscutter.net.proto.VectorOuterClass.Vector;
-import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.EntityControllerScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
@@ -46,6 +44,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -219,6 +218,16 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         SceneGroupInstance groupInstance = getScene().getScriptManager().getCachedGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaGadget != null)
             groupInstance.getDeadEntities().add(metaGadget.config_id);
+
+        val hostBlossom = getScene().getWorld().getHost().getBlossomManager();
+        val removedChest = hostBlossom.getSpawnedChest().remove(getConfigId());
+        if (removedChest != null) {
+            Grasscutter.getLogger().info("[EntityGadget] Removing Blossom Chest: {}, {}", getGroupId(), getConfigId());
+            getScene().unregisterDynamicGroup(getGroupId());
+            getScene().getScriptManager().callEvent(
+                new ScriptArgs(getGroupId(), EventType.EVENT_BLOSSOM_CHEST_DIE, getConfigId()));
+            hostBlossom.buildNextCamp(getGroupId());
+        }
     }
 
     public boolean startPlatform(){

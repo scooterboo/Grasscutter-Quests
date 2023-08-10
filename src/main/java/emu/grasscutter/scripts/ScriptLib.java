@@ -14,6 +14,8 @@ import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.GadgetWorktop;
 import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.entity.gadget.platform.PointArrayRoute;
+import emu.grasscutter.game.managers.blossom.BlossomSchedule;
+import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.EntityType;
@@ -23,6 +25,7 @@ import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.EnterTypeOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.scripts.constants.temporary.FlowSuiteOperatePolicy;
 import emu.grasscutter.scripts.constants.GroupKillPolicy;
 import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreType;
@@ -1004,20 +1007,74 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public static int CreateBlossomChestByGroupId(GroupEventLuaContext context, int groupId, int var2){
-        logger.warn("[LUA] Call unimplemented SetBlossomScheduleStateByGroupId with {} {}", groupId, var2);
-        //TODO implement
+    public static int CreateBlossomChestByGroupId(GroupEventLuaContext context, int groupId, int chestConfigId){
+        logger.debug("[LUA] Call check CreateBlossomChestByGroupId with {} {}", groupId, chestConfigId);
+
+        val currentGroup = context.getSceneScriptManager().getGroupById(groupId);
+        if (currentGroup == null) return 1;
+
+        val gadget = currentGroup.gadgets.get(chestConfigId);
+        val chestGadget = context.getSceneScriptManager().createGadget(currentGroup.id, currentGroup.block_id, gadget);
+        if (chestGadget == null) return 1;
+
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val blossomSchedule = blossomManager.getBlossomSchedule().get(groupId);
+        if (blossomSchedule == null) return 1;
+
+        blossomManager.getSpawnedChest().put(chestGadget.getConfigId(), blossomSchedule);
+        context.getSceneScriptManager().addEntity(chestGadget);
+        context.getSceneScriptManager().getScene().broadcastPacket(new PacketBlossomChestCreateNotify(
+            blossomSchedule.getRefreshId(), blossomSchedule.getCircleCampId()));
         return 0;
     }
-    public static int SetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId, int scene){
-        logger.warn("[LUA] Call unimplemented SetBlossomScheduleStateByGroupId with {} {}", groupId, scene);
-        //TODO implement scene is guessed
-        return 0;
+    public static int GetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId){
+        logger.debug("[LUA] Call check GetBlossomScheduleStateByGroupId with {}", groupId);
+        if (context.getCurrentGroup() == null) return -1;
+
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
+            .map(BlossomSchedule::getState).orElse(-1);
+    }
+    public static int SetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId, int state){
+        logger.debug("[LUA] Call check SetBlossomScheduleStateByGroupId with {} {}", groupId, state);
+
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        return blossomManager.setBlossomState(realGroupId, state) ? 0 : 1;
     }
     public static int RefreshBlossomGroup(GroupEventLuaContext context, Object rawTable) {
-        val table = context.getEngine().getTable(rawTable);
-        logger.warn("[LUA] Call unimplemented RefreshBlossomGroup with {}", printTable(table));
-        //TODO implement var3 has int group_id, int suite, bool exclude_prev
+        val configTable = context.getEngine().getTable(rawTable);
+        logger.info("[LUA] Call check RefreshBlossomGroup with {}", printTable(configTable));
+
+        int groupId = configTable.getInt("group_id");
+        val group = context.getSceneScriptManager().getGroupById(groupId == 0 ? context.getCurrentGroup().id : groupId);
+        if (group == null) return 1;
+
+        val groupInstance = context.getSceneScriptManager().getGroupInstanceById(group.id);
+        int suiteIndex = configTable.getInt("suite");
+        val suite = group.getSuiteByIndex(suiteIndex);
+        if (suite == null || groupInstance == null) return 1;
+
+        context.getSceneScriptManager().refreshGroup(groupInstance, suiteIndex, configTable.getBoolean("exclude_prev"));
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val blossomSchedule = blossomManager.getBlossomSchedule().get(group.id);
+        if (blossomSchedule == null) return 1;
+
+        val gadget = group.gadgets.values().stream()
+            .filter(g -> g.gadget_id == blossomSchedule.getRefreshType().getGadgetId())
+            .map(g -> g.config_id).findFirst()
+            .map(configId -> group.gadgets.get(configId))
+            .orElse(null);
+        if (gadget == null) return 1;
+
+        val entity = context.getSceneScriptManager().createGadget(
+            group.id, group.block_id, gadget, ScriptGadgetState.GearAction2);
+        if (entity == null) return 1;
+
+        context.getSceneScriptManager().meetEntities(List.of(entity));
+        context.getSceneScriptManager().getScene().broadcastPacket(
+            new PacketWorldOwnerBlossomScheduleInfoNotify(blossomSchedule.toScheduleProto()));
         return 0;
     }
     public static int RefreshBlossomDropRewardByGroupId(GroupEventLuaContext context, int groupId){
@@ -1026,9 +1083,17 @@ public class ScriptLib {
         return 0;
     }
     public static int AddBlossomScheduleProgressByGroupId(GroupEventLuaContext context, int groupId){
-        logger.warn("[LUA] Call unimplemented AddBlossomScheduleProgressByGroupId with {}", groupId);
-        //TODO implement
-        return 0;
+        logger.debug("[LUA] Call check AddBlossomScheduleProgressByGroupId with {}", groupId);
+
+        return context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager().addBlossomProgress(groupId) ? 0 : 1;
+    }
+    public static int GetBlossomRefreshTypeByGroupId(GroupEventLuaContext context, int groupId){
+        logger.debug("[LUA] Call check GetBlossomRefreshTypeByGroupId with {}", groupId);
+
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
+            .map(BlossomSchedule::getRefreshType).map(BlossomRefreshType::getValue).orElse(0);
     }
     public static int RefreshHuntingClueGroup(GroupEventLuaContext context){
         logger.warn("[LUA] Call unimplemented RefreshHuntingClueGroup"); //TODO: Much many calls o this garbages the log

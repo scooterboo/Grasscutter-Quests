@@ -27,6 +27,7 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.inventory.Inventory;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.mail.MailHandler;
+import emu.grasscutter.game.managers.blossom.BlossomManager;
 import emu.grasscutter.game.managers.cooking.ActiveCookCompoundData;
 import emu.grasscutter.game.managers.cooking.CookingCompoundManager;
 import emu.grasscutter.game.managers.cooking.CookingManager;
@@ -170,6 +171,7 @@ public class Player {
     @Getter private transient ActivityManager activityManager;
     @Getter private transient PlayerBuffManager buffManager;
     @Getter private transient PlayerProgressManager progressManager;
+    @Getter private transient BlossomManager blossomManager;
 
     @Getter @Setter private transient Position lastCheckedPosition = null;
 
@@ -281,6 +283,7 @@ public class Player {
         this.furnitureManager = new FurnitureManager(this);
         this.cookingManager = new CookingManager(this);
         this.cookingCompoundManager=new CookingCompoundManager(this);
+        this.blossomManager = new BlossomManager(this);
     }
 
     // On player creation
@@ -316,6 +319,7 @@ public class Player {
         this.furnitureManager = new FurnitureManager(this);
         this.cookingManager = new CookingManager(this);
         this.cookingCompoundManager=new CookingCompoundManager(this);
+        this.blossomManager = new BlossomManager(this);
     }
 
     public void updatePlayerGameTime(long gameTime){
@@ -1370,6 +1374,8 @@ public class Player {
         this.getProgressManager().onPlayerLogin();
 
         session.send(new PacketFinishedParentQuestNotify(this));
+        getBlossomManager().onPlayerLogin(); // this is the real order in official
+
         session.send(new PacketBattlePassAllDataNotify(this));
         session.send(new PacketQuestListNotify(this));
         session.send(new PacketCodexDataFullNotify(this));

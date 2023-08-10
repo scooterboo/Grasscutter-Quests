@@ -32,6 +32,9 @@ public class HandlerEnterSceneDoneReq extends PacketHandler {
         session.send(new PacketScenePlayerLocationNotify(session.getPlayer().getScene()));
         session.send(new PacketWorldPlayerRTTNotify(session.getPlayer().getWorld()));
 
+        // Blossoms, should broadcast the information of the world owner instead
+        session.getPlayer().getWorld().getOwner().getBlossomManager().loadBlossomGroup();
+
         // spawn NPC
         session.getPlayer().getScene().loadNpcForPlayerEnter(session.getPlayer());
 
