@@ -2,6 +2,7 @@ package emu.grasscutter.game.dungeons.challenge;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.dungeons.challenge.trigger.ChallengeTrigger;
+import emu.grasscutter.game.dungeons.challenge.trigger.TimeTrigger;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityMonster;
@@ -22,6 +23,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -56,6 +58,11 @@ public class WorldChallenge {
      */
     public int getGroupId(){
         return Optional.ofNullable(getGroup()).map(g -> g.id).orElse(0);
+    }
+
+
+    public int getTimeTaken() {
+        return this.finishedTime - this.startedAt;
     }
 
     private void setFatherChallenge(WorldChallenge fatherChallenge) {
@@ -109,15 +116,16 @@ public class WorldChallenge {
                 String.valueOf(this.info.getChallengeId())
             ));
         }
-        this.scene.getScriptManager().callEvent(
-            // TODO record the time in PARAM2 and used in action
-            new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_SUCCESS)
-                .setParam2(this.finishedTime)
-                .setEventSource(Integer.toString(this.info.getChallengeIndex())
-                ));
+        // might be different for other challenge types, so far only found to use in Tower challenge
+        final int remainingTime = this.challengeTriggers.stream().filter(TimeTrigger.class::isInstance)
+            .map(TimeTrigger.class::cast).findFirst().map(TimeTrigger::getGoal).map(AtomicInteger::get)
+            .map(goalTime -> goalTime - getTimeTaken()).orElse(getFinishedTime());
+
+        this.scene.getScriptManager().callEvent(new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_SUCCESS)
+                .setParam2(remainingTime).setEventSource(Integer.toString(this.info.getChallengeIndex())));
+
         this.scene.triggerDungeonEvent(
-            DungeonPassConditionType.DUNGEON_COND_FINISH_CHALLENGE,
-            this.info.getChallengeId(), this.info.getChallengeIndex());
+            DungeonPassConditionType.DUNGEON_COND_FINISH_CHALLENGE, this.info.getChallengeId(), this.info.getChallengeIndex());
     }
 
     /**

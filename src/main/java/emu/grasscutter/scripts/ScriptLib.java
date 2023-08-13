@@ -255,7 +255,7 @@ public class ScriptLib {
 			return 1;
 		}
 
-		context.getSceneScriptManager().startMonsterTideInGroup(group, ordersConfigId, tideCount, sceneLimit);
+		context.getSceneScriptManager().startMonsterTideInGroup(challengeIndex, group, ordersConfigId, tideCount, sceneLimit);
 
 		return 0;
 	}
@@ -375,12 +375,6 @@ public class ScriptLib {
         );
 
         if(challenge == null) return 1;
-
-        if(challenge instanceof DungeonChallenge dungeonChallenge){
-            // set if tower first stage (6-1)
-            dungeonChallenge.setStage(Objects.requireNonNull(
-                context.getSceneScriptManager().getVariables(groupId)).getOrDefault("stage", -1) == 0);
-        }
 
         context.getSceneScriptManager().getScene().setChallenge(challenge);
         challenge.start();

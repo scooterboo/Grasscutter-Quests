@@ -62,6 +62,7 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
         player.setEnterSceneToken(Utils.randomRange(1000, 99999));
 
         PlayerEnterSceneNotify.Builder proto = PlayerEnterSceneNotify.newBuilder()
+                .setIsSkipUi(teleportProperties.isSkipUi())
                 .setPrevSceneId(teleportProperties.getPrevSceneId())
                 .setPrevPos(teleportProperties.getPrevPos().toProto())
                 .setSceneId(teleportProperties.getSceneId())

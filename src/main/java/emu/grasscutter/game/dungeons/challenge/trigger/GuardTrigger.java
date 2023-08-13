@@ -4,9 +4,11 @@ import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.server.packet.send.PacketChallengeDataNotify;
+import lombok.Getter;
 
 import java.util.Optional;
 
+@Getter
 public class GuardTrigger extends ChallengeTrigger {
     private int lastSendPercent = 100;
 

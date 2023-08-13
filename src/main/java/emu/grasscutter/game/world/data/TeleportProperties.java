@@ -20,4 +20,5 @@ public class TeleportProperties {
     private Position prevPos;
     private int prevSceneId;
     private int worldType;
+    private boolean isSkipUi;
 }

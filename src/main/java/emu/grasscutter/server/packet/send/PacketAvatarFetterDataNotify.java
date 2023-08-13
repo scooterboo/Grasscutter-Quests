@@ -7,43 +7,28 @@ import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.AvatarFetterDataNotifyOuterClass.AvatarFetterDataNotify;
 import emu.grasscutter.net.proto.AvatarFetterInfoOuterClass.AvatarFetterInfo;
 import emu.grasscutter.net.proto.FetterDataOuterClass.FetterData;
+import lombok.val;
 
 public class PacketAvatarFetterDataNotify extends BasePacket {
-	
+
 	public PacketAvatarFetterDataNotify(Avatar avatar) {
 		super(PacketOpcodes.AvatarFetterDataNotify);
 
 		int fetterLevel = avatar.getFetterLevel();
 
-		AvatarFetterInfo.Builder avatarFetter = AvatarFetterInfo.newBuilder()
-				.setExpLevel(avatar.getFetterLevel());
-		
-		if (fetterLevel != 10) {
-			avatarFetter.setExpNumber(avatar.getFetterExp());
-		}
-		
-		if (avatar.getFetterList() != null) {
-			for (int i = 0; i < avatar.getFetterList().size(); i++) {
-				avatarFetter.addFetterList(
-					FetterData.newBuilder()
-						.setFetterId(avatar.getFetterList().get(i))
-						.setFetterState(FetterState.FINISH.getValue())
-				);
-			}
-		}
-		
-		int cardId = avatar.getNameCardId();
+		val avatarFetter = AvatarFetterInfo.newBuilder()
+				.setExpLevel(fetterLevel);
+		if (fetterLevel != 10) avatarFetter.setExpNumber(avatar.getFetterExp());
 
-		if (avatar.getPlayer().getNameCardList().contains(cardId)) {
-			avatarFetter.addRewardedFetterLevelList(10);
-		}
+        avatar.getFetters().stream().map(id -> FetterData.newBuilder().setFetterId(id)
+                .setFetterState(FetterState.FINISH.getValue()))
+            .forEach(avatarFetter::addFetterList);
 
-		AvatarFetterInfo avatarFetterInfo = avatarFetter.build();
-		
-		AvatarFetterDataNotify proto = AvatarFetterDataNotify.newBuilder()
-            .putFetterInfoMap(avatar.getGuid(), avatarFetterInfo)
-            .build();
-		
-		this.setData(proto);
+		if (avatar.getPlayer().getNameCardList().contains(avatar.getNameCardId()))
+            avatarFetter.addRewardedFetterLevelList(10);
+
+		this.setData(AvatarFetterDataNotify.newBuilder()
+            .putFetterInfoMap(avatar.getGuid(), avatarFetter.build())
+            .build());
 	}
 }

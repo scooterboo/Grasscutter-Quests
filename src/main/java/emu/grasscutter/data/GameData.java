@@ -144,8 +144,10 @@ public class GameData {
     @Getter private static final Int2ObjectMap<RewardData> rewardDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<RewardPreviewData> rewardPreviewDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<SceneData> sceneDataMap = new Int2ObjectLinkedOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<TowerBuffData> towerBuffDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerFloorData> towerFloorDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerLevelData> towerLevelDataMap = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<TowerRewardData> towerRewardDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerScheduleData> towerScheduleDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarData> trialAvatarDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarActivityData> trialAvatarActivityDataMap = new Int2ObjectOpenHashMap<>();
@@ -225,6 +227,10 @@ public class GameData {
     // Multi-keyed getters
     public static AvatarPromoteData getAvatarPromoteData(int promoteId, int promoteLevel) {
         return avatarPromoteDataMap.get((promoteId << 8) + promoteLevel);
+    }
+
+    public static TowerRewardData getTowerRewardData(int levelIndex, int floorIndex) {
+        return towerRewardDataMap.get((levelIndex << 4) + floorIndex);
     }
 
     public static WeaponPromoteData getWeaponPromoteData(int promoteId, int promoteLevel) {

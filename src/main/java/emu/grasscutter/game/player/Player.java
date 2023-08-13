@@ -1393,6 +1393,10 @@ public class Player {
         session.send(new PacketWidgetGadgetAllDataNotify());
         session.send(new PacketCombineDataNotify(this.unlockedCombines));
         session.send(new PacketGetChatEmojiCollectionRsp(this.getChatEmojiIdList()));
+
+        this.towerManager.onLogin();
+        this.session.send(new PacketTowerBriefDataNotify(this));
+
         this.forgingManager.sendForgeDataNotify();
         this.resinManager.onPlayerLogin();
         this.cookingManager.sendCookDataNotify();
