@@ -14,7 +14,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_TRIGGER_IN_TIME;
 
 @ChallengeTypeValue(type = CHALLENGE_TRIGGER_IN_TIME)
-public class TriggerTimeChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class TriggerTimeChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [timeLimit, unused1, triggerTag, triggerCount]
@@ -27,7 +27,7 @@ public class TriggerTimeChallengeFactoryHandler implements ChallengeFactoryHandl
             scene, group,
             header,
             List.of(params.get(0), params.get(3)), // parameters
-            List.of(new TimeTrigger(1, params.get(0)), new TriggerGroupTriggerTrigger(2, params.get(3), params.get(2))),
+            buildChallengeTrigger(List.of(new TimeTrigger(1, params.get(0)), new TriggerGroupTriggerTrigger(2, params.get(3), params.get(2)))),
             scoreInfo
         );
     }

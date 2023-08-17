@@ -1,7 +1,5 @@
 package emu.grasscutter.scripts.lua_engine.luaj;
 
-import emu.grasscutter.Grasscutter;
-import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.constants.IntValueEnum;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
@@ -16,7 +14,6 @@ import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
-import org.slf4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -71,7 +68,9 @@ public class LuaJEngine implements LuaEngine {
                 try {
                     return context.globals.loadfile(FileUtils.getScriptPath("Common/" + filename + ".lua").toString())
                         .call(filename);
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    logger.error("Problem loading require script for {}", filename, e);
+                }
 
                 return LuaValue.ZERO;
             }

@@ -13,7 +13,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_DIE_LESS_IN_TIME;
 
 @ChallengeTypeValue(type = CHALLENGE_DIE_LESS_IN_TIME)
-public class DieLessTimeChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class DieLessTimeChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [timeLimit, unused1, unused1, unused2]
@@ -25,7 +25,7 @@ public class DieLessTimeChallengeFactoryHandler implements ChallengeFactoryHandl
             scene, group,
             header,
             List.of(params.get(0)), // parameters
-            List.of(new TimeTrigger(1, params.get(0))),
+            buildChallengeTrigger(List.of(new TimeTrigger(1, params.get(0)))),
             scoreInfo
         );
     }

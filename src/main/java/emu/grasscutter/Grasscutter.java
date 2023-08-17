@@ -7,9 +7,16 @@ import emu.grasscutter.command.CommandMap;
 import emu.grasscutter.command.DefaultPermissionHandler;
 import emu.grasscutter.command.PermissionHandler;
 import emu.grasscutter.config.ConfigContainer;
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.ResourceLoader;
+import emu.grasscutter.data.excels.AvatarData;
+import emu.grasscutter.data.excels.AvatarSkillDepotData;
+import emu.grasscutter.data.excels.TowerFloorData;
+import emu.grasscutter.data.excels.TowerLevelData;
 import emu.grasscutter.database.DatabaseManager;
-import emu.grasscutter.game.world.World;
+import emu.grasscutter.game.avatar.Avatar;
+import emu.grasscutter.game.avatar.TowerAvatar;
+import emu.grasscutter.game.dungeons.dungeon_entry.PlayerDungeonExitInfo;
 import emu.grasscutter.plugin.PluginManager;
 import emu.grasscutter.plugin.api.ServerHook;
 import emu.grasscutter.scripts.ScriptLoader;
@@ -44,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Calendar;
+import java.util.Optional;
 
 import static emu.grasscutter.config.Configuration.SERVER;
 import static emu.grasscutter.utils.Language.translate;
@@ -111,6 +119,16 @@ public final class Grasscutter {
         Grasscutter.updateDayOfWeek();
         ScriptLoader.init();
         ResourceLoader.loadAll();
+
+//        val aa = SceneGroup.of(133210452).load(3);
+//        val bb = SceneGroup.of(133210453).load(3);
+//        val aa = new Avatar(10000060);
+//        aa.getTest().add(1);
+//        val bb = new TowerAvatar(aa);
+//        bb.getTest().add(2);
+//        Grasscutter.getLogger().info("{}", GameData.getAbilityData("Atk_Dungeon"));
+//        Grasscutter.getLogger().info("{}", PlayerDungeonExitInfo.create());
+
 
         // Generate handbooks.
         Tools.createGmHandbooks();

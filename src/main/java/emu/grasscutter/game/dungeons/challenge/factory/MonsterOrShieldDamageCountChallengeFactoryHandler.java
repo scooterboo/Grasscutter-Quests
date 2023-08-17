@@ -14,7 +14,7 @@ import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLE
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_SHEILD_ABSORB_DAMAGE_COUNT;
 
 @ChallengeTypeValue(type = {CHALLENGE_MONSTER_DAMAGE_COUNT, CHALLENGE_SHEILD_ABSORB_DAMAGE_COUNT})
-public class MonsterOrShieldDamageCountChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class MonsterOrShieldDamageCountChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [damageCount or absorbDamage, unused1, unused2, unused3]
@@ -25,7 +25,7 @@ public class MonsterOrShieldDamageCountChallengeFactoryHandler implements Challe
             scene, group,
             header,
             List.of(params.get(0)), // parameters
-            List.of(new DamageCountTrigger(1, params.get(0))),
+            buildChallengeTrigger(List.of(new DamageCountTrigger(1, params.get(0)))),
             scoreInfo
         );
     }

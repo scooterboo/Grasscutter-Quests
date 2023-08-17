@@ -16,7 +16,7 @@ import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLE
 import static emu.grasscutter.game.props.ElementReactionType.Freeze;
 
 @ChallengeTypeValue(type = CHALLENGE_KILL_COUNT_FROZEN_LESS)
-public class KillCountFrozenLessChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class KillCountFrozenLessChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [groupId, monsterCountToKill, maximumGotFrozenCount, unused1]
@@ -29,7 +29,7 @@ public class KillCountFrozenLessChallengeFactoryHandler implements ChallengeFact
             scene, realGroup,
             header,
             List.of(params.get(1), params.get(2)), // parameters
-            List.of(new KillMonsterTrigger(1, params.get(1)), new ElementReactionTrigger(2, params.get(2), Freeze, false)),
+            buildChallengeTrigger(List.of(new KillMonsterTrigger(1, params.get(1)), new ElementReactionTrigger(2, params.get(2), Freeze, false))),
             scoreInfo
         );
     }

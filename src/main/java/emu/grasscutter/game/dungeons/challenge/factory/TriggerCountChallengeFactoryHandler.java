@@ -13,7 +13,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_TRIGGER_COUNT;
 
 @ChallengeTypeValue(type = CHALLENGE_TRIGGER_COUNT)
-public class TriggerCountChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class TriggerCountChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [unused1, triggerTag, triggerCount]
@@ -25,7 +25,7 @@ public class TriggerCountChallengeFactoryHandler implements ChallengeFactoryHand
             scene, group,
             header,
             List.of(params.get(2)), // parameters
-            List.of(new TriggerGroupTriggerTrigger(1, params.get(2), params.get(1))),
+            buildChallengeTrigger(List.of(new TriggerGroupTriggerTrigger(1, params.get(2), params.get(1)))),
             scoreInfo
         );
     }

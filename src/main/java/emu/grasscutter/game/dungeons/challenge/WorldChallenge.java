@@ -1,8 +1,7 @@
 package emu.grasscutter.game.dungeons.challenge;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.game.dungeons.challenge.trigger.ChallengeTrigger;
-import emu.grasscutter.game.dungeons.challenge.trigger.TimeTrigger;
+import emu.grasscutter.game.dungeons.challenge.trigger.*;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityMonster;
@@ -19,9 +18,11 @@ import emu.grasscutter.server.packet.send.PacketDungeonChallengeFinishNotify;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +36,7 @@ public class WorldChallenge {
     private final SceneGroup group;
     private final ChallengeInfo info; // currentChallengeIndex, currentChallengeId, fatherChallengeIndex
     private final List<Integer> paramList;
-    private final List<ChallengeTrigger> challengeTriggers;
+    private final Map<Class<? extends ChallengeTrigger>, ChallengeTrigger> challengeTriggers;
     private boolean progress;
     private boolean success;
     @Setter private int startedAt;
@@ -97,7 +98,7 @@ public class WorldChallenge {
         this.progress = true;
         this.startedAt = getScene().getSceneTimeSeconds();
         this.scene.broadcastPacket(new PacketDungeonChallengeBeginNotify(this));
-        this.challengeTriggers.forEach(t -> t.onBegin(this));
+        this.challengeTriggers.values().forEach(t -> t.onBegin(this));
         this.childChallenge.forEach(WorldChallenge::start); // child challenges could be empty here
     }
 
@@ -117,8 +118,8 @@ public class WorldChallenge {
             ));
         }
         // might be different for other challenge types, so far only found to use in Tower challenge
-        final int remainingTime = this.challengeTriggers.stream().filter(TimeTrigger.class::isInstance)
-            .map(TimeTrigger.class::cast).findFirst().map(TimeTrigger::getGoal).map(AtomicInteger::get)
+        final int remainingTime = Optional.ofNullable(this.challengeTriggers.get(TimeTrigger.class))
+            .map(ChallengeTrigger::getGoal).map(AtomicInteger::get)
             .map(goalTime -> goalTime - getTimeTaken()).orElse(getFinishedTime());
 
         this.scene.getScriptManager().callEvent(new ScriptArgs(getGroupId(), EventType.EVENT_CHALLENGE_SUCCESS)
@@ -160,9 +161,9 @@ public class WorldChallenge {
     public void onCheckTimeOut(){
         if(!inProgress()) return;
 
-        this.challengeTriggers.forEach(t -> t.onCheckTimeout(this));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onCheckTimeout(cc)));
+        Optional.ofNullable(this.challengeTriggers.get(TimeTrigger.class)).ifPresent(t -> t.onCheckTimeout(this));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(TimeTrigger.class)).ifPresent(t -> t.onCheckTimeout(cc)));
     }
 
     /**
@@ -172,27 +173,32 @@ public class WorldChallenge {
     public void onMonsterDeath(EntityMonster monster){
         if(!inProgress() || monster.getGroupId() != getGroupId()) return;
 
-        this.challengeTriggers.forEach(t -> t.onMonsterDeath(this, monster));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onMonsterDeath(cc, monster)));
+        Optional.ofNullable(this.challengeTriggers.get(KillMonsterTrigger.class))
+            .ifPresent(t -> t.onMonsterDeath(this, monster));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(KillMonsterTrigger.class))
+                .ifPresent(t -> t.onMonsterDeath(cc, monster)));
     }
 
     public void onGroupTriggerDeath(SceneTrigger trigger){
         if(!inProgress()) return;
-
         if(Optional.ofNullable(trigger.getCurrentGroup()).filter(g -> g.id == getGroupId()).isEmpty()) return;
 
-        this.challengeTriggers.forEach(t -> t.onGroupTrigger(this, trigger));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onGroupTrigger(cc, trigger)));
+        Optional.ofNullable(this.challengeTriggers.get(TriggerGroupTriggerTrigger.class))
+            .ifPresent(t -> t.onGroupTrigger(this, trigger));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(TriggerGroupTriggerTrigger.class))
+                .ifPresent(t -> t.onGroupTrigger(cc, trigger)));
     }
 
     public void onGadgetDamage(EntityGadget gadget){
         if(!inProgress() || gadget.getGroupId() != getGroupId()) return;
 
-        this.challengeTriggers.forEach(t -> t.onGadgetDamage(this, gadget));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onGadgetDamage(cc, gadget)));
+        Optional.ofNullable(this.challengeTriggers.get(GuardTrigger.class))
+            .ifPresent(t -> t.onGadgetDamage(this, gadget));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(GuardTrigger.class))
+                .ifPresent(t -> t.onGadgetDamage(cc, gadget)));
     }
 
     /**
@@ -204,9 +210,11 @@ public class WorldChallenge {
         if (!inProgress()) return;
         if (defender instanceof EntityMonster monster && monster.getGroupId() != getGroupId()) return;
 
-        this.challengeTriggers.forEach(t -> t.onElementReaction(this, defender, reactionType));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onElementReaction(cc, defender, reactionType)));
+        Optional.ofNullable(this.challengeTriggers.get(ElementReactionTrigger.class))
+            .ifPresent(t -> t.onElementReaction(this, defender, reactionType));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(ElementReactionTrigger.class))
+                .ifPresent(t -> t.onElementReaction(cc, defender, reactionType)));
     }
 
     /**
@@ -218,15 +226,44 @@ public class WorldChallenge {
         if(!inProgress()) return;
         if (entity instanceof EntityMonster monster && monster.getGroupId() != getGroupId()) return;
 
-        this.challengeTriggers.forEach(t -> t.onDamageMonsterOrShield(this, damage));
-        this.childChallenge.stream().filter(WorldChallenge::inProgress)
-            .forEach(cc -> cc.getChallengeTriggers().forEach(t -> t.onDamageMonsterOrShield(cc, damage)));
+        Optional.ofNullable(this.challengeTriggers.get(DamageCountTrigger.class))
+            .ifPresent(t -> t.onDamageMonsterOrShield(this, damage));
+        this.childChallenge.stream().filter(WorldChallenge::inProgress).forEach(cc ->
+            Optional.ofNullable(cc.getChallengeTriggers().get(DamageCountTrigger.class))
+                .ifPresent(t -> t.onDamageMonsterOrShield(cc, damage)));
     }
 
     /**
      * Invoke when CHILD challenge finishes or fails
      */
     public void onIncFailSuccScore(boolean useSucc, int score) {
-        this.challengeTriggers.forEach(t -> t.onIncFailSuccScore(this, useSucc, score));
+        if(!inProgress()) return;
+
+        Optional.ofNullable(this.challengeTriggers.get(FatherTrigger.class))
+            .ifPresent(t -> t.onIncFailSuccScore(this, useSucc, score));
+    }
+
+    public void resetTimer(int incrementCount) {
+        val timerTrigger =  Optional.ofNullable(this.challengeTriggers.get(TimeTrigger.class));
+        if (timerTrigger.isEmpty()) return;
+
+        if (incrementCount > 0) {
+            // reset time count partially
+            timerTrigger.get().getGoal().addAndGet(incrementCount);
+        } else {
+            // reset time count
+            this.startedAt = getScene().getSceneTimeSeconds();
+        }
+
+        timerTrigger.get().onBegin(this);
+    }
+
+    public void resetFreezeTime() {
+        val reactionTrigger = Optional.ofNullable(this.challengeTriggers.get(ElementReactionTrigger.class));
+        if (reactionTrigger.isEmpty()) return;
+
+        reactionTrigger.get().getScore().set(0);
+        reactionTrigger.get().onBegin(this);
+        this.startedAt = getScene().getSceneTimeSeconds();
     }
 }

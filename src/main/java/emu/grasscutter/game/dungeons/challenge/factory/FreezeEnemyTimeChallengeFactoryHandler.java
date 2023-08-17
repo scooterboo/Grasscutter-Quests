@@ -15,7 +15,7 @@ import static emu.grasscutter.game.props.ElementReactionType.Freeze;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_FREEZE_ENEMY_IN_TIME;
 
 @ChallengeTypeValue(type = CHALLENGE_FREEZE_ENEMY_IN_TIME)
-public class FreezeEnemyTimeChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class FreezeEnemyTimeChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [timeLimit, goal, unused1, unused2]
@@ -26,7 +26,7 @@ public class FreezeEnemyTimeChallengeFactoryHandler implements ChallengeFactoryH
             scene, group,
             header,
             List.of(), // parameters
-            List.of(new ElementReactionTrigger(0, params.get(1), Freeze), new TimeTrigger(0, params.get(0))),
+            buildChallengeTrigger(List.of(new ElementReactionTrigger(0, params.get(1), Freeze), new TimeTrigger(0, params.get(0)))),
             scoreInfo
         );
     }

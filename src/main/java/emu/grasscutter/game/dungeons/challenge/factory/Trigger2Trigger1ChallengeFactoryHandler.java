@@ -15,7 +15,7 @@ import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLE
  * TODO
  * */
 @ChallengeTypeValue(type = CHALLENGE_TRIGGER2_AVOID_TRIGGER1)
-public class Trigger2Trigger1ChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class Trigger2Trigger1ChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [platformGoalPoint, triggerTag2, triggerCount2, unused1, triggerTag1, triggerCount1]
@@ -27,7 +27,7 @@ public class Trigger2Trigger1ChallengeFactoryHandler implements ChallengeFactory
             scene, group,
             header,
             List.of(), // parameters
-            List.of(),
+            buildChallengeTrigger(List.of()),
             scoreInfo
         );
     }

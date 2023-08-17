@@ -202,7 +202,7 @@ public class TowerManager extends BasePlayerManager {
                     floorData.getFloorIndex(), TowerFloorRecordInfo.create(floorData.getId())));
             resetCurRecord();
         }
-//        notifyCurRecordChange();
+        notifyCurRecordChange();
     }
 
     /**
@@ -214,14 +214,16 @@ public class TowerManager extends BasePlayerManager {
 
         int stars = (int) levelData.getConds().stream()
             .map(c -> getTowerData().isUpperPart() ? c.getUpperHalfCond() : c.getLowerHalfCond())
-            .filter(c -> switch (c.getTowerCondType()) {
-                case TOWER_COND_CHALLENGE_LEFT_TIME_MORE_THAN -> challenge.getChallengeTriggers().stream()
-                    .filter(TimeTrigger.class::isInstance).map(TimeTrigger.class::cast)
-                    .anyMatch(tt -> (challenge.getStartedAt() + tt.getGoal().get() - challenge.getFinishedTime()) >= c.getTargetLeftTime());
-                case TOWER_COND_LEFT_HP_GREATER_THAN -> challenge.getGroupId() == c.getGroupId()
-                    && challenge.getChallengeTriggers().stream().filter(GuardTrigger.class::isInstance)
-                    .map(GuardTrigger.class::cast).filter(gt -> gt.getGoal().get() == c.getConfigId())
-                    .anyMatch(gt -> gt.getLastSendPercent() >= c.getTargetHpPercentage());
+            .filter(c -> switch (c.getTowerCondType()) { // TODO, maybe worth it to create quest like handler to adapt future changes?
+                case TOWER_COND_CHALLENGE_LEFT_TIME_MORE_THAN ->
+                    Optional.ofNullable(challenge.getChallengeTriggers().get(TimeTrigger.class))
+                        .filter(tt -> challenge.getStartedAt() + tt.getGoal().get() - challenge.getFinishedTime() >= c.getTargetLeftTime())
+                        .isPresent();
+                case TOWER_COND_LEFT_HP_GREATER_THAN -> challenge.getGroupId() == c.getGroupId() &&
+                    Optional.ofNullable(challenge.getChallengeTriggers().get(GuardTrigger.class))
+                        .filter(gt -> gt.getGoal().get() == c.getConfigId())
+                        .filter(gt -> ((GuardTrigger) gt).getLastSendPercent() >= c.getTargetHpPercentage())
+                        .isPresent();
             }).count();
 
         tryRemoveBuffs();

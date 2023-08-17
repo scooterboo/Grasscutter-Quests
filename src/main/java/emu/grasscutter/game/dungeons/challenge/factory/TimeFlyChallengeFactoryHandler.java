@@ -15,7 +15,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_TIME_FLY;
 
 @ChallengeTypeValue(type = CHALLENGE_TIME_FLY)
-public class TimeFlyChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class TimeFlyChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [groupId, monsterKillCount, timeLimit, incTimerCount]
@@ -28,7 +28,7 @@ public class TimeFlyChallengeFactoryHandler implements ChallengeFactoryHandler {
             scene, realGroup,
             header,
             List.of(params.get(1), params.get(2)), // parameters
-            List.of(new KillMonsterTrigger(1, params.get(1), params.get(3)), new TimeTrigger(2, params.get(2))),
+            buildChallengeTrigger(List.of(new KillMonsterTrigger(1, params.get(1), params.get(3)), new TimeTrigger(2, params.get(2)))),
             scoreInfo
         );
     }

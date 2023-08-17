@@ -4,12 +4,18 @@ import emu.grasscutter.game.dungeons.challenge.ChallengeInfo;
 import emu.grasscutter.game.dungeons.challenge.ChallengeScoreInfo;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.challenge.enums.ChallengeType;
+import emu.grasscutter.game.dungeons.challenge.trigger.ChallengeTrigger;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.scripts.data.SceneGroup;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-public interface ChallengeFactoryHandler {
+public abstract class ChallengeFactoryHandler {
+    protected Map<Class<? extends ChallengeTrigger>, ChallengeTrigger> buildChallengeTrigger(List<ChallengeTrigger> triggers) {
+        return triggers.stream().collect(Collectors.toMap(ChallengeTrigger::getClass, t -> t));
+    }
     /**
      * Build a new challenge
      * @param header: currentChallengeIndex, currentChallengeId, fatherChallengeIndex
@@ -17,5 +23,5 @@ public interface ChallengeFactoryHandler {
      * @param scene: Current scene that player is in
      * @param group: Group spawned/attached to the challenge
      */
-    WorldChallenge build(ChallengeType type, ChallengeInfo header, List<Integer> params, ChallengeScoreInfo scoreInfo, Scene scene, SceneGroup group);
+    public abstract WorldChallenge build(ChallengeType type, ChallengeInfo header, List<Integer> params, ChallengeScoreInfo scoreInfo, Scene scene, SceneGroup group);
 }

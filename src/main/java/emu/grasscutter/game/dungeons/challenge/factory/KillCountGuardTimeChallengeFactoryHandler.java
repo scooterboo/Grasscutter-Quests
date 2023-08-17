@@ -15,7 +15,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_GUARD_HP;
 
 @ChallengeTypeValue(type = CHALLENGE_GUARD_HP)
-public class KillCountGuardTimeChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class KillCountGuardTimeChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [timeLimit, groupId, gadgetCFGId, unused1, incTimerCount(pretty sure)] or
@@ -32,7 +32,7 @@ public class KillCountGuardTimeChallengeFactoryHandler implements ChallengeFacto
             scene, realGroup,
             header,
             List.of(100, params.get(0), params.get(params.size()-1)), // parameters
-            List.of(new GuardTrigger(1, params.get(2)), new TimeTrigger(2, params.get(0)), new KillMonsterTrigger(3, goal, params.get(params.size()-1))),
+            buildChallengeTrigger(List.of(new GuardTrigger(1, params.get(2)), new TimeTrigger(2, params.get(0)), new KillMonsterTrigger(3, goal, params.get(params.size()-1)))),
             scoreInfo
         );
     }

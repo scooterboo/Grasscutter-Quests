@@ -32,13 +32,8 @@ public class TimeTrigger extends ChallengeTrigger{
     public void onCheckTimeout(WorldChallenge challenge) {
         if(challenge.getScene().getSceneTimeSeconds() - challenge.getStartedAt() < getGoal().get()) return;
 
-        if (getParamIndex() < 1) {// when challenge is FreezeInTime
-            challenge.getChallengeTriggers().stream()
-                .filter(t -> t instanceof ElementReactionTrigger)
-                .map(ElementReactionTrigger.class::cast)
-                .peek(reactionTrigger -> reactionTrigger.getScore().set(0))
-                .peek(reactionTrigger -> reactionTrigger.onBegin(challenge))
-                .forEach(c -> challenge.setStartedAt(challenge.getScene().getSceneTimeSeconds()));
+        if (getParamIndex() < 1) { // when challenge is FreezeInTime
+            challenge.resetFreezeTime();
             return;
         }
 

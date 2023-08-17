@@ -15,7 +15,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_KILL_MONSTER_IN_TIME;
 
 @ChallengeTypeValue(type = CHALLENGE_KILL_MONSTER_IN_TIME)
-public class KillMonsterTimeChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class KillMonsterTimeChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [timeLimit, groupId, configId, unused1]
@@ -28,7 +28,7 @@ public class KillMonsterTimeChallengeFactoryHandler implements ChallengeFactoryH
             scene, realGroup,
             header,
             List.of(params.get(0), params.get(2)), // parameters
-            List.of(new TimeTrigger(1, params.get(0)), new KillMonsterTrigger(2, params.get(2))),
+            buildChallengeTrigger(List.of(new TimeTrigger(1, params.get(0)), new KillMonsterTrigger(2, params.get(2)))),
             scoreInfo
         );
     }

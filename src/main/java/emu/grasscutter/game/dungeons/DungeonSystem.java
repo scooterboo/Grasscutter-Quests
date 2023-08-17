@@ -8,6 +8,7 @@ import emu.grasscutter.data.excels.DungeonData;
 import emu.grasscutter.data.excels.DungeonPassConfigData;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntries;
+import emu.grasscutter.game.dungeons.dungeon_entry.PlayerDungeonExitInfo;
 import emu.grasscutter.game.dungeons.enums.DungeonType;
 import emu.grasscutter.game.dungeons.handlers.DungeonBaseHandler;
 import emu.grasscutter.game.dungeons.pass_condition.BaseCondition;
@@ -70,8 +71,7 @@ public class DungeonSystem extends BaseGameSystem {
     }
 
     /**
-     * TODO record also player's position for dungeon that does not have entries and exits,
-     * like trial avatar activity and mist trial activity
+     * TODO probably don't need previous scene and previous point id anymore
      * */
     public boolean enterDungeon(Player player, int pointId, int dungeonId, DungeonSettleListener dungeonSettleListeners) {
         val data = GameData.getDungeonDataMap().get(dungeonId);
@@ -80,15 +80,18 @@ public class DungeonSystem extends BaseGameSystem {
             return false;
         }
 
+        final int realPointId = Optional.ofNullable(GameData.getDungeonEntriesMap().get(dungeonId))
+            .map(DungeonEntries::getEntryPoint).map(PointData::getId).orElse(pointId);
+
         Grasscutter.getLogger().info("{}({}) is trying to enter {}({})", player.getNickname(), player.getUid(), data.getType(), dungeonId);
         player.getScene().setPrevScene(player.getSceneId());
+        player.getDungeonExitInfo().setAll(player, dungeonId, realPointId);
         if (player.getWorld().transferPlayerToScene(player, data.getSceneId(), data)) {
             player.getScene().setDungeonManager(new DungeonManager(player.getScene(), data));
             player.getScene().addDungeonSettleObserver(dungeonSettleListeners);
         }
 
-        player.getScene().setPrevScenePoint(Optional.ofNullable(GameData.getDungeonEntriesMap().get(dungeonId))
-            .map(DungeonEntries::getEntryPoint).map(PointData::getId).orElse(pointId));
+        player.getScene().setPrevScenePoint(realPointId);
         return true;
     }
 
@@ -116,12 +119,9 @@ public class DungeonSystem extends BaseGameSystem {
         val dungeonManager = scene.getDungeonManager();
         val dungeonData = Optional.ofNullable(dungeonManager).map(DungeonManager::getDungeonData).orElse(null);
         // Get dungeon exit point
-        val exitPoint = Optional.ofNullable(dungeonData).map(data -> GameData.getDungeonEntriesMap().get(data.getId()))
-            .map(DungeonEntries::getExitPoint);
-        val newPos = exitPoint.map(PointData::getTranPos).orElse(new Position(GameConstants.START_POSITION));
-        val newRot = exitPoint.map(PointData::getTranRot).orElse(null);
-        final int pointId = exitPoint.map(PointData::getId).orElse(0);
+        val exitLoc = Optional.ofNullable(player.getDungeonExitInfo());
         int delayExitTime = -1;
+        Grasscutter.getLogger().info("DungeonExitLocation: {}", exitLoc);
 
         if(dungeonData != null && !dungeonManager.isFinishedSuccessfully() && dungeonManager.getDelayExitTaskId() < 0) {
             // fail challenges if exist
@@ -137,13 +137,13 @@ public class DungeonSystem extends BaseGameSystem {
         }
         // if player is leaving from tower
         if (Optional.ofNullable(dungeonData).map(DungeonData::getType)
-            .filter(type -> type == DungeonType.DUNGEON_TOWER).isPresent()) {
+                .filter(type -> type == DungeonType.DUNGEON_TOWER).isPresent()) {
             player.getTowerManager().removeCurrentLevelBuff();
             player.getTowerManager().clearTeamOnExit();
             isQuitImmediately = true;
         }
 
-        // remove any existing transfer task before scheduling new one
+        // remove any existing transfer task before scheduling new one, TODO might not work for multiplayer
         Optional.ofNullable(dungeonManager).filter(m -> m.getDelayExitTaskId() > 0).ifPresent(m -> {
             Grasscutter.getGameServer().getScheduler().cancelTask(m.getDelayExitTaskId());
             m.setDelayExitTaskId(-1);
@@ -151,8 +151,11 @@ public class DungeonSystem extends BaseGameSystem {
 
         final Runnable transferTask = () -> {
             scene.setPrevScene(scene.getId());
-            player.getWorld().transferPlayerToScene(player, exitPoint.map(PointData::getSceneId).orElse(3), newPos, newRot);
-            player.getScene().setPrevScenePoint(pointId);
+            player.getWorld().transferPlayerToScene(player,
+                exitLoc.map(PlayerDungeonExitInfo::getSceneId).orElse(3),
+                exitLoc.map(PlayerDungeonExitInfo::getPos).map(Position::clone).orElse(new Position(GameConstants.START_POSITION)),
+                exitLoc.map(PlayerDungeonExitInfo::getRot).map(Position::clone).orElse(null));
+            player.getScene().setPrevScenePoint(exitLoc.map(PlayerDungeonExitInfo::getPointId).orElse(0));
         };
 
         // Transfer player back to world

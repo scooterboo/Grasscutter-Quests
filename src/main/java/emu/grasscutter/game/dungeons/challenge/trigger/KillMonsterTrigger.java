@@ -50,22 +50,6 @@ public class KillMonsterTrigger extends ChallengeTrigger{
             return;
         }
 
-        if (!this.RESET_TIMER) return;
-
-        TimeTrigger trigger = challenge.getChallengeTriggers().stream()
-            .filter(t -> t instanceof TimeTrigger)
-            .map(TimeTrigger.class::cast)
-            .findFirst().orElse(null);
-        if (trigger == null) return;
-
-        if (this.INC_TIMER_COUNT > 0) {
-            // reset time count partially
-            trigger.getGoal().addAndGet(this.INC_TIMER_COUNT);
-        } else {
-            // reset time count
-            challenge.setStartedAt(challenge.getScene().getSceneTimeSeconds());
-        }
-
-        trigger.onBegin(challenge);
+        if (this.RESET_TIMER) challenge.resetTimer(this.INC_TIMER_COUNT);
     }
 }

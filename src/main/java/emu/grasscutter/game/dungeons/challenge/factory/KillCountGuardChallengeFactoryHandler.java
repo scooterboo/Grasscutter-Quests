@@ -15,7 +15,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_KILL_COUNT_GUARD_HP;
 
 @ChallengeTypeValue(type = CHALLENGE_KILL_COUNT_GUARD_HP)
-public class KillCountGuardChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class KillCountGuardChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [groupId, monstersToKill, gadgetCFGId, unused1]
@@ -28,7 +28,7 @@ public class KillCountGuardChallengeFactoryHandler implements ChallengeFactoryHa
             scene, realGroup,
             header,
             List.of(params.get(1), 100), // parameters
-            List.of(new KillMonsterTrigger(1, params.get(1)), new GuardTrigger(2, params.get(2))),
+            buildChallengeTrigger(List.of(new KillMonsterTrigger(1, params.get(1)), new GuardTrigger(2, params.get(2)))),
             scoreInfo
         );
     }

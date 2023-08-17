@@ -15,7 +15,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.*;
 
 @ChallengeTypeValue(type = {CHALLENGE_KILL_COUNT_IN_TIME, CHALLENGE_KILL_COUNT_FAST})
-public class KillCountTimeOrFastChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class KillCountTimeOrFastChallengeFactoryHandler extends ChallengeFactoryHandler{
     private static boolean shouldResetTimer(ChallengeType type){
         return type == CHALLENGE_KILL_COUNT_FAST;
     }
@@ -34,7 +34,7 @@ public class KillCountTimeOrFastChallengeFactoryHandler implements ChallengeFact
             scene, realGroup,
             header,
             List.of(params.get(2), params.get(0)), // parameters
-            List.of(new KillMonsterTrigger(1, params.get(2), shouldResetTimer(type)), new TimeTrigger(2, params.get(0))),
+            buildChallengeTrigger(List.of(new KillMonsterTrigger(1, params.get(2), shouldResetTimer(type)), new TimeTrigger(2, params.get(0)))),
             scoreInfo
         );
     }

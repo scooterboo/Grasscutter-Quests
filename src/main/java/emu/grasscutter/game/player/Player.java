@@ -18,6 +18,7 @@ import emu.grasscutter.game.avatar.TrialAvatar;
 import emu.grasscutter.game.battlepass.BattlePassManager;
 import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryItem;
 import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryManager;
+import emu.grasscutter.game.dungeons.dungeon_entry.PlayerDungeonExitInfo;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.expedition.ExpeditionInfo;
@@ -177,6 +178,7 @@ public class Player {
     @Getter private transient DungeonEntryManager dungeonEntryManager;
 
     @Getter @Setter private transient Position lastCheckedPosition = null;
+    private transient PlayerDungeonExitInfo dungeonExitInfo;
 
     // Manager data (Save-able to the database)
     private PlayerProfile playerProfile;  // Getter has null-check
@@ -327,6 +329,13 @@ public class Player {
         this.cookingCompoundManager=new CookingCompoundManager(this);
         this.blossomManager = new BlossomManager(this);
         this.dungeonEntryManager = new DungeonEntryManager(this);
+    }
+
+    public PlayerDungeonExitInfo getDungeonExitInfo() {
+        if (this.dungeonExitInfo == null) {
+            this.dungeonExitInfo = PlayerDungeonExitInfo.create();
+        }
+        return this.dungeonExitInfo;
     }
 
     public void updatePlayerGameTime(long gameTime){

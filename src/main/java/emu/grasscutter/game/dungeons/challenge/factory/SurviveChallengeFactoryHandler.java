@@ -13,7 +13,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_SURVIVE;
 
 @ChallengeTypeValue(type = CHALLENGE_SURVIVE)
-public class SurviveChallengeFactoryHandler implements ChallengeFactoryHandler {
+public class SurviveChallengeFactoryHandler extends ChallengeFactoryHandler {
     /**
      * Build a new challenge
      * @param params: [timeToSurvive, unused1, unused2, unused3]
@@ -26,7 +26,7 @@ public class SurviveChallengeFactoryHandler implements ChallengeFactoryHandler {
             scene, group,
             header,
             List.of(params.get(0)), // parameters
-            List.of(new TimeTrigger(1, params.get(0), false)),
+            buildChallengeTrigger(List.of(new TimeTrigger(1, params.get(0), false))),
             scoreInfo
         );
     }

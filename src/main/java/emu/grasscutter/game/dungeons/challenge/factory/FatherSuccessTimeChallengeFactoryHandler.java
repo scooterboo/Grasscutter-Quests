@@ -14,7 +14,7 @@ import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_FATHER_SUCC_IN_TIME;
 
 @ChallengeTypeValue(type = CHALLENGE_FATHER_SUCC_IN_TIME)
-public class FatherSuccessTimeChallengeFactoryHandler implements ChallengeFactoryHandler{
+public class FatherSuccessTimeChallengeFactoryHandler extends ChallengeFactoryHandler{
     /**
      * Build a new challenge
      * @param params: [successCount, failCount, timeLimit]
@@ -25,7 +25,7 @@ public class FatherSuccessTimeChallengeFactoryHandler implements ChallengeFactor
             scene, group,
             header,
             params, // parameters
-            List.of(new FatherTrigger(), new TimeTrigger(3, params.get(2))),
+            buildChallengeTrigger(List.of(new FatherTrigger(), new TimeTrigger(3, params.get(2)))),
             scoreInfo
         );
     }
