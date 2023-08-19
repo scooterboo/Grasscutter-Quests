@@ -32,7 +32,7 @@ public class DungeonRosterData extends GameResource {
 
     public boolean nowIsAfterOpenTime() {
         return ZonedDateTime.now(GameConstants.ZONE_ID).isAfter(ZonedDateTime.parse(
-            this.openTimeStr, GameConstants.TIME_FORMATTER.withZone(GameConstants.ZONE_ID)));
+            this.openTimeStr, GameConstants.TIME_FORMATTER_FULL.withZone(GameConstants.ZONE_ID)));
     }
 
     public int getNextPool(int previousPool) {

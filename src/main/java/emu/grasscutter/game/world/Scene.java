@@ -181,8 +181,6 @@ public class Scene {
         player.setSceneId(getId());
         player.setScene(this);
 
-        if (player == this.world.getHost()) player.getBlossomManager().setScene(this);
-
         setupPlayerAvatars(player);
     }
 
@@ -646,12 +644,12 @@ public class Scene {
 
     /**
      * Load specific (dynamic loaded) group
+     * don't load the group if it was replaced by other groups, TODO should probably log the failed loading reason
      * */
     public int loadDynamicGroup(int groupId) {
-        return this.scriptManager.getGroupInstanceById(groupId) != null ? -1 :
+        return this.scriptManager.getGroupInstanceById(groupId) != null || this.replacedGroup.contains(groupId) ? -1 :
             Optional.ofNullable(this.scriptManager.getGroupById(groupId))
-                .map(group -> group.init_config)
-                .map(config -> config.suite).orElse(-1);
+                .map(group -> group.init_config).map(config -> config.suite).orElse(-1);
     }
 
     public boolean unregisterDynamicGroup(int groupId){

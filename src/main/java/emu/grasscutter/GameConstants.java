@@ -27,7 +27,9 @@ public final class GameConstants {
     public static final int BATTLE_PASS_POINT_PER_WEEK = 10000;
     public static final int BATTLE_PASS_LEVEL_PRICE = 150;
     public static final int BATTLE_PASS_CURRENT_INDEX = 2;
-    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    // TODO move them to utils
+    public static final DateTimeFormatter TIME_FORMATTER_TIME_ONLY = DateTimeFormatter.ofPattern("HH:mm:ss");
+    public static final DateTimeFormatter TIME_FORMATTER_FULL = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final ZoneId ZONE_ID = ZoneId.of(Grasscutter.getConfig().server.game.timeZone);
     public static final DayOfWeek WEEKLY_BOSS_RESIN_DISCOUNT_REFRESH_DAY = DayOfWeek.MONDAY;
     public static final int WEEKLY_BOSS_RESIN_DISCOUNT_REFRESH_DAY_INTERVAL = 7;

@@ -13,21 +13,19 @@ import java.util.stream.Stream;
 public enum BlossomRefreshType {
     BLOSSOM_REFRESH_NONE(0, 0),
     BLOSSOM_REFRESH_SCOIN(1, 70360056),
-    BLOSSOM_REFRESH_EXP(3, 70360057);
-    // followings are not sure, do not uncomment if unsure
-    // as it will affect the currently working blossom groups
-//    BLOSSOM_REFRESH_INFUSED_CRYSTAL();
-//    BLOSSOM_REFRESH_DRAGON_SPINE_B(),
-//    BLOSSOM_REFRESH_DRAGON_SPINE_A(),
-//    BLOSSOM_REFRESH_CRYSTAL(),
-//    BLOSSOM_REFRESH_BLITZ_RUSH_A(),
-//    BLOSSOM_REFRESH_BLITZ_RUSH_B(),
-//    BLOSSOM_ISLAND_SENTRY_TOWER_A(),
-//    BLOSSOM_ISLAND_SENTRY_TOWER_B(),
-//    BLOSSOM_ISLAND_BOMB();
+    BLOSSOM_REFRESH_EXP(3, 70360057),
+    BLOSSOM_REFRESH_CRYSTAL(4, 70360001),
+    BLOSSOM_REFRESH_INFUSED_CRYSTAL(5, 70360001);
+//    BLOSSOM_REFRESH_DRAGON_SPINE_A(6, 70360128),
+//    BLOSSOM_REFRESH_DRAGON_SPINE_B(7, 70360128);
+//    BLOSSOM_ISLAND_SENTRY_TOWER_A(8),
+//    BLOSSOM_ISLAND_SENTRY_TOWER_B(9),
+//    BLOSSOM_ISLAND_BOMB(10),
+//    BLOSSOM_REFRESH_BLITZ_RUSH_A(11),
+//    BLOSSOM_REFRESH_BLITZ_RUSH_B(12);
 
     private final int value;
-    private final int gadgetId; // not chest gadget id
+    private final int gadgetId; // blossom worktop gadget id
     private static final Int2ObjectMap<BlossomRefreshType> map = new Int2ObjectOpenHashMap<>();
     private static final Map<String, BlossomRefreshType> stringMap = new HashMap<>();
 

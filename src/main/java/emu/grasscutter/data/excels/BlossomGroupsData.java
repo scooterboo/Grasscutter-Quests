@@ -28,12 +28,12 @@ public class BlossomGroupsData extends GameResource {
     private int remindRadius;
 
     public int getNewGroupId(){
-        return this.newGroupVec.stream().findFirst().orElse(0);
+        return this.newGroupVec.stream().findAny().orElse(0);
     }
 
     public int getNextCampId(){
-        return this.nextCampIdVec.stream().findFirst().orElse(0);
+        return this.nextCampIdVec.stream().findAny().orElse(0);
     }
 
-    public int getDecorateGroupId() {return this.decorateGroupVec.stream().findFirst().orElse(0);}
+    public int getDecorateGroupId() {return this.decorateGroupVec.stream().findAny().orElse(0);}
 }

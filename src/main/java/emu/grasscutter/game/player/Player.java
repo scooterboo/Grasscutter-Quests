@@ -174,7 +174,6 @@ public class Player {
     @Getter private transient ActivityManager activityManager;
     @Getter private transient PlayerBuffManager buffManager;
     @Getter private transient PlayerProgressManager progressManager;
-    @Getter private transient BlossomManager blossomManager;
     @Getter private transient DungeonEntryManager dungeonEntryManager;
 
     @Getter @Setter private transient Position lastCheckedPosition = null;
@@ -183,6 +182,7 @@ public class Player {
     // Manager data (Save-able to the database)
     private PlayerProfile playerProfile;  // Getter has null-check
     @Getter private TeamManager teamManager;
+    @Getter private BlossomManager blossomManager;
     private TowerData towerData;  // Getter has null-check
     @Getter private PlayerGachaInfo gachaInfo;
     private PlayerCollectionRecords collectionRecordStore;  // Getter has null-check
@@ -1270,6 +1270,8 @@ public class Player {
 
         // Quest tick handling
         getQuestManager().onTick();
+
+        getBlossomManager().dailyReset();
     }
 
     private synchronized void doDailyReset() {
@@ -1293,6 +1295,7 @@ public class Player {
         // Trigger login BP mission, so players who are online during the reset
         // don't have to relog to clear the mission.
         this.getBattlePassManager().triggerMission(WatcherTriggerType.TRIGGER_LOGIN);
+        this.getBlossomManager().dailyReset();
 
         // Reset weekly BP missions.
         if (currentDate.getDayOfWeek() == DayOfWeek.MONDAY) {
@@ -1314,6 +1317,7 @@ public class Player {
         this.getCodex().setPlayer(this);
         this.getProgressManager().setPlayer(this);
         this.getTeamManager().setPlayer(this);
+        this.getBlossomManager().setPlayer(this);
     }
 
     public void save() {
@@ -1325,6 +1329,9 @@ public class Player {
         // Make sure these exist
         if (this.getTeamManager() == null) {
             this.teamManager = new TeamManager(this);
+        }
+        if (this.blossomManager == null) {
+            this.blossomManager = new BlossomManager(this);
         }
         if (this.getCodex() == null) {
             this.codex = new PlayerCodex(this);

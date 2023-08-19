@@ -149,7 +149,8 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         this.setState(state);
         ticksSinceChange = getScene().getSceneTimeSeconds();
         this.getScene().broadcastPacket(new PacketGadgetStateNotify(this, state));
-        getScene().getScriptManager().callEvent(new ScriptArgs(this.getGroupId(), EventType.EVENT_GADGET_STATE_CHANGE, state, this.getConfigId()));
+        getScene().getScriptManager().callEvent(new ScriptArgs(this.getGroupId(), EventType.EVENT_GADGET_STATE_CHANGE)
+            .setParam1(state).setParam2(this.getConfigId()).setSourceEntityId(getId()));
     }
 
     @Deprecated(forRemoval = true) // Dont use!

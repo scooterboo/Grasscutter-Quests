@@ -2,13 +2,10 @@ package emu.grasscutter.data.excels;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
 import emu.grasscutter.data.GameResource;
 import emu.grasscutter.data.ResourceType;
 import emu.grasscutter.data.common.BaseBlossomROSData;
-import emu.grasscutter.game.managers.blossom.enums.BlossomClientShowType;
-import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshCondType;
-import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
+import emu.grasscutter.game.managers.blossom.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,18 +13,20 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ToString
 @SuppressWarnings("SpellCheckingInspection")
 public class BlossomRefreshData extends GameResource implements BaseBlossomROSData {
     @Getter(onMethod = @__(@Override))
     int id;
-    String clientShowType;  // BLOSSOM_SHOWTYPE_CHALLENGE, BLOSSOM_SHOWTYPE_NPCTALK
+    BlossomClientShowType clientShowType;  // BLOSSOM_SHOWTYPE_CHALLENGE, BLOSSOM_SHOWTYPE_NPCTALK
 
     // Refresh details
-    @SerializedName(value="refreshType")
-    String refreshTypeString;  // Leyline blossoms, magical ore outcrops
+    BlossomRefreshType refreshType;  // Leyline blossoms, magical ore outcrops
     int refreshCount;  // Number of entries to spawn at refresh (1 for each leyline type for each city, 4 for magical ore for each city)
     String refreshTime;  // Server time-of-day to refresh at
     List<RefreshCond> refreshCondVec;  // AR requirements etc.
+    BlossomItemLimitType itemLimitType;
+    BlossomRewardType rewardType;
 
     int cityId;
     int blossomChestId;  // 1 for mora, 2 for exp
@@ -36,14 +35,17 @@ public class BlossomRefreshData extends GameResource implements BaseBlossomROSDa
     int reviseLevel;
     int campUpdateNeedCount;  // Always 1 if specified
 
-    transient BlossomClientShowType blossomClientShowType;
-
-    transient BlossomRefreshType refreshType;
-
     @Override
     public void onLoad() {
-        this.blossomClientShowType = BlossomClientShowType.getTypeByName(this.clientShowType);
-        this.refreshType = BlossomRefreshType.getTypeByName(this.refreshTypeString);
+        if (this.refreshType == null) {
+            this.refreshType = BlossomRefreshType.BLOSSOM_REFRESH_NONE;
+        }
+        if (this.itemLimitType == null) {
+            this.itemLimitType = BlossomItemLimitType.ITEM_LIMIT_NONE;
+        }
+        if (this.rewardType == null) {
+            this.rewardType = BlossomRewardType.BLOSSOM_REWARD_TYPE_NONE;
+        }
         this.refreshCondVec = this.refreshCondVec.stream().filter(cond -> !cond.getParam().isEmpty()).toList();
         this.refreshCondVec.forEach(RefreshCond::onLoad);
     }
@@ -68,14 +70,11 @@ public class BlossomRefreshData extends GameResource implements BaseBlossomROSDa
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @Data
     public static class RefreshCond {
-        String type;
+        BlossomRefreshCondType type; // null oe none type will be filtered out, so don't have to reassign
         List<Integer> param;
-
-        transient BlossomRefreshCondType refreshCondType;
 
         public void onLoad(){
             this.param = this.param.stream().filter(x -> (x != null) && (x != 0)).toList();
-            this.refreshCondType = BlossomRefreshCondType.getTypeByName(this.type);
         }
     }
 }

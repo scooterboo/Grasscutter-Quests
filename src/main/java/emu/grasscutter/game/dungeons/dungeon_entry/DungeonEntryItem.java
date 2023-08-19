@@ -73,12 +73,12 @@ public class DungeonEntryItem {
      * string should be in this format: yyyy-MM-dd HH:mm:ss
      * */
     private static ZonedDateTime toZonedDateTime(String timeStr) {
-        return ZonedDateTime.parse(timeStr, GameConstants.TIME_FORMATTER.withZone(GameConstants.ZONE_ID));
+        return ZonedDateTime.parse(timeStr, GameConstants.TIME_FORMATTER_FULL.withZone(GameConstants.ZONE_ID));
     }
 
     static String getLastRefreshTimeStr(){
         return ZonedDateTime.now(GameConstants.ZONE_ID)
             .with(TemporalAdjusters.previous(GameConstants.WEEKLY_BOSS_RESIN_DISCOUNT_REFRESH_DAY))
-            .with(LocalTime.of(GameConstants.REFRESH_HOUR, 0, 0)).format(GameConstants.TIME_FORMATTER);
+            .with(LocalTime.of(GameConstants.REFRESH_HOUR, 0, 0)).format(GameConstants.TIME_FORMATTER_FULL);
     }
 }
