@@ -1,20 +1,28 @@
 package emu.grasscutter.game.quest.content;
 
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.game.quest.GameQuest;
-import emu.grasscutter.game.quest.QuestValueContent;
 import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.game.quest.handlers.QuestBaseHandler;
+import lombok.val;
 
-@QuestValueContent(QuestContent.QUEST_CONTENT_NONE)
-public class BaseContent extends QuestBaseHandler<QuestContentCondition> {
+public abstract class BaseContent {
 
-	@Override
-	public boolean execute(GameQuest quest, QuestContentCondition condition, String paramStr, int... params) {
-		// TODO Auto-generated method stub
-        Grasscutter.getLogger().error("Unknown condition {} at {}", condition.getType().name(), quest.getSubQuestId());
-        return false;
-	}
+    public boolean isEvent(SubQuestData questData, QuestContentCondition condition, QuestContent type, String paramStr, int... params){
+        return condition.getType() == type && condition.getParam()[0] == params[0];
+    }
 
+    public int initialCheck(GameQuest quest, SubQuestData questData, QuestContentCondition condition) {
+        return 0;
+    }
+
+    public int updateProgress(GameQuest quest, int currentProgress, QuestContentCondition condition,
+                                String paramStr, int... params){
+        return currentProgress+1;
+    }
+
+    public boolean checkProgress(GameQuest quest, QuestContentCondition condition, int currentProgress){
+        val target = condition.getCount() > 0 ? condition.getCount() : 1;
+        return currentProgress >= target;
+    }
 }

@@ -1,9 +1,10 @@
 package emu.grasscutter.game.quest.content;
 
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.common.quest.SubQuestData;
+import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestValueContent;
-import emu.grasscutter.data.common.quest.SubQuestData.QuestContentCondition;
+import lombok.val;
 
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_QUEST_VAR_EQUAL;
 
@@ -11,9 +12,17 @@ import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_QUEST_
 public class ContentQuestVarEqual extends BaseContent {
 
     @Override
-    public boolean execute(GameQuest quest, QuestContentCondition condition, String paramStr, int... params) {
-        int questVarValue = quest.getMainQuest().getQuestVars()[params[0]];
-        Grasscutter.getLogger().debug("questVar {} : {}", params[0], questVarValue);
-        return questVarValue == params[1];
+    public int initialCheck(GameQuest quest, SubQuestData questData, QuestContentCondition condition) {
+        val questVarIndex = condition.getParam()[0];
+        val questVarValueTarget = condition.getParam()[1];
+        val questVarValue = quest.getMainQuest().getQuestVars()[questVarIndex];
+        return questVarValue == questVarValueTarget ? 1 : 0;
+    }
+
+    @Override
+    public int updateProgress(GameQuest quest, int currentProgress, QuestContentCondition condition, String paramStr, int... params) {
+        val questVarValueTarget = condition.getParam()[1];
+        val currentValue = params[1];
+        return currentValue == questVarValueTarget ? 1 : 0;
     }
 }

@@ -17,18 +17,19 @@ import lombok.val;
 public class HandlerNpcTalkReq extends PacketHandler {
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        NpcTalkReq req = NpcTalkReq.parseFrom(payload);
+        val req = NpcTalkReq.parseFrom(payload);
 
         //Check if mainQuest exists
         //remove last 2 digits to get a mainQuestId
         int talkId = req.getTalkId();
         int mainQuestId = GameData.getQuestTalkMap().getOrDefault(talkId, talkId / 100);
-        MainQuestData mainQuestData = GameData.getMainQuestDataMap().get(mainQuestId);
+        val mainQuestData = GameData.getMainQuestDataMap().get(mainQuestId);
+        val questManager = session.getPlayer().getQuestManager();
 
         if (mainQuestData != null) {
             // This talk is associated with a quest. Handle it.
             // If the quest has no talk data defined on it, create one.
-            TalkData talkForQuest = new TalkData(talkId, "");
+            var talkForQuest = new TalkData(talkId, "");
             if (mainQuestData.getTalks() != null) {
                 val talks = mainQuestData.getTalks().stream().filter(p -> p.getId() == talkId).toList();
 
@@ -38,18 +39,16 @@ public class HandlerNpcTalkReq extends PacketHandler {
             }
 
             // Add to the list of done talks for this quest.
-            val questManager = session.getPlayer().getQuestManager();
             val mainQuest = questManager.getMainQuestByTalkId(talkId);
             if (mainQuest != null) {
                 mainQuest.getTalks().put(talkId, talkForQuest);
             }
 
-            // Fire quest triggers.
-            questManager.queueEvent(QuestContent.QUEST_CONTENT_COMPLETE_ANY_TALK, talkId, 0, 0);
-            questManager.queueEvent(QuestContent.QUEST_CONTENT_COMPLETE_TALK, talkId, 0);
-            questManager.queueEvent(QuestContent.QUEST_CONTENT_FINISH_PLOT, talkId, 0);
-            questManager.queueEvent(QuestCond.QUEST_COND_COMPLETE_TALK, talkId, 0);
         }
+        // Fire quest triggers either way, since a quest might depend on a talk not mapped to a quest.
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_COMPLETE_ANY_TALK, talkId, 0, 0);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_COMPLETE_TALK, talkId, 0);
+        questManager.queueEvent(QuestCond.QUEST_COND_COMPLETE_TALK, talkId, 0);
 
         session.send(new PacketNpcTalkRsp(req.getNpcEntityId(), req.getTalkId(), req.getEntityId()));
     }

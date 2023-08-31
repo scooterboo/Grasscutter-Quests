@@ -2,6 +2,7 @@ package emu.grasscutter.game.quest.exec;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueExec;
 import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.quest.enums.QuestExec;
@@ -29,7 +30,7 @@ public class ExecNotifyGroupLua extends QuestExecHandler {
             val groupInstance = scriptManager.getGroupInstanceById(groupId);
 
             if(groupInstance==null) {
-                Grasscutter.getLogger().warn("notify, no group instance for:\n group: {} \ncondition: {} \nparamStr {}", groupId, condition, paramStr);
+                QuestSystem.getLogger().warn("notify, no group instance for:\n group: {} \ncondition: {} \nparamStr {}", groupId, condition, paramStr);
             }
 
             val eventType = quest.getState() == QuestState.QUEST_STATE_FINISHED ?

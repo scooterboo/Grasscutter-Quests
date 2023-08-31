@@ -15,8 +15,8 @@ public class ConditionItemNumLessThan extends BaseCondition {
     public boolean execute(Player owner, SubQuestData questData, QuestAcceptCondition condition, String paramStr, int... params) {
         val itemId = condition.getParam()[0];
         val amount = condition.getParam()[1];
-        val checkItem = owner.getInventory().getItemByGuid(itemId);
-        return checkItem == null || checkItem.getCount() < amount;
+        val checkItem = owner.getInventory().getItemCountById(itemId);
+        return checkItem < amount;
     }
 
 }

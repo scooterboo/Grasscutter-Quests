@@ -4,6 +4,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.common.quest.SubQuestData.*;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueCond;
 import lombok.val;
 
@@ -17,7 +18,7 @@ public class ConditionQuestGlobalVarGreater extends BaseCondition {
         val questId = condition.getParam()[0];
         val minValue = condition.getParam()[1];
         Integer questGlobalVarValue = owner.getQuestManager().getQuestGlobalVarValue(questId);
-        Grasscutter.getLogger().debug("questGlobarVar {} {} : {}", questId, minValue, questGlobalVarValue);
+        QuestSystem.getLogger().debug("questGlobarVar {} {} : {}", questId, minValue, questGlobalVarValue);
         return questGlobalVarValue > minValue;
     }
 

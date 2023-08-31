@@ -4,7 +4,7 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Indexed;
 import dev.morphia.annotations.Transient;
-import emu.grasscutter.Grasscutter;
+import emu.grasscutter.Loggers;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.common.quest.MainQuestData;
 import emu.grasscutter.data.common.quest.MainQuestData.TalkData;
@@ -20,17 +20,20 @@ import emu.grasscutter.net.proto.ChildQuestOuterClass.ChildQuest;
 import emu.grasscutter.net.proto.ParentQuestOuterClass.ParentQuest;
 import emu.grasscutter.server.packet.send.PacketCodexDataUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketFinishedParentQuestUpdateNotify;
-import emu.grasscutter.server.packet.send.PacketQuestProgressUpdateNotify;
+import emu.grasscutter.server.packet.send.PacketQuestUpdateQuestVarNotify;
 import emu.grasscutter.utils.Position;
+import emu.grasscutter.utils.Utils;
 import lombok.Getter;
 import lombok.val;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 @Entity(value = "quests", useDiscriminator = false)
 public class GameMainQuest {
+    public static final Logger logger = Loggers.getQuestSystem();
     @Id private ObjectId id;
     @Indexed @Getter private int ownerUid;
     @Transient @Getter private Player owner;
@@ -76,7 +79,7 @@ public class GameMainQuest {
     private void addAllChildQuests() {
         val mainQuestData = getMainQuestData();
         if(mainQuestData== null) {
-            Grasscutter.getLogger().error("mainQuestData is null for parentQuestId {}", parentQuestId);
+            logger.error("mainQuestData is null for parentQuestId {}", parentQuestId);
             return;
         }
         val subQuests = Arrays.stream(mainQuestData.getSubQuests()).toList();
@@ -102,19 +105,45 @@ public class GameMainQuest {
     public void setQuestVar(int i, int value) {
         int previousValue = this.questVars[i];
         this.questVars[i] = value;
-        Grasscutter.getLogger().debug("questVar {} value changed from {} to {}", i, previousValue, value);
+
+        logger.debug("questVar {} value changed from {} to {}", i, previousValue, value);
+        triggerQuestVarAction(i, this.questVars[i]);
     }
 
     public void incQuestVar(int i, int inc) {
         int previousValue = this.questVars[i];
         this.questVars[i] += inc;
-        Grasscutter.getLogger().debug("questVar {} value incremented from {} to {}", i, previousValue, previousValue + inc);
+
+        logger.debug("questVar {} value incremented from {} to {}", i, previousValue, previousValue + inc);
+        triggerQuestVarAction(i, this.questVars[i]);
     }
 
     public void decQuestVar(int i, int dec) {
         int previousValue = this.questVars[i];
         this.questVars[i] -= dec;
-        Grasscutter.getLogger().debug("questVar {} value decremented from {} to {}", i, previousValue, previousValue - dec);
+
+        logger.debug("questVar {} value decremented from {} to {}", i, previousValue, previousValue - dec);
+        triggerQuestVarAction(i, this.questVars[i]);
+    }
+
+    public void setRandomQuestVar(int i, int low, int high){
+        int previousValue = this.questVars[i];
+        this.questVars[i] = Utils.random.nextInt(low, high);
+
+        logger.debug("questVar {} value random changed from {} to {}", i, previousValue, this.questVars[i]);
+        triggerQuestVarAction(i, this.questVars[i]);
+    }
+
+    private void triggerQuestVarAction(int index, int value) {
+        var questManager = this.getQuestManager();
+        questManager.queueEvent(QuestCond.QUEST_COND_QUEST_VAR_EQUAL, index, value);
+        questManager.queueEvent(QuestCond.QUEST_COND_QUEST_VAR_GREATER, index, value);
+        questManager.queueEvent(QuestCond.QUEST_COND_QUEST_VAR_LESS, index, value);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_QUEST_VAR_EQUAL, index, value);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_QUEST_VAR_GREATER, index, value);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_QUEST_VAR_LESS, index, value);
+        this.getOwner()
+            .sendPacket(new PacketQuestUpdateQuestVarNotify(this.getParentQuestId(), this.questVars));
     }
 
 
@@ -135,7 +164,7 @@ public class GameMainQuest {
         // Avoid recursion from child finish() in GameQuest
         // when auto finishing all child quests with QUEST_STATE_UNFINISHED (below)
         if (this.isFinished) {
-            Grasscutter.getLogger().debug("Skip main quest finishing because it's already finished");
+            logger.debug("Skip main quest finishing because it's already finished");
             return;
         }
 
@@ -283,7 +312,7 @@ public class GameMainQuest {
 
         posAndRot.add(0, new Position(avatarPosPos.get(0),avatarPosPos.get(1),avatarPosPos.get(2))); // position
         posAndRot.add(1, new Position(avatarPosRot.get(0),avatarPosRot.get(1),avatarPosRot.get(2))); //rotation
-        Grasscutter.getLogger().info("Succesfully loaded rewind data for subQuest {}", subId);
+        logger.info("Succesfully loaded rewind data for subQuest {}", subId);
         return true;
     }
 
@@ -311,7 +340,7 @@ public class GameMainQuest {
 
         posAndRot.add(0, new Position(transmitPosPos.get(0), transmitPosPos.get(1), transmitPosPos.get(2))); // position
         posAndRot.add(1, new Position(transmitPosRot.get(0), transmitPosRot.get(1), transmitPosRot.get(2))); // rotation
-        Grasscutter.getLogger().info("Succesfully loaded teleport data for subQuest {}", subId);
+        logger.info("Succesfully loaded teleport data for subQuest {}", subId);
         return true;
     }
 
@@ -329,29 +358,23 @@ public class GameMainQuest {
                 .filter(p -> p.getState() == QuestState.QUEST_STATE_UNFINISHED)
                 .filter(p -> p.getQuestData().getFailCond().stream().anyMatch(q -> q.getType() == condType))
                 .toList();
+            val questSystem = this.getOwner().getServer().getQuestSystem();
 
             for (GameQuest subQuestWithCond : subQuestsWithCond) {
                 val failCond = subQuestWithCond.getQuestData().getFailCond();
+                val failCondComb = subQuestWithCond.getQuestData().getFailCondComb();
+                val failProgressList = subQuestWithCond.getFailProgressList();
 
-                for (int i = 0; i < subQuestWithCond.getQuestData().getFailCond().size(); i++) {
-                    val condition = failCond.get(i);
-                    if (condition.getType() == condType) {
-                        boolean result = this.getOwner().getServer().getQuestSystem().triggerContent(subQuestWithCond, condition, paramStr, params);
-                        subQuestWithCond.getFailProgressList()[i] = result ? 1 : 0;
-                        if (result) {
-                            getOwner().getSession().send(new PacketQuestProgressUpdateNotify(subQuestWithCond));
-                        }
-                    }
-                }
-
-                boolean shouldFail = LogicType.calculate(subQuestWithCond.getQuestData().getFailCondComb(), subQuestWithCond.getFailProgressList());
+                val shouldFail = questSystem.checkAndUpdateContent(
+                    subQuestWithCond, failProgressList, failCond, failCondComb,
+                    condType, paramStr, params);
 
                 if (shouldFail)
                     subQuestWithCond.fail();
             }
 
         } catch (Exception e) {
-            Grasscutter.getLogger().error("An error occurred while trying to fail quest.", e);
+            logger.error("An error occurred while trying to fail quest.", e);
         }
     }
 
@@ -362,28 +385,22 @@ public class GameMainQuest {
                 .filter(p -> p.getState() == QuestState.QUEST_STATE_UNFINISHED && p.getQuestData().getAcceptCond() != null)
                 .filter(p -> p.getQuestData().getFinishCond().stream().anyMatch(q -> q.getType() == condType))
                 .toList();
+            val questSystem = this.getOwner().getServer().getQuestSystem();
 
             for (GameQuest subQuestWithCond : subQuestsWithCond) {
                 val finishCond = subQuestWithCond.getQuestData().getFinishCond();
+                val finishCondComb = subQuestWithCond.getQuestData().getFinishCondComb();
+                val finishProgressList = subQuestWithCond.getFinishProgressList();
 
-                for (int i = 0; i < finishCond.size(); i++) {
-                    val condition = finishCond.get(i);
-                    if (condition.getType() == condType) {
-                        boolean result = this.getOwner().getServer().getQuestSystem().triggerContent(subQuestWithCond, condition, paramStr, params);
-                        subQuestWithCond.getFinishProgressList()[i] = result ? 1 : 0;
-                        if (result) {
-                            getOwner().getSession().send(new PacketQuestProgressUpdateNotify(subQuestWithCond));
-                        }
-                    }
-                }
-
-                boolean shouldFinish = LogicType.calculate(subQuestWithCond.getQuestData().getFinishCondComb(), subQuestWithCond.getFinishProgressList());
+                val shouldFinish = questSystem.checkAndUpdateContent(subQuestWithCond,
+                    finishProgressList, finishCond, finishCondComb,
+                    condType, paramStr, params);
 
                 if (shouldFinish)
                     subQuestWithCond.finish();
             }
         } catch (Exception e) {
-            Grasscutter.getLogger().debug("An error occurred while trying to finish quest.", e);
+            logger.debug("An error occurred while trying to finish quest.", e);
         }
     }
 
@@ -425,7 +442,7 @@ public class GameMainQuest {
     // TimeVar handling TODO check if ingame or irl time
     public boolean initTimeVar(int index){
         if(index >= this.timeVar.length){
-            Grasscutter.getLogger().error("Trying to init out of bounds time var {} for quest {}", index, this.parentQuestId);
+            logger.error("Trying to init out of bounds time var {} for quest {}", index, this.parentQuestId);
             return false;
         }
         this.timeVar[index] = owner.getWorld().getTotalGameTimeMinutes();
@@ -435,7 +452,7 @@ public class GameMainQuest {
 
     public boolean clearTimeVar(int index){
         if(index >= this.timeVar.length){
-            Grasscutter.getLogger().error("Trying to clear out of bounds time var {} for quest {}", index, this.parentQuestId);
+            logger.error("Trying to clear out of bounds time var {} for quest {}", index, this.parentQuestId);
             return false;
         }
         this.timeVar[index] = -1;
@@ -451,7 +468,7 @@ public class GameMainQuest {
 
     public long getDaysSinceTimeVar(int index){
         if(index >= this.timeVar.length){
-            Grasscutter.getLogger().error("Trying to get days for out of bounds time var {} for quest {}", index, this.parentQuestId);
+            logger.error("Trying to get days for out of bounds time var {} for quest {}", index, this.parentQuestId);
             return -1;
         }
         val varTime = timeVar[index];
@@ -465,7 +482,7 @@ public class GameMainQuest {
 
     public long getHoursSinceTimeVar(int index){
         if(index >= this.timeVar.length){
-            Grasscutter.getLogger().error("Trying to get hours for out of bounds time var {} for quest {}", index, this.parentQuestId);
+            logger.error("Trying to get hours for out of bounds time var {} for quest {}", index, this.parentQuestId);
             return -1;
         }
         val varTime = timeVar[index];

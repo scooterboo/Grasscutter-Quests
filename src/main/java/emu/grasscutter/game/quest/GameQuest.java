@@ -98,8 +98,7 @@ public class GameQuest {
         }
 
         //Some subQuests and talks become active when some other subQuests are unfinished (even from different MainQuests)
-        getOwner().getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, getSubQuestId(), getState().getValue(),0,0,0);
-        getOwner().getQuestManager().queueEvent(QuestCond.QUEST_COND_STATE_EQUAL, getSubQuestId(), getState().getValue(),0,0,0);
+        triggerStateEvents();
 
         getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
         getOwner().getQuestManager().checkQuestAlreadyFullfilled(this);
@@ -185,9 +184,7 @@ public class GameQuest {
 
         getQuestData().getFinishExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
         //Some subQuests have conditions that subQuests are finished (even from different MainQuests)
-        getOwner().getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, this.subQuestId, this.state.getValue(),0,0,0);
-        getOwner().getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_FINISH_PLOT, this.subQuestId, 0);
-        getOwner().getQuestManager().queueEvent(QuestCond.QUEST_COND_STATE_EQUAL, this.subQuestId, this.state.getValue(),0,0,0);
+        triggerStateEvents();
         getOwner().getScene().triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_FINISH_QUEST, getSubQuestId());
 
         getOwner().getProgressManager().tryUnlockOpenStates();
@@ -219,16 +216,28 @@ public class GameQuest {
         getOwner().sendPacket(new PacketQuestListUpdateNotify(this));
 
         //Some subQuests have conditions that subQuests fail (even from different MainQuests)
-        getOwner().getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, this.subQuestId, this.state.getValue(),0,0,0);
-        getOwner().getQuestManager().queueEvent(QuestCond.QUEST_COND_STATE_EQUAL, this.subQuestId, this.state.getValue(),0,0,0);
-
+        triggerStateEvents();
         getQuestData().getFailExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
 
         if (getQuestData().getTrialAvatarList() != null) {
             getQuestData().getTrialAvatarList().forEach(t -> getOwner().removeTrialAvatarForQuest(t));
         }
         Grasscutter.getLogger().debug("Quest {} is failed", subQuestId);
+    }
 
+    /**
+     * Triggers events: 'QUEST_COND_STATE_EQUAL', 'QUEST_COND_STATE_NOT_EQUAL',
+     * 'QUEST_CONTENT_QUEST_STATE_EQUAL', 'QUEST_CONTENT_QUEST_STATE_NOT_EQUAL'
+     */
+    public void triggerStateEvents(){
+        val questManager = getOwner().getQuestManager();
+        val questId = this.subQuestId;
+        val state = this.state.getValue();
+
+        questManager.queueEvent(QuestCond.QUEST_COND_STATE_EQUAL, questId, state);
+        questManager.queueEvent(QuestCond.QUEST_COND_STATE_NOT_EQUAL, questId, state);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, questId, state);
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_NOT_EQUAL, questId, state);
 
     }
 
