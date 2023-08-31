@@ -1,7 +1,5 @@
 package emu.grasscutter.scripts.lua_engine.luaj;
 
-import emu.grasscutter.Grasscutter;
-import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.constants.IntValueEnum;
 import emu.grasscutter.scripts.lua_engine.LuaEngine;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
@@ -11,10 +9,11 @@ import lombok.Getter;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
-import org.slf4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -42,27 +41,40 @@ public class LuaJEngine implements LuaEngine {
         context = (LuajContext) engine.getContext();
 
         // Set engine to replace require as a temporary fix to missing scripts
-        context.globals.finder = new ResourceFinder() {
+//        context.globals.finder = new ResourceFinder() {
+//            @Override
+//            public InputStream findResource(String filename) {
+//                val targetFile = FileUtils.getScriptPath("Common/" + filename).toFile();
+//                if (targetFile.exists()) {
+//                    try {
+//                        return new FileInputStream(targetFile);
+//                    } catch (FileNotFoundException e) {
+//                        logger.error("[LuaJ] exception while reading file {}:", filename, e);
+//                    }
+//                } else {
+//                    logger.warn("trying to load non existent lua file {}", filename);
+//                }
+//                return new ByteArrayInputStream(new byte[0]);
+//            }
+//
+//            @Override
+//            public boolean useRawParamString() {
+//                return true;
+//            }
+//        };
+        context.globals.set("require", new OneArgFunction() {
             @Override
-            public InputStream findResource(String filename) {
-                val targetFile = FileUtils.getScriptPath("Common/" + filename).toFile();
-                if (targetFile.exists()) {
-                    try {
-                        return new FileInputStream(targetFile);
-                    } catch (FileNotFoundException e) {
-                        logger.error("[LuaJ] exception while reading file {}:", filename, e);
-                    }
-                } else {
-                    logger.warn("trying to load non existent lua file {}", filename);
+            public LuaValue call(LuaValue filename) {
+                try {
+                    return context.globals.loadfile(FileUtils.getScriptPath("Common/" + filename + ".lua").toString())
+                        .call(filename);
+                } catch (Exception e) {
+                    logger.error("Problem loading require script for {}", filename, e);
                 }
-                return new ByteArrayInputStream(new byte[0]);
-            }
 
-            @Override
-            public boolean useRawParamString() {
-                return true;
+                return LuaValue.ZERO;
             }
-        };
+        });
     }
 
     @Override

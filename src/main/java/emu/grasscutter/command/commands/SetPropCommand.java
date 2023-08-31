@@ -1,22 +1,23 @@
 package emu.grasscutter.command.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.excels.TowerFloorData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.PlayerProperty;
-import emu.grasscutter.game.tower.TowerLevelRecord;
+import emu.grasscutter.game.tower.TowerFloorRecordInfo;
 import emu.grasscutter.server.packet.send.PacketOpenStateChangeNotify;
 import emu.grasscutter.server.packet.send.PacketSceneAreaUnlockNotify;
 import emu.grasscutter.server.packet.send.PacketScenePointUnlockNotify;
+import lombok.val;
 
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Command(label = "setProp", aliases = {"prop"}, usage = {"<prop> <value>"}, permission = "player.setprop", permissionTargeted = "player.setprop.others")
 public final class SetPropCommand implements CommandHandler {
-    static enum PseudoProp {
+    enum PseudoProp {
         NONE,
         WORLD_LEVEL,
         TOWER_LEVEL,
@@ -30,9 +31,9 @@ public final class SetPropCommand implements CommandHandler {
     }
 
     static class Prop {
-        String name;
-        PlayerProperty prop;
-        PseudoProp pseudoProp;
+        private final String name;
+        private final PlayerProperty prop;
+        private final PseudoProp pseudoProp;
 
         public Prop(PlayerProperty prop) {
             this(prop.toString(), prop, PseudoProp.NONE);
@@ -57,23 +58,22 @@ public final class SetPropCommand implements CommandHandler {
         }
     }
 
-    Map<String, Prop> props;
+    private final Map<String, Prop> props = new HashMap<>();
 
     public SetPropCommand() {
-        this.props = new HashMap<>();
         // Full PlayerProperty enum that won't be advertised but can be used by devs
-        for (PlayerProperty prop : PlayerProperty.values()) {
-            String name = prop.toString().substring(5);  // PROP_EXP -> EXP
-            String key = name.toLowerCase();  // EXP -> exp
+        for (val prop : PlayerProperty.values()) {
+            val name = prop.toString().substring(5);  // PROP_EXP -> EXP
+            val key = name.toLowerCase();  // EXP -> exp
             this.props.put(key, new Prop(name, prop));
             this.props.put(prop.name().toLowerCase(), new Prop(prop.name(), prop));
         }
         // Add special props
-        Prop worldlevel = new Prop("World Level", PlayerProperty.PROP_PLAYER_WORLD_LEVEL, PseudoProp.WORLD_LEVEL);
-        this.props.put("worldlevel", worldlevel);
-        this.props.put("wl", worldlevel);
+        val worldLevel = new Prop("World Level", PlayerProperty.PROP_PLAYER_WORLD_LEVEL, PseudoProp.WORLD_LEVEL);
+        this.props.put("worldlevel", worldLevel);
+        this.props.put("wl", worldLevel);
 
-        Prop abyss = new Prop("Tower Level", PseudoProp.TOWER_LEVEL);
+        val abyss = new Prop("Tower Level", PseudoProp.TOWER_LEVEL);
         this.props.put("abyss", abyss);
         this.props.put("abyssfloor", abyss);
         this.props.put("ut", abyss);
@@ -81,37 +81,37 @@ public final class SetPropCommand implements CommandHandler {
         this.props.put("towerlevel", abyss);
         this.props.put("unlocktower", abyss);
 
-        Prop bplevel = new Prop("BP Level", PseudoProp.BP_LEVEL);
-        this.props.put("bplevel", bplevel);
-        this.props.put("bp", bplevel);
-        this.props.put("battlepass", bplevel);
+        val bpLevel = new Prop("BP Level", PseudoProp.BP_LEVEL);
+        this.props.put("bplevel", bpLevel);
+        this.props.put("bp", bpLevel);
+        this.props.put("battlepass", bpLevel);
 
-        Prop godmode = new Prop("GodMode", PseudoProp.GOD_MODE);
-        this.props.put("godmode", godmode);
-        this.props.put("god", godmode);
+        val godMode = new Prop("GodMode", PseudoProp.GOD_MODE);
+        this.props.put("godmode", godMode);
+        this.props.put("god", godMode);
 
-        Prop nostamina = new Prop("UnlimitedStamina", PseudoProp.UNLIMITED_STAMINA);
-        this.props.put("unlimitedstamina", nostamina);
-        this.props.put("us", nostamina);
-        this.props.put("nostamina", nostamina);
-        this.props.put("nostam", nostamina);
-        this.props.put("ns", nostamina);
+        val noStamina = new Prop("UnlimitedStamina", PseudoProp.UNLIMITED_STAMINA);
+        this.props.put("unlimitedstamina", noStamina);
+        this.props.put("us", noStamina);
+        this.props.put("nostamina", noStamina);
+        this.props.put("nostam", noStamina);
+        this.props.put("ns", noStamina);
 
-        Prop unlimitedenergy = new Prop("UnlimitedEnergy", PseudoProp.UNLIMITED_ENERGY);
-        this.props.put("unlimitedenergy", unlimitedenergy);
-        this.props.put("ue", unlimitedenergy);
+        val unlimitedEnergy = new Prop("UnlimitedEnergy", PseudoProp.UNLIMITED_ENERGY);
+        this.props.put("unlimitedenergy", unlimitedEnergy);
+        this.props.put("ue", unlimitedEnergy);
 
-        Prop setopenstate = new Prop("SetOpenstate", PseudoProp.SET_OPENSTATE);
-        this.props.put("setopenstate", setopenstate);
-        this.props.put("so", setopenstate);
+        val setOpenState = new Prop("SetOpenstate", PseudoProp.SET_OPENSTATE);
+        this.props.put("setopenstate", setOpenState);
+        this.props.put("so", setOpenState);
 
-        Prop unsetopenstate = new Prop("UnsetOpenstate", PseudoProp.UNSET_OPENSTATE);
-        this.props.put("unsetopenstate", unsetopenstate);
-        this.props.put("uo", unsetopenstate);
+        val unsetOpenState = new Prop("UnsetOpenstate", PseudoProp.UNSET_OPENSTATE);
+        this.props.put("unsetopenstate", unsetOpenState);
+        this.props.put("uo", unsetOpenState);
 
-        Prop unlockmap = new Prop("UnlockMap", PseudoProp.UNLOCK_MAP);
-        this.props.put("unlockmap", unlockmap);
-        this.props.put("um", unlockmap);
+        val unlockMap = new Prop("UnlockMap", PseudoProp.UNLOCK_MAP);
+        this.props.put("unlockmap", unlockMap);
+        this.props.put("um", unlockMap);
     }
 
     @Override
@@ -120,8 +120,8 @@ public final class SetPropCommand implements CommandHandler {
             sendUsageMessage(sender);
             return;
         }
-        String propStr = args.get(0).toLowerCase();
-        String valueStr = args.get(1).toLowerCase();
+        val propStr = args.get(0).toLowerCase();
+        val valueStr = args.get(1).toLowerCase();
         int value;
 
         if (!props.containsKey(propStr)) {
@@ -140,10 +140,8 @@ public final class SetPropCommand implements CommandHandler {
             return;
         }
 
-        boolean success = false;
-        Prop prop = props.get(propStr);
-
-        success = switch (prop.pseudoProp) {
+        val prop = props.get(propStr);
+        val success = switch (prop.pseudoProp) {
             case WORLD_LEVEL -> targetPlayer.setWorldLevel(value);
             case BP_LEVEL -> targetPlayer.getBattlePassManager().setLevel(value);
             case TOWER_LEVEL -> this.setTowerLevel(sender, targetPlayer, value);
@@ -158,13 +156,13 @@ public final class SetPropCommand implements CommandHandler {
             if (targetPlayer == sender) {
                 CommandHandler.sendTranslatedMessage(sender, "commands.generic.set_to", prop.name, valueStr);
             } else {
-                String uidStr = targetPlayer.getAccount().getId();
+                val uidStr = targetPlayer.getAccount().getId();
                 CommandHandler.sendTranslatedMessage(sender, "commands.generic.set_for_to", prop.name, uidStr, valueStr);
             }
         } else {
             if (prop.prop != PlayerProperty.PROP_NONE) {  // PseudoProps need to do their own error messages
-                int min = targetPlayer.getPropertyMin(prop.prop);
-                int max = targetPlayer.getPropertyMax(prop.prop);
+                final int min = targetPlayer.getPropertyMin(prop.prop);
+                final int max = targetPlayer.getPropertyMax(prop.prop);
                 CommandHandler.sendTranslatedMessage(sender, "commands.generic.invalid.value_between", prop.name, min, max);
             }
         }
@@ -177,23 +175,27 @@ public final class SetPropCommand implements CommandHandler {
             return false;
         }
 
-        Map<Integer, TowerLevelRecord> recordMap = targetPlayer.getTowerManager().getRecordMap();
+        val recordMap = targetPlayer.getTowerManager().getRecordMap();
         // Add records for each unlocked floor
-        for (int floor : floorIds.subList(0, topFloor)) {
-            if (!recordMap.containsKey(floor)) {
-                recordMap.put(floor, new TowerLevelRecord(floor));
-            }
-        }
+        floorIds.subList(0, topFloor).stream().map(floorId -> GameData.getTowerFloorDataMap().get(floorId.intValue()))
+            .filter(Objects::nonNull).forEach(floorData -> recordMap.putIfAbsent(
+                floorData.getFloorIndex(), TowerFloorRecordInfo.create(floorData.getFloorId())));
+
         // Remove records for each floor past our target
-        for (int floor : floorIds.subList(topFloor, floorIds.size())) {
-            if (recordMap.containsKey(floor)) {
-                recordMap.remove(floor);
-            }
-        }
+        floorIds.subList(topFloor, floorIds.size()).stream().map(floorId -> GameData.getTowerFloorDataMap().get(floorId.intValue()))
+            .map(TowerFloorData::getFloorIndex).forEach(recordMap::remove);
+
         // Six stars required on Floor 8 to unlock Floor 9+
         if (topFloor > 8) {
-            recordMap.get(floorIds.get(7)).setLevelStars(0, 6);  // levelIds seem to start at 1 for Floor 1 Chamber 1, so this doesn't get shown at all
+            val floorData = GameData.getTowerFloorDataMap().get(floorIds.get(7).intValue());
+            val recordInfo = recordMap.get(8);
+            if (floorData != null && recordInfo != null) {
+                GameData.getTowerLevelDataMap().values().stream().filter(data -> data.getLevelGroupId() == floorData.getLevelGroupId())
+                    .forEach(levelData -> recordInfo.update(levelData.getId(), levelData.getLevelIndex(), 2));
+            }
         }
+
+        targetPlayer.getTowerManager().notifyFloorChange(recordMap.values().stream().toList());
         return true;
     }
 
@@ -211,17 +213,12 @@ public final class SetPropCommand implements CommandHandler {
         };
 
         switch (pseudoProp) {
-            case GOD_MODE:
-                targetPlayer.setGodmode(enabled);
-                break;
-            case UNLIMITED_STAMINA:
-                targetPlayer.setUnlimitedStamina(enabled);
-                break;
-            case UNLIMITED_ENERGY:
-                targetPlayer.getEnergyManager().setEnergyUsage(!enabled);
-                break;
-            default:
+            case GOD_MODE -> targetPlayer.setGodmode(enabled);
+            case UNLIMITED_STAMINA -> targetPlayer.setUnlimitedStamina(enabled);
+            case UNLIMITED_ENERGY -> targetPlayer.getEnergyManager().setEnergyUsage(!enabled);
+            default -> {
                 return false;
+            }
         }
         return true;
     }

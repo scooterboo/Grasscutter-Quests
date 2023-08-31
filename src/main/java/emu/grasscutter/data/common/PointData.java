@@ -5,54 +5,101 @@ import com.google.gson.annotations.SerializedName;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.DailyDungeonData;
+import emu.grasscutter.data.excels.DungeonRosterData;
 import emu.grasscutter.utils.Position;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Collection;
+
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+@SuppressWarnings(value = "SpellCheckingInspection")
 public class PointData {
-    @Getter @Setter private int id;
+    private int id;
+    private int sceneId;
     private String $type;
-    @Getter private Position tranPos;
-    @Getter private Position pos;
-    @Getter private Position rot;
-    @Getter private Position size;
-
+    @Nullable
+    private Position tranPos;
+    @Nullable
+    private Position tranRot;
+    private Position pos;
+    private Position rot;
+    private Position size;
     @SerializedName(value="dungeonIds", alternate={"JHHFPGJNMIN"})
-    @Getter private int[] dungeonIds;
-
+    private int[] dungeonIds;
     @SerializedName(value="dungeonRandomList", alternate={"OIBKFJNBLHO"})
-    @Getter private int[] dungeonRandomList;
-
+    private int[] dungeonRandomList;
+    private int[] dungeonRosterList;
     @SerializedName(value="groupIDs", alternate={"HFOBOOHKBGF"})
-    @Getter private int[] groupIDs;
-
+    private int[] groupIds;
     @SerializedName(value="tranSceneId", alternate={"JHBICGBAPIH"})
-    @Getter @Setter private int tranSceneId;
+    private int tranSceneId;
+    private int entryPointId;
+    @SerializedName(value="dungeonEntryType", alternate={"EJFPAJGPEBH"})
+    private String dungeonEntryType;
+
+    // all dungeons that should appear in this entry, regardless of showing conditions
+    private List<Integer> allDungeonIds;
 
     public String getType() {
-        return $type;
+        return this.$type;
+    }
+
+    public Position getTransPosWithFallback(){
+        if (this.tranPos == null) {
+            return this.pos;
+        }
+        return this.tranPos;
+    }
+
+    public Position getTransRotWithFallback(){
+        if (this.tranRot == null) {
+            return this.rot;
+        }
+        return this.tranRot;
+    }
+
+    public void onLoad() {
+        if (this.dungeonEntryType == null) {
+            this.dungeonEntryType = "";
+        }
+
+        if (this.dungeonRandomList != null && this.dungeonRandomList.length > 0) {
+            this.allDungeonIds = Arrays.stream(this.dungeonRandomList)
+                .mapToObj(GameData.getDailyDungeonDataMap()::get).filter(Objects::nonNull)
+                .map(DailyDungeonData::getMap).map(Map::values)
+                .flatMap(Collection::stream).flatMapToInt(Arrays::stream)
+                .distinct().boxed().toList();
+        }
+
+        if (this.dungeonRosterList != null && this.dungeonRosterList.length > 0) {
+            this.allDungeonIds = Arrays.stream(this.dungeonRosterList)
+                .mapToObj(GameData.getDungeonRosterDataMap()::get).filter(Objects::nonNull)
+                .map(DungeonRosterData::getRosterPool).flatMap(List::stream)
+                .map(DungeonRosterData.RosterPool::getDungeonList).flatMapToInt(Arrays::stream)
+                .distinct().boxed().toList();
+        }
+
+        if (this.dungeonIds != null && this.dungeonIds.length > 0) {
+            this.allDungeonIds = Arrays.stream(this.dungeonIds).boxed().toList();
+        }
     }
 
     public void updateDailyDungeon() {
-        if (this.dungeonRandomList == null || this.dungeonRandomList.length == 0) {
-            return;
+        if (this.dungeonRandomList != null && this.dungeonRandomList.length > 0) {
+            this.dungeonIds = Arrays.stream(this.dungeonRandomList)
+                .mapToObj(GameData.getDailyDungeonDataMap()::get).filter(Objects::nonNull)
+                .map(data -> data.getDungeonsByDay(Grasscutter.getCurrentDayOfWeek()))
+                .flatMapToInt(Arrays::stream)
+                .filter(GameData.getDungeonDataMap()::containsKey)
+                .toArray();
         }
-
-        IntList newDungeons = new IntArrayList();
-        int day = Grasscutter.getCurrentDayOfWeek();
-
-        for (int randomId : this.dungeonRandomList) {
-            DailyDungeonData data = GameData.getDailyDungeonDataMap().get(randomId);
-
-            if (data != null) {
-                for (int d : data.getDungeonsByDay(day)) {
-                    newDungeons.add(d);
-                }
-            }
-        }
-
-        this.dungeonIds = newDungeons.toIntArray();
     }
 }

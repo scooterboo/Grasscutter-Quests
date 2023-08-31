@@ -145,6 +145,8 @@ public class ConfigContainer {
         public int accessPort = 0;
 
         /* Entities within a certain range will be loaded for the player */
+
+        public String timeZone = "Asia/Shanghai";
         public int loadEntitiesForPlayerRange = 300;
         public boolean enableScriptInBigWorld = true;
         public boolean useJNLua=false;

@@ -239,6 +239,9 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         for (Player player : this.getScene().getPlayers()) {
             player.getEnergyManager().handleMonsterEnergyDrop(this, hpBeforeDamage, hpAfterDamage);
         }
+
+        // invoke challenge trigger if any
+        Optional.ofNullable(getScene()).map(Scene::getChallenge).ifPresent(c -> c.onDamageMonsterOrShield(this, amount));
     }
 
     @Override

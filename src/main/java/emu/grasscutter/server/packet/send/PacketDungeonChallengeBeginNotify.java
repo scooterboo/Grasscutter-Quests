@@ -7,16 +7,17 @@ import emu.grasscutter.net.proto.DungeonChallengeBeginNotifyOuterClass.DungeonCh
 
 public class PacketDungeonChallengeBeginNotify extends BasePacket {
 
-	public PacketDungeonChallengeBeginNotify(WorldChallenge challenge) {
-		super(PacketOpcodes.DungeonChallengeBeginNotify, true);
+    public PacketDungeonChallengeBeginNotify(WorldChallenge challenge) {
+        super(PacketOpcodes.DungeonChallengeBeginNotify, true);
 
-		DungeonChallengeBeginNotify proto = DungeonChallengeBeginNotify.newBuilder()
-				.setChallengeId(challenge.getChallengeId())
-				.setChallengeIndex(challenge.getChallengeIndex())
-				.setGroupId(challenge.getGroupId())
-				.addAllParamList(challenge.getParamList())
-				.build();
+        DungeonChallengeBeginNotify proto = DungeonChallengeBeginNotify.newBuilder()
+            .setFatherIndex(challenge.getInfo().getFatherChallengeIndex())
+            .setChallengeId(challenge.getInfo().getChallengeId())
+            .setChallengeIndex(challenge.getInfo().getChallengeIndex())
+            .setGroupId(challenge.getGroupId())
+            .addAllParamList(challenge.getParamList())
+            .build();
 
-		this.setData(proto);
-	}
+        this.setData(proto);
+    }
 }

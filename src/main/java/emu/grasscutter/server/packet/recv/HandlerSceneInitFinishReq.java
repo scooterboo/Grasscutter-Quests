@@ -1,5 +1,6 @@
 package emu.grasscutter.server.packet.recv;
 
+import emu.grasscutter.game.dungeons.DungeonManager;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.Opcodes;
@@ -8,6 +9,8 @@ import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
 
+import java.util.Optional;
+
 @Opcodes(PacketOpcodes.SceneInitFinishReq)
 public class HandlerSceneInitFinishReq extends PacketHandler {
 
@@ -15,8 +18,12 @@ public class HandlerSceneInitFinishReq extends PacketHandler {
 	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
 		// Info packets
 		session.send(new PacketServerTimeNotify());
+        Optional.ofNullable(session.getPlayer().getScene().getDungeonManager())
+            .ifPresent(DungeonManager::sendDungeonInfoPacket);
+
 		session.send(new PacketWorldPlayerInfoNotify(session.getPlayer().getWorld()));
 		session.send(new PacketWorldDataNotify(session.getPlayer().getWorld()));
+        session.send(new PacketWorldOwnerBlossomBriefInfoNotify(session.getPlayer().getWorld()));
 		session.send(new PacketPlayerWorldSceneInfoListNotify());
 		session.send(new BasePacket(PacketOpcodes.SceneForceUnlockNotify));
 		session.send(new PacketHostPlayerNotify(session.getPlayer().getWorld()));

@@ -3,12 +3,12 @@ package emu.grasscutter.data;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.data.binout.*;
 import emu.grasscutter.data.binout.AbilityModifier.AbilityModifierAction;
 import emu.grasscutter.data.binout.config.*;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
+import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntries;
 import emu.grasscutter.data.common.quest.MainQuestData;
 import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.binout.routes.SceneRoutes;
@@ -23,11 +23,13 @@ import emu.grasscutter.data.server.MonsterMapping;
 import emu.grasscutter.data.server.SubfieldMapping;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.dungeons.DungeonDrop;
+import emu.grasscutter.game.dungeons.enums.DungeonType;
 import emu.grasscutter.game.managers.blossom.BlossomConfig;
 import emu.grasscutter.game.quest.QuestEncryptionKey;
 import emu.grasscutter.game.quest.RewindData;
 import emu.grasscutter.game.quest.TeleportData;
 import emu.grasscutter.game.quest.enums.QuestCond;
+import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.GroupReplacementData;
 import emu.grasscutter.game.world.SpawnDataEntry;
 import emu.grasscutter.game.world.SpawnDataEntry.GridBlockId;
@@ -53,12 +55,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Map.Entry;
-import javax.script.Bindings;
-import javax.script.CompiledScript;
 
 import static emu.grasscutter.utils.FileUtils.getDataPath;
 import static emu.grasscutter.utils.FileUtils.getResourcePath;
@@ -129,6 +130,7 @@ public class ResourceLoader {
         loadDungeonDrops();
         // Load scene points - must be done AFTER resources are loaded
         loadScenePoints();
+        loadDungeonEntryAndExitPoints();
         // Load default home layout
         loadHomeworldDefaultSaveData();
         loadNpcBornData();
@@ -248,13 +250,15 @@ public class ResourceLoader {
                 val scenePoints = new IntArrayList();
                 config.points.forEach((pointId, pointData) -> {
                     val scenePoint = new ScenePointEntry(sceneId, pointData);
-                    scenePoints.add(pointId);
+                    scenePoints.add(pointId.intValue());
                     pointData.setId(pointId);
+                    pointData.setSceneId(sceneId);
 
-                    GameData.getScenePointIdList().add(pointId);
+                    GameData.getScenePointIdList().add(pointId.intValue());
                     GameData.getScenePointEntries().put(scenePoint.getName(), scenePoint);
                     GameData.scenePointEntryMap.put((sceneId << 16) + pointId, scenePoint);
 
+                    pointData.onLoad();
                     pointData.updateDailyDungeon();
                 });
                 GameData.getScenePointsPerScene().put(sceneId, scenePoints);
@@ -262,6 +266,56 @@ public class ResourceLoader {
         } catch (IOException e) {
             logger.error("Scene point files cannot be found, you cannot use teleport waypoints!");
         }
+    }
+
+    /**
+     * Pre-make dungeon entries and exits using existing map for easier information retrieve
+     * Some dungeon exits not included like trial avatar activity and mist trial activity, player
+     * should transfer back to where they were
+     * TODO there are 2 special dungeon entries not included so far, which is amber dungeon(2002) and one of summerV2 event dungeon(4038)
+     * */
+    private static void loadDungeonEntryAndExitPoints() {
+        val tempEntriesMap = GameData.getDungeonEntriesMap();
+
+        val tempExitHolderMap = GameData.scenePointEntryMap.values().stream().parallel().map(ScenePointEntry::getPointData)
+            .filter(pointData -> pointData.getType().equals("DungeonExit")).filter(pointData -> pointData.getEntryPointId() > 0)
+            .collect(Collectors.toMap(pointData -> (pointData.getSceneId() << 16) + pointData.getEntryPointId(), pointData -> pointData));
+
+        GameData.scenePointEntryMap.values().stream().map(ScenePointEntry::getPointData)
+            .filter(pointData -> pointData.getType().equals("DungeonEntry"))
+            .forEach(pointData -> {
+                val loadedDungeonIds = new AtomicBoolean(false);
+                Optional.ofNullable(pointData.getAllDungeonIds()).stream().flatMap(List::stream).forEach(dungeonId -> {
+                    loadedDungeonIds.set(true);
+                    tempEntriesMap.putIfAbsent(dungeonId, DungeonEntries.create(dungeonId, pointData, tempExitHolderMap));
+                });
+                if (loadedDungeonIds.get()) return;
+
+                val dungeonType = switch (pointData.getDungeonEntryType()) {
+                    case "Tower" -> DungeonType.DUNGEON_TOWER;
+                    case "RogueDiary" -> DungeonType.DUNGEON_ROGUELIKE;
+                    case "Effigy" -> DungeonType.DUNGEON_EFFIGY;
+                    default -> DungeonType.DUNGEON_NONE;
+                };
+                GameData.getDungeonDataMap().values().stream().filter(dungeonData -> dungeonData.getType() == dungeonType)
+                    .forEach(dungeonData -> tempEntriesMap.putIfAbsent(
+                        dungeonData.getId(), DungeonEntries.create(dungeonData.getId(), pointData, tempExitHolderMap)));
+            });
+
+        GameData.getQuestDataMap().values().forEach(data -> Optional.ofNullable(data.getGuide())
+            .map(SubQuestData.Guide::getGuideScene).ifPresent(sceneId -> data.getFinishCond().stream()
+                .filter(c -> c.getType() == QuestContent.QUEST_CONTENT_ENTER_DUNGEON)
+                .filter(c -> !tempEntriesMap.containsKey(c.getParam()[0])).forEach(cond -> {
+                    val scenePointEntry = GameData.getScenePointEntryById(sceneId == 0 ? 3 : sceneId, cond.getParam()[1]);
+                    if (scenePointEntry == null) {
+//                        Grasscutter.getLogger().info("MainQuest: {}, SubQuest: {}", data.getMainId(), data.getSubId());
+//                        Grasscutter.getLogger().info("SceneId: {}, PointId: {}, dungeonId: {}", sceneId, cond.getParam()[1], cond.getParam()[0]);
+                        return;
+                    }
+
+                    tempEntriesMap.putIfAbsent(cond.getParam()[0],
+                        DungeonEntries.create(cond.getParam()[0], scenePointEntry.getPointData(), tempExitHolderMap));
+                })));
     }
 
     private static void cacheTalentLevelSets() {

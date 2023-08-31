@@ -37,27 +37,26 @@ import lombok.Setter;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
-@Entity
+@Entity @Getter
 public class TeamManager extends BasePlayerDataManager {
     // This needs to be a LinkedHashMap to guarantee insertion order.
-    @Getter @Setter private LinkedHashMap<Integer, TeamInfo> teams;
-    @Getter @Setter private int currentTeamId;
-    @Getter private int currentCharacterIndex;
+    @Setter private LinkedHashMap<Integer, TeamInfo> teams;
+    @Setter private int currentTeamId;
+    private int currentCharacterIndex;
 
-    @Transient @Getter @Setter private EntityTeam entity;
-    @Transient @Getter private final List<EntityAvatar> activeTeam;
-    @Transient @Getter private final Set<EntityBaseGadget> gadgets;
-    @Transient @Getter private final IntSet teamResonances;
-    @Transient @Getter private final IntSet teamResonancesConfig;
-    @Transient @Getter @Setter private TeamInfo mpTeam;
-    @Transient @Getter @Setter private int temporaryTeamIndex = -1;
-    @Transient @Getter private final List<TeamInfo> temporaryTeam; // Temporary Team for tower
-    @Transient @Getter @Setter private boolean useTrialTeam;
-    @Transient @Getter @Setter private TeamInfo trialAvatarTeam;
-    // used to hold trial avatar's guid,
-    // normal avatar's guid should not come in here
-    @Transient @Getter private final LinkedHashMap<Integer, Long> entityGuids;
-    @Transient @Getter @Setter private int previousIndex = -1; // index of character selection in team before adding trial avatar
+    @Transient @Setter private EntityTeam entity;
+    @Transient private final List<EntityAvatar> activeTeam;
+    @Transient private final Set<EntityBaseGadget> gadgets;
+    @Transient private final IntSet teamResonances;
+    @Transient private final IntSet teamResonancesConfig;
+    @Transient @Setter private TeamInfo mpTeam;
+    @Transient @Setter private int temporaryTeamIndex = -1;
+    @Transient private final List<TeamInfo> temporaryTeam; // Temporary Team for tower
+    @Transient @Setter private boolean useTrialTeam;
+    @Transient @Setter private TeamInfo trialAvatarTeam;
+    // used to hold temp team's avatar guid, trial avatar, tower team etc
+    @Transient private final LinkedHashMap<Integer, Long> entityGuids;
+    @Transient @Setter private int previousIndex = -1; // index of character selection in team before adding trial avatar
 
     public TeamManager() {
         this.mpTeam = new TeamInfo();
@@ -262,19 +261,15 @@ public class TeamManager extends BasePlayerDataManager {
 
         // Skill charges packet - Yes, this is official server behavior as of 2.6.0
         getActiveTeam().stream().map(EntityAvatar::getAvatar).forEach(Avatar::sendSkillExtraChargeMap);
-
         saveAvatars(existingAvatars.values());
-
         if (getPlayer().getScene() == null) return;
 
         existingAvatars.values().forEach(entity -> getPlayer().getScene().removeEntity(entity));
+        if (!shouldReplace || currentEntity == getCurrentAvatarEntity()) return; // Check if character changed
 
-        // Check if character changed
-        if (currentEntity != getCurrentAvatarEntity() && shouldReplace) {
-            if (currentEntity == null) {
-                getPlayer().getScene().addEntity(getCurrentAvatarEntity());
-                return;
-            }
+        if (currentEntity == null) {
+            getPlayer().getScene().addEntity(getCurrentAvatarEntity());
+        } else {
             // Remove and Add
             getPlayer().getScene().replaceEntity(currentEntity, getCurrentAvatarEntity());
         }
@@ -290,8 +285,7 @@ public class TeamManager extends BasePlayerDataManager {
     public synchronized boolean setupAvatarTeam(int teamId, @NotNull List<Long> guidList, long guid) {
         // Sanity checks
         TeamInfo teamInfo = getTeams().get(teamId);
-        if (guidList.isEmpty() || guidList.size() > getMaxTeamSize() || teamInfo == null
-            || !canAddAvatarsToTeam(teamInfo, newTeam(guidList).size())) return false;
+        if (guidList.isEmpty() || guidList.size() > getMaxTeamSize() || teamInfo == null) return false;
 
         // Set team data and clear current team info and add avatars from our new team
         teamInfo.getAvatars().clear();
@@ -358,36 +352,41 @@ public class TeamManager extends BasePlayerDataManager {
     }
 
     public void setupTemporaryTeam(@NotNull List<List<Long>> guidListList) {
-        getTemporaryTeam().clear();
-        setPreviousIndex(getCurrentCharacterIndex());
+        this.temporaryTeam.clear();
+        this.entityGuids.clear();
         // Sanity checks
         // Set team data and convert to avatar ids
-        getTemporaryTeam().addAll(guidListList.stream()
-            .map(guidList -> (guidList.isEmpty() || guidList.size() > getMaxTeamSize()) ?
-                null : newTeam(guidList))
-            .filter(Objects::nonNull)
-            .filter(List::isEmpty)
+        this.temporaryTeam.addAll(guidListList.stream().parallel()
+            .filter(guidList -> !guidList.isEmpty()).filter(guidList -> guidList.size() <= getMaxTeamSize())
+            .map(this::newTeam).filter(Objects::nonNull).filter(l -> !l.isEmpty())
             .map(TeamInfo::new)
             .toList());
+
+        guidListList.stream().flatMap(List::stream).map(this.player.getAvatars()::getAvatarByGuid)
+            .forEachOrdered(avatar ->  this.entityGuids.put(avatar.getAvatarId(), avatar.getGuid()));
     }
 
     public void useTemporaryTeam(int index) {
-        setTemporaryTeamIndex(index);
-        setCurrentCharacterIndex(0);
-        updateTeamEntities(true);
+        this.temporaryTeamIndex = index;
+        if (index == 0) {
+            if (this.previousIndex < 0) this.previousIndex = this.currentCharacterIndex;
+        } else {
+            this.temporaryTeam.iterator().next().getAvatars().forEach(this.entityGuids::remove);
+        }
+        this.currentCharacterIndex = 0;
+        updateTeamEntities(false);
     }
 
     public void cleanTemporaryTeam() {
         // check if using temporary team
-        if (getTemporaryTeamIndex() < 0) {
-            return;
-        }
+        if (this.temporaryTeamIndex < 0) return;
 
-        setTemporaryTeamIndex(-1);
-        setCurrentCharacterIndex(getPreviousIndex());
-        setPreviousIndex(-1);
-        getTemporaryTeam().clear();
-        updateTeamEntities(true);
+        this.temporaryTeamIndex = -1;
+        this.currentCharacterIndex = this.previousIndex;
+        this.previousIndex = -1;
+        this.temporaryTeam.clear();
+        this.entityGuids.clear();
+        updateTeamEntities(false);
     }
 
     public synchronized boolean setCurrentTeam(int teamId) {
@@ -559,9 +558,9 @@ public class TeamManager extends BasePlayerDataManager {
             .map(pointId -> GameData.getScenePointEntryById(sceneId, pointId))
             .filter(point -> point.getPointData().getType().equals("SceneTransPoint"))
             .min(Comparator.comparingDouble(pos ->
-                Utils.getDist(pos.getPointData().getTranPos(),
+                Utils.getDist(pos.getPointData().getTransPosWithFallback(),
                 getPlayer().getPosition())))
-            .map(scenePointEntry -> scenePointEntry.getPointData().getTranPos())
+            .map(scenePointEntry -> scenePointEntry.getPointData().getTransRotWithFallback())
             .orElse(GameConstants.START_POSITION);
     }
     public void saveAvatars() {

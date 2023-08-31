@@ -199,7 +199,6 @@ public class EntityAvatar extends GameEntity {
 
             // I only see EntityFightPropUpdataNotify being sent by the official server, and without any prop reason,
             // not sure how that differs to this
-            this.getScene().broadcastPacket(new PacketAvatarFightPropUpdateNotify(this.getAvatar(), curEnergyProp));
             this.getScene().broadcastPacket(new PacketEntityFightPropChangeReasonNotify(this, curEnergyProp, newEnergy, reason));
         }
     }

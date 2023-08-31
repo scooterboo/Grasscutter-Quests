@@ -19,18 +19,15 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 
+@Getter
 public class AvatarStorage extends BasePlayerManager implements Iterable<Avatar> {
     private final Int2ObjectMap<Avatar> avatars;
-    @Getter private final Long2ObjectMap<Avatar> avatarsGuid;
+    private final Long2ObjectMap<Avatar> avatarsGuid;
 
     public AvatarStorage(Player player) {
         super(player);
         this.avatars = new Int2ObjectOpenHashMap<>();
         this.avatarsGuid = new Long2ObjectOpenHashMap<>();
-    }
-
-    public Int2ObjectMap<Avatar> getAvatars() {
-        return avatars;
     }
 
     public int getAvatarCount() {
@@ -63,7 +60,7 @@ public class AvatarStorage extends BasePlayerManager implements Iterable<Avatar>
         avatar.setOwner(getPlayer());
 
         // Put into maps
-        if (!(avatar instanceof TrialAvatar)) {
+        if (!(avatar instanceof TrialAvatar) && !(avatar instanceof TowerAvatar)) {
             // Don't need to replace with new avatar using
             // avatar id if it is trial avatars
             this.avatars.put(avatar.getAvatarId(), avatar);
@@ -77,11 +74,7 @@ public class AvatarStorage extends BasePlayerManager implements Iterable<Avatar>
 
     public boolean removeAvatarByGuid(long guid) {
         // the only ones removable are trial avatars, which only guid are used in adding
-        if (this.getAvatarsGuid().containsKey(guid)) {
-            return false;
-        }
-        this.avatarsGuid.remove(guid);
-        return true;
+        return this.avatarsGuid.remove(guid) != null;
     }
 
     public void addStartingWeapon(Avatar avatar) {

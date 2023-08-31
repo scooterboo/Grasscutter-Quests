@@ -4,13 +4,17 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.activity.ActivityManager;
-import emu.grasscutter.game.dungeons.challenge.DungeonChallenge;
+import emu.grasscutter.game.dungeons.challenge.ChallengeInfo;
+import emu.grasscutter.game.dungeons.challenge.ChallengeScoreInfo;
+import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.challenge.enums.FatherChallengeProperty;
 import emu.grasscutter.game.dungeons.challenge.factory.ChallengeFactory;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.GadgetWorktop;
 import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.entity.gadget.platform.PointArrayRoute;
+import emu.grasscutter.game.managers.blossom.BlossomSchedule;
+import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.EntityType;
@@ -20,6 +24,7 @@ import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.EnterTypeOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
+import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.scripts.constants.temporary.FlowSuiteOperatePolicy;
 import emu.grasscutter.scripts.constants.GroupKillPolicy;
 import emu.grasscutter.scripts.constants.temporary.GalleryProgressScoreType;
@@ -37,7 +42,6 @@ import lombok.Getter;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -249,7 +253,7 @@ public class ScriptLib {
 			return 1;
 		}
 
-		context.getSceneScriptManager().startMonsterTideInGroup(group, ordersConfigId, tideCount, sceneLimit);
+		context.getSceneScriptManager().startMonsterTideInGroup(challengeIndex, group, ordersConfigId, tideCount, sceneLimit);
 
 		return 0;
 	}
@@ -356,42 +360,50 @@ public class ScriptLib {
         return 0;
     }
 
-	public static int ActiveChallenge(GroupEventLuaContext context, int challengeId, int challengeIndex, int timeLimitOrGroupId, int groupId, int objectiveKills, int param5) {
-		logger.debug("[LUA] Call ActiveChallenge with {},{},{},{},{},{}",
-				challengeId,challengeIndex,timeLimitOrGroupId,groupId,objectiveKills,param5);
+	public static int ActiveChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, int timeLimitOrGroupId, int groupId, int objectiveKills, int param5) {
+        logger.debug("[LUA] Call ActiveChallenge with {},{},{},{},{},{}",
+            challengeIndex, challengeId, timeLimitOrGroupId,groupId,objectiveKills,param5);
 
-		var challenge = ChallengeFactory.getChallenge(
-				challengeId,
-				challengeIndex,
-				timeLimitOrGroupId,
-				groupId,
-				objectiveKills,
-				param5,
-				context.getSceneScriptManager().getScene(),
-				context.getCurrentGroup()
-				);
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, 0),
+            List.of(timeLimitOrGroupId, groupId, objectiveKills, param5),
+            new ChallengeScoreInfo(0, 0),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
 
-		if(challenge == null){
-			return 1;
-		}
+        if(challenge == null) return 1;
 
-		if(challenge instanceof DungeonChallenge dungeonChallenge){
-			// set if tower first stage (6-1)
-			dungeonChallenge.setStage(context.getSceneScriptManager().getVariables(groupId).getOrDefault("stage", -1) == 0);
-		}
-
-		context.getSceneScriptManager().getScene().setChallenge(challenge);
-		challenge.start();
-		return 0;
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
+        challenge.start();
+        return 0;
 	}
 
-    public static int StopChallenge(GroupEventLuaContext context, int challengeId, int result) {
+    public static int StartChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, Object challengeParams) {
+        logger.info("[LUA] Call StartChallenge with {},{},{}", challengeIndex, challengeId, challengeParams);
+        val conditionParamTable = context.getEngine().getTable(challengeParams);
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, 0),
+            Arrays.stream(conditionParamTable.getAsIntArray()).boxed().toList(),
+            new ChallengeScoreInfo(0, 0),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        if(challenge == null) return 1;
+
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
+        challenge.start();
+        return 0;
+    }
+
+    public static int StopChallenge(GroupEventLuaContext context, int challengeIndex, int result) {
         logger.debug("[LUA] Call StopChallenge with ");
         var challenge = context.getSceneScriptManager().getScene().getChallenge();
         if(challenge == null){
             return 1;
         }
-        if(challenge.getChallengeId() != challengeId){
+        if(challenge.getInfo().getChallengeIndex() != challengeIndex){
             return 2;
         }
 
@@ -421,7 +433,7 @@ public class ScriptLib {
         if(challenge == null){
             return 1;
         }
-        if(challenge.getChallengeId() != challengeId){
+        if(challenge.getInfo().getChallengeId() != challengeId){
             return 2;
         }
         /*if(!challenge.addDuration(duration)){
@@ -913,15 +925,31 @@ public class ScriptLib {
         return 0;
     }
 
-    public static int CreateFatherChallenge(GroupEventLuaContext context, int var1, int var2, int var3, Object var4Table){
-        val var4 = context.getEngine().getTable(var4Table);
-        logger.warn("[LUA] Call unimplemented CreateFatherChallenge with {} {} {} {}", var1, var2, var3, var4);
-        //TODO implement var4 object has int success, int fail, bool fail_on_wipe
+    public static int CreateFatherChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, int timeLimit, Object conditionTable){
+        val conditionLuaTable = context.getEngine().getTable(conditionTable);
+
+        logger.debug("[LUA] Call CreateFatherChallenge with {} {} {} {}",
+            challengeIndex, challengeId, timeLimit, conditionTable);
+
+        WorldChallenge challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(challengeIndex, challengeId, challengeIndex),
+            List.of(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail"), timeLimit),
+            new ChallengeScoreInfo(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail")),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        if (challenge == null) return 1;
+
+        context.getSceneScriptManager().getScene().setChallenge(challenge);
         return 0;
     }
-    public static int StartFatherChallenge(GroupEventLuaContext context, int var1){
-        logger.warn("[LUA] Call unimplemented StartFatherChallenge with {}", var1);
-        //TODO implement
+    public static int StartFatherChallenge(GroupEventLuaContext context, int challengeIndex){
+        logger.debug("[LUA] Call StartFatherChallenge with {}", challengeIndex);
+        WorldChallenge challenge = context.getSceneScriptManager().getScene().getChallenge();
+        if (challenge == null || challenge.getInfo().getChallengeIndex() != challengeIndex) return 1;
+
+        challenge.start();
         return 0;
     }
     public static int ModifyFatherChallengeProperty(GroupEventLuaContext context, int challengeId, int propertyTypeIndex, int value){
@@ -930,13 +958,28 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public static int AttachChildChallenge(GroupEventLuaContext context, int var1, int var2, int var3, Object var4Tabke, Object var5Table, Object var6Table){
-        val var4 = context.getEngine().getTable(var4Tabke);
+    public static int AttachChildChallenge(GroupEventLuaContext context, int fatherChallengeIndex, int childChallengeIndex,
+                                           int childChallengeId, Object var4Table, Object var5Table, Object var6Table){
+        val conditionArray = context.getEngine().getTable(var4Table);
         val var5 = context.getEngine().getTable(var5Table);
-        val var6 = context.getEngine().getTable(var6Table);
-        logger.warn("[LUA] Call unimplemented AttachChildChallenge with {} {} {} {} {} {}", var1, var2, var3,
-            printTable(var4), printTable(var5), printTable(var6));
-        //TODO implement var6 object has int success, int fail, bool fail_on_wipe
+        val conditionTable = context.getEngine().getTable(var6Table);
+        logger.warn("[LUA] Call unimplemented AttachChildChallenge with {} {} {} {} {} {}",
+            fatherChallengeIndex, childChallengeIndex, childChallengeId,
+            printTable(conditionArray), printTable(var5), printTable(conditionTable));
+
+        val challenge = ChallengeFactory.getChallenge(
+            new ChallengeInfo(childChallengeIndex, childChallengeId, fatherChallengeIndex),
+            Arrays.stream(conditionArray.getAsIntArray()).boxed().toList(),
+            new ChallengeScoreInfo(conditionTable.getInt("success"), conditionTable.getInt("fail")),
+            context.getSceneScriptManager().getScene(),
+            context.getCurrentGroup()
+        );
+
+        val sceneChallenge = context.getSceneScriptManager().getScene().getChallenge();
+        if (sceneChallenge == null || challenge == null
+            || sceneChallenge.getInfo().getChallengeIndex() != fatherChallengeIndex) return 1;
+
+        sceneChallenge.attachChild(challenge);
         return 0;
     }
     public static int CreateEffigyChallengeMonster(GroupEventLuaContext context, int var1, Object var2Table){
@@ -956,20 +999,70 @@ public class ScriptLib {
         //TODO implement
         return 0;
     }
-    public static int CreateBlossomChestByGroupId(GroupEventLuaContext context, int groupId, int var2){
-        logger.warn("[LUA] Call unimplemented SetBlossomScheduleStateByGroupId with {} {}", groupId, var2);
-        //TODO implement
+    public static int CreateBlossomChestByGroupId(GroupEventLuaContext context, int groupId, int chestConfigId){
+        logger.debug("[LUA] Call check CreateBlossomChestByGroupId with {} {}", groupId, chestConfigId);
+
+        val currentGroup = context.getSceneScriptManager().getGroupById(groupId);
+        if (currentGroup == null) return 1;
+
+        val gadget = currentGroup.gadgets.get(chestConfigId);
+        val chestGadget = context.getSceneScriptManager().createGadget(currentGroup.id, currentGroup.block_id, gadget);
+        if (chestGadget == null) return 1;
+
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val blossomSchedule = blossomManager.getBlossomSchedule().get(currentGroup.id);
+        if (blossomSchedule == null) return 1;
+
+        blossomManager.getSpawnedChest().put(chestGadget.getConfigId(), currentGroup.id);
+        context.getSceneScriptManager().addEntity(chestGadget);
+        context.getSceneScriptManager().getScene().broadcastPacket(
+            new PacketBlossomChestCreateNotify(blossomSchedule.getRefreshId(), blossomSchedule.getCircleCampId()));
         return 0;
     }
-    public static int SetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId, int scene){
-        logger.warn("[LUA] Call unimplemented SetBlossomScheduleStateByGroupId with {} {}", groupId, scene);
-        //TODO implement scene is guessed
-        return 0;
+    public static int GetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId){
+        logger.debug("[LUA] Call check GetBlossomScheduleStateByGroupId with {}", groupId);
+        if (context.getCurrentGroup() == null) return -1;
+
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
+            .map(BlossomSchedule::getState).orElse(-1);
+    }
+    public static int SetBlossomScheduleStateByGroupId(GroupEventLuaContext context, int groupId, int state){
+        logger.debug("[LUA] Call check SetBlossomScheduleStateByGroupId with {} {}", groupId, state);
+
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val result = blossomManager.setBlossomState(realGroupId, state);
+        if (result && state == 1) { // there should only be one gadget of this blossom at this point, which is the operator
+            context.getSceneScriptManager().getScene().getEntities().values().stream()
+                .filter(entity -> entity.getGroupId() == realGroupId).filter(EntityGadget.class::isInstance)
+                .map(EntityGadget.class::cast).findFirst().ifPresent(gadget -> gadget.updateState(ScriptGadgetState.GearAction2));
+        }
+        return result ? 0 : 1;
     }
     public static int RefreshBlossomGroup(GroupEventLuaContext context, Object rawTable) {
-        val table = context.getEngine().getTable(rawTable);
-        logger.warn("[LUA] Call unimplemented RefreshBlossomGroup with {}", printTable(table));
-        //TODO implement var3 has int group_id, int suite, bool exclude_prev
+        val configTable = context.getEngine().getTable(rawTable);
+        logger.debug("[LUA] Call check RefreshBlossomGroup with {}", printTable(configTable));
+
+        int groupId = configTable.getInt("group_id");
+        val group = context.getSceneScriptManager().getGroupById(groupId == 0 ? context.getCurrentGroup().id : groupId);
+        if (group == null) return 1;
+
+        val groupInstance = context.getSceneScriptManager().getGroupInstanceById(group.id);
+        int suiteIndex = configTable.getInt("suite");
+        val suite = group.getSuiteByIndex(suiteIndex);
+        if (suite == null || groupInstance == null) return 1;
+
+        context.getSceneScriptManager().refreshGroup(groupInstance, suiteIndex, configTable.getBoolean("exclude_prev"));
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        val schedule = blossomManager.getBlossomSchedule().get(group.id);
+        if (schedule == null) return 0;
+
+        val spawnedChest = blossomManager.getSpawnedChest().values().stream()
+            .filter(gid -> gid == schedule.getGroupId()).findFirst().orElse(null);
+        context.getSceneScriptManager().callEvent(new ScriptArgs(
+            group.id, spawnedChest == null ? EventType.EVENT_GROUP_REFRESH : EventType.EVENT_BLOSSOM_PROGRESS_FINISH));
         return 0;
     }
     public static int RefreshBlossomDropRewardByGroupId(GroupEventLuaContext context, int groupId){
@@ -978,9 +1071,17 @@ public class ScriptLib {
         return 0;
     }
     public static int AddBlossomScheduleProgressByGroupId(GroupEventLuaContext context, int groupId){
-        logger.warn("[LUA] Call unimplemented AddBlossomScheduleProgressByGroupId with {}", groupId);
-        //TODO implement
-        return 0;
+        logger.debug("[LUA] Call check AddBlossomScheduleProgressByGroupId with {}", groupId);
+
+        return context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager().addBlossomProgress(groupId) ? 0 : 1;
+    }
+    public static int GetBlossomRefreshTypeByGroupId(GroupEventLuaContext context, int groupId){
+        logger.debug("[LUA] Call check GetBlossomRefreshTypeByGroupId with {}", groupId);
+
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
+            .map(BlossomSchedule::getRefreshType).map(BlossomRefreshType::getValue).orElse(2);
     }
     public static int RefreshHuntingClueGroup(GroupEventLuaContext context){
         logger.warn("[LUA] Call unimplemented RefreshHuntingClueGroup"); //TODO: Much many calls o this garbages the log

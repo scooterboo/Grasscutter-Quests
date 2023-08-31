@@ -14,6 +14,7 @@ import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
 import emu.grasscutter.data.binout.config.ConfigGlobalCombat;
 import emu.grasscutter.data.binout.config.ConfigLevelEntity;
+import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntries;
 import emu.grasscutter.data.common.quest.MainQuestData;
 import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.binout.routes.Route;
@@ -59,6 +60,7 @@ public class GameData {
     @Getter private static final Map<String, ConfigEntityMonster> monsterConfigData = new HashMap<>();
     @Getter private static final Map<String, OpenConfigEntry> openConfigEntries = new HashMap<>();
     @Deprecated(forRemoval = true) @Getter private static final Map<String, ScenePointEntry> scenePointEntries = new HashMap<>();
+    @Getter private static final Int2ObjectMap<DungeonEntries> dungeonEntriesMap = new Int2ObjectOpenHashMap<>();
     protected static final Map<String, AbilityData> abilityDataMap = new HashMap<>();
     protected static final Int2ObjectMap<ScenePointEntry> scenePointEntryMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<MainQuestData> mainQuestData = new Int2ObjectOpenHashMap<>();
@@ -89,7 +91,11 @@ public class GameData {
     @Getter private static final Int2ObjectMap<AvatarTalentData> avatarTalentDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<BattlePassMissionData> battlePassMissionDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<BattlePassRewardData> battlePassRewardDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<BlossomRefreshExcelConfigData> blossomRefreshExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<BlossomChestData> blossomChestDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<BlossomGroupsData> blossomGroupsDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<BlossomOpenData> blossomOpenDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<BlossomRefreshData> blossomRefreshDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<BlossomSectionOrderData> blossomSectionOrderDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<BuffData> buffDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ChapterData> chapterDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<CityData> cityDataMap = new Int2ObjectOpenHashMap<>();
@@ -106,6 +112,8 @@ public class GameData {
     @Getter private static final Int2ObjectMap<DungeonData> dungeonDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonElementChallengeData> dungeonElementChallengeDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DungeonEntryData> dungeonEntryDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<DungeonRosterData> dungeonRosterDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<DungeonSerialData> dungeonSerialDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<EnvAnimalGatherConfigData> envAnimalGatherConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<EquipAffixData> equipAffixDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<MonsterAffixData> monsterAffixDataMap = new Int2ObjectOpenHashMap<>();
@@ -136,8 +144,10 @@ public class GameData {
     @Getter private static final Int2ObjectMap<RewardData> rewardDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<RewardPreviewData> rewardPreviewDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<SceneData> sceneDataMap = new Int2ObjectLinkedOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<TowerBuffData> towerBuffDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerFloorData> towerFloorDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerLevelData> towerLevelDataMap = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<TowerRewardData> towerRewardDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TowerScheduleData> towerScheduleDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarData> trialAvatarDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<TrialAvatarActivityData> trialAvatarActivityDataMap = new Int2ObjectOpenHashMap<>();
@@ -217,6 +227,10 @@ public class GameData {
     // Multi-keyed getters
     public static AvatarPromoteData getAvatarPromoteData(int promoteId, int promoteLevel) {
         return avatarPromoteDataMap.get((promoteId << 8) + promoteLevel);
+    }
+
+    public static TowerRewardData getTowerRewardData(int levelIndex, int floorIndex) {
+        return towerRewardDataMap.get((levelIndex << 4) + floorIndex);
     }
 
     public static WeaponPromoteData getWeaponPromoteData(int promoteId, int promoteLevel) {

@@ -184,6 +184,9 @@ public class SceneScriptManager {
         triggersByGroupScene.put(group.id+"_"+suiteIndex, groupSceneTriggers);
     }
 
+    public void refreshGroup(int groupId, int suiteIndex, boolean excludePrevSuite) {
+        refreshGroup(getGroupInstanceById(groupId));
+    }
     public void refreshGroup(SceneGroupInstance groupInstance) {
         if(groupInstance == null || groupInstance.getLuaGroup().suites==null){
             return;
@@ -648,9 +651,9 @@ public class SceneScriptManager {
         suite.sceneRegions.forEach(this::deregisterRegion);
     }
 
-    public void startMonsterTideInGroup(SceneGroup group, Integer[] ordersConfigId, int tideCount, int sceneLimit) {
+    public void startMonsterTideInGroup(int challengeIndex, SceneGroup group, Integer[] ordersConfigId, int tideCount, int sceneLimit) {
         this.scriptMonsterTideService =
-                new ScriptMonsterTideService(this, group, tideCount, sceneLimit, ordersConfigId);
+                new ScriptMonsterTideService(this, challengeIndex, group, tideCount, sceneLimit, ordersConfigId);
 
     }
     public void unloadCurrentMonsterTide() {
