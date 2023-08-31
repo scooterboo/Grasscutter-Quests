@@ -50,7 +50,7 @@ public class TowerLevelData extends GameResource {
     @ToString
     public static class TowerChallengeCond {
         TowerCondType towerCondType;
-        @SerializedName(value = "argumentListFirstHalf", alternate = {"OECDJKGBNFE"})
+        @SerializedName(value = "argumentListFirstHalf", alternate = {"argument_list_upper","OECDJKGBNFE"})
         List<Integer> argumentListFirstHalf;
         @SerializedName(value = "argumentListSecondHalf", alternate = {"argumentList"})
         List<Integer> argumentListSecondHalf;

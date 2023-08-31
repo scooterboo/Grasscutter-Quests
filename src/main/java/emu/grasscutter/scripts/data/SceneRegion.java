@@ -34,7 +34,7 @@ public class SceneRegion extends SceneObject{
     }
 
     public int getGroupId() {
-        return group.id;
+        return group.getId();
     }
 
 }

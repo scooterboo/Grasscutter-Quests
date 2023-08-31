@@ -137,7 +137,7 @@ public class LuaJSerializer extends Serializer {
         }
 
         try {
-            if (!methodAccessCache.containsKey(type)) {
+            if (!fieldMetaCache.containsKey(type)) {
                 cacheType(type);
             }
             var methodAccess = methodAccessCache.get(type);
@@ -160,17 +160,17 @@ public class LuaJSerializer extends Serializer {
                     LuaValue keyValue = table.get(k);
 
                     if (keyValue.istable()) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), serialize(fieldMeta.getType(), fieldMeta.getField(), keyValue.checktable()));
+                        set(object, fieldMeta, methodAccess, serialize(fieldMeta.getType(), fieldMeta.getField(), keyValue.checktable()));
                     } else if (fieldMeta.getType().equals(float.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.tofloat());
+                        set(object, fieldMeta, methodAccess, keyValue.tofloat());
                     } else if (fieldMeta.getType().equals(int.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.toint());
+                        set(object, fieldMeta, methodAccess, keyValue.toint());
                     } else if (fieldMeta.getType().equals(String.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.tojstring());
+                        set(object, fieldMeta, methodAccess, keyValue.tojstring());
                     } else if (fieldMeta.getType().equals(boolean.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.toboolean());
+                        set(object, fieldMeta, methodAccess, keyValue.toboolean());
                     } else {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue.tojstring());
+                        set(object, fieldMeta, methodAccess, keyValue.tojstring());
                     }
                 } catch (Exception ex) {
                     LuaEngine.logger.error("Exception serializing", ex);

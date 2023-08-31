@@ -5,6 +5,7 @@ import java.util.List;
 
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
 
 @ToString
 @Setter
@@ -24,37 +25,41 @@ public class SceneSuite {
     public transient List<SceneRegion> sceneRegions = List.of();
 
     public void init(SceneGroup sceneGroup) {
-        if(sceneGroup.monsters != null){
+        val monsters = sceneGroup.getMonsters();
+        if(monsters != null){
             this.sceneMonsters = new ArrayList<>(
                 this.monsters.stream()
-                    .filter(sceneGroup.monsters::containsKey)
-                    .map(sceneGroup.monsters::get)
+                    .filter(monsters::containsKey)
+                    .map(monsters::get)
                     .toList()
             );
         }
 
-        if(sceneGroup.gadgets != null){
+        val gadgets = sceneGroup.getGadgets();
+        if(gadgets != null){
             this.sceneGadgets = new ArrayList<>(
                 this.gadgets.stream()
-                    .filter(sceneGroup.gadgets::containsKey)
-                    .map(sceneGroup.gadgets::get)
+                    .filter(gadgets::containsKey)
+                    .map(gadgets::get)
                     .toList()
             );
         }
 
-        if(sceneGroup.triggers != null) {
+        val triggers = sceneGroup.getTriggers();
+        if(triggers != null) {
             this.sceneTriggers = new ArrayList<>(
                 this.triggers.stream()
-                    .filter(sceneGroup.triggers::containsKey)
-                    .map(sceneGroup.triggers::get)
+                    .filter(triggers::containsKey)
+                    .map(triggers::get)
                     .toList()
             );
         }
-        if(sceneGroup.regions != null) {
+        val regions = sceneGroup.getRegions();
+        if(regions != null) {
             this.sceneRegions = new ArrayList<>(
                 this.regions.stream()
-                    .filter(sceneGroup.regions::containsKey)
-                    .map(sceneGroup.regions::get)
+                    .filter(regions::containsKey)
+                    .map(regions::get)
                     .toList()
             );
         }

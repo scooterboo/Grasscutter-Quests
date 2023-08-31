@@ -138,7 +138,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         this.state = state;
         //Cache the gadget state
         if(metaGadget != null && metaGadget.group != null) {
-            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.group.id);
+            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.group.getId());
             if(instance != null) instance.cacheGadgetState(metaGadget, state);
         }
     }

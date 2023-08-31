@@ -58,7 +58,7 @@ public class WorldChallenge {
      * Get the monster group id spawned by the challenge
      */
     public int getGroupId(){
-        return Optional.ofNullable(getGroup()).map(g -> g.id).orElse(0);
+        return group!=null ? group.getId() : 0;
     }
 
 
@@ -171,7 +171,9 @@ public class WorldChallenge {
      * @param monster Monster that belongs to the group spawned by the challenge
      */
     public void onMonsterDeath(EntityMonster monster){
-        if(!inProgress() || monster.getGroupId() != getGroupId()) return;
+        if(!inProgress() || monster.getGroupId() != getGroupId())
+            return;
+
 
         Optional.ofNullable(this.challengeTriggers.get(KillMonsterTrigger.class))
             .ifPresent(t -> t.onMonsterDeath(this, monster));
@@ -182,7 +184,7 @@ public class WorldChallenge {
 
     public void onGroupTriggerDeath(SceneTrigger trigger){
         if(!inProgress()) return;
-        if(Optional.ofNullable(trigger.getCurrentGroup()).filter(g -> g.id == getGroupId()).isEmpty()) return;
+        if(Optional.ofNullable(trigger.getCurrentGroup()).filter(g -> g.getId() == getGroupId()).isEmpty()) return;
 
         Optional.ofNullable(this.challengeTriggers.get(TriggerGroupTriggerTrigger.class))
             .ifPresent(t -> t.onGroupTrigger(this, trigger));

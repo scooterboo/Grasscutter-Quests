@@ -7,6 +7,7 @@ import emu.grasscutter.scripts.data.SceneGroup;
 import emu.grasscutter.scripts.data.SceneMonster;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.scripts.listener.ScriptMonsterListener;
+import lombok.val;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -41,7 +42,7 @@ public class ScriptMonsterTideService {
         this.sceneScriptManager.getScriptMonsterSpawnService().addMonsterDeadListener(onMonsterDead);
         // spawn the first turn
         for (int i = 0; i < this.monsterSceneLimit; i++) {
-            sceneScriptManager.addEntity(this.sceneScriptManager.createMonster(group.id, group.block_id, getNextMonster()));
+            sceneScriptManager.addEntity(this.sceneScriptManager.createMonster(group.getId(), group.block_id, getNextMonster()));
         }
     }
 
@@ -56,12 +57,16 @@ public class ScriptMonsterTideService {
     }
 
     public SceneMonster getNextMonster(){
-        var nextId = this.monsterConfigOrders.poll();
-        if(currentGroup.monsters.containsKey(nextId)){
-            return currentGroup.monsters.get(nextId);
+        val nextId = this.monsterConfigOrders.poll();
+        val monsters = currentGroup.getMonsters();
+        if (monsters == null) {
+            return null;
+        }
+        if(monsters.containsKey(nextId)){
+            return monsters.get(nextId);
         }
         // TODO some monster config_id do not exist in groups, so temporarily set it to the first
-        return currentGroup.monsters.values().stream().findFirst().orElse(null);
+        return monsters.values().stream().findFirst().orElse(null);
     }
 
     public class OnMonsterDead implements ScriptMonsterListener {
@@ -77,11 +82,11 @@ public class ScriptMonsterTideService {
             monsterKillCount.incrementAndGet();
             if (monsterTideCount.get() > 0) {
                 // add more
-                sceneScriptManager.addEntity(sceneScriptManager.createMonster(currentGroup.id, currentGroup.block_id, getNextMonster()));
+                sceneScriptManager.addEntity(sceneScriptManager.createMonster(currentGroup.getId(), currentGroup.block_id, getNextMonster()));
             }
             // spawn the last turn of monsters
             // fix the 5-2
-            sceneScriptManager.callEvent(new ScriptArgs(currentGroup.id, EventType.EVENT_MONSTER_TIDE_DIE, monsterKillCount.get())
+            sceneScriptManager.callEvent(new ScriptArgs(currentGroup.getId(), EventType.EVENT_MONSTER_TIDE_DIE, monsterKillCount.get())
                 .setEventSource(String.valueOf(challengeIndex)));
         }
 

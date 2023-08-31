@@ -366,7 +366,7 @@ public final class AbilityManager extends BasePlayerManager {
                 instancedAbilityData = GameData.getAbilityData(modChange.getParentAbilityName().getStr());
             }
 
-            if(instancedAbilityData == null) {
+            if(instancedAbilityData == null ||  instancedAbilityData.modifiers == null) {
                 logger.info("No ability found");
                 return; //TODO: Display error message
             }

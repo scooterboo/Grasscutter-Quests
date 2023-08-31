@@ -102,8 +102,8 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Nullable
     private List<MonsterAffixData> getAffixes(@Nullable SceneGroup group){
         List<Integer> affixes = null;
-        if(group != null) {
-            SceneMonster monster = group.monsters.get(getConfigId());
+        if(group != null && group.getMonsters() != null) {
+            SceneMonster monster = group.getMonsters().get(getConfigId());
             if(monster != null) affixes = monster.affix;
         }
 
@@ -132,7 +132,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         ArrayList<String> abilityNames = new ArrayList<>();
         val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
         //Affix abilities
-        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getId() == getGroupId()).findAny();
         List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
 
         // first add pre add affix abilities
@@ -157,7 +157,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         }
 
         optionalGroup.ifPresent(group -> {
-            val monster = group.monsters.get(getConfigId());
+            val monster = group.getMonsters().get(getConfigId());
             if(monster != null && monster.isElite) {
                 abilityNames.add(defaultAbilities.getMonterEliteAbilityName());
             }

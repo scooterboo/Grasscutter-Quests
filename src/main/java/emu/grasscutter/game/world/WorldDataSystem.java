@@ -100,11 +100,11 @@ public class WorldDataSystem extends BaseGameSystem {
         var sceneId = imd.getCityData().getSceneId();
         var group = getInvestigationGroup(sceneId, groupId);
 
-        if (group == null || group.monsters == null) {
+        if (group == null || group.getMonsters() == null) {
             return null;
         }
 
-        var monster = group.monsters.values().stream()
+        var monster = group.getMonsters().values().stream()
                 .filter(x -> x.monster_id == monsterId)
                 .findFirst();
         if (monster.isEmpty()) {

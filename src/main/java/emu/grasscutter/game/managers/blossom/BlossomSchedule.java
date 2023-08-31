@@ -53,7 +53,7 @@ public class BlossomSchedule implements BaseBlossomROSData {
             .orElse(3);
 
         return Optional.ofNullable(SceneGroup.of(groupsData.getNewGroupId()).load(sceneId))
-            .map(group -> group.gadgets)
+            .map(SceneGroup::getGadgets)
             .map(Map::values)
             .stream().flatMap(Collection::stream)
             .filter(gadget -> gadget.gadget_id == baseData.getRefreshType().getGadgetId())

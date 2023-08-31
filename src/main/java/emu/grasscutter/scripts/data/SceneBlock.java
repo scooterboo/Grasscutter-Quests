@@ -64,10 +64,10 @@ public class SceneBlock {
 
             // Set groups
             this.groups = cs.getGlobalVariableList("groups", SceneGroup.class).stream()
-                    .collect(Collectors.toMap(x -> x.id, y -> y, (a, b) -> a));
+                    .collect(Collectors.toMap(x -> x.getId(), y -> y, (a, b) -> a));
 
             this.groups.values().forEach(g -> g.block_id = this.id);
-            this.sceneGroupIndex = SceneIndexManager.buildIndex(3, this.groups.values(), g -> g.pos.toPoint());
+            this.sceneGroupIndex = SceneIndexManager.buildIndex(3, this.groups.values(), g -> g.getPos().toPoint());
         } catch (ScriptException exception) {
             Grasscutter.getLogger().error("An error occurred while loading block " + this.id + " in scene " + sceneId, exception);
         }

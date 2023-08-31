@@ -29,7 +29,16 @@ public class BossChestInteractHandler implements ChestInteractHandler{
         if (blossomRewards) return true;
 
         val worldDataManager = chest.getGadget().getScene().getWorld().getServer().getWorldDataSystem();
-        val monster = chest.getGadget().getMetaGadget().group.monsters.get(chest.getGadget().getMetaGadget().boss_chest.monster_config_id);
+        val chestMetaGadget = chest.getGadget().getMetaGadget();
+        val monsterCfgId = chestMetaGadget.boss_chest.monster_config_id;
+        val groupMonsters = chestMetaGadget.getGroup().getMonsters();
+        if(groupMonsters == null){
+            Grasscutter.getLogger().warn("group monsters are null {} unable to get cfg id {}",
+                chestMetaGadget.getGroup().getId(), monsterCfgId);
+            return false;
+        }
+        val monster = groupMonsters.get(monsterCfgId);
+
         val reward = worldDataManager.getRewardByBossId(monster.monster_id);
 
         if (reward == null) {

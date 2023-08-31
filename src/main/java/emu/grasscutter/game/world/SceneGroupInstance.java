@@ -37,7 +37,7 @@ public class SceneGroupInstance {
 
     public SceneGroupInstance(SceneGroup group, Player owner) {
         this.luaGroup = group;
-        this.groupId = group.id;
+        this.groupId = group.getId();
         this.targetSuiteId = 0;
         this.activeSuiteId = 0;
         this.lastTimeRefreshed = 0;
@@ -58,7 +58,7 @@ public class SceneGroupInstance {
 
     public void setLuaGroup(SceneGroup group) {
         this.luaGroup = group;
-        this.groupId = group.id;
+        this.groupId = group.getId();
     }
 
     public boolean isCached() {

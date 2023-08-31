@@ -24,7 +24,7 @@ public class EntityRegion extends GameEntity{
     public EntityRegion(Scene scene, SceneRegion region) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.REGION);
-        setGroupId(region.group.id);
+        setGroupId(region.group.getId());
         setBlockId(region.group.block_id);
         setConfigId(region.config_id);
         this.position = region.pos.clone();

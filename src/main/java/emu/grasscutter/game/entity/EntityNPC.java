@@ -20,7 +20,7 @@ public class EntityNPC extends GameEntity {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.NPC);
         setConfigId(metaNPC.config_id);
-        setGroupId(metaNPC.group.id);
+        setGroupId(metaNPC.group.getId());
         setBlockId(blockId);
         this.suiteId = suiteId;
         this.position = metaNPC.pos.clone();

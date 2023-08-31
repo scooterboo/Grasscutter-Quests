@@ -621,13 +621,13 @@ public class Scene {
         val visible = this.players.stream().map(this::getPlayerActiveGroups)
             .flatMap(Collection::stream).collect(Collectors.toSet());
 
-        this.loadedGroups.stream().filter(group -> !visible.contains(group.id) && !group.dynamic_load)
-            .forEach(group -> unloadGroup(this.scriptManager.getBlocks().get(group.block_id), group.id));
+        this.loadedGroups.stream().filter(group -> !visible.contains(group.getId()) && !group.isDynamic_load())
+            .forEach(group -> unloadGroup(this.scriptManager.getBlocks().get(group.block_id), group.getId()));
 
-        val toLoad = visible.stream().filter(g -> this.loadedGroups.stream().noneMatch(gr -> gr.id == g))
+        val toLoad = visible.stream().filter(g -> this.loadedGroups.stream().noneMatch(gr -> gr.getId() == g))
             .filter(g -> !this.replacedGroup.contains(g)).map(g -> Optional.ofNullable(this.scriptManager.getBlocks())
                 .stream().map(Map::values).flatMap(Collection::stream).peek(this::loadBlock).map(b -> b.groups.get(g))
-                .filter(Objects::nonNull).filter(group -> !group.dynamic_load).findFirst().orElse(null))
+                .filter(Objects::nonNull).filter(group -> !group.isDynamic_load()).findFirst().orElse(null))
             .filter(Objects::nonNull).toList();
 
         onLoadGroup(toLoad);
@@ -649,7 +649,7 @@ public class Scene {
     public int loadDynamicGroup(int groupId) {
         return this.scriptManager.getGroupInstanceById(groupId) != null || this.replacedGroup.contains(groupId) ? -1 :
             Optional.ofNullable(this.scriptManager.getGroupById(groupId))
-                .map(group -> group.init_config).map(config -> config.suite).orElse(-1);
+                .map(SceneGroup::getInit_config).map(config -> config.suite).orElse(-1);
     }
 
     public boolean unregisterDynamicGroup(int groupId){
@@ -660,7 +660,7 @@ public class Scene {
         unloadGroup(block, groupId);
 
         val toRestore = Optional.ofNullable(block.groups.get(groupId)).map(g -> g.getReplaceableGroups(block.groups.values()))
-            .stream().flatMap(List::stream).filter(replacement -> this.replacedGroup.remove(replacement.id)).toList();
+            .stream().flatMap(List::stream).filter(replacement -> this.replacedGroup.remove(replacement.getId())).toList();
         if (!toRestore.isEmpty()) {
             onLoadGroup(toRestore);
             Grasscutter.getLogger().info("Unregistered group: {}", groupId);
@@ -676,8 +676,8 @@ public class Scene {
         // Create the graph
         val groupList = new HashSet<Integer>();
         val nodes = GameData.getGroupReplacements().values().stream()
-            .filter(replacement -> this.loadedGroups.stream().filter(group -> group.dynamic_load)
-                .anyMatch(group -> group.id == replacement.id)) // dynamic groups
+            .filter(replacement -> this.loadedGroups.stream().filter(group -> group.isDynamic_load())
+                .anyMatch(group -> group.getId() == replacement.id)) // dynamic groups
 //            .filter(replacement -> getReplacedGroup().stream().noneMatch(replacement.replace_groups::contains))
             .peek(replacement -> Grasscutter.getLogger().info("Graph ordering replacement {}", replacement))
             .peek(replacement -> groupList.add(replacement.id))
@@ -690,21 +690,21 @@ public class Scene {
         // Now we can start unloading and loading groups :D
         Optional.ofNullable(KahnsSort.doSort(new KahnsSort.Graph(
                 nodes.stream().toList(), groupList.stream().toList()))).stream().flatMap(List::stream)
-            .map(groupId -> this.loadedGroups.stream().filter(g -> g.id == groupId).findFirst()) // isGroupJoinReplacement
+            .map(groupId -> this.loadedGroups.stream().filter(g -> g.getId() == groupId).findFirst()) // isGroupJoinReplacement
             .filter(Optional::isPresent).map(Optional::get)
             .map(targetGroup -> targetGroup.getReplaceableGroups(this.loadedGroups))
             .flatMap(List::stream)
-            .filter(replacement -> !this.replacedGroup.contains(replacement.id))
-            .peek(replacement -> this.replacedGroup.add(replacement.id))
-            .peek(replacement -> Grasscutter.getLogger().info("Graph ordering: unloaded {}", replacement.id))
+            .filter(replacement -> !this.replacedGroup.contains(replacement.getId()))
+            .peek(replacement -> this.replacedGroup.add(replacement.getId()))
+            .peek(replacement -> Grasscutter.getLogger().info("Graph ordering: unloaded {}", replacement.getId()))
             .peek(replacement -> Grasscutter.getLogger().info("Replaced groups: {}", this.replacedGroup))
-            .forEach(replacement -> unloadGroup(this.scriptManager.getBlocks().get(replacement.block_id), replacement.id));
+            .forEach(replacement -> unloadGroup(this.scriptManager.getBlocks().get(replacement.block_id), replacement.getId()));
     }
 
     public void loadTriggerFromGroup(SceneGroup group, String triggerName) {
         //Load triggers and regions
-        this.scriptManager.registerTrigger(group.triggers.values().stream().filter(p -> p.getName().contains(triggerName)).toList());
-        group.regions.values().stream().filter(q -> q.config_id == Integer.parseInt(triggerName.substring(13)))
+        this.scriptManager.registerTrigger(group.getTriggers().values().stream().filter(p -> p.getName().contains(triggerName)).toList());
+        group.getRegions().values().stream().filter(q -> q.config_id == Integer.parseInt(triggerName.substring(13)))
             .map(region -> new EntityRegion(this, region)).forEach(this.scriptManager::registerRegion);
     }
 
@@ -725,16 +725,16 @@ public class Scene {
         // TODO
         val entities = new ArrayList<GameEntity>();
         val entitiesBorn = new ArrayList<GameEntity>();
-        groups.stream().filter(group -> !this.loadedGroups.contains(group)).filter(group -> group.init_config != null)
-            .map(group -> Optional.ofNullable(this.scriptManager.getCachedGroupInstanceById(group.id))
+        groups.stream().filter(group -> !this.loadedGroups.contains(group)).filter(group -> group.getInit_config() != null)
+            .map(group -> Optional.ofNullable(this.scriptManager.getCachedGroupInstanceById(group.getId()))
                 .stream().peek(cachedInstance -> cachedInstance.setLuaGroup(group))
-                .findFirst().orElse(this.scriptManager.getGroupInstanceById(group.id)))
+                .findFirst().orElse(this.scriptManager.getGroupInstanceById(group.getId())))
             .peek(gi -> this.loadedGroups.add(gi.getLuaGroup())) // Load suites
             .forEach(gi -> this.scriptManager.refreshGroup(gi, 0, false, entitiesBorn)); //This is what the official server does
 
         this.scriptManager.meetEntities(entities);
         this.scriptManager.addEntities(entitiesBorn);
-        groups.forEach(g -> this.scriptManager.callEvent(new ScriptArgs(g.id, EventType.EVENT_GROUP_LOAD, g.id)));
+        groups.forEach(g -> this.scriptManager.callEvent(new ScriptArgs(g.getId(), EventType.EVENT_GROUP_LOAD, g.getId())));
         Grasscutter.getLogger().info("Scene {} loaded {} group(s)", getId(), groups.size());
     }
 
@@ -748,11 +748,16 @@ public class Scene {
         removeEntities(this.entities.values().stream().filter(Objects::nonNull).filter(e ->
             e.getBlockId() == block.id && e.getGroupId() == groupId).toList(), VisionType.VISION_TYPE_REMOVE);
 
-        val group = block.groups.get(groupId);
-        Optional.ofNullable(group.triggers).map(Map::values).stream().flatMap(Collection::stream)
-            .forEach(this.scriptManager::deregisterTrigger);
-        Optional.ofNullable(group.regions).map(Map::values).stream().flatMap(Collection::stream)
-            .forEach(this.scriptManager::deregisterRegion);
+
+        SceneGroup group = block.groups.get(groupId);
+        val triggers = group.getTriggers();
+        if (triggers != null) {
+            triggers.values().forEach(getScriptManager()::deregisterTrigger);
+        }
+        val regions = group.getRegions();
+        if (regions != null) {
+            regions.values().forEach(getScriptManager()::deregisterRegion);
+        }
 
         Optional.ofNullable(this.scriptManager.getLoadedGroupSetPerBlock().get(block.id)).ifPresent(s -> s.remove(group));
 
