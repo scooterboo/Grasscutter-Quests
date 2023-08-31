@@ -10,6 +10,7 @@ import emu.grasscutter.utils.Position;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,9 @@ public class PointData {
     private int id;
     private int sceneId;
     private String $type;
+    @Nullable
     private Position tranPos;
+    @Nullable
     private Position tranRot;
     private Position pos;
     private Position rot;
@@ -47,6 +50,20 @@ public class PointData {
 
     public String getType() {
         return this.$type;
+    }
+
+    public Position getTransPosWithFallback(){
+        if (this.tranPos == null) {
+            return this.pos;
+        }
+        return this.tranPos;
+    }
+
+    public Position getTransRotWithFallback(){
+        if (this.tranRot == null) {
+            return this.rot;
+        }
+        return this.tranRot;
     }
 
     public void onLoad() {
@@ -72,14 +89,6 @@ public class PointData {
 
         if (this.dungeonIds != null && this.dungeonIds.length > 0) {
             this.allDungeonIds = Arrays.stream(this.dungeonIds).boxed().toList();
-        }
-
-        if (this.tranPos == null) { // should only happen for dungeon exit points
-            this.tranPos = this.pos;
-        }
-
-        if (this.tranRot == null) { // should only happen for dungeon exit points
-            this.tranRot = this.rot;
         }
     }
 

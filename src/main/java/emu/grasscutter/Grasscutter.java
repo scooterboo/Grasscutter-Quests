@@ -120,16 +120,6 @@ public final class Grasscutter {
         ScriptLoader.init();
         ResourceLoader.loadAll();
 
-//        val aa = SceneGroup.of(133210452).load(3);
-//        val bb = SceneGroup.of(133210453).load(3);
-//        val aa = new Avatar(10000060);
-//        aa.getTest().add(1);
-//        val bb = new TowerAvatar(aa);
-//        bb.getTest().add(2);
-//        Grasscutter.getLogger().info("{}", GameData.getAbilityData("Atk_Dungeon"));
-//        Grasscutter.getLogger().info("{}", PlayerDungeonExitInfo.create());
-
-
         // Generate handbooks.
         Tools.createGmHandbooks();
 

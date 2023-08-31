@@ -23,7 +23,8 @@ public class HandlerSceneTransToPointReq extends PacketHandler {
         val result = Optional.ofNullable(GameData.getScenePointEntryById(req.getSceneId(), req.getPointId()))
             .map(ScenePointEntry::getPointData)
             .filter(pointData -> player.getWorld().transferPlayerToScene(
-                player, req.getSceneId(), TeleportType.WAYPOINT, pointData.getTranPos(), pointData.getTranRot()))
+                player, req.getSceneId(), TeleportType.WAYPOINT,
+                pointData.getTransPosWithFallback(), pointData.getTransRotWithFallback()))
             .isPresent();
 
         session.send(new PacketSceneTransToPointRsp(result, req.getPointId(), req.getSceneId()));

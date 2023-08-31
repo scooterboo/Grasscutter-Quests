@@ -26,8 +26,8 @@ public class HandlerPersonalSceneJumpReq extends PacketHandler {
             .map(ScenePointEntry::getPointData).orElse(null);
 
         if (pointData != null) {
-            val pos = pointData.getTranPos();
-            val rot = pointData.getTranRot();
+            val pos = pointData.getTransPosWithFallback();
+            val rot = pointData.getTransRotWithFallback();
             int sceneId = pointData.getTranSceneId();
 
             player.getWorld().transferPlayerToScene(player, sceneId, pos, rot);

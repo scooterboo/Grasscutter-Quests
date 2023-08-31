@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class ChallengeFactoryHandler {
-    protected Map<Class<? extends ChallengeTrigger>, ChallengeTrigger> buildChallengeTrigger(List<ChallengeTrigger> triggers) {
+    protected static Map<Class<? extends ChallengeTrigger>, ChallengeTrigger> buildChallengeTrigger(List<ChallengeTrigger> triggers) {
         return triggers.stream().collect(Collectors.toMap(ChallengeTrigger::getClass, t -> t));
     }
     /**

@@ -558,9 +558,9 @@ public class TeamManager extends BasePlayerDataManager {
             .map(pointId -> GameData.getScenePointEntryById(sceneId, pointId))
             .filter(point -> point.getPointData().getType().equals("SceneTransPoint"))
             .min(Comparator.comparingDouble(pos ->
-                Utils.getDist(pos.getPointData().getTranPos(),
+                Utils.getDist(pos.getPointData().getTransPosWithFallback(),
                 getPlayer().getPosition())))
-            .map(scenePointEntry -> scenePointEntry.getPointData().getTranPos())
+            .map(scenePointEntry -> scenePointEntry.getPointData().getTransRotWithFallback())
             .orElse(GameConstants.START_POSITION);
     }
     public void saveAvatars() {

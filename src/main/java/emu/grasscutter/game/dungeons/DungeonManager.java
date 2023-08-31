@@ -89,6 +89,7 @@ public class DungeonManager {
     public boolean activateRespawnPoint(int pointId) {
         val respawnPoint = GameData.getScenePointEntryById(this.scene.getId(), pointId);
 
+        // getter depend on this check being done here
         if (respawnPoint == null) {
             Grasscutter.getLogger().warn("trying to activate unknown respawn point {}", pointId);
             return false;
@@ -103,21 +104,40 @@ public class DungeonManager {
     @Nullable
     public Position getRespawnLocation() {
         // validity is checked before setting it, so if != 0 its always valid
-        return Optional.ofNullable(GameData.getScenePointEntryById(this.scene.getId(), this.newestWayPoint))
-            .map(ScenePointEntry::getPointData).map(PointData::getTranPos).orElse(null);
+        if(newestWayPoint == 0)
+            return null;
+        return GameData.getScenePointEntryById(this.scene.getId(), this.newestWayPoint)
+            .getPointData()
+            .getTransPosWithFallback();
     }
 
     public Position getRespawnRotation() {
         // validity is checked before setting it, so if != 0 its always valid
-        return Optional.ofNullable(GameData.getScenePointEntryById(this.scene.getId(), this.newestWayPoint))
-            .map(ScenePointEntry::getPointData).map(PointData::getRot).orElse(null);
+        if(newestWayPoint == 0)
+            return null;
+        return GameData.getScenePointEntryById(this.scene.getId(), this.newestWayPoint)
+            .getPointData()
+            .getTransRotWithFallback();
+    }
+
+    private boolean hasRewards(){
+        //TODO check dungeonData.passRewardId and dungeondata.passRewardPreviewId only as fallback
+        return this.dungeonData.getRewardPreviewData() != null && this.dungeonData.getRewardPreviewData().getPreviewItems().length > 0;
+    }
+
+    private boolean hasPlayerClaimedRewards(Player player){
+        return this.rewardedPlayers.contains(player.getUid());
     }
 
     public boolean getStatueDrops(Player player, boolean useCondensed, int groupId) {
-        if (!isFinishedSuccessfully() || Optional.ofNullable(this.dungeonData.getRewardPreviewData())
-            .filter(previewData -> previewData.getPreviewItems().length == 0).isPresent()
-            // Already rewarded
-            || this.rewardedPlayers.contains(player.getUid()) || !handleCost(player, useCondensed)) return false;
+        // checks before claiming rewards
+        if (!isFinishedSuccessfully() || !hasRewards() || hasPlayerClaimedRewards(player))
+            return false;
+
+
+        // check if player has enough currency to claim and pay, otherwise fail
+        if (!handleCost(player, useCondensed))
+            return false;
 
         // Get and roll rewards.
         val rewards = rollRewards(useCondensed);
@@ -137,12 +157,14 @@ public class DungeonManager {
             // Check if condensed resin is usable here.
             // For this, we use the following logic for now:
             // The normal resin cost of the dungeon has to be 20.
+            if (resinCost != 20) return false;
+
             // Spend the condensed resin and only proceed if the transaction succeeds.
-            return resinCost == 20 && player.getResinManager().useCondensedResin(1);
+            return player.getResinManager().useCondensedResin(1);
         } else if (this.dungeonData.getStatueCostID() == 106) {
             // Spend the resin and only proceed if the transaction succeeds.
             return player.getResinManager().useResin(resinCost);
-        }
+        } //TODO should we maybe support other currencies here?
         return true;
     }
 
@@ -264,9 +286,9 @@ public class DungeonManager {
     }
 
     public void endDungeon(BaseDungeonResult.DungeonEndReason endReason) {
-        Optional.ofNullable(this.scene.getDungeonSettleListeners()).stream()
-            .flatMap(List::stream)
-            .forEach(o -> o.onDungeonSettle(this, endReason));
+        if (scene.getDungeonSettleListeners() != null) {
+            scene.getDungeonSettleListeners().forEach(o -> o.onDungeonSettle(this, endReason));
+        }
         this.ended = true;
     }
 
