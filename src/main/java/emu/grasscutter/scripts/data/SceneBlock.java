@@ -7,9 +7,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.utils.Position;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.val;
+import lombok.*;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
@@ -19,21 +17,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ToString
-@Setter
+@Getter
 public class SceneBlock {
-    public int id;
-    public Position max;
-    public Position min;
+    @Setter(AccessLevel.PACKAGE)
+    private int id;
+    private Position max;
+    private Position min;
 
-    public int sceneId;
-    public Map<Integer,SceneGroup> groups;
-    public RTree<SceneGroup, Geometry> sceneGroupIndex;
+    private int sceneId;
+    private Map<Integer,SceneGroup> groups;
+    private RTree<SceneGroup, Geometry> sceneGroupIndex;
 
     private transient boolean loaded; // Not an actual variable in the scripts either
-
-    public boolean isLoaded() {
-        return this.loaded;
-    }
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;

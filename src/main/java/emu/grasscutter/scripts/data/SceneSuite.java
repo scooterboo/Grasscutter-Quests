@@ -3,26 +3,27 @@ package emu.grasscutter.scripts.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.val;
 
 @ToString
-@Setter
+@Getter
 public class SceneSuite {
     // make it refer the default empty list to avoid NPE caused by some group
-	public List<Integer> monsters = List.of();
-	public List<Integer> gadgets = List.of();
-	public List<String> triggers = List.of();
-    public List<Integer> regions = List.of();
-    public int rand_weight;
+    private List<Integer> monsters = List.of();
+    private List<Integer> gadgets = List.of();
+    private List<String> triggers = List.of();
+    private List<Integer> regions = List.of();
+    private int rand_weight;
 
-    public boolean ban_refresh = false;
+    private boolean ban_refresh = false;
 
-	public transient List<SceneMonster> sceneMonsters = List.of();
-	public transient List<SceneGadget> sceneGadgets = List.of();
-	public transient List<SceneTrigger> sceneTriggers = List.of();
-    public transient List<SceneRegion> sceneRegions = List.of();
+    private transient List<SceneMonster> sceneMonsters = List.of();
+    private transient List<SceneGadget> sceneGadgets = List.of();
+    private transient List<SceneTrigger> sceneTriggers = List.of();
+    private transient List<SceneRegion> sceneRegions = List.of();
 
     public void init(SceneGroup sceneGroup) {
         val monsters = sceneGroup.getMonsters();

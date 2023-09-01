@@ -1,10 +1,17 @@
 package emu.grasscutter.scripts.data;
 
+import emu.grasscutter.game.props.EntityIdType;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-@Setter
+@Getter
 public class SceneNPC extends SceneObject{
-	public int npc_id;
+	private int npc_id;
+
+    @Override
+    public EntityIdType getType() {
+        return EntityIdType.NPC;
+    }
 }

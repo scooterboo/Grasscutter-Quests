@@ -858,7 +858,7 @@ public class ScriptLib {
 
         var group = context.getSceneScriptManager().getGroupById(groupId);
         if(group != null && group.getIs_replaceable() != null) {
-            group.getIs_replaceable().value = value;
+            group.getIs_replaceable().setValue(value);
             return 0;
         }
         return 1;
@@ -1705,7 +1705,7 @@ public class ScriptLib {
 
         // kill targets if exists
         targets.forEach(o -> {
-            var entity = sceneScriptManager.getScene().getEntityByConfigId(o.config_id);
+            var entity = sceneScriptManager.getScene().getEntityByConfigId(o.getConfig_id());
             if (entity == null) {
                 return;
             }

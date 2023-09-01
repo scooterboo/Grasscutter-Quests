@@ -1,21 +1,26 @@
 package emu.grasscutter.scripts.data;
 
+import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.scripts.constants.ScriptRegionShape;
 import emu.grasscutter.utils.Position;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 
-@Setter
+@Getter
 public class SceneRegion extends SceneObject{
-    public int shape;
+    private int shape;
     // for CUBIC
-    public Position size;
-    // for SPHERE
-    public int radius;
-    public float height;
-    public List<Position> point_array;
+    private Position size;
+    // for SPHERE AND CYLINDER
+    private int radius;
+    // for CYLINDER and POLYGON
+    private float height;
+    private List<Position> point_array;
+    private List<String> team_ability_group;
+    private boolean is_trigger_reload_group;
 
     public boolean contains(Position position) {
         switch (shape) {
@@ -37,4 +42,8 @@ public class SceneRegion extends SceneObject{
         return group.getId();
     }
 
+    @Override
+    public EntityIdType getType() {
+        return EntityIdType.REGION;
+    }
 }

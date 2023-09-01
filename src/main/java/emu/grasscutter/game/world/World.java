@@ -311,8 +311,8 @@ public class World implements Iterable<Player> {
         // }
         SceneConfig config = newScene.getScriptManager().getConfig();
         if (teleportProperties.getTeleportTo() == null && config != null) {
-            Optional.ofNullable(config.born_pos).ifPresent(teleportProperties::setTeleportTo);
-            Optional.ofNullable(config.born_rot).ifPresent(teleportProperties::setTeleportRot);
+            Optional.ofNullable(config.getBorn_pos()).ifPresent(teleportProperties::setTeleportTo);
+            Optional.ofNullable(config.getBorn_rot()).ifPresent(teleportProperties::setTeleportRot);
         }
 
         // Set player position and rotation

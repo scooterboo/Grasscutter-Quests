@@ -28,6 +28,7 @@ import emu.grasscutter.scripts.SceneScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.SceneBlock;
 import emu.grasscutter.scripts.data.SceneGroup;
+import emu.grasscutter.scripts.data.SceneInitConfig;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.player.PlayerTeleportEvent;
 import emu.grasscutter.server.packet.send.*;
@@ -422,18 +423,18 @@ public class Scene {
     private void checkPlayerRespawn() {
         if (this.scriptManager.getConfig() == null) return;
 
-        val diePos = this.scriptManager.getConfig().die_y;
+        val diePos = this.scriptManager.getConfig().getDie_y();
         // Check if we need a respawn
         this.players.stream().filter(p -> diePos >= p.getPosition().getY()).forEach(this::respawnPlayer);
         this.entities.values().stream().filter(e -> diePos >= e.getPosition().getY()).forEach(this::killEntity);
     }
 
     private Position getDefaultLocation(Player player) {
-        return Optional.ofNullable(this.scriptManager.getConfig().born_pos).orElse(player.getPosition());
+        return Optional.ofNullable(this.scriptManager.getConfig().getBorn_pos()).orElse(player.getPosition());
     }
 
     private Position getDefaultRot(Player player) {
-        return Optional.ofNullable(this.scriptManager.getConfig().born_rot).orElse(player.getRotation());
+        return Optional.ofNullable(this.scriptManager.getConfig().getBorn_rot()).orElse(player.getRotation());
     }
 
     private Position getRespawnLocation(Player player) {
@@ -626,7 +627,7 @@ public class Scene {
 
         val toLoad = visible.stream().filter(g -> this.loadedGroups.stream().noneMatch(gr -> gr.getId() == g))
             .filter(g -> !this.replacedGroup.contains(g)).map(g -> Optional.ofNullable(this.scriptManager.getBlocks())
-                .stream().map(Map::values).flatMap(Collection::stream).peek(this::loadBlock).map(b -> b.groups.get(g))
+                .stream().map(Map::values).flatMap(Collection::stream).peek(this::loadBlock).map(b -> b.getGroups().get(g))
                 .filter(Objects::nonNull).filter(group -> !group.isDynamic_load()).findFirst().orElse(null))
             .filter(Objects::nonNull).toList();
 
@@ -637,9 +638,9 @@ public class Scene {
     private Set<SceneGroup> onLoadBlock(SceneBlock block, List<Player> players) {
         if (!block.isLoaded()) {
             this.scriptManager.loadBlockFromScript(block);
-            Grasscutter.getLogger().info("Scene {} Block {} loaded.", getId(), block.id);
+            Grasscutter.getLogger().info("Scene {} Block {} loaded.", getId(), block.getId());
         }
-        return this.scriptManager.getLoadedGroupSetPerBlock().computeIfAbsent(block.id, f -> new HashSet<>());
+        return this.scriptManager.getLoadedGroupSetPerBlock().computeIfAbsent(block.getId(), f -> new HashSet<>());
     }
 
     /**
@@ -649,7 +650,7 @@ public class Scene {
     public int loadDynamicGroup(int groupId) {
         return this.scriptManager.getGroupInstanceById(groupId) != null || this.replacedGroup.contains(groupId) ? -1 :
             Optional.ofNullable(this.scriptManager.getGroupById(groupId))
-                .map(SceneGroup::getInit_config).map(config -> config.suite).orElse(-1);
+                .map(SceneGroup::getInit_config).map(SceneInitConfig::getSuite).orElse(-1);
     }
 
     public boolean unregisterDynamicGroup(int groupId){
@@ -659,7 +660,7 @@ public class Scene {
         val block = this.scriptManager.getBlocks().get(group.block_id);
         unloadGroup(block, groupId);
 
-        val toRestore = Optional.ofNullable(block.groups.get(groupId)).map(g -> g.getReplaceableGroups(block.groups.values()))
+        val toRestore = Optional.ofNullable(block.getGroups().get(groupId)).map(g -> g.getReplaceableGroups(block.getGroups().values()))
             .stream().flatMap(List::stream).filter(replacement -> this.replacedGroup.remove(replacement.getId())).toList();
         if (!toRestore.isEmpty()) {
             onLoadGroup(toRestore);
@@ -704,7 +705,7 @@ public class Scene {
     public void loadTriggerFromGroup(SceneGroup group, String triggerName) {
         //Load triggers and regions
         this.scriptManager.registerTrigger(group.getTriggers().values().stream().filter(p -> p.getName().contains(triggerName)).toList());
-        group.getRegions().values().stream().filter(q -> q.config_id == Integer.parseInt(triggerName.substring(13)))
+        group.getRegions().values().stream().filter(q -> q.getConfig_id() == Integer.parseInt(triggerName.substring(13)))
             .map(region -> new EntityRegion(this, region)).forEach(this.scriptManager::registerRegion);
     }
 
@@ -746,10 +747,10 @@ public class Scene {
      * */
     private void unloadGroup(SceneBlock block, int groupId) {
         removeEntities(this.entities.values().stream().filter(Objects::nonNull).filter(e ->
-            e.getBlockId() == block.id && e.getGroupId() == groupId).toList(), VisionType.VISION_TYPE_REMOVE);
+            e.getBlockId() == block.getId() && e.getGroupId() == groupId).toList(), VisionType.VISION_TYPE_REMOVE);
 
 
-        SceneGroup group = block.groups.get(groupId);
+        SceneGroup group = block.getGroups().get(groupId);
         val triggers = group.getTriggers();
         if (triggers != null) {
             triggers.values().forEach(getScriptManager()::deregisterTrigger);
@@ -759,13 +760,13 @@ public class Scene {
             regions.values().forEach(getScriptManager()::deregisterRegion);
         }
 
-        Optional.ofNullable(this.scriptManager.getLoadedGroupSetPerBlock().get(block.id)).ifPresent(s -> s.remove(group));
+        Optional.ofNullable(this.scriptManager.getLoadedGroupSetPerBlock().get(block.getId())).ifPresent(s -> s.remove(group));
 
         this.loadedGroups.remove(group);
 
-        if (this.scriptManager.getLoadedGroupSetPerBlock().get(block.id).isEmpty()) {
-            this.scriptManager.getLoadedGroupSetPerBlock().remove(block.id);
-            Grasscutter.getLogger().info("Scene {} Block {} is unloaded.", getId(), block.id);
+        if (this.scriptManager.getLoadedGroupSetPerBlock().get(block.getId()).isEmpty()) {
+            this.scriptManager.getLoadedGroupSetPerBlock().remove(block.getId());
+            Grasscutter.getLogger().info("Scene {} Block {} is unloaded.", getId(), block.getId());
         }
 
         broadcastPacket(new PacketGroupUnloadNotify(List.of(groupId)));

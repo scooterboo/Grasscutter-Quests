@@ -1,13 +1,14 @@
 package emu.grasscutter.scripts.data;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-@Setter
+@Getter
 public class SceneVar {
-    public int configId;
-	public String name;
-	public int value;
-	public boolean no_refresh;
+    private int configId;
+    private String name;
+    private int value;
+    private boolean no_refresh;
 }

@@ -62,11 +62,15 @@ public class SceneGroup {
     }
 
     public int getBusinessType() {
-        return this.business == null ? 0 : this.business.type;
+        return this.business == null ? 0 : this.business.getType();
     }
 
     public List<SceneGadget> getGarbageGadgets() {
-        return this.garbages == null ? null : this.garbages.gadgets;
+        return this.garbages == null ? null : this.garbages.getGadgets();
+    }
+
+    public boolean isReplaceable() {
+        return this.is_replaceable != null ? this.is_replaceable.isValue() : false;
     }
 
     public SceneSuite getSuiteByIndex(int index) {
@@ -145,27 +149,27 @@ public class SceneGroup {
 
     public int findInitSuiteIndex(int exclude_index) { //TODO: Investigate end index
         if (init_config == null) return 1;
-        if (init_config.io_type == 1) return init_config.suite; //IO TYPE FLOW
-        if (init_config.rand_suite) {
+        if (init_config.getIo_type() == 1) return init_config.getSuite(); //IO TYPE FLOW
+        if (init_config.isRand_suite()) {
             if (suites.size() == 1) {
-                return init_config.suite;
+                return init_config.getSuite();
             } else {
                 List<Integer> randSuiteList = new ArrayList<>();
                 for (int i = 0; i < suites.size(); i++) {
                     if (i == exclude_index) continue;
 
                     var suite = suites.get(i);
-                    for (int j = 0; j < suite.rand_weight; j++) randSuiteList.add(Integer.valueOf(i + 1));
+                    for (int j = 0; j < suite.getRand_weight(); j++) randSuiteList.add(Integer.valueOf(i + 1));
                 }
                 return randSuiteList.get(new Random().nextInt(randSuiteList.size()));
             }
         }
-        return init_config.suite;
+        return init_config.getSuite();
     }
 
     public Optional<SceneBossChest> searchBossChestInGroup() {
-        return this.gadgets.values().stream().map(g -> g.boss_chest).filter(Objects::nonNull)
-            .filter(bossChest -> bossChest.monster_config_id > 0)
+        return this.gadgets.values().stream().map(g -> g.getBoss_chest()).filter(Objects::nonNull)
+            .filter(bossChest -> bossChest.getMonster_config_id() > 0)
             .findFirst();
     }
 
@@ -177,9 +181,9 @@ public class SceneGroup {
                 .map(replacementId -> loadedGroups.stream().filter(g -> g.id == replacementId).findFirst())
                 .filter(Optional::isPresent).map(Optional::get)
                 .filter(replacementGroup -> replacementGroup.is_replaceable != null)
-                .filter(replacementGroup -> (replacementGroup.is_replaceable.value
-                    && replacementGroup.is_replaceable.version <= this.is_replaceable.version)
-                    || replacementGroup.is_replaceable.new_bin_only)
+                .filter(replacementGroup -> (replacementGroup.is_replaceable.isValue()
+                    && replacementGroup.is_replaceable.getVersion() <= this.is_replaceable.getVersion())
+                    || replacementGroup.is_replaceable.isNew_bin_only())
                 .toList();
     }
 }
