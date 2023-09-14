@@ -50,17 +50,21 @@ public abstract class Serializer {
         var fieldMetaMap = new HashMap<String, FieldMeta>();
         var methodNameSet = new HashSet<>(Arrays.stream(methodAccess.getMethodNames()).toList());
 
-        Arrays.stream(type.getDeclaredFields())
-            .forEach(field -> {
-                if(methodNameSet.contains(getSetterName(field.getName()))) {
-                    var setter = getSetterName(field.getName());
-                    var index = methodAccess.getIndex(setter);
-                    fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), setter, index, field.getType(), field));
-                } else {
-                    field.setAccessible(true);
-                    fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), null, -1, field.getType(), field));
-                }
-            });
+        Class<?> classtype = type;
+        while(classtype!=null){
+            Arrays.stream(classtype.getDeclaredFields())
+                .forEach(field -> {
+                    if(methodNameSet.contains(getSetterName(field.getName()))) {
+                        var setter = getSetterName(field.getName());
+                        var index = methodAccess.getIndex(setter);
+                        fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), setter, index, field.getType(), field));
+                    } else {
+                        field.setAccessible(true);
+                        fieldMetaMap.put(field.getName(), new FieldMeta(field.getName(), null, -1, field.getType(), field));
+                    }
+                });
+            classtype = classtype.getSuperclass();
+        }
 
         Arrays.stream(type.getFields())
             .filter(field -> !fieldMetaMap.containsKey(field.getName()))
