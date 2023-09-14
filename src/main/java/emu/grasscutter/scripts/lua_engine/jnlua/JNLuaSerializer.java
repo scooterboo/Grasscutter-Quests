@@ -122,7 +122,7 @@ public class JNLuaSerializer extends Serializer {
         }
 
         try {
-            if (!methodAccessCache.containsKey(type)) {
+            if (!fieldMetaCache.containsKey(type)) {
                 cacheType(type);
             }
             var methodAccess = methodAccessCache.get(type);
@@ -145,22 +145,22 @@ public class JNLuaSerializer extends Serializer {
                     var fieldMeta = fieldMetaMap.get(keyName);
                     var keyValue = k.getValue();
                     if (fieldMeta.getType().equals(float.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), getFloat(keyValue));
+                        set(object, fieldMeta, methodAccess, getFloat(keyValue));
                     } else if (fieldMeta.getType().equals(double.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), (keyValue));
+                        set(object, fieldMeta, methodAccess, (double) keyValue);
                     } else if (fieldMeta.getType().equals(int.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), getInt(keyValue));
+                        set(object, fieldMeta, methodAccess, getInt(keyValue));
                     } else if (fieldMeta.getType().equals(String.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue);
+                        set(object, fieldMeta, methodAccess, keyValue);
                     } else if (fieldMeta.getType().equals(boolean.class)) {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), keyValue);
+                        set(object, fieldMeta, methodAccess, (boolean) keyValue);
                     } else if (fieldMeta.getType().equals(List.class)) {
                         LuaValueProxy objTable = (LuaValueProxy) tableObj.get(k.getKey());
                         Class<?> listType = getListType(type, fieldMeta.getField());
                         List<?> listObj = serializeList(listType, objTable);
-                        methodAccess.invoke(object, fieldMeta.getIndex(), listObj);
+                        set(object, fieldMeta, methodAccess, listObj);
                     } else {
-                        methodAccess.invoke(object, fieldMeta.getIndex(), serialize(fieldMeta.getType(), fieldMeta.getField(), (LuaValueProxy) keyValue));
+                        set(object, fieldMeta, methodAccess, serialize(fieldMeta.getType(), fieldMeta.getField(), (LuaValueProxy) keyValue));
                         //methodAccess.invoke(object, fieldMeta.index, keyValue);
                     }
                 } catch (Exception ex) {

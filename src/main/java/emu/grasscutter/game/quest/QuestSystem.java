@@ -1,5 +1,6 @@
 package emu.grasscutter.game.quest;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.data.common.quest.SubQuestData.*;
 import emu.grasscutter.data.common.quest.SubQuestData;
@@ -16,7 +17,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -45,8 +45,7 @@ public class QuestSystem extends BaseGameSystem {
     }
 
     public <T> void registerHandlers(Int2ObjectMap<T> map, String packageName, Class<T> clazz) {
-        Reflections reflections = new Reflections(packageName);
-        var handlerClasses = reflections.getSubTypesOf(clazz);
+        var handlerClasses = Grasscutter.reflector.getSubTypesOf(clazz);
 
         for (var obj : handlerClasses) {
             this.registerPacketHandler(map, obj);

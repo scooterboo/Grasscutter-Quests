@@ -102,9 +102,9 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Nullable
     private List<MonsterAffixData> getAffixes(@Nullable SceneGroup group){
         List<Integer> affixes = null;
-        if(group != null) {
-            SceneMonster monster = group.monsters.get(getConfigId());
-            if(monster != null) affixes = monster.affix;
+        if(group != null && group.getMonsters() != null) {
+            SceneMonster monster = group.getMonsters().get(getConfigId());
+            if(monster != null) affixes = monster.getAffix();
         }
 
         if(monsterData != null) {
@@ -132,7 +132,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         ArrayList<String> abilityNames = new ArrayList<>();
         val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
         //Affix abilities
-        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.id == getGroupId()).findAny();
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getId() == getGroupId()).findAny();
         List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
 
         // first add pre add affix abilities
@@ -157,8 +157,8 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         }
 
         optionalGroup.ifPresent(group -> {
-            val monster = group.monsters.get(getConfigId());
-            if(monster != null && monster.isElite) {
+            val monster = group.getMonsters().get(getConfigId());
+            if(monster != null && monster.isElite()) {
                 abilityNames.add(defaultAbilities.getMonterEliteAbilityName());
             }
         });
@@ -286,7 +286,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
 
         SceneGroupInstance groupInstance = scene.getScriptManager().getGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaMonster != null)
-            groupInstance.getDeadEntities().add(metaMonster.config_id);
+            groupInstance.getDeadEntities().add(metaMonster.getConfig_id());
 
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_GROUP_MONSTER, this.getGroupId());
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_TYPE_MONSTER, this.getMonsterData().getType().getValue());
@@ -358,9 +358,9 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
             .setBlockId(getScene().getId())
             .setBornType(MonsterBornType.MONSTER_BORN_TYPE_DEFAULT);
 
-        if(metaMonster!=null && metaMonster.special_name_id!=0){
-            monsterInfo.setTitleId(this.metaMonster.title_id)
-                .setSpecialNameId(this.metaMonster.special_name_id);
+        if(metaMonster!=null && metaMonster.getSpecial_name_id()!=0){
+            monsterInfo.setTitleId(this.metaMonster.getTitle_id())
+                .setSpecialNameId(this.metaMonster.getSpecial_name_id());
         } else if (monsterData.getDescribeData() != null) {
             monsterInfo.setTitleId(monsterData.getDescribeData().getTitleId())
                 .setSpecialNameId(monsterData.getSpecialNameId());

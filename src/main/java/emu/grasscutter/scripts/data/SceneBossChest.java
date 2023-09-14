@@ -1,13 +1,14 @@
 package emu.grasscutter.scripts.data;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Setter
+@Getter
 @ToString
 public class SceneBossChest {
-    public int life_time;
-    public int monster_config_id;
-    public int resin;
-    public int take_num;
+    private int life_time;
+    private int monster_config_id;
+    private int resin;
+    private int take_num;
 }

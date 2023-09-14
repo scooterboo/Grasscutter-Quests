@@ -41,7 +41,7 @@ public class DungeonSystem extends BaseGameSystem {
     }
 
     public <T> void registerHandlers(Int2ObjectMap<T> map, String packageName, Class<T> clazz) {
-        new Reflections(packageName).getSubTypesOf(clazz).forEach(obj -> registerPacketHandler(map, obj));
+        Grasscutter.reflector.getSubTypesOf(clazz).forEach(obj -> registerPacketHandler(map, obj));
     }
 
     public <T> void registerPacketHandler(Int2ObjectMap<T> map, Class<? extends T> handlerClass) {

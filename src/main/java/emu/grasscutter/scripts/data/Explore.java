@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Explore {
-    public String name;
-    public int exp;
+    private String name;
+    private int exp;
 }

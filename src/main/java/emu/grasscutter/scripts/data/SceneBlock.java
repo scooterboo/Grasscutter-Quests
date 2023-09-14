@@ -7,9 +7,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.utils.Position;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.val;
+import lombok.*;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
@@ -19,21 +17,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ToString
-@Setter
+@Getter
 public class SceneBlock {
-    public int id;
-    public Position max;
-    public Position min;
+    @Setter(AccessLevel.PACKAGE)
+    private int id;
+    private Position max;
+    private Position min;
 
-    public int sceneId;
-    public Map<Integer,SceneGroup> groups;
-    public RTree<SceneGroup, Geometry> sceneGroupIndex;
+    private int sceneId;
+    private Map<Integer,SceneGroup> groups;
+    private RTree<SceneGroup, Geometry> sceneGroupIndex;
 
     private transient boolean loaded; // Not an actual variable in the scripts either
-
-    public boolean isLoaded() {
-        return this.loaded;
-    }
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
@@ -64,10 +59,10 @@ public class SceneBlock {
 
             // Set groups
             this.groups = cs.getGlobalVariableList("groups", SceneGroup.class).stream()
-                    .collect(Collectors.toMap(x -> x.id, y -> y, (a, b) -> a));
+                    .collect(Collectors.toMap(x -> x.getId(), y -> y, (a, b) -> a));
 
             this.groups.values().forEach(g -> g.block_id = this.id);
-            this.sceneGroupIndex = SceneIndexManager.buildIndex(3, this.groups.values(), g -> g.pos.toPoint());
+            this.sceneGroupIndex = SceneIndexManager.buildIndex(3, this.groups.values(), g -> g.getPos().toPoint());
         } catch (ScriptException exception) {
             Grasscutter.getLogger().error("An error occurred while loading block " + this.id + " in scene " + sceneId, exception);
         }

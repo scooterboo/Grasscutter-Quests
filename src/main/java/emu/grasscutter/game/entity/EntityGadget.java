@@ -137,8 +137,8 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
     public void setState(int state) {
         this.state = state;
         //Cache the gadget state
-        if(metaGadget != null && metaGadget.group != null) {
-            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.group.id);
+        if(metaGadget != null && metaGadget.getGroup() != null) {
+            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.getGroup().getId());
             if(instance != null) instance.cacheGadgetState(metaGadget, state);
         }
     }
@@ -218,7 +218,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
 
         SceneGroupInstance groupInstance = getScene().getScriptManager().getCachedGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaGadget != null)
-            groupInstance.getDeadEntities().add(metaGadget.config_id);
+            groupInstance.getDeadEntities().add(metaGadget.getConfig_id());
 
         val hostBlossom = getScene().getWorld().getHost().getBlossomManager();
         val removedChest = hostBlossom.getSpawnedChest().remove(getConfigId());
@@ -298,7 +298,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
                 .setAuthorityPeerId(this.getScene().getWorld().getHostPeerId());
 
         if (this.metaGadget != null) {
-            gadgetInfo.setDraftId(this.metaGadget.draft_id);
+            gadgetInfo.setDraftId(this.metaGadget.getDraft_id());
         }
 
         if(owner != null){

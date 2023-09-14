@@ -82,7 +82,7 @@ public class WorldDataSystem extends BaseGameSystem {
 
     public int getMonsterLevel(SceneMonster monster, World world) {
         // Calculate level
-        int level = monster.level;
+        int level = monster.getLevel();
         WorldLevelData worldLevelData = GameData.getWorldLevelDataMap().get(world.getWorldLevel());
 
         if (worldLevelData != null) {
@@ -100,12 +100,12 @@ public class WorldDataSystem extends BaseGameSystem {
         var sceneId = imd.getCityData().getSceneId();
         var group = getInvestigationGroup(sceneId, groupId);
 
-        if (group == null || group.monsters == null) {
+        if (group == null || group.getMonsters() == null) {
             return null;
         }
 
-        var monster = group.monsters.values().stream()
-                .filter(x -> x.monster_id == monsterId)
+        var monster = group.getMonsters().values().stream()
+                .filter(x -> x.getMonster_id() == monsterId)
                 .findFirst();
         if (monster.isEmpty()) {
             return null;
@@ -122,13 +122,13 @@ public class WorldDataSystem extends BaseGameSystem {
                 .setIsAlive(true)
                 .setNextRefreshTime(Integer.MAX_VALUE)
                 .setRefreshInterval(Integer.MAX_VALUE)
-                .setPos(monster.get().pos.toProto());
+                .setPos(monster.get().getPos().toProto());
 
         if ("Boss".equals(imd.getMonsterCategory())) {
             var bossChest = group.searchBossChestInGroup();
             if (bossChest.isPresent()) {
-                builder.setResin(bossChest.get().resin);
-                builder.setBossChestNum(bossChest.get().take_num);
+                builder.setResin(bossChest.get().getResin());
+                builder.setBossChestNum(bossChest.get().getTake_num());
             }
         }
         return builder.build();

@@ -1,16 +1,17 @@
 package emu.grasscutter.scripts.data;
 
 import emu.grasscutter.utils.Position;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-@Setter
+@Getter
 public class SceneConfig {
-	public Position vision_anchor;
-	public Position born_pos;
-	public Position born_rot;
-	public Position begin_pos;
-	public Position size;
-    public float die_y;
+	private Position vision_anchor;
+    private Position born_pos;
+    private Position born_rot;
+    private Position begin_pos;
+    private Position size;
+    private float die_y;
 }

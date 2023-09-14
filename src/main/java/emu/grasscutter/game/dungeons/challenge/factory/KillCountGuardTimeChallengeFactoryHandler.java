@@ -26,7 +26,7 @@ public class KillCountGuardTimeChallengeFactoryHandler extends ChallengeFactoryH
     @Override
     public WorldChallenge build(ChallengeType type, ChallengeInfo header, List<Integer> params, ChallengeScoreInfo scoreInfo, Scene scene, SceneGroup group) {
         val realGroup = scene.getScriptManager().getGroupById(params.get(1));
-        int goal = realGroup == null || realGroup.monsters == null ? 0 : realGroup.monsters.size();
+        int goal = realGroup == null || realGroup.getMonsters() == null ? 0 : realGroup.getMonsters().size();
 
         return new WorldChallenge(
             scene, realGroup,

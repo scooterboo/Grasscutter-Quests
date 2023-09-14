@@ -37,7 +37,7 @@ public class SceneGroupInstance {
 
     public SceneGroupInstance(SceneGroup group, Player owner) {
         this.luaGroup = group;
-        this.groupId = group.id;
+        this.groupId = group.getId();
         this.targetSuiteId = 0;
         this.activeSuiteId = 0;
         this.lastTimeRefreshed = 0;
@@ -58,7 +58,7 @@ public class SceneGroupInstance {
 
     public void setLuaGroup(SceneGroup group) {
         this.luaGroup = group;
-        this.groupId = group.id;
+        this.groupId = group.getId();
     }
 
     public boolean isCached() {
@@ -71,13 +71,13 @@ public class SceneGroupInstance {
     }
 
     public void cacheGadgetState(SceneGadget g, int state) {
-        if(g.persistent) //Only cache when is persistent
-            cachedGadgetStates.put(g.config_id, state);
+        if(g.isPersistent()) //Only cache when is persistent
+            cachedGadgetStates.put(g.getConfig_id(), state);
     }
 
     public int getCachedGadgetState(SceneGadget g) {
-        Integer state = cachedGadgetStates.getOrDefault(g.config_id, null);
-        return (state == null) ? g.state : state;
+        Integer state = cachedGadgetStates.getOrDefault(g.getConfig_id(), null);
+        return (state == null) ? g.getState() : state;
     }
 
     public void save() {

@@ -21,13 +21,16 @@ public class PacketTowerBriefDataNotify extends BasePacket {
             .map(TowerFloorData::getFloorIndex).filter(towerManager.getRecordMap()::containsKey).toList();
         val bestFloor = floorIndices.stream().max(Comparator.naturalOrder()).orElse(0);
 
+        val bestFloorRecord = towerManager.getRecordMap().get(bestFloor);
+        val lastLevelIndex = bestFloorRecord != null ? bestFloorRecord.getBestLevelIndex(): 0;
+
         this.setData(TowerBriefDataNotify.newBuilder()
             .setTotalStarNum(floorIndices.stream().map(towerManager.getRecordMap()::get)
                 .mapToInt(TowerFloorRecordInfo::getStarCount).sum())
             .setIsFinishedEntranceFloor(towerManager.canEnterScheduleFloor())
             .setScheduleStartTime(towerScheduleManager.getScheduleStartDate())
             .setLastFloorIndex(bestFloor)
-            .setLastLevelIndex(towerManager.getRecordMap().get(bestFloor).getBestLevelIndex())
+            .setLastLevelIndex(lastLevelIndex)
             .setNextScheduleChangeTime(towerScheduleManager.getScheduleChangeDate())
             .setTowerScheduleId(towerScheduleManager.getCurrentTowerScheduleData().getScheduleId()));
     }

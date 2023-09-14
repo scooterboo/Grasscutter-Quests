@@ -1,12 +1,15 @@
 package emu.grasscutter.scripts.data;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-@Setter
+@Getter
 public class SceneReplaceable {
-	public boolean value;
-	public int version;
-	public boolean new_bin_only;
+    // TODO move to modifiable value in SceneGroupInstance
+    @Setter
+    private boolean value;
+    private int version;
+    private boolean new_bin_only;
 }

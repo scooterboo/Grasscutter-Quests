@@ -24,10 +24,10 @@ public class EntityRegion extends GameEntity{
     public EntityRegion(Scene scene, SceneRegion region) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.REGION);
-        setGroupId(region.group.id);
-        setBlockId(region.group.block_id);
-        setConfigId(region.config_id);
-        this.position = region.pos.clone();
+        setGroupId(region.getGroup().getId());
+        setBlockId(region.getGroup().block_id);
+        setConfigId(region.getConfig_id());
+        this.position = region.getPos().clone();
         this.entities = ConcurrentHashMap.newKeySet();
         this.newEntities = ConcurrentHashMap.newKeySet();
         this.leftEntities = ConcurrentHashMap.newKeySet();
@@ -45,7 +45,7 @@ public class EntityRegion extends GameEntity{
 
     @Override
     public int getEntityTypeId() {
-        return metaRegion.config_id;
+        return metaRegion.getConfig_id();
     }
 
     public boolean hasNewEntities() {

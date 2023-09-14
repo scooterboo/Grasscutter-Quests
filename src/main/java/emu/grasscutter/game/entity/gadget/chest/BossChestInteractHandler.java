@@ -29,8 +29,17 @@ public class BossChestInteractHandler implements ChestInteractHandler{
         if (blossomRewards) return true;
 
         val worldDataManager = chest.getGadget().getScene().getWorld().getServer().getWorldDataSystem();
-        val monster = chest.getGadget().getMetaGadget().group.monsters.get(chest.getGadget().getMetaGadget().boss_chest.monster_config_id);
-        val reward = worldDataManager.getRewardByBossId(monster.monster_id);
+        val chestMetaGadget = chest.getGadget().getMetaGadget();
+        val monsterCfgId = chestMetaGadget.getBoss_chest().getMonster_config_id();
+        val groupMonsters = chestMetaGadget.getGroup().getMonsters();
+        if(groupMonsters == null){
+            Grasscutter.getLogger().warn("group monsters are null {} unable to get cfg id {}",
+                chestMetaGadget.getGroup().getId(), monsterCfgId);
+            return false;
+        }
+        val monster = groupMonsters.get(monsterCfgId);
+
+        val reward = worldDataManager.getRewardByBossId(monster.getMonster_id());
 
         if (reward == null) {
             val dungeonManager = player.getScene().getDungeonManager();
@@ -38,7 +47,7 @@ public class BossChestInteractHandler implements ChestInteractHandler{
             if(dungeonManager != null){
                 return dungeonManager.getStatueDrops(player, useCondensedResin, chest.getGadget().getGroupId());
             }
-            Grasscutter.getLogger().warn("Could not found the reward of boss monster {}", monster.monster_id);
+            Grasscutter.getLogger().warn("Could not found the reward of boss monster {}", monster.getMonster_id());
             return false;
         }
 

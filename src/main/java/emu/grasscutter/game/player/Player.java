@@ -610,40 +610,6 @@ public class Player {
         return towerData;
     }
 
-
-    // TODO remove?
-    public void onEnterRegion(SceneRegion region) {
-        val enterRegionName = "ENTER_REGION_"+ region.config_id;
-        getQuestManager().forEachActiveQuest(quest -> {
-            val triggerData = quest.getTriggerByName(enterRegionName);
-            if (triggerData != null && triggerData.getGroupId() == region.getGroupId()) {
-                // If trigger hasn't been fired yet
-                if (!Boolean.TRUE.equals(quest.getTriggers().put(enterRegionName, true))) {
-                    //getSession().send(new PacketServerCondMeetQuestListUpdateNotify());
-                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE,
-                        triggerData.getId(),0);
-                }
-            }
-        });
-
-    }
-
-    // TODO remove?
-    public void onLeaveRegion(SceneRegion region) {
-        val leaveRegionName = "LEAVE_REGION_"+ region.config_id;
-        getQuestManager().forEachActiveQuest(quest -> {
-            val triggerData = quest.getTriggerByName(leaveRegionName);
-            if (triggerData != null && triggerData.getGroupId() == region.getGroupId()) {
-                // If trigger hasn't been fired yet
-                if (!Boolean.TRUE.equals(quest.getTriggers().put(leaveRegionName, true))) {
-                    getSession().send(new PacketServerCondMeetQuestListUpdateNotify());
-                    getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE,
-                        triggerData.getId(),0);
-                }
-            }
-        });
-    }
-
     public PlayerProfile getProfile() {
         if (this.playerProfile == null) {
             this.playerProfile = new PlayerProfile(this);

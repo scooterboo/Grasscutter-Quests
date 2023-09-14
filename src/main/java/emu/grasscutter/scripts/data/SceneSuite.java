@@ -3,58 +3,64 @@ package emu.grasscutter.scripts.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
 
 @ToString
-@Setter
+@Getter
 public class SceneSuite {
     // make it refer the default empty list to avoid NPE caused by some group
-	public List<Integer> monsters = List.of();
-	public List<Integer> gadgets = List.of();
-	public List<String> triggers = List.of();
-    public List<Integer> regions = List.of();
-    public int rand_weight;
+    private List<Integer> monsters = List.of();
+    private List<Integer> gadgets = List.of();
+    private List<String> triggers = List.of();
+    private List<Integer> regions = List.of();
+    private int rand_weight;
 
-    public boolean ban_refresh = false;
+    private boolean ban_refresh = false;
 
-	public transient List<SceneMonster> sceneMonsters = List.of();
-	public transient List<SceneGadget> sceneGadgets = List.of();
-	public transient List<SceneTrigger> sceneTriggers = List.of();
-    public transient List<SceneRegion> sceneRegions = List.of();
+    private transient List<SceneMonster> sceneMonsters = List.of();
+    private transient List<SceneGadget> sceneGadgets = List.of();
+    private transient List<SceneTrigger> sceneTriggers = List.of();
+    private transient List<SceneRegion> sceneRegions = List.of();
 
     public void init(SceneGroup sceneGroup) {
-        if(sceneGroup.monsters != null){
+        val monsters = sceneGroup.getMonsters();
+        if(monsters != null){
             this.sceneMonsters = new ArrayList<>(
                 this.monsters.stream()
-                    .filter(sceneGroup.monsters::containsKey)
-                    .map(sceneGroup.monsters::get)
+                    .filter(monsters::containsKey)
+                    .map(monsters::get)
                     .toList()
             );
         }
 
-        if(sceneGroup.gadgets != null){
+        val gadgets = sceneGroup.getGadgets();
+        if(gadgets != null){
             this.sceneGadgets = new ArrayList<>(
                 this.gadgets.stream()
-                    .filter(sceneGroup.gadgets::containsKey)
-                    .map(sceneGroup.gadgets::get)
+                    .filter(gadgets::containsKey)
+                    .map(gadgets::get)
                     .toList()
             );
         }
 
-        if(sceneGroup.triggers != null) {
+        val triggers = sceneGroup.getTriggers();
+        if(triggers != null) {
             this.sceneTriggers = new ArrayList<>(
                 this.triggers.stream()
-                    .filter(sceneGroup.triggers::containsKey)
-                    .map(sceneGroup.triggers::get)
+                    .filter(triggers::containsKey)
+                    .map(triggers::get)
                     .toList()
             );
         }
-        if(sceneGroup.regions != null) {
+        val regions = sceneGroup.getRegions();
+        if(regions != null) {
             this.sceneRegions = new ArrayList<>(
                 this.regions.stream()
-                    .filter(sceneGroup.regions::containsKey)
-                    .map(sceneGroup.regions::get)
+                    .filter(regions::containsKey)
+                    .map(regions::get)
                     .toList()
             );
         }

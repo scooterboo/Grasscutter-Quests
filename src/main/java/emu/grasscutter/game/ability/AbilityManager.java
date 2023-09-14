@@ -7,10 +7,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.game.props.ElementReactionType;
 import emu.grasscutter.net.proto.AbilityMetaTriggerElementReactionOuterClass.AbilityMetaTriggerElementReaction;
-import org.reflections.Reflections;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -61,8 +61,7 @@ public final class AbilityManager extends BasePlayerManager {
     }
 
     public static void registerHandlers() {
-        Reflections reflections = new Reflections("emu.grasscutter.game.ability.actions");
-        var handlerClassesAction = reflections.getSubTypesOf(AbilityActionHandler.class);
+        var handlerClassesAction = Grasscutter.reflector.getSubTypesOf(AbilityActionHandler.class);
 
         for (var obj : handlerClassesAction) {
             try {
@@ -77,8 +76,7 @@ public final class AbilityManager extends BasePlayerManager {
             }
         }
 
-        reflections = new Reflections("emu.grasscutter.game.ability.mixins");
-        var handlerClassesMixin = reflections.getSubTypesOf(AbilityMixinHandler.class);
+        var handlerClassesMixin = Grasscutter.reflector.getSubTypesOf(AbilityMixinHandler.class);
 
         for (var obj : handlerClassesMixin) {
             try {
@@ -366,7 +364,7 @@ public final class AbilityManager extends BasePlayerManager {
                 instancedAbilityData = GameData.getAbilityData(modChange.getParentAbilityName().getStr());
             }
 
-            if(instancedAbilityData == null) {
+            if(instancedAbilityData == null ||  instancedAbilityData.modifiers == null) {
                 logger.info("No ability found");
                 return; //TODO: Display error message
             }

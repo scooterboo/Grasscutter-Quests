@@ -61,11 +61,11 @@ public class GadgetChest extends GadgetContent {
         val playersUid = getGadget().getScene().getPlayers().stream().map(Player::getUid).toList();
 
         Optional.ofNullable(getGadget().getMetaGadget())
-            .map(g -> g.boss_chest)
+            .map(g -> g.getBoss_chest())
             .ifPresent(bossChest -> {
                 val chestProto = BossChestInfo.newBuilder()
-                    .setMonsterConfigId(bossChest.monster_config_id)
-                    .setResin(bossChest.resin);
+                    .setMonsterConfigId(bossChest.getMonster_config_id())
+                    .setResin(bossChest.getResin());
 
                 // removing instead of creating new list directly below is because
                 // it also has to consider normal cases

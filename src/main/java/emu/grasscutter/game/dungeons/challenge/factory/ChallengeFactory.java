@@ -10,7 +10,6 @@ import emu.grasscutter.game.dungeons.challenge.enums.ChallengeType;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.scripts.data.SceneGroup;
 import lombok.val;
-import org.reflections.Reflections;
 
 import java.util.*;
 
@@ -21,11 +20,8 @@ public class ChallengeFactory {
 
 
     static {
-        // Use reflection to scan and find the classes that implement the interface
-        val reflections = new Reflections(ChallengeFactoryHandler.class.getPackage().getName());
-
         // Instantiate objects of those classes dynamically
-        reflections.getSubTypesOf(ChallengeFactoryHandler.class).forEach(clazz -> {
+        Grasscutter.reflector.getSubTypesOf(ChallengeFactoryHandler.class).forEach(clazz -> {
             try {
                 val classInstance = clazz.getDeclaredConstructor().newInstance();
                 Arrays.stream(clazz.getAnnotation(ChallengeTypeValue.class).type()).forEach(type ->

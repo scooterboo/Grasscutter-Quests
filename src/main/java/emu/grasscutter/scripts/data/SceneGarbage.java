@@ -2,11 +2,12 @@ package emu.grasscutter.scripts.data;
 
 import java.util.List;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-@Setter
+@Getter
 public class SceneGarbage {
-	public List<SceneGadget> gadgets;
+	private List<SceneGadget> gadgets;
 }

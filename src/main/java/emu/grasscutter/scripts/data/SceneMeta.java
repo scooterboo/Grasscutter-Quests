@@ -6,6 +6,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.val;
@@ -19,15 +20,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ToString
-@Setter
+@Getter
 public class SceneMeta {
 
-    public SceneConfig config;
-    public Map<Integer, SceneBlock> blocks;
+    private SceneConfig config;
+    private Map<Integer, SceneBlock> blocks;
 
-    public LuaScript context;
+    private LuaScript context;
 
-    public RTree<SceneBlock, Geometry> sceneBlockIndex;
+    private RTree<SceneBlock, Geometry> sceneBlockIndex;
 
     public static SceneMeta of(int sceneId) {
         return new SceneMeta().load(sceneId);
@@ -55,11 +56,10 @@ public class SceneMeta {
 
             for (int i = 0; i < blocks.size(); i++) {
                 SceneBlock block = blocks.get(i);
-                block.id = blockIds.get(i);
-
+                block.setId(blockIds.get(i));
             }
 
-            this.blocks = blocks.stream().collect(Collectors.toMap(b -> b.id, b -> b, (a, b) -> a));
+            this.blocks = blocks.stream().collect(Collectors.toMap(b -> b.getId(), b -> b, (a, b) -> a));
             this.sceneBlockIndex = SceneIndexManager.buildIndex(2, blocks, SceneBlock::toRectangle);
 
         } catch (ScriptException exception) {

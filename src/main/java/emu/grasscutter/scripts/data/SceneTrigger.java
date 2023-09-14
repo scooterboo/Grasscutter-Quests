@@ -1,12 +1,18 @@
 package emu.grasscutter.scripts.data;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 // todo find way to deserialize from lua with final fields, maybe with the help of Builder?
 public class SceneTrigger {
-	private String name;
+    /**
+     * When the trigger count is set to this, it only gets unregistered on a return of != 0 from the trigger function.
+     */
+    public static final int INF_TRIGGERS = 0;
+
+    private String name;
     private int config_id;
     private int event;
     private int trigger_count = 1;
@@ -15,7 +21,7 @@ public class SceneTrigger {
     private String action;
     private String tag;
     private String tlog_tag;
-    public boolean forbid_guest;
+    private boolean forbid_guest;
 
-	public transient SceneGroup currentGroup;
+    private transient SceneGroup currentGroup;
 }

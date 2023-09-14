@@ -19,8 +19,6 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerRunMode;
 import emu.grasscutter.game.Account;
 
-import org.reflections.Reflections;
-
 public final class DatabaseManager {
     private static Datastore gameDatastore;
     private static Datastore dispatchDatastore;
@@ -55,7 +53,7 @@ public final class DatabaseManager {
         gameDatastore = Morphia.createDatastore(gameMongoClient, DATABASE.game.collection, mapperOptions);
 
         // Map classes.
-        Class<?>[] entities = new Reflections(Grasscutter.class.getPackageName())
+        Class<?>[] entities = Grasscutter.reflector
                 .getTypesAnnotatedWith(Entity.class)
                 .stream()
                 .filter(cls -> {

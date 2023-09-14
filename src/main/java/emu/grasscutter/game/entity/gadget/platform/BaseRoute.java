@@ -23,15 +23,15 @@ public abstract class BaseRoute {
     }
 
     BaseRoute(SceneGadget gadget) {
-        this.startRot = gadget.rot;
-        this.isStarted = gadget.start_route;
-        this.isActive = gadget.start_route;
+        this.startRot = gadget.getRot();
+        this.isStarted = gadget.isStart_route();
+        this.isActive = gadget.isStart_route();
     }
 
     public static BaseRoute fromSceneGadget(SceneGadget sceneGadget) {
-        if (sceneGadget.route_id != 0) {
+        if (sceneGadget.getRoute_id() != 0) {
             return new ConfigRoute(sceneGadget);
-        } else if (sceneGadget.is_use_point_array) {
+        } else if (sceneGadget.is_use_point_array()) {
             return new PointArrayRoute(sceneGadget);
         }
         return null;

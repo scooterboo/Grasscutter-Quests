@@ -4,7 +4,6 @@ import emu.grasscutter.Grasscutter;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.reflections.Reflections;
 
 import java.util.*;
 
@@ -145,8 +144,7 @@ public final class TaskMap {
     }
 
     private void scan() {
-        Reflections reflector = Grasscutter.reflector;
-        Set<Class<?>> classes = reflector.getTypesAnnotatedWith(Task.class);
+        Set<Class<?>> classes = Grasscutter.reflector.getTypesAnnotatedWith(Task.class);
         classes.forEach(annotated -> {
             try {
                 Task taskData = annotated.getAnnotation(Task.class);

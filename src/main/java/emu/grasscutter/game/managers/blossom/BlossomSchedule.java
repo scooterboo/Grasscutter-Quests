@@ -53,14 +53,14 @@ public class BlossomSchedule implements BaseBlossomROSData {
             .orElse(3);
 
         return Optional.ofNullable(SceneGroup.of(groupsData.getNewGroupId()).load(sceneId))
-            .map(group -> group.gadgets)
+            .map(SceneGroup::getGadgets)
             .map(Map::values)
             .stream().flatMap(Collection::stream)
-            .filter(gadget -> gadget.gadget_id == baseData.getRefreshType().getGadgetId())
+            .filter(gadget -> gadget.getGadget_id() == baseData.getRefreshType().getGadgetId())
             .map(gadget -> BlossomSchedule.of()
                 .setSceneId(sceneId)
                 .setCityId(baseData.getCityId())
-                .setPosition(gadget.pos)
+                .setPosition(gadget.getPos())
                 .setResin(getResinCost(baseData.getRefreshType()))
                 .setMonsterLevel(getMonsterLevel(worldLevel))
                 .setRewardId(baseData.getRewardId(worldLevel))

@@ -19,19 +19,19 @@ public class EntityNPC extends GameEntity {
     public EntityNPC(Scene scene, SceneNPC metaNPC, int blockId, int suiteId) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.NPC);
-        setConfigId(metaNPC.config_id);
-        setGroupId(metaNPC.group.id);
+        setConfigId(metaNPC.getConfig_id());
+        setGroupId(metaNPC.getGroup().getId());
         setBlockId(blockId);
         this.suiteId = suiteId;
-        this.position = metaNPC.pos.clone();
-        this.rotation = metaNPC.rot.clone();
+        this.position = metaNPC.getPos().clone();
+        this.rotation = metaNPC.getRot().clone();
         this.metaNpc = metaNPC;
 
     }
 
     @Override
     public int getEntityTypeId() {
-        return metaNpc.npc_id;
+        return metaNpc.getNpc_id();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class EntityNPC extends GameEntity {
 
 
         entityInfo.setNpc(SceneNpcInfoOuterClass.SceneNpcInfo.newBuilder()
-            .setNpcId(metaNpc.npc_id)
+            .setNpcId(metaNpc.getNpc_id())
             .setBlockId(getBlockId())
             .build());
 

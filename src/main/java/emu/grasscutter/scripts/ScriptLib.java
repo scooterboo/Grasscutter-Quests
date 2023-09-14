@@ -74,7 +74,7 @@ public class ScriptLib {
     private static void printLog(@Nullable LuaContext context, String source, String msg){
         if(context instanceof GroupEventLuaContext){
             var group = ((GroupEventLuaContext) context).getCurrentGroup();
-            logger.debug("[LUA] {} {} {}", source, group.id, msg);
+            logger.debug("[LUA] {} {} {}", source, group.getId(), msg);
             return;
         } else {
             logger.debug("[LUA] {} {}", source, msg);
@@ -83,10 +83,21 @@ public class ScriptLib {
 
 
     private static GameEntity createGadget(SceneScriptManager sceneScriptManager, int configId, SceneGroup group){
-        var gadget = group.gadgets.get(configId);
-        var entity = sceneScriptManager.createGadget(group.id, group.block_id, gadget);
+        val groupGadgets = group.getGadgets();
+        if (groupGadgets == null){
+            logger.warn("[LUA] Create gadget called with cid: {} gid: {} bid: {}, but gadgets is null", configId, group.getId(), group.getBlock_id());
+            return null;
+        }
+
+        val gadget = groupGadgets.get(configId);
+        if (gadget == null){
+            logger.warn("[LUA] Create gadget called with cid: {} gid: {} bid: {}, but gadget is null", configId, group.getId(), group.getBlock_id());
+            return null;
+        }
+
+        val entity = sceneScriptManager.createGadget(group.getId(), group.getBlock_id(), gadget);
         if(entity==null){
-            logger.warn("[LUA] Create gadget null with cid: {} gid: {} bid: {}", configId, group.id, group.block_id);
+            logger.warn("[LUA] Create gadget null with cid: {} gid: {} bid: {}", configId, group.getId(), group.getBlock_id());
             return null;
         }
 
@@ -249,7 +260,7 @@ public class ScriptLib {
 
 		SceneGroup group = context.getSceneScriptManager().getGroupById(groupId);
 
-		if (group == null || group.monsters == null) {
+		if (group == null || group.getMonsters() == null) {
 			return 1;
 		}
 
@@ -264,7 +275,7 @@ public class ScriptLib {
         val scriptManager = context.getSceneScriptManager();
         SceneGroup group = scriptManager.getGroupById(groupId);
         SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(groupId);
-        if (group == null || groupInstance == null || group.monsters == null) {
+        if (group == null || groupInstance == null) {
             return 1;
         }
         var suiteData = group.getSuiteByIndex(suite);
@@ -294,7 +305,7 @@ public class ScriptLib {
 		SceneGroup group = scriptManager.getGroupById(groupId);
         SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(groupId);
 
-		if (group == null || groupInstance == null || group.monsters == null) {
+		if (group == null || groupInstance == null) {
 			return 1;
 		}
 		var suiteData = group.getSuiteByIndex(suite);
@@ -311,7 +322,7 @@ public class ScriptLib {
 				groupId,suite);
 
 		SceneGroup group = context.getSceneScriptManager().getGroupById(groupId);
-		if (group == null || group.monsters == null) {
+		if (group == null) {
 			return 1;
 		}
 		var suiteData = group.getSuiteByIndex(suite);
@@ -328,7 +339,7 @@ public class ScriptLib {
 				groupId,suite);
 
 		SceneGroup group = context.getSceneScriptManager().getGroupById(groupId);
-		if (group == null || group.monsters == null) {
+		if (group == null) {
 			return 1;
 		}
 		var suiteData = group.getSuiteByIndex(suite);
@@ -496,7 +507,7 @@ public class ScriptLib {
 	public static int GetGroupVariableValue(GroupEventLuaContext context, String var) {
 		logger.debug("[LUA] Call GetGroupVariableValue with {}",
 				var);
-		return getGroupVariableValue(context.getSceneScriptManager(), context.getCurrentGroup().id, var);
+		return getGroupVariableValue(context.getSceneScriptManager(), context.getCurrentGroup().getId(), var);
 	}
 
     public static int GetGroupVariableValueByGroup(GroupEventLuaContext context, String name, int groupId){
@@ -510,7 +521,7 @@ public class ScriptLib {
 		logger.debug("[LUA] Call SetGroupVariableValue with {},{}",
             varName, value);
 
-        val groupId = context.getCurrentGroup().id;
+        val groupId = context.getCurrentGroup().getId();
 		return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, varName, value, true);
 	}
 
@@ -525,7 +536,7 @@ public class ScriptLib {
 		logger.debug("[LUA] Call ChangeGroupVariableValue with {},{}",
             varName, value);
 
-        val groupId = context.getCurrentGroup().id;
+        val groupId = context.getCurrentGroup().getId();
 		return modifyGroupVariableValue(context.getSceneScriptManager(), groupId, varName, value, false);
 	}
 
@@ -598,7 +609,7 @@ public class ScriptLib {
 
 		return (int) context.getSceneScriptManager().getScene().getEntities().values().stream()
 				.filter(e -> e instanceof EntityMonster &&
-						e.getGroupId() == context.getCurrentGroup().id)
+						e.getGroupId() == context.getCurrentGroup().getId())
 				.count();
 	}
 
@@ -846,8 +857,8 @@ public class ScriptLib {
         logger.warn("[LUA] Call SetGroupReplaceable with {} {}", groupId, value);
 
         var group = context.getSceneScriptManager().getGroupById(groupId);
-        if(group != null && group.is_replaceable != null) {
-            group.is_replaceable.value = value;
+        if(group != null && group.getIs_replaceable() != null) {
+            group.getIs_replaceable().setValue(value);
             return 0;
         }
         return 1;
@@ -1005,15 +1016,15 @@ public class ScriptLib {
         val currentGroup = context.getSceneScriptManager().getGroupById(groupId);
         if (currentGroup == null) return 1;
 
-        val gadget = currentGroup.gadgets.get(chestConfigId);
-        val chestGadget = context.getSceneScriptManager().createGadget(currentGroup.id, currentGroup.block_id, gadget);
+        val gadget = currentGroup.getGadgets().get(chestConfigId);
+        val chestGadget = context.getSceneScriptManager().createGadget(currentGroup.getId(), currentGroup.block_id, gadget);
         if (chestGadget == null) return 1;
 
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
-        val blossomSchedule = blossomManager.getBlossomSchedule().get(currentGroup.id);
+        val blossomSchedule = blossomManager.getBlossomSchedule().get(currentGroup.getId());
         if (blossomSchedule == null) return 1;
 
-        blossomManager.getSpawnedChest().put(chestGadget.getConfigId(), currentGroup.id);
+        blossomManager.getSpawnedChest().put(chestGadget.getConfigId(), currentGroup.getId());
         context.getSceneScriptManager().addEntity(chestGadget);
         context.getSceneScriptManager().getScene().broadcastPacket(
             new PacketBlossomChestCreateNotify(blossomSchedule.getRefreshId(), blossomSchedule.getCircleCampId()));
@@ -1023,7 +1034,7 @@ public class ScriptLib {
         logger.debug("[LUA] Call check GetBlossomScheduleStateByGroupId with {}", groupId);
         if (context.getCurrentGroup() == null) return -1;
 
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().getId() : groupId;
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
         return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
             .map(BlossomSchedule::getState).orElse(-1);
@@ -1032,7 +1043,7 @@ public class ScriptLib {
         logger.debug("[LUA] Call check SetBlossomScheduleStateByGroupId with {} {}", groupId, state);
 
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().getId() : groupId;
         val result = blossomManager.setBlossomState(realGroupId, state);
         if (result && state == 1) { // there should only be one gadget of this blossom at this point, which is the operator
             context.getSceneScriptManager().getScene().getEntities().values().stream()
@@ -1046,23 +1057,23 @@ public class ScriptLib {
         logger.debug("[LUA] Call check RefreshBlossomGroup with {}", printTable(configTable));
 
         int groupId = configTable.getInt("group_id");
-        val group = context.getSceneScriptManager().getGroupById(groupId == 0 ? context.getCurrentGroup().id : groupId);
+        val group = context.getSceneScriptManager().getGroupById(groupId == 0 ? context.getCurrentGroup().getId() : groupId);
         if (group == null) return 1;
 
-        val groupInstance = context.getSceneScriptManager().getGroupInstanceById(group.id);
+        val groupInstance = context.getSceneScriptManager().getGroupInstanceById(group.getId());
         int suiteIndex = configTable.getInt("suite");
         val suite = group.getSuiteByIndex(suiteIndex);
         if (suite == null || groupInstance == null) return 1;
 
         context.getSceneScriptManager().refreshGroup(groupInstance, suiteIndex, configTable.getBoolean("exclude_prev"));
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
-        val schedule = blossomManager.getBlossomSchedule().get(group.id);
+        val schedule = blossomManager.getBlossomSchedule().get(group.getId());
         if (schedule == null) return 0;
 
         val spawnedChest = blossomManager.getSpawnedChest().values().stream()
             .filter(gid -> gid == schedule.getGroupId()).findFirst().orElse(null);
         context.getSceneScriptManager().callEvent(new ScriptArgs(
-            group.id, spawnedChest == null ? EventType.EVENT_GROUP_REFRESH : EventType.EVENT_BLOSSOM_PROGRESS_FINISH));
+            group.getId(), spawnedChest == null ? EventType.EVENT_GROUP_REFRESH : EventType.EVENT_BLOSSOM_PROGRESS_FINISH));
         return 0;
     }
     public static int RefreshBlossomDropRewardByGroupId(GroupEventLuaContext context, int groupId){
@@ -1078,7 +1089,7 @@ public class ScriptLib {
     public static int GetBlossomRefreshTypeByGroupId(GroupEventLuaContext context, int groupId){
         logger.debug("[LUA] Call check GetBlossomRefreshTypeByGroupId with {}", groupId);
 
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().id : groupId;
+        val realGroupId = groupId == 0 ? context.getCurrentGroup().getId() : groupId;
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
         return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
             .map(BlossomSchedule::getRefreshType).map(BlossomRefreshType::getValue).orElse(2);
@@ -1669,7 +1680,7 @@ public class ScriptLib {
 
         // kill targets if exists
         for(int cfgId : targets){
-            var entity = sceneScriptManager.getScene().getEntityByConfigId(cfgId, group.id);
+            var entity = sceneScriptManager.getScene().getEntityByConfigId(cfgId, group.getId());
             if (entity == null || cfgId == 0) {
                 continue;
             }
@@ -1682,15 +1693,19 @@ public class ScriptLib {
         // get targets
         var targets = new ArrayList<SceneObject>();
         if(killPolicy==GROUP_KILL_MONSTER || killPolicy == GROUP_KILL_ALL){
-            targets.addAll(group.monsters.values());
+            val monsters = group.getMonsters();
+            if(monsters != null)
+                targets.addAll(monsters.values());
         }
         if(killPolicy == GROUP_KILL_GADGET || killPolicy == GROUP_KILL_ALL) {
-            targets.addAll(group.gadgets.values());
+            val gadgets = group.getGadgets();
+            if(gadgets != null)
+                targets.addAll(gadgets.values());
         }
 
         // kill targets if exists
         targets.forEach(o -> {
-            var entity = sceneScriptManager.getScene().getEntityByConfigId(o.config_id);
+            var entity = sceneScriptManager.getScene().getEntityByConfigId(o.getConfig_id());
             if (entity == null) {
                 return;
             }
