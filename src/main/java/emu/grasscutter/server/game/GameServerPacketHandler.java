@@ -4,9 +4,7 @@ import static emu.grasscutter.config.Configuration.*;
 
 import java.util.Set;
 
-import emu.grasscutter.game.Account;
 import emu.grasscutter.server.event.game.ReceivePacketEvent;
-import org.reflections.Reflections;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerDebugMode;
@@ -44,8 +42,7 @@ public class GameServerPacketHandler {
     }
 
     public void registerHandlers(Class<? extends PacketHandler> handlerClass) {
-        Reflections reflections = new Reflections("emu.grasscutter.server.packet");
-        Set<?> handlerClasses = reflections.getSubTypesOf(handlerClass);
+        Set<?> handlerClasses = Grasscutter.reflector.getSubTypesOf(handlerClass);
 
         for (Object obj : handlerClasses) {
             this.registerPacketHandler((Class<? extends PacketHandler>) obj);

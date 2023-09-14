@@ -6,12 +6,8 @@ import emu.grasscutter.game.player.Player;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-import org.reflections.Reflections;
-
-import java.net.IDN;
 import java.util.*;
 
-import static emu.grasscutter.config.Configuration.ACCOUNT;
 import static emu.grasscutter.config.Configuration.SERVER;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
@@ -52,11 +48,9 @@ public final class CommandMap {
         this.commands.put(label, command);
 
         // Register aliases.
-        if (annotation.aliases().length > 0) {
-            for (String alias : annotation.aliases()) {
-                this.aliases.put(alias, command);
-                this.annotations.put(alias, annotation);
-            }
+        for (String alias : annotation.aliases()) {
+            this.aliases.put(alias, command);
+            this.annotations.put(alias, annotation);
         }
         return this;
     }
@@ -78,11 +72,9 @@ public final class CommandMap {
         this.commands.remove(label);
 
         // Unregister aliases.
-        if (annotation.aliases().length > 0) {
-            for (String alias : annotation.aliases()) {
-                this.aliases.remove(alias);
-                this.annotations.remove(alias);
-            }
+        for (String alias : annotation.aliases()) {
+            this.aliases.remove(alias);
+            this.annotations.remove(alias);
         }
 
         return this;
@@ -319,8 +311,7 @@ public final class CommandMap {
      * Scans for all classes annotated with {@link Command} and registers them.
      */
     private void scan() {
-        Reflections reflector = Grasscutter.reflector;
-        Set<Class<?>> classes = reflector.getTypesAnnotatedWith(Command.class);
+        Set<Class<?>> classes = Grasscutter.reflector.getTypesAnnotatedWith(Command.class);
 
         classes.forEach(annotated -> {
             try {
