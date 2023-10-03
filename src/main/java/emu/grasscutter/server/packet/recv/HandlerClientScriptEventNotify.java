@@ -5,6 +5,7 @@ import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.ClientScriptEventNotifyOuterClass.ClientScriptEventNotify;
+import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.game.GameSession;
 import lombok.val;
@@ -26,6 +27,12 @@ public class HandlerClientScriptEventNotify extends PacketHandler {
                 case 0 -> args.setParam1(data.getParamList(i));
                 case 1 -> args.setParam2(data.getParamList(i));
                 case 2 -> args.setParam3(data.getParamList(i));
+            }
+        }
+        if(data.getEventType() == EventType.EVENT_AVATAR_NEAR_PLATFORM){
+            val entity = scriptManager.getScene().getEntityById(data.getSourceEntityId());
+            if(entity != null){
+                args.setParam1(entity.getConfigId());
             }
         }
 

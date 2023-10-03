@@ -104,10 +104,16 @@ public class WorldDataSystem extends BaseGameSystem {
             return null;
         }
 
-        var monster = group.getMonsters().values().stream()
+        val monsterOpt = group.getMonsters().values().stream()
                 .filter(x -> x.getMonster_id() == monsterId)
                 .findFirst();
-        if (monster.isEmpty()) {
+        if (monsterOpt.isEmpty()) {
+            return null;
+        }
+        val monster = monsterOpt.get();
+        val monsterPos = monster.getPos();
+        if(monsterPos == null){
+            Grasscutter.getLogger().error("null monster pos in investigationGroup {} in scene{}:", groupId, sceneId);
             return null;
         }
 
@@ -118,11 +124,11 @@ public class WorldDataSystem extends BaseGameSystem {
                 .setSceneId(imd.getCityData().getSceneId())
                 .setGroupId(groupId)
                 .setMonsterId(monsterId)
-                .setLevel(getMonsterLevel(monster.get(), player.getWorld()))
+                .setLevel(getMonsterLevel(monster, player.getWorld()))
                 .setIsAlive(true)
                 .setNextRefreshTime(Integer.MAX_VALUE)
                 .setRefreshInterval(Integer.MAX_VALUE)
-                .setPos(monster.get().getPos().toProto());
+                .setPos(monsterPos.toProto());
 
         if ("Boss".equals(imd.getMonsterCategory())) {
             var bossChest = group.searchBossChestInGroup();

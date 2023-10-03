@@ -7,6 +7,7 @@ import emu.grasscutter.game.quest.QuestValueContent;
 import lombok.val;
 
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL;
+import static emu.grasscutter.game.quest.enums.QuestState.QUEST_STATE_NONE;
 
 @QuestValueContent(QUEST_CONTENT_QUEST_STATE_EQUAL)
 public class ContentQuestStateEqual extends BaseContent {
@@ -16,10 +17,8 @@ public class ContentQuestStateEqual extends BaseContent {
         val questId = condition.getParam()[0];
         val questState = condition.getParam()[1];
         val checkQuest = quest.getOwner().getQuestManager().getQuestById(questId);
-        if (checkQuest == null) {
-            return 0;
-        }
-        return checkQuest.getState().getValue() == questState ? 1 : 0;
+        val curQuestState = checkQuest != null ? checkQuest.getState() : QUEST_STATE_NONE;
+        return curQuestState.getValue() == questState ? 1 : 0;
     }
 
     @Override
