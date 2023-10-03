@@ -1,10 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.CityInfoOuterClass.CityInfo;
 import emu.grasscutter.net.proto.GetSceneAreaRspOuterClass.GetSceneAreaRsp;
+import lombok.val;
 
 public class PacketGetSceneAreaRsp extends BasePacket {
 
@@ -13,13 +15,16 @@ public class PacketGetSceneAreaRsp extends BasePacket {
 
         this.buildHeader(0);
 
-        GetSceneAreaRsp p = GetSceneAreaRsp.newBuilder()
+        val p = GetSceneAreaRsp.newBuilder()
                 .setSceneId(sceneId)
-                .addAllAreaIdList(player.getUnlockedSceneAreas(sceneId))
-                .addCityInfoList(CityInfo.newBuilder().setCityId(1).setLevel(1).build())
-                .addCityInfoList(CityInfo.newBuilder().setCityId(2).setLevel(1).build())
-                .addCityInfoList(CityInfo.newBuilder().setCityId(3).setLevel(1).build())
-                .build();
+                .addAllAreaIdList(player.getUnlockedSceneAreas(sceneId));
+
+        GameData.getCityDataMap().values().stream().filter(cityData -> cityData.getSceneId() == sceneId).forEach(cityData -> {
+            p.addCityInfoList(CityInfo.newBuilder()
+                .setCityId(cityData.getCityId())
+                .setLevel(1)
+                .build());
+        });
 
         this.setData(p);
     }
