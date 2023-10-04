@@ -73,7 +73,7 @@ public class WorldDataSystem extends BaseGameSystem {
                 val group = SceneGroup.of(groupId).load(sceneId);
                 sceneInvestigationGroupMap.putIfAbsent(key, group);
                 return group;
-            } catch (LuaError luaError){
+            } catch (Exception luaError){
                 Grasscutter.getLogger().error("failed to get investigationGroup {} in scene{}:", groupId, sceneId, luaError);
             }
         }

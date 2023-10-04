@@ -11,6 +11,7 @@ import emu.grasscutter.GameConstants;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.AvatarSkillDepotData;
 import emu.grasscutter.game.avatar.Avatar;
+import emu.grasscutter.game.avatar.AvatarStorage;
 import emu.grasscutter.game.avatar.TrialAvatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.EntityBaseGadget;
@@ -210,14 +211,25 @@ public class TeamManager extends BasePlayerDataManager {
         }
     }
 
+    private long getAvatarGuid(AvatarStorage storage, int avatarId){
+        Long avatarGuid = getEntityGuids().get(avatarId);
+        if(avatarGuid == null){
+            val fallbackAvatar = storage.getAvatarById(avatarId);
+            avatarGuid = fallbackAvatar != null ? fallbackAvatar.getGuid() : -1;
+        }
+        return avatarGuid;
+    }
+
     /**
      * Updates the active team of the player based on the current team information.
      * Removes any entities that are not in the new team and adds any new entities.
      * Also updates the selected character index and team properties.
      */
     public synchronized void updateTeamEntities(boolean shouldReplace) {
+        val team = getCurrentTeamInfo();
+        val avatars = team.getAvatars();
         // Sanity check - Should never happen
-        if (getCurrentTeamInfo().getAvatars().isEmpty()) return;
+        if (avatars.isEmpty()) return;
 
         // If current team has changed
         EntityAvatar currentEntity = getCurrentAvatarEntity();
@@ -229,10 +241,9 @@ public class TeamManager extends BasePlayerDataManager {
         getActiveTeam().clear();
 
         // Add back entities into team
-        getCurrentTeamInfo().getAvatars().forEach(avatarId -> {
-            val avatarStorage = getPlayer().getAvatars();
-            long avatarGuid = getEntityGuids().getOrDefault(
-                avatarId, avatarStorage.getAvatarById(avatarId).getGuid());
+        val avatarStorage = getPlayer().getAvatars();
+        avatars.forEach(avatarId -> {
+            val avatarGuid = getAvatarGuid(avatarStorage, avatarId);
 
             getActiveTeam().add(existingAvatars.containsKey(avatarGuid) ?
                 existingAvatars.remove(avatarGuid) :
