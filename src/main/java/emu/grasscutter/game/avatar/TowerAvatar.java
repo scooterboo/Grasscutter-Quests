@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.val;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -62,7 +63,8 @@ public class TowerAvatar extends Avatar {
             setSkillDepot(original.skillDepot);
 
             this.currentHp = getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
-            this.currentEnergy = this.skillDepot.getEnergySkillData().getCostElemVal();
+            val energySkillData = this.skillDepot.getEnergySkillData();
+            this.currentEnergy = energySkillData!=null ? energySkillData.getCostElemVal() : 0;
 
             // put to save
             this.equips.forEach((k, v) -> this.towerItemMap.put(k, new TowerItem(v)));
