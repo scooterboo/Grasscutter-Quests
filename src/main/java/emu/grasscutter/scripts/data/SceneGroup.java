@@ -5,6 +5,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.world.GroupReplacementData;
 import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.scripts.lua_engine.LuaScript;
+import emu.grasscutter.scripts.lua_engine.ScriptType;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,7 +88,7 @@ public class SceneGroup {
         // Set flag here so if there is no script, we don't call this function over and over again.
         this.loaded = true;
 
-        val cs = ScriptLoader.getScript("Scene/" + sceneId + "/scene" + sceneId + "_group" + this.id + ".lua");
+        val cs = ScriptLoader.getScript("Scene/" + sceneId + "/scene" + sceneId + "_group" + this.id + ".lua", ScriptType.EXECUTABLE);
 
         if (cs == null) {
             return this;

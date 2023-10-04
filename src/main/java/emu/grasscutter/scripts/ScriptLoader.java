@@ -80,14 +80,14 @@ public class ScriptLoader {
         }
     }
 
-    public static LuaScript getScript(String path) {
+    public static LuaScript getScript(String path, ScriptType scriptType) {
         var sc = tryGet(scriptsCache.get(path));
         if (sc.isPresent()) {
             return sc.get();
         }
 
         try {
-            var script = luaEngine.getScript(path, ScriptType.SCENE);
+            var script = luaEngine.getScript(path, scriptType);
             if(script == null) {
                 logger.error("Loading script {} failed! - {}", path, "script is null");
                 return null;

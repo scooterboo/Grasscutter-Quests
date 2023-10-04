@@ -3,16 +3,19 @@ package emu.grasscutter.scripts.lua_engine;
 import lombok.Getter;
 
 public enum ScriptType {
-    GADGET("Gadget"),
-    SCENE("Scene"),
-    ACTIVITY("Activity"),
-    COMMON("Common"),
-    QUEST("Quest");
-    @Getter
-    private final String folderName;
+    DATA_STORAGE(false, false),
+    STATIC_EXECUTABLE(false, true),
+    EXECUTABLE(true, true),
+    INCLUDE(true, true);
 
-    ScriptType(String folderName) {
-        this.folderName = folderName;
+    @Getter
+    private final boolean addDefaultGlobals;
+    @Getter
+    private final boolean precompile;
+
+    ScriptType(boolean addDefaultGlobals, boolean precompile) {
+        this.addDefaultGlobals = addDefaultGlobals;
+        this.precompile = precompile;
     }
 
 }

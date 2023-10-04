@@ -2,6 +2,7 @@ package emu.grasscutter.scripts;
 
 import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.data.controller.EntityController;
+import emu.grasscutter.scripts.lua_engine.ScriptType;
 import lombok.val;
 import org.slf4j.Logger;
 
@@ -29,7 +30,7 @@ public class EntityControllerScriptManager {
                     return;
 
                 val controllerName = fileName.substring(0, fileName.length()-4);
-                val cs = ScriptLoader.getScript("Gadget/"+fileName);
+                val cs = ScriptLoader.getScript("Gadget/"+fileName, ScriptType.EXECUTABLE);
                 if (cs == null)
                     return;
 
