@@ -89,7 +89,7 @@ public class JNLuaEngine implements LuaEngine {
         if (!Files.exists(scriptPath)) return null;
 
         try {
-            return new JNLuaScript(this, scriptPath);
+            return new JNLuaScript(this, scriptPath, scriptType);
         } catch (IOException | ScriptException e) {
             throw new RuntimeException(e);
         }
