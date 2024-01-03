@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
 import messages.general.item.EquipParam;
 import messages.mail.*;
@@ -11,7 +11,7 @@ import messages.mail.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketMailChangeNotify extends BaseTypedPackage<MailChangeNotify> {
+public class PacketMailChangeNotify extends BaseTypedPacket<MailChangeNotify> {
 
     public PacketMailChangeNotify(Player player, Mail message) {
         this (player, List.of(message));

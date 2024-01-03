@@ -5,33 +5,31 @@ import emu.grasscutter.data.excels.DungeonEntryData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.enums.LogicType;
-import emu.grasscutter.game.quest.enums.QuestState;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.DailyDungeonEntryInfoOuterClass.DailyDungeonEntryInfo;
-import emu.grasscutter.net.proto.GetDailyDungeonEntryInfoRspOuterClass.GetDailyDungeonEntryInfoRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
+import messages.dungeon.DailyDungeonEntryInfo;
+import messages.dungeon.GetDailyDungeonEntryInfoRsp;
+import org.anime_game_servers.core.gi.enums.QuestState;
 
 import java.util.*;
 
-public class PacketGetDailyDungeonEntryInfoRsp extends BasePacket {
+public class PacketGetDailyDungeonEntryInfoRsp extends BaseTypedPacket<GetDailyDungeonEntryInfoRsp> {
 
     public PacketGetDailyDungeonEntryInfoRsp(Player player, int sceneId) {
-        super(PacketOpcodes.GetDailyDungeonEntryInfoRsp);
+        super(new GetDailyDungeonEntryInfoRsp());
 
-        this.setData(GetDailyDungeonEntryInfoRsp.newBuilder()
-            .addAllDailyDungeonInfoList(GameData.getDungeonEntryDataMap().values().stream()
+        proto.setDailyDungeonInfoList(GameData.getDungeonEntryDataMap().values().stream()
                 .filter(data -> data.getSceneId() == sceneId)
                 .filter(DungeonEntryData::isShowInAdvHandbook)
                 .filter(data -> isSatisfied(player, data.getCondComb(), data.getSatisfiedCond()))
                 .map(data -> getDungeonEntryInfo(player, data))
-                .filter(DailyDungeonEntryInfo::hasRecommendDungeonEntryInfo)
+                .filter(e -> e.getRecommendDungeonEntryInfo().getDungeonId() != 0)
                 .sorted(Comparator.comparing(DailyDungeonEntryInfo::getDungeonEntryConfigId))
-                .toList()));
+                .toList());
     }
 
     private DailyDungeonEntryInfo getDungeonEntryInfo(Player player, DungeonEntryData entryData) {
-        val dailyEntryInfo = DailyDungeonEntryInfo.newBuilder();
+        val dailyEntryInfo = new DailyDungeonEntryInfo(entryData.getDungeonEntryId(), entryData.getId());
         player.getDungeonEntryManager().getDungeonEntries(entryData.getSceneId(), entryData.getDungeonEntryId()).stream()
             .min(Comparator.comparingInt(data -> Math.abs(data.getLimitLevel() - player.getLevel())))
             .ifPresent(dungeonData -> {
@@ -39,7 +37,7 @@ public class PacketGetDailyDungeonEntryInfoRsp extends BasePacket {
                 dailyEntryInfo.setRecommendDungeonEntryInfo(player.getDungeonEntryManager().toProto(dungeonData));
             });
 
-        return dailyEntryInfo.setDungeonEntryId(entryData.getDungeonEntryId()).setDungeonEntryConfigId(entryData.getId()).build();
+        return dailyEntryInfo;
     }
 
     private boolean isSatisfied(Player player, LogicType condComb, List<DungeonEntryData.SatisfiedCond> conds) {

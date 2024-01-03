@@ -15,8 +15,7 @@ import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
 import emu.grasscutter.game.player.BasePlayerDataManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.proto.BlossomBriefInfoOuterClass.BlossomBriefInfo;
-import emu.grasscutter.net.proto.BlossomChestInfoOuterClass.BlossomChestInfo;
+import emu.grasscutter.net.proto.BlossomBriefInfoOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketBlossomBriefInfoNotify;
@@ -25,6 +24,7 @@ import emu.grasscutter.utils.Utils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
+import messages.gadget.BlossomChestInfo;
 
 @Getter
 @Entity
@@ -54,11 +54,11 @@ public class BlossomManager extends BasePlayerDataManager {
     /**
      * BlossomBriefInfo proto
      * */
-    public List<BlossomBriefInfo> getBriefInfo() {
+    public List<BlossomBriefInfoOuterClass.BlossomBriefInfo> getBriefInfo() {
         return this.blossomSchedule.values().stream()
             .map(BlossomSchedule::toBriefProto)
-            .sorted(Comparator.comparing(BlossomBriefInfo::getRefreshId)
-                .thenComparing(BlossomBriefInfo::getCircleCampId))
+            .sorted(Comparator.comparing(BlossomBriefInfoOuterClass.BlossomBriefInfo::getRefreshId)
+                .thenComparing(BlossomBriefInfoOuterClass.BlossomBriefInfo::getCircleCampId))
             .toList();
     }
 
@@ -133,13 +133,13 @@ public class BlossomManager extends BasePlayerDataManager {
         val scheduleOption = Optional.ofNullable(this.spawnedChest.get(chestConfigId))
             .map(this.blossomSchedule::get);
         scheduleOption.ifPresent(schedule -> schedule.getRemainingUid().addAll(playersUid));
-        return scheduleOption.map(schedule -> BlossomChestInfo.newBuilder()
-            .setResin(schedule.getResin())
-            .addAllQualifyUidList(playersUid)
-            .addAllRemainUidList(playersUid)
-            .setRefreshId(schedule.getRefreshId())
-            .setBlossomRefreshType(schedule.getRefreshType().getValue())
-            .build()).orElse(null);
+        return scheduleOption.map(schedule -> {
+            val proto = new BlossomChestInfo(schedule.getResin(), playersUid, playersUid);
+
+            proto.setRefreshId(schedule.getRefreshId());
+            proto.setBlossomRefreshType(schedule.getRefreshType().getValue());
+            return proto;
+        }).orElse(null);
     }
 
     /**

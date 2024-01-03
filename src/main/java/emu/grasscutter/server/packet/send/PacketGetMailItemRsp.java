@@ -5,7 +5,7 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
 import messages.general.item.EquipParam;
 import messages.mail.GetMailItemRsp;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PacketGetMailItemRsp  extends BaseTypedPackage<GetMailItemRsp> {
+public class PacketGetMailItemRsp  extends BaseTypedPacket<GetMailItemRsp> {
 
     public PacketGetMailItemRsp(Player player, List<Integer> mailList) {
         super(new GetMailItemRsp());

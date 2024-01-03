@@ -102,7 +102,7 @@ public class GameSession implements GameSessionManager.KcpChannel {
     }
 
     public void logPacket(String sendOrRecv, int opcode, byte[] payload) {
-        Grasscutter.getLogger().info(sendOrRecv + ": " + PacketOpcodesUtils.getOpcodeName(opcode) + " (" + opcode + ")");
+        Grasscutter.getLogger().info(sendOrRecv + ": " + PacketOpcodesUtils.getOpcodeName(opcode, this) + " (" + opcode + ")");
         if (GAME_INFO.isShowPacketPayload)
             System.out.println(Utils.bytesToHex(payload));
     }

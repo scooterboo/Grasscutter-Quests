@@ -16,8 +16,8 @@ public class PacketBeginCameraSceneLookNotify extends BasePacket {
 	public PacketBeginCameraSceneLookNotify(CameraSceneLookNotify parameters) {
 		super(PacketOpcodes.BeginCameraSceneLookNotify);
         val builder = BeginCameraSceneLookNotify.newBuilder()
-            .setLookPos(parameters.lookPos.toProto())
-            .setFollowPos(parameters.followPos.toProto())
+            .setLookPos(parameters.lookPos.toProtoOld())
+            .setFollowPos(parameters.followPos.toProtoOld())
             .setDuration(parameters.duration)
             .setIsAllowInput(parameters.isAllowInput)
             .setIsSetFollowPos(parameters.setFollowPos)

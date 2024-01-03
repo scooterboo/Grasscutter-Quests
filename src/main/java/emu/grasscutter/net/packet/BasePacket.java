@@ -27,10 +27,14 @@ public class BasePacket {
 
     protected BasePacket(){}
 
+    public BasePacket(boolean shouldBuildHeader) {
+        this.shouldBuildHeader = shouldBuildHeader;
+    }
+
+
     public BasePacket(int opcode) {
         this.opcode = opcode;
     }
-
     public BasePacket(int opcode, int clientSequence) {
         this.opcode = opcode;
         this.buildHeader(clientSequence);

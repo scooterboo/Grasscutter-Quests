@@ -1,26 +1,21 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CustomTeamListNotifyOuterClass.CustomTeamListNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.team.AvatarTeamAllDataNotify;
 
-public class PacketCustomTeamListNotify extends BasePacket {
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class PacketCustomTeamListNotify extends BaseTypedPacket<AvatarTeamAllDataNotify> {
     public PacketCustomTeamListNotify(Player player) {
-        super(PacketOpcodes.CustomTeamListNotify);
-
-        CustomTeamListNotify.Builder proto = CustomTeamListNotify.newBuilder();
+        super(new AvatarTeamAllDataNotify());
 
         // Add the id list for custom teams.
-        for (int id : player.getTeamManager().getTeams().keySet()) {
-            if (id > 4) {
-                proto.addCustomTeamIds(id);
-            }
-        }
+        proto.setBackupAvatarTeamOrderList(player.getTeamManager().getTeams().keySet().stream().filter(e -> e > 4).toList());
 
         // Add the avatar lists for all the teams the player has.
-        player.getTeamManager().getTeams().forEach((id, teamInfo) -> proto.putAvatarTeamMap(id, teamInfo.toProto(player)));
-
-        this.setData(proto);
+        proto.setAvatarTeamMap(player.getTeamManager().getTeams().entrySet()
+            .stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toProto(player))));
     }
 }

@@ -4,28 +4,17 @@ import static emu.grasscutter.config.Configuration.*;
 
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ItemOuterClass.Item;
-import emu.grasscutter.net.proto.PlayerStoreNotifyOuterClass.PlayerStoreNotify;
-import emu.grasscutter.net.proto.StoreTypeOuterClass.StoreType;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.storage.PlayerStoreNotify;
 
-public class PacketPlayerStoreNotify extends BasePacket {
+public class PacketPlayerStoreNotify extends BaseTypedPacket<PlayerStoreNotify> {
 
     public PacketPlayerStoreNotify(Player player) {
-        super(PacketOpcodes.PlayerStoreNotify);
+        super(new PlayerStoreNotify(messages.storage.StoreType.STORE_PACK));
 
         this.buildHeader(2);
+        proto.setWeightLimit(GAME_OPTIONS.inventoryLimits.all);
 
-        PlayerStoreNotify.Builder p = PlayerStoreNotify.newBuilder()
-                .setStoreType(StoreType.STORE_TYPE_PACK)
-                .setWeightLimit(GAME_OPTIONS.inventoryLimits.all);
-
-        for (GameItem item : player.getInventory()) {
-            Item itemProto = item.toProto();
-            p.addItemList(itemProto);
-        }
-
-        this.setData(p.build());
+        proto.setItemList(player.getInventory().stream().map(GameItem::toProto).toList());
     }
 }

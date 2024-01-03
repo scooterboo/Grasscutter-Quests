@@ -79,9 +79,9 @@ public class HomeSceneItem {
         blockItems.values().forEach(b -> proto.addBlockArrangementInfoList(b.toProto()));
 
         proto.setComfortValue(calComfort())
-                .setBornPos(bornPos.toProto())
-                .setBornRot(bornRot.toProto())
-                .setDjinnPos(djinnPos.toProto())
+                .setBornPos(bornPos.toProtoOld())
+                .setBornRot(bornRot.toProtoOld())
+                .setDjinnPos(djinnPos.toProtoOld())
                 .setIsSetBornPos(true)
                 .setSceneId(sceneId)
                 .setUnk2700BJHAMKKECEI(homeBgmId)

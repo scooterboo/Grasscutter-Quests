@@ -6,9 +6,10 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import dev.morphia.annotations.Entity;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
+import emu.grasscutter.net.proto.VectorOuterClass;
 import lombok.Getter;
 import lombok.Setter;
+import messages.general.Vector;
 
 @Entity
 public class Position implements Serializable {
@@ -24,6 +25,9 @@ public class Position implements Serializable {
     @Getter @Setter private float z;
 
     public Position() {}
+    public Position(VectorOuterClass.Vector luaPos) {
+        set(luaPos.getX(), luaPos.getY(), luaPos.getZ());
+    }
 
     public Position(float x, float y) {
         set(x, y);
@@ -165,7 +169,11 @@ public class Position implements Serializable {
     }
 
     public Vector toProto() {
-        return Vector.newBuilder()
+        return new Vector(this.getX(), this.getY(), this.getZ());
+    }
+    @Deprecated
+    public VectorOuterClass.Vector toProtoOld() {
+        return VectorOuterClass.Vector.newBuilder()
             .setX(this.getX())
             .setY(this.getY())
             .setZ(this.getZ())

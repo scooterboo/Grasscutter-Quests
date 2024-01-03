@@ -1,21 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerGameTimeNotifyOuterClass.PlayerGameTimeNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.player.PlayerGameTimeNotify;
 
-public class PacketPlayerGameTimeNotify extends BasePacket {
+public class PacketPlayerGameTimeNotify extends BaseTypedPacket<PlayerGameTimeNotify> {
 
 	public PacketPlayerGameTimeNotify(Player player) {
-		super(PacketOpcodes.PlayerGameTimeNotify);
-
-		PlayerGameTimeNotify proto = PlayerGameTimeNotify.newBuilder()
-				.setGameTime(player.getWorld().getGameTime())
-				.setUid(player.getUid())
-				.build();
-
-		this.setData(proto);
+		super(new PlayerGameTimeNotify(player.getUid(), player.getWorld().getGameTime()));
 	}
 }

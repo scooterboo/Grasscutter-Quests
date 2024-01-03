@@ -2,10 +2,10 @@ package emu.grasscutter.game.entity.gadget;
 
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass;
-import emu.grasscutter.net.proto.ScreenInfoOuterClass;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.scene.entity.SceneGadgetInfo;
+import messages.scene.entity.ScreenInfo;
 
 public class GadgetScreen extends GadgetContent {
     public GadgetScreen(EntityGadget gadget) {
@@ -13,16 +13,15 @@ public class GadgetScreen extends GadgetContent {
     }
 
     @Override
-    public boolean onInteract(Player player, GadgetInteractReqOuterClass.GadgetInteractReq req) {
+    public boolean onInteract(Player player, GadgetInteractReq req) {
         return false;
     }
 
     @Override
-    public void onBuildProto(SceneGadgetInfoOuterClass.SceneGadgetInfo.Builder gadgetInfo) {
-        val screen = ScreenInfoOuterClass.ScreenInfo.newBuilder()
-            //.setProjectorEntityId(getGadget().getScene().getEntityByConfigId(178001, getGadget().getGroupId()).getId())
-            .setLiveId(1);
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
+        val screen = new ScreenInfo(1);
+        //screen.setProjectorEntityId(getGadget().getScene().getEntityByConfigId(178001, getGadget().getGroupId()).getId())
 
-        gadgetInfo.setScreenInfo(screen);
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.ScreenInfo(screen));
     }
 }

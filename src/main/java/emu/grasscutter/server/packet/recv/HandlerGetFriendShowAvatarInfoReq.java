@@ -1,19 +1,15 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetFriendShowAvatarInfoReqOuterClass.GetFriendShowAvatarInfoReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketGetFriendShowAvatarInfoRsp;
+import messages.chat.GetFriendShowAvatarInfoReq;
 
-@Opcodes(PacketOpcodes.GetFriendShowAvatarInfoReq)
-public class HandlerGetFriendShowAvatarInfoReq extends PacketHandler {
+public class HandlerGetFriendShowAvatarInfoReq extends TypedPacketHandler<GetFriendShowAvatarInfoReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		GetFriendShowAvatarInfoReq req = GetFriendShowAvatarInfoReq.parseFrom(payload);
+	public void handle(GameSession session, byte[] header, GetFriendShowAvatarInfoReq req) throws Exception {
 
 		int targetUid = req.getUid();
 		Player targetPlayer = session.getServer().getPlayerByUid(targetUid, true);

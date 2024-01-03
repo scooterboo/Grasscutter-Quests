@@ -1,21 +1,17 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CreateVehicleReqOuterClass;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCreateVehicleRsp;
 
 import emu.grasscutter.utils.Position;
+import messages.gadget.CreateVehicleReq;
 
-@Opcodes(PacketOpcodes.CreateVehicleReq)
-public class HandlerCreateVehicleReq extends PacketHandler {
+public class HandlerCreateVehicleReq extends TypedPacketHandler<CreateVehicleReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		CreateVehicleReqOuterClass.CreateVehicleReq req = CreateVehicleReqOuterClass.CreateVehicleReq.parseFrom(payload);
+	public void handle(GameSession session, byte[] header, CreateVehicleReq req) throws Exception {
 		session.send(new PacketCreateVehicleRsp(session.getPlayer(), req.getVehicleId(), req.getScenePointId(), new Position(req.getPos()), new Position(req.getRot())));
 	}
 }

@@ -5,17 +5,21 @@ import emu.grasscutter.server.game.GameSession;
 import interfaces.ProtoModel;
 import messages.VERSION;
 
-public abstract class BaseTypedPackage<Package extends ProtoModel> extends BasePacket {
+public abstract class BaseTypedPacket<Packet extends ProtoModel> extends BasePacket {
 
-    protected Package proto;
-    protected BaseTypedPackage(Package proto) {
+    protected Packet proto;
+    protected BaseTypedPacket(Packet proto) {
         super();
         this.proto = proto;
     }
-    protected BaseTypedPackage(Package proto, int clientSequence) {
+    protected BaseTypedPacket(Packet proto, int clientSequence) {
         super();
         this.proto = proto;
         this.buildHeader(clientSequence);
+    }
+    protected BaseTypedPacket(Packet proto, boolean shouldBuildHeader) {
+        super(shouldBuildHeader);
+        this.proto = proto;
     }
 
     @Override

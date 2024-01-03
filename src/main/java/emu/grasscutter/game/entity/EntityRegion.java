@@ -2,11 +2,11 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass;
 import emu.grasscutter.scripts.data.SceneRegion;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
+import messages.scene.entity.SceneEntityInfo;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +76,7 @@ public class EntityRegion extends GameEntity{
     @Override public Position getRotation() {return null;}
 
     @Override
-    public SceneEntityInfoOuterClass.SceneEntityInfo toProto() {
+    public SceneEntityInfo toProto() {
         /**
          * The Region Entity would not be sent to client.
          */

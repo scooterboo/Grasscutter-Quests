@@ -7,6 +7,12 @@ import emu.grasscutter.scripts.data.SceneNPC;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
+import lombok.val;
+import messages.general.Vector;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.scene.entity.*;
+
+import java.util.List;
 
 public class EntityNPC extends GameEntity {
     @Getter(onMethod = @__(@Override))
@@ -40,35 +46,25 @@ public class EntityNPC extends GameEntity {
     }
 
     @Override
-    public SceneEntityInfoOuterClass.SceneEntityInfo toProto() {
+    public SceneEntityInfo toProto() {
+        val protoBornPos = getPosition().toProto();
+        val protoPos = getPosition().toProto();
+        val protoRot = getRotation().toProto();
+        val aiInfo = new SceneEntityAiInfo(true, protoBornPos);
+        val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, protoBornPos);
 
-        EntityAuthorityInfoOuterClass.EntityAuthorityInfo authority = EntityAuthorityInfoOuterClass.EntityAuthorityInfo.newBuilder()
-            .setAbilityInfo(AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo.newBuilder())
-            .setRendererChangedInfo(EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo.newBuilder())
-            .setAiInfo(SceneEntityAiInfoOuterClass.SceneEntityAiInfo.newBuilder()
-                .setIsAiOpen(true)
-                .setBornPos(getPosition().toProto()))
-            .setBornPos(getPosition().toProto())
-            .build();
-
-        SceneEntityInfoOuterClass.SceneEntityInfo.Builder entityInfo = SceneEntityInfoOuterClass.SceneEntityInfo.newBuilder()
-            .setEntityId(getId())
-            .setEntityType(ProtEntityTypeOuterClass.ProtEntityType.PROT_ENTITY_TYPE_NPC)
-            .setMotionInfo(MotionInfoOuterClass.MotionInfo.newBuilder()
-                .setPos(getPosition().toProto())
-                .setRot(getRotation().toProto())
-                .setSpeed(VectorOuterClass.Vector.newBuilder()))
-            .addAnimatorParaList(AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair.newBuilder())
-            .setEntityClientData(EntityClientDataOuterClass.EntityClientData.newBuilder())
-            .setEntityAuthorityInfo(authority)
-            .setLifeState(1);
+        val entityInfo = new SceneEntityInfo(ProtEntityType.PROT_ENTITY_NPC, getId());
+        entityInfo.setMotionInfo(new MotionInfo(protoPos, protoRot, new Vector()));
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLifeState(1);
 
 
-        entityInfo.setNpc(SceneNpcInfoOuterClass.SceneNpcInfo.newBuilder()
-            .setNpcId(metaNpc.getNpc_id())
-            .setBlockId(getBlockId())
-            .build());
+        val npc = new SceneNpcInfo(metaNpc.getNpc_id());
+        npc.setBlockId(getBlockId());
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Npc(npc));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 }

@@ -2,8 +2,8 @@ package emu.grasscutter.game.entity.gadget;
 
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass;
+import messages.gadget.GadgetInteractReq;
+import messages.scene.entity.SceneGadgetInfo;
 
 public class GadgetObject extends GadgetContent{
     public GadgetObject(EntityGadget gadget) {
@@ -11,12 +11,12 @@ public class GadgetObject extends GadgetContent{
     }
 
     @Override
-    public boolean onInteract(Player player, GadgetInteractReqOuterClass.GadgetInteractReq req) {
+    public boolean onInteract(Player player, GadgetInteractReq req) {
         return false;
     }
 
     @Override
-    public void onBuildProto(SceneGadgetInfoOuterClass.SceneGadgetInfo.Builder gadgetInfo) {
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
 
     }
 }

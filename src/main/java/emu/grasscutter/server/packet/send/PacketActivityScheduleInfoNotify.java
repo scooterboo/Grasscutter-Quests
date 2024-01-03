@@ -1,7 +1,7 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.activity.ActivityConfigItem;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.DateHelper;
 import lombok.val;
 import messages.activity.ActivityScheduleInfo;
@@ -9,7 +9,7 @@ import messages.activity.ActivityScheduleInfoNotify;
 
 import java.util.Collection;
 
-public class PacketActivityScheduleInfoNotify extends BaseTypedPackage<ActivityScheduleInfoNotify> {
+public class PacketActivityScheduleInfoNotify extends BaseTypedPacket<ActivityScheduleInfoNotify> {
 
 	public PacketActivityScheduleInfoNotify(Collection<ActivityConfigItem> activityConfigItemList) {
 		super(new ActivityScheduleInfoNotify());

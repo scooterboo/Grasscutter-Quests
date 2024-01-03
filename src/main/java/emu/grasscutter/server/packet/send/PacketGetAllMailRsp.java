@@ -1,14 +1,14 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
 import messages.mail.GetAllMailRsp;
 
 import java.time.Instant;
 import java.util.List;
 
-public class PacketGetAllMailRsp extends BaseTypedPackage<GetAllMailRsp> {
+public class PacketGetAllMailRsp extends BaseTypedPacket<GetAllMailRsp> {
 
     public PacketGetAllMailRsp(Player player, boolean isGiftMail) {
         super(new GetAllMailRsp());

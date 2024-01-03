@@ -3,16 +3,15 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.activity.ActivityConfigItem;
 import emu.grasscutter.game.activity.ActivityManager;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
-import emu.grasscutter.server.game.GameSession;
 import messages.shop.ActivityShopSheetInfo;
 import messages.shop.GetActivityShopSheetInfoRsp;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketGetActivityShopSheetInfoRsp extends BaseTypedPackage<GetActivityShopSheetInfoRsp> {
+public class PacketGetActivityShopSheetInfoRsp extends BaseTypedPacket<GetActivityShopSheetInfoRsp> {
 
 
     public PacketGetActivityShopSheetInfoRsp(int shopType) {

@@ -20,9 +20,7 @@ import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
-import emu.grasscutter.net.proto.EnterTypeOuterClass;
-import emu.grasscutter.net.proto.SelectWorktopOptionReqOuterClass;
-import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
+import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.SceneScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
@@ -38,6 +36,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.gadget.SelectWorktopOptionReq;
+import messages.scene.EnterType;
+import messages.scene.VisionType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -218,7 +219,7 @@ public class Scene {
     }
 
     private synchronized void removePlayerAvatars(@NotNull Player player) {
-        removeEntities(player.getTeamManager().getActiveTeam(), VisionType.VISION_TYPE_MISS);
+        removeEntities(player.getTeamManager().getActiveTeam(), VisionTypeOuterClass.VisionType.VISION_TYPE_MISS);
     }
 
     public void spawnPlayer(Player player) {
@@ -253,7 +254,7 @@ public class Scene {
     }
 
     public void addEntities(Collection<? extends GameEntity> entities) {
-        addEntities(entities, VisionType.VISION_TYPE_BORN);
+        addEntities(entities, VisionType.VISION_BORN);
     }
 
     public void updateEntity(GameEntity entity) {
@@ -293,15 +294,15 @@ public class Scene {
     }
 
     public void removeEntity(GameEntity entity) {
-        removeEntity(entity, VisionType.VISION_TYPE_DIE);
+        removeEntity(entity, VisionTypeOuterClass.VisionType.VISION_TYPE_DIE);
     }
 
-    private synchronized void removeEntity(GameEntity entity, VisionType visionType) {
+    private synchronized void removeEntity(GameEntity entity, VisionTypeOuterClass.VisionType visionType) {
         Optional.ofNullable(removeEntityDirectly(entity)).ifPresent(removed ->
             broadcastPacket(new PacketSceneEntityDisappearNotify(removed, visionType)));
     }
 
-    public synchronized void removeEntities(Collection<? extends GameEntity> entity, VisionType visionType) {
+    public synchronized void removeEntities(Collection<? extends GameEntity> entity, VisionTypeOuterClass.VisionType visionType) {
         val toRemove = entity.stream().filter(Objects::nonNull)
             .map(this::removeEntityDirectly).filter(Objects::nonNull)
             .toList();
@@ -313,15 +314,15 @@ public class Scene {
     public synchronized void replaceEntity(EntityAvatar oldEntity, EntityAvatar newEntity) {
         removeEntityDirectly(oldEntity);
         addEntityDirectly(newEntity);
-        broadcastPacket(new PacketSceneEntityDisappearNotify(oldEntity, VisionType.VISION_TYPE_REPLACE));
-        broadcastPacket(new PacketSceneEntityAppearNotify(newEntity, VisionType.VISION_TYPE_REPLACE, oldEntity.getId()));
+        broadcastPacket(new PacketSceneEntityDisappearNotify(oldEntity, VisionTypeOuterClass.VisionType.VISION_TYPE_REPLACE));
+        broadcastPacket(new PacketSceneEntityAppearNotify(newEntity, VisionType.VISION_REPLACE, oldEntity.getId()));
     }
 
     public void showOtherEntities(Player player) {
         val entities = this.entities.values().stream().filter(entity ->
             entity != player.getTeamManager().getCurrentAvatarEntity()).toList();
 
-        player.sendPacket(new PacketSceneEntityAppearNotify(entities, VisionType.VISION_TYPE_MEET));
+        player.sendPacket(new PacketSceneEntityAppearNotify(entities, VisionType.VISION_MEET));
     }
 
     public void handleAttack(AttackResult result) {
@@ -460,7 +461,7 @@ public class Scene {
             .teleportRot(getRespawnRotation(player))
             .teleportType(PlayerTeleportEvent.TeleportType.INTERNAL)
             .worldType(Optional.ofNullable(this.dungeonManager).map(data -> 13).orElse(14))
-            .enterType(EnterTypeOuterClass.EnterType.ENTER_TYPE_GOTO)
+            .enterType(EnterType.ENTER_GOTO)
             .dungeonId(Optional.ofNullable(this.dungeonManager).map(DungeonManager::getDungeonData).map(DungeonData::getId).orElse(0))
             .enterReason(this.dungeonManager != null ? EnterReason.DungeonReviveOnWaypoint : EnterReason.Revival)
             .build());
@@ -577,11 +578,11 @@ public class Scene {
 
         if (!toAdd.isEmpty()) {
             toAdd.forEach(this::addEntityDirectly);
-            broadcastPacket(new PacketSceneEntityAppearNotify(toAdd, VisionType.VISION_TYPE_BORN));
+            broadcastPacket(new PacketSceneEntityAppearNotify(toAdd, VisionType.VISION_BORN));
         }
         if (!toRemove.isEmpty()) {
             toRemove.forEach(this::removeEntityDirectly);
-            broadcastPacket(new PacketSceneEntityDisappearNotify(toRemove, VisionType.VISION_TYPE_REMOVE));
+            broadcastPacket(new PacketSceneEntityDisappearNotify(toRemove, VisionTypeOuterClass.VisionType.VISION_TYPE_REMOVE));
         }
     }
 
@@ -748,7 +749,7 @@ public class Scene {
      * */
     private void unloadGroup(SceneBlock block, int groupId) {
         removeEntities(this.entities.values().stream().filter(Objects::nonNull).filter(e ->
-            e.getBlockId() == block.getId() && e.getGroupId() == groupId).toList(), VisionType.VISION_TYPE_REMOVE);
+            e.getBlockId() == block.getId() && e.getGroupId() == groupId).toList(), VisionTypeOuterClass.VisionType.VISION_TYPE_REMOVE);
 
 
         SceneGroup group = block.getGroups().get(groupId);
@@ -800,7 +801,7 @@ public class Scene {
 
         // Optimization
         if (this.players.stream().anyMatch(p -> p != gadget.getOwner())) { // if there is other players in scene
-            broadcastPacketToOthers(gadget.getOwner(), new PacketSceneEntityDisappearNotify(gadget, VisionType.VISION_TYPE_DIE));
+            broadcastPacketToOthers(gadget.getOwner(), new PacketSceneEntityDisappearNotify(gadget, VisionTypeOuterClass.VisionType.VISION_TYPE_DIE));
         }
     }
 
@@ -873,14 +874,14 @@ public class Scene {
         broadcastPacket(new PacketSceneForceLockNotify(force));
     }
 
-    public void selectWorktopOptionWith(SelectWorktopOptionReqOuterClass.SelectWorktopOptionReq req) {
+    public void selectWorktopOptionWith(SelectWorktopOptionReq req) {
         val entity = getEntityById(req.getGadgetEntityId());
         Optional.ofNullable(entity)
             .filter(EntityGadget.class::isInstance).map(EntityGadget.class::cast)
             .map(EntityGadget::getContent)
             .filter(GadgetWorktop.class::isInstance).map(GadgetWorktop.class::cast)
             .filter(worktop -> worktop.onSelectWorktopOption(req))
-            .ifPresent(worktop -> entity.getScene().removeEntity(entity, VisionType.VISION_TYPE_REMOVE));
+            .ifPresent(worktop -> entity.getScene().removeEntity(entity, VisionTypeOuterClass.VisionType.VISION_TYPE_REMOVE));
     }
 
     public void saveGroups() {

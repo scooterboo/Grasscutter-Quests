@@ -14,7 +14,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import messages.general.Item.EquipParam;
+import messages.general.item.EquipParam;
 import messages.mail.MailCollectState;
 import messages.mail.MailData;
 import messages.mail.MailTextContent;

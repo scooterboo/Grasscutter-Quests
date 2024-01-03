@@ -2,22 +2,17 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.PlayerProperty;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerPropNotifyOuterClass.PlayerPropNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.ProtoHelper;
+import messages.player.PlayerPropNotify;
 
-public class PacketPlayerPropNotify extends BasePacket {
-	
+import java.util.Map;
+
+public class PacketPlayerPropNotify extends BaseTypedPacket<PlayerPropNotify> {
+
 	public PacketPlayerPropNotify(Player player, PlayerProperty prop) {
-		super(PacketOpcodes.PlayerPropNotify);
-		
+		super(new PlayerPropNotify(Map.of(prop.getId(), ProtoHelper.newPropValue(prop, player.getProperty(prop)))));
+
 		this.buildHeader(0);
-		
-		PlayerPropNotify proto = PlayerPropNotify.newBuilder()
-				.putPropMap(prop.getId(), ProtoHelper.newPropValue(prop, player.getProperty(prop)))
-				.build();
-		
-		this.setData(proto);
 	}
 }

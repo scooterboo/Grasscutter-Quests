@@ -1,16 +1,11 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerChatRspOuterClass.PlayerChatRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.chat.PlayerChatRsp;
 
-public class PacketPlayerChatRsp extends BasePacket {
-	
+public class PacketPlayerChatRsp extends BaseTypedPacket<PlayerChatRsp> {
+
 	public PacketPlayerChatRsp() {
-		super(PacketOpcodes.PlayerChatRsp);
-		
-		PlayerChatRsp proto = PlayerChatRsp.newBuilder().build();
-		
-		this.setData(proto);
+		super(new PlayerChatRsp());
 	}
 }

@@ -1,23 +1,20 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PrivateChatReqOuterClass.PrivateChatReq;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
+import lombok.val;
+import messages.chat.PrivateChatReq;
 
-@Opcodes(PacketOpcodes.PrivateChatReq)
-public class HandlerPrivateChatReq extends PacketHandler {
+public class HandlerPrivateChatReq extends TypedPacketHandler<PrivateChatReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        PrivateChatReq req = PrivateChatReq.parseFrom(payload);
-        PrivateChatReq.ContentCase content = req.getContentCase();
+    public void handle(GameSession session, byte[] header, PrivateChatReq req) throws Exception {
+        val content = req.getContent();
 
-        if (content == PrivateChatReq.ContentCase.TEXT) {
-            session.getServer().getChatSystem().sendPrivateMessage(session.getPlayer(), req.getTargetUid(), req.getText());
-        } else if (content == PrivateChatReq.ContentCase.ICON) {
-            session.getServer().getChatSystem().sendPrivateMessage(session.getPlayer(), req.getTargetUid(), req.getIcon());
+        if (content instanceof PrivateChatReq.Content.Text text) {
+            session.getServer().getChatSystem().sendPrivateMessage(session.getPlayer(), req.getTargetUid(), text.getValue());
+        } else if (content instanceof PrivateChatReq.Content.Icon icon) {
+            session.getServer().getChatSystem().sendPrivateMessage(session.getPlayer(), req.getTargetUid(), icon.getValue());
         }
     }
 

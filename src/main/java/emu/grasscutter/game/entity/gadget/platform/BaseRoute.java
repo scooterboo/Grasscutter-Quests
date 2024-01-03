@@ -1,13 +1,13 @@
 package emu.grasscutter.game.entity.gadget.platform;
 
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.MathQuaternionOuterClass.MathQuaternion;
-import emu.grasscutter.net.proto.PlatformInfoOuterClass.PlatformInfo;
 import emu.grasscutter.scripts.data.SceneGadget;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.general.MathQuaternion;
+import messages.scene.entity.PlatformInfo;
 
 public abstract class BaseRoute {
     @Getter @Setter private boolean isStarted;
@@ -23,7 +23,7 @@ public abstract class BaseRoute {
     }
 
     BaseRoute(SceneGadget gadget) {
-        this.startRot = gadget.getRot();
+        this.startRot = new Position(gadget.getRot());
         this.isStarted = gadget.isStart_route();
         this.isActive = gadget.isStart_route();
     }
@@ -60,22 +60,22 @@ public abstract class BaseRoute {
         return true;
     }
 
-    private MathQuaternion.Builder rotAsMathQuaternion() {
-        val result = MathQuaternion.newBuilder();
+    private MathQuaternion rotAsMathQuaternion() {
+        val result = new MathQuaternion();
         if (startRot != null) {
-            result.setX(startRot.getX())
-                .setY(startRot.getY())
-                .setZ(startRot.getZ());
+            result.setX(startRot.getX());
+            result.setY(startRot.getY());
+            result.setZ(startRot.getZ());
         }
         return result;
     }
 
-    public PlatformInfo.Builder toProto() {
-        val result = PlatformInfo.newBuilder()
-            .setIsStarted(isStarted)
-            .setIsActive(isActive)
-            .setStartRot(rotAsMathQuaternion())
-            .setStartSceneTime(startSceneTime);
+    public PlatformInfo toProto() {
+        val result = new PlatformInfo();
+        result.setStarted(isStarted);
+        result.setActive(isActive);
+        result.setStartRot(rotAsMathQuaternion());
+        result.setStartSceneTime(startSceneTime);
         if (!isStarted) {
             result.setStopSceneTime(stopSceneTime);
         }

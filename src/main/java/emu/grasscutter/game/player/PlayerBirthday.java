@@ -1,7 +1,7 @@
 package emu.grasscutter.game.player;
 
 import dev.morphia.annotations.Entity;
-import emu.grasscutter.net.proto.BirthdayOuterClass.Birthday;
+import messages.chat.Birthday;
 
 @Entity
 public class PlayerBirthday {
@@ -51,20 +51,15 @@ public class PlayerBirthday {
     }
 
     public Birthday toProto(){
-        return Birthday.newBuilder()
-                .setDay(this.getDay())
-                .setMonth(this.getMonth())
-                .build();
+        return new Birthday(this.getMonth(), this.getDay());
     }
 
-    public Birthday.Builder getFilledProtoWhenNotEmpty(){
+    public Birthday getFilledProtoWhenNotEmpty(){
         if(this.getDay() > 0)
         {
-            return Birthday.newBuilder()
-                    .setDay(this.getDay())
-                    .setMonth(this.getMonth());
+            return new Birthday(this.getMonth(), this.getDay());
         }
 
-        return Birthday.newBuilder();
+        return new Birthday();
     }
 }

@@ -1,10 +1,10 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.activity.PlayerActivityData;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import messages.activity.ActivityUpdateWatcherNotify;
 
-public class PacketActivityUpdateWatcherNotify extends BaseTypedPackage<ActivityUpdateWatcherNotify> {
+public class PacketActivityUpdateWatcherNotify extends BaseTypedPacket<ActivityUpdateWatcherNotify> {
 
 	public PacketActivityUpdateWatcherNotify(int activityId, PlayerActivityData.WatcherInfo watcherInfo) {
 		super(new ActivityUpdateWatcherNotify(

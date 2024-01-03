@@ -22,8 +22,8 @@ public class HomeNPCItem {
     public HomeNpcDataOuterClass.HomeNpcData toProto(){
         return HomeNpcDataOuterClass.HomeNpcData.newBuilder()
                 .setAvatarId(avatarId)
-                .setSpawnPos(spawnPos.toProto())
-                .setSpawnRot(spawnRot.toProto())
+                .setSpawnPos(spawnPos.toProtoOld())
+                .setSpawnRot(spawnRot.toProtoOld())
                 .setCostumeId(costumeId)
                 .build();
     }

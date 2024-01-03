@@ -1,11 +1,12 @@
 package emu.grasscutter.game.entity.gadget.platform;
 
-import emu.grasscutter.net.proto.MovingPlatformTypeOuterClass;
-import emu.grasscutter.net.proto.PlatformInfoOuterClass;
 import emu.grasscutter.scripts.data.SceneGadget;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
+import messages.scene.entity.MovingPlatformType;
+import messages.scene.entity.PlatformInfo;
 
 /**
  * TODO implement point array routes, read from missing resources
@@ -25,8 +26,9 @@ public class PointArrayRoute extends BaseRoute {
     }
 
     @Override
-    public PlatformInfoOuterClass.PlatformInfo.Builder toProto() {
-        return super.toProto()
-            .setMovingPlatformType(MovingPlatformTypeOuterClass.MovingPlatformType.MOVING_PLATFORM_TYPE_ROUTE);
+    public PlatformInfo toProto() {
+        val proto = super.toProto();
+        proto.setMovingPlatformType(MovingPlatformType.MOVING_PLATFORM_ROUTE);
+        return proto;
     }
 }

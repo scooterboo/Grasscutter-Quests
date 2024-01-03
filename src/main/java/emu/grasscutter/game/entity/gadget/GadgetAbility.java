@@ -3,10 +3,10 @@ package emu.grasscutter.game.entity.gadget;
 import emu.grasscutter.game.entity.EntityBaseGadget;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.AbilityGadgetInfoOuterClass;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.scene.entity.AbilityGadgetInfo;
+import messages.scene.entity.SceneGadgetInfo;
 
 public class GadgetAbility extends GadgetContent {
     private EntityBaseGadget parent;
@@ -20,18 +20,14 @@ public class GadgetAbility extends GadgetContent {
         return false;
     }
 
-    public void onBuildProto(SceneGadgetInfo.Builder gadgetInfo) {
+    @Override
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
         if (this.parent == null) {
             return;
         }
 
-        val abilityGadgetInfo = AbilityGadgetInfoOuterClass.AbilityGadgetInfo.newBuilder()
-            .setCampId(parent.getCampId())
-            .setCampTargetType(parent.getCampType())
-            .setTargetEntityId(parent.getId())
-            .build();
-
-        gadgetInfo.setAbilityGadget(abilityGadgetInfo);
+        val abilityGadgetInfo = new AbilityGadgetInfo(parent.getCampId(), parent.getCampType(), parent.getId());
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.AbilityGadget(abilityGadgetInfo));
     }
 
 }

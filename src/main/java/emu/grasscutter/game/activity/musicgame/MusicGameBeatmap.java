@@ -3,9 +3,6 @@ package emu.grasscutter.game.activity.musicgame;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import emu.grasscutter.database.DatabaseHelper;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass;
-import emu.grasscutter.net.proto.UgcMusicNoteOuterClass;
-import emu.grasscutter.net.proto.UgcMusicTrackOuterClass;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -61,14 +58,6 @@ public class MusicGameBeatmap {
                 .toList())
             .toList();
     }
-    @Deprecated
-    public static List<List<BeatmapNote>> parseOld(List<UgcMusicTrackOuterClass.UgcMusicTrack> beatmapItemListList) {
-        return beatmapItemListList.stream()
-            .map(item -> item.getMusicNoteListList().stream()
-                .map(BeatmapNote::parse)
-                .toList())
-            .toList();
-    }
 
     public UgcMusicRecord toProto(){
         return new UgcMusicRecord(musicId,
@@ -98,26 +87,6 @@ public class MusicGameBeatmap {
         return proto;
     }
 
-    public UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo toOldBriefProto(){
-        var player = DatabaseHelper.getPlayerByUid(authorUid);
-
-        val proto = UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo.newBuilder();
-        proto.setMusicId(musicId);
-        proto.setNoteCount(musicNoteCount);
-        proto.setUgcGuid(musicShareId);
-        proto.setMaxScore(maxScore);
-        proto.setPublishTime(createTime);
-        proto.setCreatorNickname(player.getNickname());
-        proto.setSavePageType(savePageType);
-        proto.setVersion(version);
-        proto.addAllAfterNoteList(afterNoteList);
-        proto.addAllBeforeNoteList(beforeNoteList);
-        proto.setTimeLineEditTime(timeLineEditTime);
-        proto.setPublishTime(publishTime);
-        proto.setRealTimeEditTime(realTimeEditTime);
-        return proto.build();
-    }
-
     private UgcMusicTrack musicBeatmapListToProto(List<BeatmapNote> beatmapNoteList) {
         return new UgcMusicTrack(beatmapNoteList.stream()
             .map(BeatmapNote::toProto)
@@ -133,14 +102,6 @@ public class MusicGameBeatmap {
         int endTime;
 
         public static BeatmapNote parse(UgcMusicNote note){
-            return BeatmapNote.of()
-                .startTime(note.getStartTime())
-                .endTime(note.getEndTime())
-                .build();
-        }
-
-        @Deprecated
-        public static BeatmapNote parse(UgcMusicNoteOuterClass.UgcMusicNote note){
             return BeatmapNote.of()
                 .startTime(note.getStartTime())
                 .endTime(note.getEndTime())

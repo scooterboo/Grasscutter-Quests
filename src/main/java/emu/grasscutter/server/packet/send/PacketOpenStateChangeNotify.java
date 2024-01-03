@@ -2,31 +2,18 @@ package emu.grasscutter.server.packet.send;
 
 import java.util.Map;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.OpenStateChangeNotifyOuterClass.OpenStateChangeNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.player.OpenStateChangeNotify;
 
 //Sets openState to value
-public class PacketOpenStateChangeNotify extends BasePacket {
+public class PacketOpenStateChangeNotify extends BaseTypedPacket<OpenStateChangeNotify> {
 
     public PacketOpenStateChangeNotify(int openState, int value) {
-        super(PacketOpcodes.OpenStateChangeNotify);
-
-        OpenStateChangeNotify proto = OpenStateChangeNotify.newBuilder()
-            .putOpenStateMap(openState, value)
-            .build();
-
-        this.setData(proto);
+        super(new OpenStateChangeNotify(Map.of(openState, value)));
     }
 
     public PacketOpenStateChangeNotify(Map<Integer, Integer> map) {
-        super(PacketOpcodes.OpenStateChangeNotify);
-
-        OpenStateChangeNotify proto = OpenStateChangeNotify.newBuilder()
-            .putAllOpenStateMap(map)
-            .build();
-
-        this.setData(proto);
+        super(new OpenStateChangeNotify(map));
     }
 
 }

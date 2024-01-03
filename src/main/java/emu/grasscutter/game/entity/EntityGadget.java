@@ -14,20 +14,6 @@ import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair;
-import emu.grasscutter.net.proto.EntityAuthorityInfoOuterClass.EntityAuthorityInfo;
-import emu.grasscutter.net.proto.EntityClientDataOuterClass.EntityClientData;
-import emu.grasscutter.net.proto.EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.MotionInfoOuterClass.MotionInfo;
-import emu.grasscutter.net.proto.PlatformInfoOuterClass;
-import emu.grasscutter.net.proto.PropPairOuterClass.PropPair;
-import emu.grasscutter.net.proto.ProtEntityTypeOuterClass.ProtEntityType;
-import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.EntityControllerScriptManager;
 import emu.grasscutter.scripts.constants.EventType;
@@ -45,6 +31,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.scene.entity.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -262,40 +251,31 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
 
     @Override
     public SceneEntityInfo toProto() {
-        EntityAuthorityInfo authority = EntityAuthorityInfo.newBuilder()
-                .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
-                .setRendererChangedInfo(EntityRendererChangedInfo.newBuilder())
-                .setAiInfo(SceneEntityAiInfo.newBuilder().setIsAiOpen(true).setBornPos(bornPos.toProto()))
-                .setBornPos(bornPos.toProto())
-                .build();
+        val protoBornPos = this.bornPos.toProto();
+        val protoCurPos = getPosition().toProto();
+        val protoCurRot = getRotation().toProto();
+        val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(),
+            new SceneEntityAiInfo(true, protoBornPos), protoBornPos);
 
-        SceneEntityInfo.Builder entityInfo = SceneEntityInfo.newBuilder()
-                .setEntityId(getId())
-                .setEntityType(ProtEntityType.PROT_ENTITY_TYPE_GADGET)
-                .setMotionInfo(MotionInfo.newBuilder().setPos(getPosition().toProto()).setRot(getRotation().toProto()).setSpeed(Vector.newBuilder()))
-                .addAnimatorParaList(AnimatorParameterValueInfoPair.newBuilder())
-                .setEntityClientData(EntityClientData.newBuilder())
-                .setEntityAuthorityInfo(authority)
-                .setLifeState(1);
+        val entityInfo = new SceneEntityInfo(ProtEntityType.PROT_ENTITY_GADGET, getId());
+        entityInfo.setMotionInfo(new MotionInfo(protoCurPos, protoCurRot, new messages.general.Vector()));
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLifeState(1);
 
-        PropPair pair = PropPair.newBuilder()
-                .setType(PlayerProperty.PROP_LEVEL.getId())
-                .setPropValue(ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, 1))
-                .build();
-        entityInfo.addPropList(pair);
+        val pair = new PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, 1));
+        entityInfo.setPropList(List.of(pair));
 
         // We do not use the getter to null check because the getter will create a fight prop map if it is null
         if (this.fightProperties != null) {
             addAllFightPropsToEntityInfo(entityInfo);
         }
 
-        SceneGadgetInfo.Builder gadgetInfo = SceneGadgetInfo.newBuilder()
-                .setGadgetId(this.getGadgetId())
-                .setGroupId(this.getGroupId())
-                .setConfigId(this.getConfigId())
-                .setGadgetState(this.getState())
-                .setIsEnableInteract(this.interactEnabled)
-                .setAuthorityPeerId(this.getScene().getWorld().getHostPeerId());
+        val gadgetInfo = new SceneGadgetInfo(this.getGadgetId(), this.getGroupId(), this.getConfigId());
+        gadgetInfo.setGadgetState(this.getState());
+        gadgetInfo.setEnableInteract(this.interactEnabled);
+        gadgetInfo.setAuthorityPeerId(this.getScene().getWorld().getHostPeerId());
 
         if (this.metaGadget != null) {
             gadgetInfo.setDraftId(this.metaGadget.getDraft_id());
@@ -313,16 +293,16 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
             gadgetInfo.setPlatform(getPlatformInfo());
         }
 
-        entityInfo.setGadget(gadgetInfo);
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Gadget(gadgetInfo));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 
-    public PlatformInfoOuterClass.PlatformInfo.Builder getPlatformInfo(){
+    public PlatformInfo getPlatformInfo(){
         if(routeConfig != null){
             return routeConfig.toProto();
         }
 
-        return PlatformInfoOuterClass.PlatformInfo.newBuilder();
+        return new PlatformInfo();
     }
 }

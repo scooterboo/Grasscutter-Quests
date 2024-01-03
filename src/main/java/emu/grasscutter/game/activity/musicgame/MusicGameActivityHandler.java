@@ -41,7 +41,7 @@ public class MusicGameActivityHandler extends ActivityHandler {
             .map(MusicGamePlayerData.CustomBeatmapRecord::toOthersBriefProto)
             .toList());
 
-        activityInfo.setDetail(new ActivityInfo.Detail.MusicGameActivityDetailInfo(musicGameActivityInfo));
+        activityInfo.setDetail(new ActivityInfo.Detail.MusicGameInfo(musicGameActivityInfo));
     }
 
     public MusicGamePlayerData getMusicGamePlayerData(PlayerActivityData playerActivityData) {

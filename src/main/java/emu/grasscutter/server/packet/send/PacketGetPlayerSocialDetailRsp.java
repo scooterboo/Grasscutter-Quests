@@ -1,24 +1,19 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetPlayerSocialDetailRspOuterClass.GetPlayerSocialDetailRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
-import emu.grasscutter.net.proto.SocialDetailOuterClass.SocialDetail;
+import messages.chat.GetPlayerSocialDetailRsp;
+import messages.chat.SocialDetail;
 
-public class PacketGetPlayerSocialDetailRsp extends BasePacket {
-	
-	public PacketGetPlayerSocialDetailRsp(SocialDetail.Builder detail) {
-		super(PacketOpcodes.GetPlayerSocialDetailRsp);
+public class PacketGetPlayerSocialDetailRsp extends BaseTypedPacket<GetPlayerSocialDetailRsp> {
 
-		GetPlayerSocialDetailRsp.Builder proto = GetPlayerSocialDetailRsp.newBuilder();
-		
+	public PacketGetPlayerSocialDetailRsp(SocialDetail detail) {
+		super(new GetPlayerSocialDetailRsp());
+
 		if (detail != null) {
 			proto.setDetailData(detail);
 		} else {
-			proto.setRetcode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE);
+			proto.setRetCode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE);
 		}
-
-		this.setData(proto);
 	}
 }

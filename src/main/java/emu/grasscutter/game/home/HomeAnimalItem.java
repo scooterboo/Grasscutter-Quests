@@ -21,8 +21,8 @@ public class HomeAnimalItem {
     public HomeAnimalDataOuterClass.HomeAnimalData toProto(){
         return HomeAnimalDataOuterClass.HomeAnimalData.newBuilder()
                 .setFurnitureId(furnitureId)
-                .setSpawnPos(spawnPos.toProto())
-                .setSpawnRot(spawnRot.toProto())
+                .setSpawnPos(spawnPos.toProtoOld())
+                .setSpawnRot(spawnRot.toProtoOld())
                 .build();
     }
 

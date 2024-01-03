@@ -4,7 +4,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.shop.ShopInfo;
 import emu.grasscutter.game.shop.ShopSystem;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.Utils;
 import lombok.val;
 import messages.general.item.ItemParam;
@@ -14,7 +14,7 @@ import messages.shop.ShopGoods;
 
 import java.util.ArrayList;
 
-public class PacketGetShopRsp extends BaseTypedPackage<GetShopRsp> {
+public class PacketGetShopRsp extends BaseTypedPacket<GetShopRsp> {
     public PacketGetShopRsp(Player inv, int shopType) {
         super(new GetShopRsp());
 

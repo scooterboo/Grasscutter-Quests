@@ -37,7 +37,7 @@ public class TrialAvatarActivityHandler extends ActivityHandler {
     @Override
     public void onProtoBuild(PlayerActivityData playerActivityData, @NonNull ActivityInfo activityInfo) {
         activityInfo.setDetail(
-            new ActivityInfo.Detail.TrialAvatarActivityDetailInfo(
+            new ActivityInfo.Detail.TrialAvatarInfo(
                 getTrialAvatarPlayerData(playerActivityData).toProto()
             )
         );

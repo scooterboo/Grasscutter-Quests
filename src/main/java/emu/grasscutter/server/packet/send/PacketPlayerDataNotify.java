@@ -2,25 +2,33 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BasePacket;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerDataNotifyOuterClass.PlayerDataNotify;
-import emu.grasscutter.net.proto.PropValueOuterClass.PropValue;
+import messages.general.PropValue;
+import messages.player.PlayerDataNotify;
 
-public class PacketPlayerDataNotify extends BasePacket {
-	
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class PacketPlayerDataNotify extends BaseTypedPacket<PlayerDataNotify> {
+
 	public PacketPlayerDataNotify(Player player) {
-		super(PacketOpcodes.PlayerDataNotify, 2);
-		
-		PlayerDataNotify.Builder p = PlayerDataNotify.newBuilder()
-				.setNickName(player.getNickname())
-				.setServerTime(System.currentTimeMillis())
-				.setIsFirstLoginToday(true)
-				.setRegionId(player.getRegionId());
-				
-		player.getProperties().forEach((key, value) -> {
+		super(new PlayerDataNotify(), 2);
+
+        proto.setNickName(player.getNickname());
+        proto.setServerTime(System.currentTimeMillis());
+        proto.setFirstLoginToday(true);
+        proto.setRegionId(player.getRegionId());
+        proto.setPropMap(
+            player.getProperties().entrySet().stream().collect(
+                Collectors.toMap(e->e.getKey(), e -> new PropValue(e.getKey(), e.getValue(), new PropValue.Value.Ival(e.getValue())))
+            )
+        );
+
+		/*player.getProperties().forEach((key, value) -> {
 			p.putPropMap(key, PropValue.newBuilder().setType(key).setIval(value).setVal(value).build());
 		});
 
-		this.setData(p.build());
+		this.setData(p.build());*/
 	}
 }

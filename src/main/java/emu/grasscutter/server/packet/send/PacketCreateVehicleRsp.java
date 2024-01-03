@@ -4,22 +4,19 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.entity.EntityVehicle;
 import emu.grasscutter.game.entity.GameEntity;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-
-import emu.grasscutter.net.proto.VehicleInteractTypeOuterClass;
-import emu.grasscutter.net.proto.VehicleMemberOuterClass.VehicleMember;
-import emu.grasscutter.net.proto.CreateVehicleRspOuterClass.CreateVehicleRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 
 import emu.grasscutter.utils.Position;
+import messages.gadget.CreateVehicleRsp;
+import messages.gadget.VehicleInteractType;
+import messages.general.vehicle.VehicleMember;
 
 import java.util.List;
 
-public class PacketCreateVehicleRsp extends BasePacket {
+public class PacketCreateVehicleRsp extends BaseTypedPacket<CreateVehicleRsp> {
 
     public PacketCreateVehicleRsp(Player player, int vehicleId, int pointId, Position pos, Position rot) {
-        super(PacketOpcodes.CreateVehicleRsp);
-        CreateVehicleRsp.Builder proto = CreateVehicleRsp.newBuilder();
+        super(new CreateVehicleRsp(vehicleId, pointId));
 
         // Eject vehicle members and Kill previous vehicles if there are any
         List<GameEntity> previousVehicles = player.getScene().getEntities().values().stream()
@@ -32,7 +29,7 @@ public class PacketCreateVehicleRsp extends BasePacket {
             List<VehicleMember> vehicleMembers = ((EntityVehicle) entity).getVehicleMembers().stream().toList();
 
             vehicleMembers.stream().forEach(vehicleMember -> {
-                player.getScene().broadcastPacket(new PacketVehicleInteractRsp(((EntityVehicle) entity), vehicleMember, VehicleInteractTypeOuterClass.VehicleInteractType.VEHICLE_INTERACT_TYPE_OUT));
+                player.getScene().broadcastPacket(new PacketVehicleInteractRsp(((EntityVehicle) entity), vehicleMember, VehicleInteractType.VEHICLE_INTERACT_OUT));
             });
 
             player.getScene().killEntity(entity, 0);
@@ -43,7 +40,5 @@ public class PacketCreateVehicleRsp extends BasePacket {
 
         proto.setVehicleId(vehicleId);
         proto.setEntityId(vehicle.getId());
-
-        this.setData(proto.build());
     }
 }

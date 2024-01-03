@@ -1,7 +1,7 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.Utils;
 import lombok.val;
 import messages.mail.GetAllMailResultNotify;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Used since 3.0 for mail requests.
  */
-public class PacketGetAllMailResultNotify extends BaseTypedPackage<GetAllMailResultNotify> {
+public class PacketGetAllMailResultNotify extends BaseTypedPacket<GetAllMailResultNotify> {
 
     public PacketGetAllMailResultNotify(Player player, boolean isGiftMail) {
         super(new GetAllMailResultNotify());

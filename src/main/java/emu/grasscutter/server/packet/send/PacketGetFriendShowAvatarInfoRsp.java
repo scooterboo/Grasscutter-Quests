@@ -2,23 +2,14 @@ package emu.grasscutter.server.packet.send;
 
 import java.util.List;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetFriendShowAvatarInfoRspOuterClass.GetFriendShowAvatarInfoRsp;
-import emu.grasscutter.net.proto.ShowAvatarInfoOuterClass.ShowAvatarInfo;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.chat.GetFriendShowAvatarInfoRsp;
+import messages.general.avatar.ShowAvatarInfo;
 
-@Opcodes(PacketOpcodes.GetFriendShowAvatarInfoRsp)
-public class PacketGetFriendShowAvatarInfoRsp extends BasePacket {
+public class PacketGetFriendShowAvatarInfoRsp extends BaseTypedPacket<GetFriendShowAvatarInfoRsp> {
 
 	public PacketGetFriendShowAvatarInfoRsp(int uid, List<ShowAvatarInfo> showAvatarInfoList) {
-		super(PacketOpcodes.GetFriendShowAvatarInfoRsp);
-
-		GetFriendShowAvatarInfoRsp.Builder p = GetFriendShowAvatarInfoRsp.newBuilder()
-				.setUid(uid)
-				.addAllShowAvatarInfoList(showAvatarInfoList);
-
-		this.setData(p.build());
+		super(new GetFriendShowAvatarInfoRsp(uid, showAvatarInfoList));
 	}
 
 }

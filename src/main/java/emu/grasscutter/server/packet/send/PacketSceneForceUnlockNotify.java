@@ -1,30 +1,16 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.SceneForceUnlockNotifyOuterClass.SceneForceUnlockNotify;
-import lombok.val;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.SceneForceUnlockNotify;
 
-import java.util.Collection;
+import java.util.List;
 
-public class PacketSceneForceUnlockNotify extends BasePacket {
-	public PacketSceneForceUnlockNotify(Collection<Integer> unlocked, boolean isAdd) {
-		super(PacketOpcodes.SceneForceUnlockNotify);
-
-        val builder = SceneForceUnlockNotify.newBuilder()
-            .addAllForceIdList(unlocked)
-            .setIsAdd(isAdd);
-
-		this.setData(builder);
+public class PacketSceneForceUnlockNotify extends BaseTypedPacket<SceneForceUnlockNotify> {
+	public PacketSceneForceUnlockNotify(List<Integer> unlocked, boolean isAdd) {
+		super(new SceneForceUnlockNotify(unlocked, isAdd));
 	}
 
 	public PacketSceneForceUnlockNotify(int unlocked, boolean isAdd) {
-		super(PacketOpcodes.SceneForceUnlockNotify);
-
-        val builder = SceneForceUnlockNotify.newBuilder()
-            .addForceIdList(unlocked)
-            .setIsAdd(isAdd);
-
-		this.setData(builder);
+		super(new SceneForceUnlockNotify(List.of(unlocked), isAdd));
 	}
 }

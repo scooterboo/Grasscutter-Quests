@@ -20,8 +20,6 @@ import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.proto.EnterTypeOuterClass.EnterType;
-import emu.grasscutter.net.proto.MotionStateOuterClass.MotionState;
 import emu.grasscutter.net.proto.PlayerDieTypeOuterClass.PlayerDieType;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.server.event.player.PlayerTeamDeathEvent;
@@ -36,6 +34,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.scene.EnterType;
+import messages.scene.entity.MotionState;
 import org.jetbrains.annotations.NotNull;
 
 @Entity @Getter
@@ -441,7 +441,7 @@ public class TeamManager extends BasePlayerDataManager {
         setCurrentCharacterIndex(index);
 
         // Old entity motion state
-        oldEntity.setMotionState(MotionState.MOTION_STATE_STANDBY);
+        oldEntity.setMotionState(MotionState.MOTION_STANDBY);
 
         // Remove and Add
         getPlayer().getScene().replaceEntity(oldEntity, newEntity);
@@ -554,7 +554,7 @@ public class TeamManager extends BasePlayerDataManager {
         Position respawnPos = getRespawnPosition();
         getPlayer().sendPacket(new PacketPlayerEnterSceneNotify(
             getPlayer(),
-            EnterType.ENTER_TYPE_SELF,
+            EnterType.ENTER_SELF,
             EnterReason.Revival,
             respawnPos == GameConstants.START_POSITION ? 3 : player.getSceneId(),
             respawnPos));

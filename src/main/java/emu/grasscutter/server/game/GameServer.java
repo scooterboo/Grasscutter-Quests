@@ -26,7 +26,6 @@ import emu.grasscutter.game.tower.TowerSystem;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.game.world.WorldDataSystem;
 import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.proto.SocialDetailOuterClass.SocialDetail;
 import emu.grasscutter.server.event.types.ServerEvent;
 import emu.grasscutter.server.event.game.ServerTickEvent;
 import emu.grasscutter.server.event.internal.ServerStartEvent;
@@ -36,6 +35,7 @@ import emu.grasscutter.task.TaskMap;
 import kcp.highway.ChannelConfig;
 import kcp.highway.KcpServer;
 import lombok.Getter;
+import messages.chat.SocialDetail;
 
 import java.net.InetSocketAddress;
 import java.time.Instant;
@@ -194,7 +194,7 @@ public final class GameServer extends KcpServer {
         return playerOpt.orElse(null);
     }
 
-    public SocialDetail.Builder getSocialDetailByUid(int id) {
+    public SocialDetail getSocialDetailByUid(int id) {
         // Get from online players
         Player player = this.getPlayerByUid(id, true);
 

@@ -1,13 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BaseTypedPackage;
-import emu.grasscutter.server.game.GameSession;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
 import messages.shop.GetShopmallDataRsp;
 
 import java.util.List;
 
-public class PacketGetShopmallDataRsp extends BaseTypedPackage<GetShopmallDataRsp> {
+public class PacketGetShopmallDataRsp extends BaseTypedPacket<GetShopmallDataRsp> {
 
 	public PacketGetShopmallDataRsp() {
 		super(new GetShopmallDataRsp());

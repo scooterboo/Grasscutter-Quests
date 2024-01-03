@@ -3,13 +3,13 @@ package emu.grasscutter.game.chat;
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.command.CommandMap;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.ChatInfoOuterClass.ChatInfo;
 import emu.grasscutter.server.game.GameServer;
 import emu.grasscutter.server.packet.send.PacketPlayerChatNotify;
 import emu.grasscutter.server.packet.send.PacketPrivateChatNotify;
 import emu.grasscutter.server.packet.send.PacketPullPrivateChatRsp;
 import emu.grasscutter.server.packet.send.PacketPullRecentChatRsp;
 import emu.grasscutter.utils.Utils;
+import messages.chat.ChatInfo;
 
 import java.util.regex.Pattern;
 

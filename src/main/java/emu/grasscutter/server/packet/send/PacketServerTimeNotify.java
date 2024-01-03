@@ -1,18 +1,11 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ServerTimeNotifyOuterClass.ServerTimeNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.general.ServerTimeNotify;
 
-public class PacketServerTimeNotify extends BasePacket {
-	
+public class PacketServerTimeNotify extends BaseTypedPacket<ServerTimeNotify> {
+
 	public PacketServerTimeNotify() {
-		super(PacketOpcodes.ServerTimeNotify);
-
-		ServerTimeNotify proto = ServerTimeNotify.newBuilder()
-				.setServerTime(System.currentTimeMillis())
-				.build();
-		
-		this.setData(proto);
+		super(new ServerTimeNotify(System.currentTimeMillis()));
 	}
 }

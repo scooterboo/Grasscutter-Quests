@@ -18,8 +18,7 @@ import emu.grasscutter.game.props.WatcherTriggerType;
 import emu.grasscutter.game.quest.enums.LogicType;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason;
-import emu.grasscutter.net.proto.WeeklyBossResinDiscountInfoOuterClass.WeeklyBossResinDiscountInfo;
+import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass;
 import emu.grasscutter.scripts.constants.EventType;
 import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketDungeonDataNotify;
@@ -34,6 +33,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.val;
+import messages.scene.entity.WeeklyBossResinDiscountInfo;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -231,7 +231,7 @@ public class DungeonManager {
                                 ActivityType.NEW_ACTIVITY_TRIAL_AVATAR, TrialAvatarActivityHandler.class)
                             .map(TrialAvatarActivityHandler::getBattleAvatarsList)
                             .ifPresent(battleAvatars -> player.addTrialAvatarsForDungeon(
-                                battleAvatars, GrantReason.GRANT_REASON_BY_TRIAL_AVATAR_ACTIVITY));
+                                battleAvatars, TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason.GRANT_REASON_BY_TRIAL_AVATAR_ACTIVITY));
 
                     case DUNGEON_PLAY_TYPE_MIST_TRIAL -> {} // TODO
                 }
@@ -240,7 +240,7 @@ public class DungeonManager {
                 Optional.ofNullable(GameData.getDungeonElementChallengeDataMap().get(getDungeonData().getId()))
                     .map(DungeonElementChallengeData::getTrialAvatarId)
                     .ifPresent(trialAvatarId -> player.addTrialAvatarsForDungeon(
-                        trialAvatarId, GrantReason.GRANT_REASON_BY_DUNGEON_ELEMENT_CHALLENGE));
+                        trialAvatarId, TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason.GRANT_REASON_BY_DUNGEON_ELEMENT_CHALLENGE));
         }
         if (player.getTeamManager().isUseTrialTeam()){
             player.getTeamManager().updateTeamEntities(false);

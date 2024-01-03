@@ -1,47 +1,31 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ChatInfoOuterClass.ChatInfo;
-import emu.grasscutter.net.proto.PrivateChatNotifyOuterClass.PrivateChatNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import messages.chat.ChatInfo;
+import messages.chat.PrivateChatNotify;
 
-public class PacketPrivateChatNotify extends BasePacket {
+public class PacketPrivateChatNotify extends BaseTypedPacket<PrivateChatNotify> {
     private ChatInfo info;
 
     public PacketPrivateChatNotify(int senderId, int recvId, String message) {
-        super(PacketOpcodes.PrivateChatNotify);
-
-        ChatInfo info = ChatInfo.newBuilder()
-                .setTime((int) (System.currentTimeMillis() / 1000))
-                .setUid(senderId)
-                .setToUid(recvId)
-                .setText(message)
-                .build();
-        this.info = info;
-
-        PrivateChatNotify proto = PrivateChatNotify.newBuilder()
-                .setChatInfo(info)
-                .build();
-
-        this.setData(proto);
+        this(senderId, recvId, new ChatInfo.Content.Text(message));
     }
 
     public PacketPrivateChatNotify(int senderId, int recvId, int emote) {
-        super(PacketOpcodes.PrivateChatNotify);
+        this(senderId, recvId, new ChatInfo.Content.Icon(emote));
+    }
+    private PacketPrivateChatNotify(int senderId, int recvId, ChatInfo.Content<?> content) {
+        super(new PrivateChatNotify());
 
-        ChatInfo info = ChatInfo.newBuilder()
-                .setTime((int) (System.currentTimeMillis() / 1000))
-                .setUid(senderId)
-                .setToUid(recvId)
-                .setIcon(emote)
-                .build();
+        val info = new ChatInfo();
+        info.setTime((int) (System.currentTimeMillis() / 1000));
+        info.setUid(senderId);
+        info.setToUid(recvId);
+        info.setContent(content);
         this.info = info;
 
-        PrivateChatNotify proto = PrivateChatNotify.newBuilder()
-                .setChatInfo(info)
-                .build();
-
-        this.setData(proto);
+        proto.setChatInfo(info);
     }
 
     public ChatInfo getChatInfo() {

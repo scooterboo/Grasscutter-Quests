@@ -29,8 +29,8 @@ public class HomeFurnitureItem {
                 .setFurnitureId(furnitureId)
                 .setGuid(guid)
                 .setParentFurnitureIndex(parentFurnitureIndex)
-                .setSpawnPos(spawnPos.toProto())
-                .setSpawnRot(spawnRot.toProto())
+                .setSpawnPos(spawnPos.toProtoOld())
+                .setSpawnRot(spawnRot.toProtoOld())
                 .setVersion(version)
                 .build();
     }
@@ -40,7 +40,7 @@ public class HomeFurnitureItem {
                 .setFurnitureId(furnitureId)
                 .setGuid(guid)
                 .setFurnitureType(type)
-                .setPos(spawnPos.toProto())
+                .setPos(spawnPos.toProtoOld())
                 // TODO NPC and farm
                 .build();
     }

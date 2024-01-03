@@ -1,30 +1,18 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AvatarChangeCostumeRspOuterClass.AvatarChangeCostumeRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
+import messages.team.avatar.AvatarChangeCostumeRsp;
 
-public class PacketAvatarChangeCostumeRsp extends BasePacket {
-	
+public class PacketAvatarChangeCostumeRsp extends BaseTypedPacket<AvatarChangeCostumeRsp> {
+
 	public PacketAvatarChangeCostumeRsp(long avatarGuid, int costumeId) {
-		super(PacketOpcodes.AvatarChangeCostumeRsp);
-
-		AvatarChangeCostumeRsp proto = AvatarChangeCostumeRsp.newBuilder()
-				.setAvatarGuid(avatarGuid)
-				.setCostumeId(costumeId)
-				.build();
-		
-		this.setData(proto);
+		super(new AvatarChangeCostumeRsp(costumeId, avatarGuid));
 	}
-	
-	public PacketAvatarChangeCostumeRsp() {
-		super(PacketOpcodes.AvatarChangeCostumeRsp);
 
-		AvatarChangeCostumeRsp proto = AvatarChangeCostumeRsp.newBuilder()
-				.setRetcode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE)
-				.build();
-		
-		this.setData(proto);
+	public PacketAvatarChangeCostumeRsp() {
+		super(new AvatarChangeCostumeRsp());
+        proto.setRetcode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE);
+
 	}
 }

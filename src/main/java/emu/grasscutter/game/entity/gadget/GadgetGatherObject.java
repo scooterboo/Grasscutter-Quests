@@ -10,12 +10,13 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.GatherGadgetInfoOuterClass.GatherGadgetInfo;
-import emu.grasscutter.net.proto.InteractTypeOuterClass.InteractType;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import emu.grasscutter.server.packet.send.PacketGadgetInteractRsp;
 import emu.grasscutter.utils.Utils;
+import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.gadget.InteractType;
+import messages.scene.entity.GatherGadgetInfo;
+import messages.scene.entity.SceneGadgetInfo;
 
 public class GadgetGatherObject extends GadgetContent {
     private int itemId;
@@ -57,18 +58,15 @@ public class GadgetGatherObject extends GadgetContent {
         GameItem item = new GameItem(itemData, 1);
         player.getInventory().addItem(item, ActionReason.Gather);
 
-        getGadget().getScene().broadcastPacket(new PacketGadgetInteractRsp(getGadget(), InteractType.INTERACT_TYPE_GATHER));
+        getGadget().getScene().broadcastPacket(new PacketGadgetInteractRsp(getGadget(), InteractType.INTERACT_GATHER));
 
         return true;
     }
 
-    public void onBuildProto(SceneGadgetInfo.Builder gadgetInfo) {
-        GatherGadgetInfo gatherGadgetInfo = GatherGadgetInfo.newBuilder()
-                .setItemId(this.getItemId())
-                .setIsForbidGuest(this.isForbidGuest())
-                .build();
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
+        val gatherGadgetInfo = new GatherGadgetInfo(this.getItemId(), this.isForbidGuest());
 
-        gadgetInfo.setGatherGadget(gatherGadgetInfo);
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.GatherGadget(gatherGadgetInfo));
     }
 
     public void dropItems(Player player) {

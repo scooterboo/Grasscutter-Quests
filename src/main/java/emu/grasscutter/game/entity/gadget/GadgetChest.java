@@ -5,16 +5,15 @@ import emu.grasscutter.game.dungeons.DungeonManager;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.gadget.chest.BossChestInteractHandler;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.BossChestInfoOuterClass.BossChestInfo;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.InterOpTypeOuterClass.InterOpType;
-import emu.grasscutter.net.proto.InteractTypeOuterClass;
-import emu.grasscutter.net.proto.InteractTypeOuterClass.InteractType;
-import emu.grasscutter.net.proto.ResinCostTypeOuterClass.ResinCostType;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.server.packet.send.PacketGadgetInteractRsp;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.gadget.InterOpType;
+import messages.gadget.InteractType;
+import messages.gadget.ResinCostType;
+import messages.scene.entity.BossChestInfo;
+import messages.scene.entity.SceneGadgetInfo;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -34,8 +33,8 @@ public class GadgetChest extends GadgetContent {
             return false;
         }
 
-        if (req.getOpType() == InterOpType.INTER_OP_TYPE_START && handler.isTwoStep()) {
-            player.sendPacket(new PacketGadgetInteractRsp(getGadget(), InteractType.INTERACT_TYPE_OPEN_CHEST, InterOpType.INTER_OP_TYPE_START));
+        if (req.getOpType() == InterOpType.INTER_OP_START && handler.isTwoStep()) {
+            player.sendPacket(new PacketGadgetInteractRsp(getGadget(), InteractType.INTERACT_OPEN_CHEST, InterOpType.INTER_OP_START));
             return false;
         } else {
             boolean success;
@@ -48,7 +47,7 @@ public class GadgetChest extends GadgetContent {
             if (!success) return false;
 
             getGadget().updateState(ScriptGadgetState.ChestOpened);
-            player.sendPacket(new PacketGadgetInteractRsp(this.getGadget(), InteractTypeOuterClass.InteractType.INTERACT_TYPE_OPEN_CHEST));
+            player.sendPacket(new PacketGadgetInteractRsp(this.getGadget(), InteractType.INTERACT_OPEN_CHEST));
             return true;
         }
     }
@@ -57,33 +56,33 @@ public class GadgetChest extends GadgetContent {
      * Builds proto information for gadgets, note that
      * it will override the gadget's properties even if the builder is empty
      * */
-    public void onBuildProto(SceneGadgetInfo.Builder gadgetInfo) {
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
         val playersUid = getGadget().getScene().getPlayers().stream().map(Player::getUid).toList();
 
         Optional.ofNullable(getGadget().getMetaGadget())
             .map(g -> g.getBoss_chest())
             .ifPresent(bossChest -> {
-                val chestProto = BossChestInfo.newBuilder()
-                    .setMonsterConfigId(bossChest.getMonster_config_id())
-                    .setResin(bossChest.getResin());
+                val chestProto = new BossChestInfo(bossChest.getMonster_config_id(), bossChest.getResin());
 
                 // removing instead of creating new list directly below is because
                 // it also has to consider normal cases
                 val qualifiedUids = new ArrayList<>(playersUid);
                 // don't allow player to take again if he has taken weekly boss already
-                Optional.ofNullable(getGadget().getScene().getDungeonManager())
-                    .map(DungeonManager::getWeeklyBossUidInfo).map(chestProto::putAllUidDiscountMap)
-                    .map(BossChestInfo.Builder::getUidDiscountMapMap).map(Map::keySet)
-                    .ifPresent(qualifiedUids::retainAll);
+                val dungeonManager = getGadget().getScene().getDungeonManager();
+                if(dungeonManager != null){
+                   val weeklyInfo = dungeonManager.getWeeklyBossUidInfo();
+                   chestProto.getUidDiscountMap().putAll(weeklyInfo);
+                   qualifiedUids.retainAll(weeklyInfo.keySet());
+                }
 
-                gadgetInfo.setBossChest(chestProto
-                    .addAllQualifyUidList(playersUid)
-                    .addAllRemainUidList(qualifiedUids)
-                    .build());
+                chestProto.setQualifyUidList(playersUid);
+                chestProto.setRemainUidList(qualifiedUids);
+                gadgetInfo.setContent(new SceneGadgetInfo.Content.BossChest(chestProto));
             });
+
 
         Optional.ofNullable(getGadget().getScene().getWorld().getHost().getBlossomManager()
                 .getChestInfo(getGadget().getConfigId(), playersUid))
-            .ifPresent(gadgetInfo::setBlossomChest);
+            .ifPresent(chest -> gadgetInfo.setContent(new SceneGadgetInfo.Content.BlossomChest(chest)));
     }
 }

@@ -6,11 +6,11 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.proto.EnterTypeOuterClass.EnterType;
 import emu.grasscutter.server.packet.send.PacketAvatarFightPropUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketAvatarLifeStateChangeNotify;
 import emu.grasscutter.server.packet.send.PacketPlayerEnterSceneNotify;
 import emu.grasscutter.utils.Position;
+import messages.scene.EnterType;
 
 /**
  * Hooks into the {@link Player} class, adding convenient ways to do certain things.
@@ -83,7 +83,7 @@ public final class PlayerHook {
     public void teleport(Position position) {
         this.player.getPosition().set(position);
         this.player.sendPacket(new PacketPlayerEnterSceneNotify(this.player,
-                EnterType.ENTER_TYPE_JUMP, EnterReason.TransPoint,
+                EnterType.ENTER_JUMP, EnterReason.TransPoint,
                 this.player.getSceneId(), position
         ));
     }

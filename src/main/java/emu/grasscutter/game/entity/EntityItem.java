@@ -7,26 +7,19 @@ import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair;
-import emu.grasscutter.net.proto.EntityAuthorityInfoOuterClass.EntityAuthorityInfo;
-import emu.grasscutter.net.proto.EntityClientDataOuterClass.EntityClientData;
-import emu.grasscutter.net.proto.EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo;
-import emu.grasscutter.net.proto.GadgetBornTypeOuterClass.GadgetBornType;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.InteractTypeOuterClass.InteractType;
-import emu.grasscutter.net.proto.MotionInfoOuterClass.MotionInfo;
-import emu.grasscutter.net.proto.PropPairOuterClass.PropPair;
-import emu.grasscutter.net.proto.ProtEntityTypeOuterClass.ProtEntityType;
-import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
 import emu.grasscutter.server.packet.send.PacketGadgetInteractRsp;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.ProtoHelper;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
+import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.gadget.InteractType;
+import messages.general.Vector;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.scene.entity.*;
+
+import java.util.List;
 
 public class EntityItem extends EntityBaseGadget {
     @Getter private final GameItem item;
@@ -88,47 +81,40 @@ public class EntityItem extends EntityBaseGadget {
         boolean success = player.getInventory().addItem(item, ActionReason.SubfieldDrop);
         if (success) {
             if (!this.isShare()) { // not shared drop
-                player.sendPacket(new PacketGadgetInteractRsp(this, InteractType.INTERACT_TYPE_PICK_ITEM));
+                player.sendPacket(new PacketGadgetInteractRsp(this, InteractType.INTERACT_PICK_ITEM));
             } else {
-                this.getScene().broadcastPacket(new PacketGadgetInteractRsp(this, InteractType.INTERACT_TYPE_PICK_ITEM));
+                this.getScene().broadcastPacket(new PacketGadgetInteractRsp(this, InteractType.INTERACT_PICK_ITEM));
             }
         }
     }
 
     @Override
     public SceneEntityInfo toProto() {
-        EntityAuthorityInfo authority = EntityAuthorityInfo.newBuilder()
-                .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
-                .setRendererChangedInfo(EntityRendererChangedInfo.newBuilder())
-                .setAiInfo(SceneEntityAiInfo.newBuilder().setIsAiOpen(true).setBornPos(Vector.newBuilder()))
-                .setBornPos(Vector.newBuilder())
-                .build();
+        val protoBornPos = new Vector();
+        val protoPos = getPosition().toProto();
+        val protoRot = getRotation().toProto();
+        val aiInfo = new SceneEntityAiInfo(true, protoBornPos);
+        val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, protoBornPos);
 
-        SceneEntityInfo.Builder entityInfo = SceneEntityInfo.newBuilder()
-                .setEntityId(getId())
-                .setEntityType(ProtEntityType.PROT_ENTITY_TYPE_GADGET)
-                .setMotionInfo(MotionInfo.newBuilder().setPos(getPosition().toProto()).setRot(getRotation().toProto()).setSpeed(Vector.newBuilder()))
-                .addAnimatorParaList(AnimatorParameterValueInfoPair.newBuilder())
-                .setEntityClientData(EntityClientData.newBuilder())
-                .setEntityAuthorityInfo(authority)
-                .setLifeState(1);
+        val entityInfo = new SceneEntityInfo(ProtEntityType.PROT_ENTITY_GADGET, getId());
+        entityInfo.setMotionInfo(new MotionInfo(protoPos, protoRot, new Vector()));
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLifeState(1);
 
-        PropPair pair = PropPair.newBuilder()
-                .setType(PlayerProperty.PROP_LEVEL.getId())
-                .setPropValue(ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, 1))
-                .build();
-        entityInfo.addPropList(pair);
+        PropPair pair = new PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, 1));
+        entityInfo.setPropList(List.of(pair));
 
-        SceneGadgetInfo.Builder gadgetInfo = SceneGadgetInfo.newBuilder()
-                .setGadgetId(this.getItemData().getGadgetId())
-                .setTrifleItem(this.getItem().toProto())
-                .setBornType(GadgetBornType.GADGET_BORN_TYPE_IN_AIR)
-                .setAuthorityPeerId(this.getWorld().getHostPeerId())
-                .setIsEnableInteract(true);
+        val gadgetInfo = new SceneGadgetInfo(this.getItemData().getGadgetId());
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.TrifleItem(this.getItem().toProto()));
+        gadgetInfo.setBornType(GadgetBornType.GADGET_BORN_IN_AIR);
+        gadgetInfo.setAuthorityPeerId(this.getWorld().getHostPeerId());
+        gadgetInfo.setEnableInteract(true);
 
-        entityInfo.setGadget(gadgetInfo);
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Gadget(gadgetInfo));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 
 }

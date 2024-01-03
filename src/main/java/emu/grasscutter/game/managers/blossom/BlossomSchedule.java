@@ -168,7 +168,7 @@ public class BlossomSchedule implements BaseBlossomROSData {
         return BlossomBriefInfo.newBuilder()
             .setSceneId(this.sceneId)
             .setCityId(this.cityId)
-            .setPos(this.position.toProto())
+            .setPos(this.position.toProtoOld())
             .setResin(this.resin)
             .setMonsterLevel(this.monsterLevel)
             .setRewardId(this.rewardId)

@@ -5,12 +5,13 @@ import java.util.Arrays;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.gadget.worktop.WorktopWorktopOptionHandler;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
-import emu.grasscutter.net.proto.SelectWorktopOptionReqOuterClass.SelectWorktopOptionReq;
-import emu.grasscutter.net.proto.WorktopInfoOuterClass.WorktopInfo;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.gadget.SelectWorktopOptionReq;
+import messages.scene.entity.SceneGadgetInfo;
+import messages.scene.entity.WorktopInfo;
 
 public class GadgetWorktop extends GadgetContent {
     private IntSet worktopOptions;
@@ -45,16 +46,14 @@ public class GadgetWorktop extends GadgetContent {
         return false;
     }
 
-    public void onBuildProto(SceneGadgetInfo.Builder gadgetInfo) {
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
         if (this.worktopOptions == null) {
             return;
         }
 
-        WorktopInfo worktop = WorktopInfo.newBuilder()
-                .addAllOptionList(this.getWorktopOptions())
-                .build();
+        val worktop = new WorktopInfo(this.getWorktopOptions().stream().toList());
 
-        gadgetInfo.setWorktop(worktop);
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.Worktop(worktop));
     }
 
     public void setOnSelectWorktopOptionEvent(WorktopWorktopOptionHandler handler) {

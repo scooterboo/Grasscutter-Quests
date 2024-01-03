@@ -128,7 +128,7 @@ public class WorldDataSystem extends BaseGameSystem {
                 .setIsAlive(true)
                 .setNextRefreshTime(Integer.MAX_VALUE)
                 .setRefreshInterval(Integer.MAX_VALUE)
-                .setPos(monsterPos.toProto());
+                .setPos(monsterPos.toProtoOld());
 
         if ("Boss".equals(imd.getMonsterCategory())) {
             var bossChest = group.searchBossChestInGroup();

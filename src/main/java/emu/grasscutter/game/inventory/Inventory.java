@@ -32,6 +32,7 @@ import lombok.val;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static emu.grasscutter.config.Configuration.INVENTORY_LIMITS;
 
@@ -550,5 +551,9 @@ public class Inventory extends BasePlayerManager implements Iterable<GameItem> {
     @Override
     public Iterator<GameItem> iterator() {
         return this.getItems().values().iterator();
+    }
+
+    public Stream<GameItem> stream() {
+        return this.getItems().values().stream();
     }
 }

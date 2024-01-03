@@ -1,11 +1,11 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BaseTypedPackage;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.utils.Crypto;
 import messages.player.GetPlayerTokenRsp;
 
-public class PacketGetPlayerTokenRsp extends BaseTypedPackage<GetPlayerTokenRsp> {
+public class PacketGetPlayerTokenRsp extends BaseTypedPacket<GetPlayerTokenRsp> {
 
     @Override
     public boolean shouldBuildHeader() {

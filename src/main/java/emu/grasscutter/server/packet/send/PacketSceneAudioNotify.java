@@ -1,9 +1,7 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AbilityChangeNotifyOuterClass.AbilityChangeNotify;
 import emu.grasscutter.net.proto.SceneAudioNotifyOuterClass.SceneAudioNotify;
 import lombok.val;
 

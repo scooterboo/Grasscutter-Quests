@@ -3,8 +3,6 @@ package emu.grasscutter.game.systems;
 import emu.grasscutter.game.CoopRequest;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.proto.EnterTypeOuterClass.EnterType;
-import emu.grasscutter.net.proto.PlayerApplyEnterMpReasonOuterClass.PlayerApplyEnterMpReason;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.net.proto.PlayerApplyEnterMpResultNotifyOuterClass;
@@ -13,6 +11,7 @@ import emu.grasscutter.server.game.GameServer;
 import emu.grasscutter.server.packet.send.PacketPlayerApplyEnterMpNotify;
 import emu.grasscutter.server.packet.send.PacketPlayerApplyEnterMpResultNotify;
 import emu.grasscutter.server.packet.send.PacketPlayerEnterSceneNotify;
+import messages.scene.EnterType;
 
 public class MultiplayerSystem extends BaseGameSystem {
 
@@ -89,7 +88,7 @@ public class MultiplayerSystem extends BaseGameSystem {
             world.addPlayer(hostPlayer);
 
             // Rejoin packet
-            hostPlayer.sendPacket(new PacketPlayerEnterSceneNotify(hostPlayer, hostPlayer, EnterType.ENTER_TYPE_SELF, EnterReason.HostFromSingleToMp, hostPlayer.getScene().getId(), hostPlayer.getPosition()));
+            hostPlayer.sendPacket(new PacketPlayerEnterSceneNotify(hostPlayer, hostPlayer, EnterType.ENTER_SELF, EnterReason.HostFromSingleToMp, hostPlayer.getScene().getId(), hostPlayer.getPosition()));
         }
 
         // Set scene pos and id of requester to the host player's
@@ -101,7 +100,7 @@ public class MultiplayerSystem extends BaseGameSystem {
         hostPlayer.getWorld().addPlayer(requester);
 
         // Packet
-        requester.sendPacket(new PacketPlayerEnterSceneNotify(requester, hostPlayer, EnterType.ENTER_TYPE_OTHER, EnterReason.TeamJoin, hostPlayer.getScene().getId(), hostPlayer.getPosition()));
+        requester.sendPacket(new PacketPlayerEnterSceneNotify(requester, hostPlayer, EnterType.ENTER_OTHER, EnterReason.TeamJoin, hostPlayer.getScene().getId(), hostPlayer.getPosition()));
     }
 
     public boolean leaveCoop(Player player) {
@@ -122,7 +121,7 @@ public class MultiplayerSystem extends BaseGameSystem {
         world.addPlayer(player);
 
         // Packet
-        player.sendPacket(new PacketPlayerEnterSceneNotify(player, EnterType.ENTER_TYPE_SELF, EnterReason.TeamBack, player.getScene().getId(), player.getPosition()));
+        player.sendPacket(new PacketPlayerEnterSceneNotify(player, EnterType.ENTER_SELF, EnterReason.TeamBack, player.getScene().getId(), player.getPosition()));
 
         return true;
     }
@@ -149,7 +148,7 @@ public class MultiplayerSystem extends BaseGameSystem {
         World world = new World(victim);
         world.addPlayer(victim);
 
-        victim.sendPacket(new PacketPlayerEnterSceneNotify(victim, EnterType.ENTER_TYPE_SELF, EnterReason.TeamKick, victim.getScene().getId(), victim.getPosition()));
+        victim.sendPacket(new PacketPlayerEnterSceneNotify(victim, EnterType.ENTER_SELF, EnterReason.TeamKick, victim.getScene().getId(), victim.getPosition()));
         return true;
     }
 }

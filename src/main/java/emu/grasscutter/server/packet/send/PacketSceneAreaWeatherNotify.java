@@ -1,21 +1,15 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.SceneAreaWeatherNotifyOuterClass.SceneAreaWeatherNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.SceneAreaWeatherNotify;
 
-public class PacketSceneAreaWeatherNotify extends BasePacket {
-	
+public class PacketSceneAreaWeatherNotify extends BaseTypedPacket<SceneAreaWeatherNotify> {
+
 	public PacketSceneAreaWeatherNotify(Player player) {
-		super(PacketOpcodes.SceneAreaWeatherNotify);
-		
-		SceneAreaWeatherNotify proto = SceneAreaWeatherNotify.newBuilder()
-				.setWeatherAreaId(player.getWeatherId())
-				.setClimateType(player.getClimate().getValue())
-				.build();
-		
-		this.setData(proto);
+		super(new SceneAreaWeatherNotify());
+
+		proto.setWeatherAreaId(player.getWeatherId());
+        proto.setClimateType(player.getClimate().getValue());
 	}
 }

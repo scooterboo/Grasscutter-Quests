@@ -13,11 +13,11 @@ import emu.grasscutter.game.quest.GameMainQuest;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.quest.enums.QuestState;
-import emu.grasscutter.net.proto.DungeonEntryInfoOuterClass.DungeonEntryInfo;
-import emu.grasscutter.net.proto.WeeklyBossResinDiscountInfoOuterClass.WeeklyBossResinDiscountInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.NonNull;
 import lombok.val;
+import messages.dungeon.DungeonEntryInfo;
+import messages.scene.entity.WeeklyBossResinDiscountInfo;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -61,17 +61,17 @@ public class DungeonEntryManager extends BasePlayerManager {
     }
 
     public DungeonEntryInfo toProto(DungeonData data) {
-        val proto = DungeonEntryInfo.newBuilder();
+        val proto = new DungeonEntryInfo(data.getId(), getDungeonEntryItem().getPassedDungeons().contains(data.getId()));
         Optional.ofNullable(GameData.getDungeonSerialDataMap().get(data.getSerialId()))
             .map(DungeonSerialData::getId).map(getBossRecordMap()::get)
-            .ifPresent(bossRecord -> proto.setWeeklyBossResinDiscountInfo(bossRecord.toProto())
-                .setBossChestNum(bossRecord.getTakeNum())
-                .setMaxBossChestNum(bossRecord.getMaxTakeNumLimit())
-                .setNextRefreshTime(bossRecord.getNextRefreshTime()));
+            .ifPresent(bossRecord -> {
+                proto.setWeeklyBossResinDiscountInfo(bossRecord.toProto());
+                proto.setBossChestNum(bossRecord.getTakeNum());
+                proto.setMaxBossChestNum(bossRecord.getMaxTakeNumLimit());
+                proto.setNextRefreshTime(bossRecord.getNextRefreshTime());
+            });
 
-        return proto.setDungeonId(data.getId())
-            .setIsPassed(getDungeonEntryItem().getPassedDungeons().contains(data.getId()))
-            .build();
+        return proto;
     }
 
     /**
