@@ -3,7 +3,7 @@ package emu.grasscutter.net.packet;
 import com.google.protobuf.GeneratedMessageV3;
 import emu.grasscutter.server.game.GameSession;
 import interfaces.ProtoModel;
-import messages.VERSION;
+import org.anime_game_servers.core.base.Version;
 
 public abstract class BaseTypedPacket<Packet extends ProtoModel> extends BasePacket {
 
@@ -23,7 +23,7 @@ public abstract class BaseTypedPacket<Packet extends ProtoModel> extends BasePac
     }
 
     @Override
-    public byte[] getData(VERSION version) {
+    public byte[] getData(Version version) {
         return proto.encodeToByteArray(version);
     }
 

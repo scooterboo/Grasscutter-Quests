@@ -13,9 +13,10 @@ import emu.grasscutter.utils.Utils;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import lombok.val;
-import messages.VERSION;
 import messages.general.server.RegionInfo;
 import messages.login.QueryCurrRegionHttpRsp;
+import org.anime_game_servers.core.base.Game;
+import org.anime_game_servers.core.base.Version;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -170,8 +171,8 @@ public final class RegionHandler implements Router {
         int versionMajor = Integer.parseInt(versionCode[0]);
         int versionMinor = Integer.parseInt(versionCode[1]);
         int versionFix   = Integer.parseInt(versionCode[2]);
-        val versionId = VERSION.idFromVersion(versionMajor, versionMinor, versionFix);
-        val version = VERSION.fromId(versionId);
+        val versionId = Version.idFromVersion(Game.GI, versionMajor, versionMinor, versionFix);
+        val version = Version.fromId(Game.GI, versionId);
 
         if (version == null){
             Grasscutter.getLogger().error("Client {} request: query_cur_region/{} with invalid version {}", ctx.ip(), regionName, versionName);
@@ -186,7 +187,7 @@ public final class RegionHandler implements Router {
         }
 
 
-        if (versionId > VERSION.V2_7_0.getId()) {
+        if (versionId > Version.GI_2_7_0.getId()) {
             try {
                 QueryCurrentRegionEvent event = new QueryCurrentRegionEvent(regionData); event.call();
 
@@ -265,7 +266,7 @@ public final class RegionHandler implements Router {
             return this.regionQuery;
         }
 
-        public String getBase64(VERSION version) {
+        public String getBase64(Version version) {
             return Utils.base64Encode(regionQuery.encodeToByteArray(version));
         }
     }

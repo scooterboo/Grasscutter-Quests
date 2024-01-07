@@ -20,7 +20,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
-import messages.VERSION;
+import org.anime_game_servers.core.base.Version;
 import package_id.PackageIds;
 
 import static emu.grasscutter.config.Configuration.*;
@@ -39,7 +39,7 @@ public class GameSession implements GameSessionManager.KcpChannel {
     @Getter private int clientTime;
     @Getter private long lastPingTime;
     private int lastClientSeq = 10;
-    @Getter private VERSION version = VERSION.V3_2_0; // TODO actually get the version from the client
+    @Getter private Version version = Version.GI_3_2_0; // TODO actually get the version from the client
     @Getter private PackageIdProvider packageIdProvider = PackageIds.getMapper(version);
 
     public GameSession(GameServer server) {

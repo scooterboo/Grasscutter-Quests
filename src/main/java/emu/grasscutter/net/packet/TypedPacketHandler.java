@@ -3,7 +3,7 @@ package emu.grasscutter.net.packet;
 import emu.grasscutter.server.game.GameSession;
 import interfaces.ProtoModel;
 import lombok.val;
-import messages.VERSION;
+import org.anime_game_servers.core.base.Version;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public abstract class TypedPacketHandler<T extends ProtoModel> extends PacketHan
             throw new RuntimeException("Could not find model class for " + getClass().getName());
         }
         try {
-            parseMethod = modelClass.getMethod("parseBy", byte[].class, VERSION.class);
+            parseMethod = modelClass.getMethod("parseBy", byte[].class, Version.class);
             if(!parseMethod.getReturnType().isAssignableFrom(modelClass))
                 throw new RuntimeException("parseBy method does not return " + modelClass.getName());
         } catch (NoSuchMethodException e) {
@@ -47,7 +47,7 @@ public abstract class TypedPacketHandler<T extends ProtoModel> extends PacketHan
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
         val model = (T) parseMethod.invoke(null, payload, session.getVersion());
-         handle(session, header, model);
+        handle(session, header, model);
     }
 
     public abstract void handle(GameSession session, byte[] header, T payload) throws Exception;

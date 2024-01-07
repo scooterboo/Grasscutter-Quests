@@ -7,9 +7,8 @@ import com.google.protobuf.GeneratedMessageV3;
 import emu.grasscutter.net.proto.PacketHeadOuterClass.PacketHead;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.utils.Crypto;
-import interfaces.ProtoModel;
 import lombok.val;
-import messages.VERSION;
+import org.anime_game_servers.core.base.Version;
 
 public class BasePacket {
     private static final int const1 = 17767; // 0x4567
@@ -69,7 +68,7 @@ public class BasePacket {
         return shouldBuildHeader;
     }
 
-    public byte[] getData(VERSION version) {
+    public byte[] getData(Version version) {
         return data;
     }
 

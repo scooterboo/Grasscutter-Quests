@@ -44,7 +44,7 @@ public class GameServerPacketHandler {
 
             this.handlers.put(opcode.value(), packetHandler);
         } catch (Exception e) {
-            e.printStackTrace();
+            Grasscutter.getLogger().warn("exception while registering packet handler: {}", handlerClass.getName(), e);
         }
     }
     public void registerTypedPacketHandler(Class<TypedPacketHandler<?>> handlerClass) {
