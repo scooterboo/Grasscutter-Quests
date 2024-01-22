@@ -5,9 +5,9 @@ import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.props.ElementReactionType;
-import emu.grasscutter.scripts.data.SceneTrigger;
 import emu.grasscutter.server.packet.send.PacketChallengeDataNotify;
 import lombok.Getter;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneTrigger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

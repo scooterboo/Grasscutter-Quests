@@ -26,6 +26,7 @@ import emu.grasscutter.game.tower.TowerSystem;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.game.world.WorldDataSystem;
 import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.scripts.ScriptSystem;
 import emu.grasscutter.server.event.types.ServerEvent;
 import emu.grasscutter.server.event.game.ServerTickEvent;
 import emu.grasscutter.server.event.internal.ServerStartEvent;
@@ -55,6 +56,7 @@ public final class GameServer extends KcpServer {
     private final Set<World> worlds;
 
     // Server systems
+    private final ScriptSystem scriptSystem;
     private final InventorySystem inventorySystem;
     private final GachaSystem gachaSystem;
     private final ShopSystem shopSystem;
@@ -108,6 +110,7 @@ public final class GameServer extends KcpServer {
         this.taskMap = new TaskMap(true);
 
         // Create game systems
+        this.scriptSystem = new ScriptSystem(this);
         this.inventorySystem = new InventorySystem(this);
         this.gachaSystem = new GachaSystem(this);
         this.shopSystem = new ShopSystem(this);

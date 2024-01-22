@@ -5,10 +5,10 @@ import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.ClientScriptEventNotifyOuterClass.ClientScriptEventNotify;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.game.GameSession;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
 
 @Opcodes(PacketOpcodes.ClientScriptEventNotify)
 public class HandlerClientScriptEventNotify extends PacketHandler {

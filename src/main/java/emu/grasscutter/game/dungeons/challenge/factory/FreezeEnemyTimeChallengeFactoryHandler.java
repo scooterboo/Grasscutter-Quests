@@ -7,7 +7,7 @@ import emu.grasscutter.game.dungeons.challenge.enums.ChallengeType;
 import emu.grasscutter.game.dungeons.challenge.trigger.ElementReactionTrigger;
 import emu.grasscutter.game.dungeons.challenge.trigger.TimeTrigger;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
 
 import java.util.List;
 

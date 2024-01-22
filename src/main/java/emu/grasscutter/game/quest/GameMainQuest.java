@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import org.anime_game_servers.core.gi.enums.QuestState;
+
 @Entity(value = "quests", useDiscriminator = false)
 public class GameMainQuest {
     public static final Logger logger = Loggers.getQuestSystem();
@@ -264,7 +266,7 @@ public class GameMainQuest {
 
         if (highestActiveQuest == null) {
             var firstUnstarted = getChildQuests().values().stream()
-                .filter(q -> q.getQuestData() != null && q.getState().getValue() != QuestState.FINISHED.getValue())
+                .filter(q -> q.getQuestData() != null && q.getState().getValue() != QuestState.QUEST_STATE_FINISHED.getValue())
                 .min(Comparator.comparingInt(a -> a.getQuestData().getOrder()));
             if(firstUnstarted.isEmpty()){
                 // all quests are probably finished, do don't rewind and maybe also set the mainquest to finished?

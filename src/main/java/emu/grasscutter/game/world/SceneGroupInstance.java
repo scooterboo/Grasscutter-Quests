@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.anime_game_servers.gi_lua.models.SceneGroupUserData;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
 import org.bson.types.ObjectId;
 
 import dev.morphia.annotations.Entity;
@@ -12,13 +15,12 @@ import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Indexed;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.scripts.data.SceneGadget;
-import emu.grasscutter.scripts.data.SceneGroup;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 @Entity(value = "group_instances", useDiscriminator = false)
-public class SceneGroupInstance {
+public class SceneGroupInstance implements SceneGroupUserData {
     @Id private ObjectId id;
 
     @Indexed private int ownerUid; //This group is owned by the host player
@@ -34,10 +36,11 @@ public class SceneGroupInstance {
     @Getter private Map<String, Integer> cachedVariables;
 
     @Getter @Setter private int lastTimeRefreshed;
+    @Nullable @Getter @Setter private Boolean isReplaceable;
 
     public SceneGroupInstance(SceneGroup group, Player owner) {
         this.luaGroup = group;
-        this.groupId = group.getId();
+        this.groupId = group.getGroupInfo().getId();
         this.targetSuiteId = 0;
         this.activeSuiteId = 0;
         this.lastTimeRefreshed = 0;
@@ -58,7 +61,8 @@ public class SceneGroupInstance {
 
     public void setLuaGroup(SceneGroup group) {
         this.luaGroup = group;
-        this.groupId = group.getId();
+        this.groupId = group.getGroupInfo().getId();
+        initWithSceneGroup(group.getGroupInfo());
     }
 
     public boolean isCached() {
@@ -72,15 +76,26 @@ public class SceneGroupInstance {
 
     public void cacheGadgetState(SceneGadget g, int state) {
         if(g.isPersistent()) //Only cache when is persistent
-            cachedGadgetStates.put(g.getConfig_id(), state);
+            cachedGadgetStates.put(g.getConfigId(), state);
     }
 
     public int getCachedGadgetState(SceneGadget g) {
-        Integer state = cachedGadgetStates.getOrDefault(g.getConfig_id(), null);
+        Integer state = cachedGadgetStates.getOrDefault(g.getConfigId(), null);
         return (state == null) ? g.getState() : state;
     }
 
     public void save() {
         DatabaseHelper.saveGroupInstance(this);
+    }
+
+    @Nullable
+    @Override
+    public Boolean isReplaceable() {
+        return isReplaceable;
+    }
+
+    @Override
+    public void setReplaceable(@Nullable Boolean isReplaceable) {
+        this.isReplaceable = isReplaceable;
     }
 }

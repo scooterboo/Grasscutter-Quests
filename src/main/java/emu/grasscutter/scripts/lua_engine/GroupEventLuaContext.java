@@ -1,11 +1,16 @@
 package emu.grasscutter.scripts.lua_engine;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.scripts.SceneScriptManager;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import lombok.Getter;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.script_lib.ScriptLibGroupHandlerProvider;
+import org.anime_game_servers.gi_lua.script_lib.ScriptLibHandler;
+import org.anime_game_servers.lua.engine.LuaEngine;
+import org.jetbrains.annotations.NotNull;
 
-public class GroupEventLuaContext implements LuaContext {
+public class GroupEventLuaContext implements org.anime_game_servers.gi_lua.script_lib.GroupEventLuaContext {
     @Getter
     final private SceneGroup groupInstance;
     @Getter
@@ -30,4 +35,30 @@ public class GroupEventLuaContext implements LuaContext {
     public SceneScriptManager getSceneScriptManager() {
         return scriptManager;
     }
+
+    @Override
+    public ScriptLibHandler getScriptLibHandler() {
+        return Grasscutter.getGameServer().getScriptSystem().getScriptLibHandler();
+    }
+
+    @NotNull
+    @Override
+    public ScriptLibGroupHandlerProvider getScriptLibHandlerProvider() {
+        return Grasscutter.getGameServer().getScriptSystem().getScriptLibGroupHandlerProvider();
+    }
+
+    /*@Override
+    public int source_entity_id() {
+        return args.source_eid;
+    }
+
+    @Override
+    public int target_entity_id() {
+        return args.target_eid;
+    }
+
+    @Override
+    public int uid() {
+        return args.uid;
+    }*/
 }

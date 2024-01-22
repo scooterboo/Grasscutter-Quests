@@ -3,11 +3,11 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.net.packet.TypedPacketHandler;
-import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketProjectorOptionRsp;
 import messages.gadget.ProjectorOpType;
 import messages.gadget.ProjectorOptionReq;
+import org.anime_game_servers.gi_lua.models.constants.ScriptGadgetState;
 
 public class HandlerProjectorOptionReq extends TypedPacketHandler<ProjectorOptionReq> {
 

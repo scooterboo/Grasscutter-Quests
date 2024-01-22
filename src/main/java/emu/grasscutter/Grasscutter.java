@@ -117,7 +117,6 @@ public final class Grasscutter {
 
         // Load all resources.
         Grasscutter.updateDayOfWeek();
-        ScriptLoader.init();
         ResourceLoader.loadAll();
 
         // Generate handbooks.

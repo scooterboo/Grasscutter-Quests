@@ -2,17 +2,22 @@ package emu.grasscutter.game.managers.blossom;
 
 import dev.morphia.annotations.Entity;
 import emu.grasscutter.GameConstants;
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.common.BaseBlossomROSData;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
+import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.proto.BlossomBriefInfoOuterClass.BlossomBriefInfo;
 import emu.grasscutter.net.proto.BlossomScheduleInfoOuterClass.BlossomScheduleInfo;
-import emu.grasscutter.scripts.data.SceneGroup;
+import emu.grasscutter.scripts.ScriptSystem;
 import emu.grasscutter.utils.Position;
 import lombok.*;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.core.gi.models.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -48,19 +53,30 @@ public class BlossomSchedule implements BaseBlossomROSData {
     /**
      * Builder function
      * */
-    public static BlossomSchedule create(@NotNull BaseBlossomROSData baseData, @NotNull BlossomGroupsData groupsData, int worldLevel) {
+    public static BlossomSchedule create(@Nonnull World world, @NotNull BaseBlossomROSData baseData, @NotNull BlossomGroupsData groupsData, int worldLevel) {
         final int sceneId = Optional.ofNullable(GameData.getCityDataMap().get(groupsData.getCityId())).map(CityData::getSceneId)
             .orElse(3);
+        val scriptSystem = world.getHost().getServer().getScriptSystem();
+        val scene = scriptSystem.getSceneMeta(sceneId);
 
-        return Optional.ofNullable(SceneGroup.of(groupsData.getNewGroupId()).load(sceneId))
-            .map(SceneGroup::getGadgets)
-            .map(Map::values)
-            .stream().flatMap(Collection::stream)
-            .filter(gadget -> gadget.getGadget_id() == baseData.getRefreshType().getGadgetId())
+        val group = scene.getGroup(groupsData.getNewGroupId());
+        if(group == null) {
+            Grasscutter.getLogger().warn("[BlossomSchedule] Unable to find group {} in scene {}", groupsData.getNewGroupId(), sceneId);
+            return null;
+        }
+
+        group.load(ScriptSystem.getScriptLoader());
+        val gadgets = group.getGadgets();
+        if(gadgets == null || gadgets.isEmpty()) {
+            return null;
+        }
+
+        return gadgets.values().stream()
+            .filter(gadget -> gadget.getGadgetId() == baseData.getRefreshType().getGadgetId())
             .map(gadget -> BlossomSchedule.of()
                 .setSceneId(sceneId)
                 .setCityId(baseData.getCityId())
-                .setPosition(gadget.getPos())
+                .setPosition(new Position(gadget.getPos()))
                 .setResin(getResinCost(baseData.getRefreshType()))
                 .setMonsterLevel(getMonsterLevel(worldLevel))
                 .setRewardId(baseData.getRewardId(worldLevel))

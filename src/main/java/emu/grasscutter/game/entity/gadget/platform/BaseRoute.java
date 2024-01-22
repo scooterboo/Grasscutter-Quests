@@ -1,13 +1,13 @@
 package emu.grasscutter.game.entity.gadget.platform;
 
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.SceneGadget;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import messages.general.MathQuaternion;
 import messages.scene.entity.PlatformInfo;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
 
 public abstract class BaseRoute {
     @Getter @Setter private boolean isStarted;
@@ -24,14 +24,14 @@ public abstract class BaseRoute {
 
     BaseRoute(SceneGadget gadget) {
         this.startRot = new Position(gadget.getRot());
-        this.isStarted = gadget.isStart_route();
-        this.isActive = gadget.isStart_route();
+        this.isStarted = gadget.isStartRoute();
+        this.isActive = gadget.isStartRoute();
     }
 
     public static BaseRoute fromSceneGadget(SceneGadget sceneGadget) {
-        if (sceneGadget.getRoute_id() != 0) {
+        if (sceneGadget.getRouteId() != 0) {
             return new ConfigRoute(sceneGadget);
-        } else if (sceneGadget.is_use_point_array()) {
+        } else if (sceneGadget.isUsePointArray()) {
             return new PointArrayRoute(sceneGadget);
         }
         return null;

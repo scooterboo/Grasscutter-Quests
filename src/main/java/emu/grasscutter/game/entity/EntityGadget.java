@@ -16,9 +16,6 @@ import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.EntityControllerScriptManager;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.SceneGadget;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketGadgetStateNotify;
 import emu.grasscutter.server.packet.send.PacketPlatformStartRouteNotify;
 import emu.grasscutter.server.packet.send.PacketPlatformStopRouteNotify;
@@ -34,6 +31,9 @@ import lombok.val;
 import messages.gadget.GadgetInteractReq;
 import messages.general.ability.AbilitySyncStateInfo;
 import messages.scene.entity.*;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -126,8 +126,8 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
     public void setState(int state) {
         this.state = state;
         //Cache the gadget state
-        if(metaGadget != null && metaGadget.getGroup() != null) {
-            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.getGroup().getId());
+        if(metaGadget != null && metaGadget.getGroupId() > 0) {
+            var instance = getScene().getScriptManager().getCachedGroupInstanceById(metaGadget.getGroupId());
             if(instance != null) instance.cacheGadgetState(metaGadget, state);
         }
     }
@@ -207,7 +207,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
 
         SceneGroupInstance groupInstance = getScene().getScriptManager().getCachedGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaGadget != null)
-            groupInstance.getDeadEntities().add(metaGadget.getConfig_id());
+            groupInstance.getDeadEntities().add(metaGadget.getConfigId());
 
         val hostBlossom = getScene().getWorld().getHost().getBlossomManager();
         val removedChest = hostBlossom.getSpawnedChest().remove(getConfigId());
@@ -278,7 +278,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         gadgetInfo.setAuthorityPeerId(this.getScene().getWorld().getHostPeerId());
 
         if (this.metaGadget != null) {
-            gadgetInfo.setDraftId(this.metaGadget.getDraft_id());
+            gadgetInfo.setDraftId(this.metaGadget.getDraftId());
         }
 
         if(owner != null){

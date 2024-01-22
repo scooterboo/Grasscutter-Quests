@@ -2,8 +2,6 @@ package emu.grasscutter.game.dungeons;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.ScenePointEntry;
-import emu.grasscutter.data.common.PointData;
 import emu.grasscutter.data.excels.DungeonData;
 import emu.grasscutter.data.excels.DungeonElementChallengeData;
 import emu.grasscutter.data.excels.DungeonPassConfigData;
@@ -19,8 +17,6 @@ import emu.grasscutter.game.quest.enums.LogicType;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketDungeonDataNotify;
 import emu.grasscutter.server.packet.send.PacketDungeonReviseLevelNotify;
 import emu.grasscutter.server.packet.send.PacketDungeonWayPointNotify;
@@ -34,6 +30,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.val;
 import messages.scene.entity.WeeklyBossResinDiscountInfo;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
 
 import javax.annotation.Nullable;
 import java.util.*;

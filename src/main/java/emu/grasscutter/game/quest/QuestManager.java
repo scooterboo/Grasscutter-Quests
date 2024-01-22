@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
+import org.anime_game_servers.core.gi.enums.QuestState;
 
 import javax.annotation.Nonnull;
 

@@ -4,10 +4,10 @@ import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.MonsterAlertChangeNotifyOuterClass.MonsterAlertChangeNotify;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.server.game.GameSession;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
 
 @Opcodes(PacketOpcodes.MonsterAlertChangeNotify)
 public class HandlerMonsterAlertChangeNotify extends PacketHandler {

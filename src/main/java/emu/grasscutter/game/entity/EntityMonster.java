@@ -1,7 +1,6 @@
 package emu.grasscutter.game.entity;
 
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.common.PropGrowCurve;
@@ -11,17 +10,12 @@ import emu.grasscutter.data.excels.MonsterCurveData;
 import emu.grasscutter.data.excels.MonsterData;
 import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
-import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.entity.interfaces.StringAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneMonster;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.ProtoHelper;
@@ -34,12 +28,16 @@ import messages.gadget.GadgetInteractReq;
 import messages.general.ability.AbilitySyncStateInfo;
 import messages.general.entity.SceneWeaponInfo;
 import messages.scene.entity.*;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneMonster;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
+import static org.anime_game_servers.gi_lua.models.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
 
 public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Getter(onMethod = @__(@Override))
@@ -123,7 +121,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         ArrayList<String> abilityNames = new ArrayList<>();
         val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
         //Affix abilities
-        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getId() == getGroupId()).findAny();
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getGroupInfo().getId() == getGroupId()).findAny();
         List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
 
         // first add pre add affix abilities
@@ -277,7 +275,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
 
         SceneGroupInstance groupInstance = scene.getScriptManager().getGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaMonster != null)
-            groupInstance.getDeadEntities().add(metaMonster.getConfig_id());
+            groupInstance.getDeadEntities().add(metaMonster.getConfigId());
 
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_GROUP_MONSTER, this.getGroupId());
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_TYPE_MONSTER, this.getMonsterData().getType().getValue());
@@ -341,9 +339,9 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         monsterInfo.setBlockId(getScene().getId());
         monsterInfo.setBornType(MonsterBornType.MONSTER_BORN_DEFAULT);
 
-        if(metaMonster!=null && metaMonster.getSpecial_name_id()!=0){
-            monsterInfo.setTitleId(this.metaMonster.getTitle_id());
-            monsterInfo.setSpecialNameId(this.metaMonster.getSpecial_name_id());
+        if(metaMonster!=null && metaMonster.getSpecialNameId()!=0){
+            monsterInfo.setTitleId(this.metaMonster.getTitleId());
+            monsterInfo.setSpecialNameId(this.metaMonster.getSpecialNameId());
         } else if (monsterData.getDescribeData() != null) {
             monsterInfo.setTitleId(monsterData.getDescribeData().getTitleId());
             monsterInfo.setSpecialNameId(monsterData.getSpecialNameId());

@@ -31,7 +31,6 @@ import emu.grasscutter.game.quest.RewindData;
 import emu.grasscutter.game.quest.TeleportData;
 import emu.grasscutter.game.world.GroupReplacementData;
 import emu.grasscutter.game.quest.enums.QuestCond;
-import emu.grasscutter.scripts.data.DummyPoint;
 import emu.grasscutter.utils.Utils;
 import emu.grasscutter.data.excels.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -46,6 +45,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Tolerate;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.scene.DummyPoint;
+import org.anime_game_servers.gi_lua.models.scene.SceneGroupReplacement;
 
 import javax.annotation.Nullable;
 
@@ -188,7 +189,7 @@ public class GameData {
     @Getter private static final Int2ObjectMap<DropTableExcelConfigData> dropTableExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<MonsterMapping> monsterMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ActivityCondGroup> activityCondGroupMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<GroupReplacementData> groupReplacements = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<SceneGroupReplacement> groupReplacements = new Int2ObjectOpenHashMap<>();
 
     // Cache
     @Getter private static final IntList scenePointIdList = new IntArrayList();

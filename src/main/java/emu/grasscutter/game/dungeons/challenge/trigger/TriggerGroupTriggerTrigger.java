@@ -1,7 +1,7 @@
 package emu.grasscutter.game.dungeons.challenge.trigger;
 
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
-import emu.grasscutter.scripts.data.SceneTrigger;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneTrigger;
 
 public class TriggerGroupTriggerTrigger extends ChallengeTrigger{
     private final String TRIGGER_TAG;

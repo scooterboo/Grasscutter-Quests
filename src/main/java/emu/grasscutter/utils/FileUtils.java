@@ -22,6 +22,7 @@ public final class FileUtils {
     private static final Path CACHE_PATH;
     private static final Path RESOURCES_PATH;
     private static final Path SCRIPTS_PATH;
+    private static final Path SCRIPTS_OVERWRITES_PATH;
     static {
         FileSystem fs = null;
         Path path = null;
@@ -87,6 +88,10 @@ public final class FileUtils {
         SCRIPTS_PATH = (scripts.startsWith("resources:"))
             ? RESOURCES_PATH.resolve(scripts.substring("resources:".length()))
             : Path.of(scripts);
+        final String scriptOverwrites = Grasscutter.config.folderStructure.scriptOverwrites;
+        SCRIPTS_OVERWRITES_PATH = (scriptOverwrites.startsWith("resources:"))
+            ? RESOURCES_PATH.resolve(scriptOverwrites.substring("resources:".length()))
+            : Path.of(scriptOverwrites);
 
         CACHE_PATH = RESOURCES_PATH.resolve(Grasscutter.config.folderStructure.cache);
     };
@@ -152,6 +157,9 @@ public final class FileUtils {
     }
 
     public static Path getScriptPath(String path) {
+        return SCRIPTS_PATH.resolve(path);
+    }
+    public static Path getScriptOverwritePath(String path) {
         return SCRIPTS_PATH.resolve(path);
     }
 

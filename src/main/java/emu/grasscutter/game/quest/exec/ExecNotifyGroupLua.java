@@ -4,13 +4,13 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestSystem;
 import emu.grasscutter.game.quest.QuestValueExec;
-import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.game.quest.enums.QuestExec;
 import emu.grasscutter.game.quest.handlers.QuestExecHandler;
 import emu.grasscutter.data.common.quest.SubQuestData.QuestExecParam;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import lombok.val;
+import org.anime_game_servers.core.gi.enums.QuestState;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
 
 @QuestValueExec(QuestExec.QUEST_EXEC_NOTIFY_GROUP_LUA)
 public class ExecNotifyGroupLua extends QuestExecHandler {

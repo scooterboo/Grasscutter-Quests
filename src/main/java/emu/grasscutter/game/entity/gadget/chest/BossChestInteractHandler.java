@@ -30,16 +30,22 @@ public class BossChestInteractHandler implements ChestInteractHandler{
 
         val worldDataManager = chest.getGadget().getScene().getWorld().getServer().getWorldDataSystem();
         val chestMetaGadget = chest.getGadget().getMetaGadget();
-        val monsterCfgId = chestMetaGadget.getBoss_chest().getMonster_config_id();
-        val groupMonsters = chestMetaGadget.getGroup().getMonsters();
+        val group = chestMetaGadget.getSceneMeta().getGroup(chestMetaGadget.getGroupId());
+        if(group == null){
+            Grasscutter.getLogger().warn("group is null {} unable to get cfg id {}",
+                chestMetaGadget.getGroupId(), chestMetaGadget.getBossChest().getMonsterConfigId());
+            return false;
+        }
+        val monsterCfgId = chestMetaGadget.getBossChest().getMonsterConfigId();
+        val groupMonsters = group.getMonsters();
         if(groupMonsters == null){
             Grasscutter.getLogger().warn("group monsters are null {} unable to get cfg id {}",
-                chestMetaGadget.getGroup().getId(), monsterCfgId);
+                chestMetaGadget.getGroupId(), monsterCfgId);
             return false;
         }
         val monster = groupMonsters.get(monsterCfgId);
 
-        val reward = worldDataManager.getRewardByBossId(monster.getMonster_id());
+        val reward = worldDataManager.getRewardByBossId(monster.getMonsterId());
 
         if (reward == null) {
             val dungeonManager = player.getScene().getDungeonManager();
@@ -47,7 +53,7 @@ public class BossChestInteractHandler implements ChestInteractHandler{
             if(dungeonManager != null){
                 return dungeonManager.getStatueDrops(player, useCondensedResin, chest.getGadget().getGroupId());
             }
-            Grasscutter.getLogger().warn("Could not found the reward of boss monster {}", monster.getMonster_id());
+            Grasscutter.getLogger().warn("Could not found the reward of boss monster {}", monster.getMonsterId());
             return false;
         }
 

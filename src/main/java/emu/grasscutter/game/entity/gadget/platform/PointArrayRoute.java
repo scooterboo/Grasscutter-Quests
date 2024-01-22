@@ -1,12 +1,12 @@
 package emu.grasscutter.game.entity.gadget.platform;
 
-import emu.grasscutter.scripts.data.SceneGadget;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import messages.scene.entity.MovingPlatformType;
 import messages.scene.entity.PlatformInfo;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
 
 /**
  * TODO implement point array routes, read from missing resources

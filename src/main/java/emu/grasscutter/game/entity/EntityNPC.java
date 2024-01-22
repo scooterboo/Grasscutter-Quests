@@ -2,8 +2,6 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.*;
-import emu.grasscutter.scripts.data.SceneNPC;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
@@ -11,6 +9,7 @@ import lombok.val;
 import messages.general.Vector;
 import messages.general.ability.AbilitySyncStateInfo;
 import messages.scene.entity.*;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneNPC;
 
 import java.util.List;
 
@@ -25,12 +24,12 @@ public class EntityNPC extends GameEntity {
     public EntityNPC(Scene scene, SceneNPC metaNPC, int blockId, int suiteId) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.NPC);
-        setConfigId(metaNPC.getConfig_id());
-        setGroupId(metaNPC.getGroup().getId());
+        setConfigId(metaNPC.getConfigId());
+        setGroupId(metaNPC.getGroupId());
         setBlockId(blockId);
         this.suiteId = suiteId;
-        this.position = metaNPC.getPos().clone();
-        this.rotation = metaNPC.getRot().clone();
+        this.position = new Position(metaNPC.getPos());
+        this.rotation = new Position(metaNPC.getRot());
         this.metaNpc = metaNPC;
 
     }

@@ -9,7 +9,7 @@ import emu.grasscutter.game.quest.QuestValueCond;
 import lombok.val;
 
 import static emu.grasscutter.game.quest.enums.QuestCond.QUEST_COND_STATE_EQUAL;
-import static emu.grasscutter.game.quest.enums.QuestState.QUEST_STATE_NONE;
+import static org.anime_game_servers.core.gi.enums.QuestState.QUEST_STATE_NONE;
 
 @QuestValueCond(QUEST_COND_STATE_EQUAL)
 public class ConditionStateEqual extends BaseCondition {

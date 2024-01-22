@@ -2,8 +2,8 @@ package emu.grasscutter.scripts;
 
 import emu.grasscutter.Loggers;
 import emu.grasscutter.scripts.data.controller.EntityController;
-import emu.grasscutter.scripts.lua_engine.ScriptType;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.loader.GadgetScriptLoadParams;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -22,6 +22,7 @@ public class EntityControllerScriptManager {
     }
 
     private static void cacheGadgetControllers(){
+        val scriptLoader = ScriptSystem.getScriptLoader();
         try (val stream = Files.newDirectoryStream(getScriptPath("Gadget/"), "*.lua")) {
             stream.forEach(path -> {
                 val fileName = path.getFileName().toString();
@@ -30,16 +31,10 @@ public class EntityControllerScriptManager {
                     return;
 
                 val controllerName = fileName.substring(0, fileName.length()-4);
-                val cs = ScriptLoader.getScript("Gadget/"+fileName, ScriptType.EXECUTABLE);
-                if (cs == null)
-                    return;
-
-                try{
-                    cs.evaluate();
+                val scriptParams = new GadgetScriptLoadParams(fileName);
+                scriptLoader.loadData(scriptParams, cs -> {
                     gadgetController.put(controllerName, new EntityController(cs));
-                } catch (Throwable e){
-                    logger.error("Error while loading gadget controller: {}", fileName, e);
-                }
+                });
             });
 
             logger.info("Loaded {} gadget controllers", gadgetController.size());

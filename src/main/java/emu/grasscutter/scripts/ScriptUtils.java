@@ -2,10 +2,9 @@ package emu.grasscutter.scripts;
 
 import java.util.HashMap;
 
-import emu.grasscutter.scripts.lua_engine.LuaEngine;
-import emu.grasscutter.scripts.lua_engine.LuaTable;
 import emu.grasscutter.utils.Position;
 import lombok.val;
+import org.anime_game_servers.lua.engine.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 public class ScriptUtils {
@@ -22,21 +21,6 @@ public class ScriptUtils {
 		}
 		return map;
 	}
-
-    public static LuaTable posToLua(Position position, LuaEngine engine){
-        var result = engine.createTable();
-        if(position != null){
-            result.set("x", position.getX());
-            result.set("y", position.getY());
-            result.set("z", position.getZ());
-        } else {
-            result.set("x", 0);
-            result.set("y", 0);
-            result.set("z", 0);
-        }
-
-        return result;
-    }
 
     public static Position luaToPos(LuaTable position){
         val result = new Position();

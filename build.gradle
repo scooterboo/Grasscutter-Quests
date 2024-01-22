@@ -96,8 +96,13 @@ dependencies {
     implementation group: 'org.quartz-scheduler', name: 'quartz-jobs', version: '2.3.2'
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 
+    implementation("org.anime_game_servers.core:gi:0.1")
     implementation("org.anime_game_servers:luaj:3.0.3")
     implementation("org.anime_game_servers:JNLua_GC:0.1.0")
+    implementation("org.anime_game_servers.lua:base:0.1")
+    implementation("org.anime_game_servers.lua:GIlua:0.1")
+    implementation("org.anime_game_servers.lua:LuaJEngine:0.1")
+    implementation("org.anime_game_servers.lua:JNLuaEngine:0.1")
 
     implementation("org.anime_game_servers.multi_proto:gi-jvm:0.1.32")
 
@@ -106,7 +111,6 @@ dependencies {
 
     implementation group: 'io.javalin', name: 'javalin', version: '4.6.4'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
-    //implementation("pro.streem.pbandk:pbandk-runtime:0.14.2")
 
     protobuf files('proto/')
 

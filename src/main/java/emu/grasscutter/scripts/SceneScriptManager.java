@@ -12,29 +12,35 @@ import emu.grasscutter.data.server.Grid;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
-import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.quest.GameQuest;
 import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.*;
-import emu.grasscutter.scripts.lua_engine.LuaValue;
-import emu.grasscutter.scripts.lua_engine.mock_results.BooleanLuaValue;
+import emu.grasscutter.scripts.lua_engine.GroupEventLuaContext;
 import emu.grasscutter.scripts.lua_engine.service.ScriptMonsterSpawnService;
 import emu.grasscutter.scripts.lua_engine.service.ScriptMonsterTideService;
 import emu.grasscutter.server.packet.send.PacketGroupSuiteNotify;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.GridPosition;
 import emu.grasscutter.utils.JsonUtils;
-import emu.grasscutter.utils.Position;
 import io.netty.util.concurrent.FastThreadLocalThread;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kotlin.Pair;
+import lombok.Getter;
 import lombok.val;
+import messages.scene.VisionType;
+import org.anime_game_servers.gi_lua.models.*;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.SceneConfig;
+import org.anime_game_servers.gi_lua.models.scene.SceneMeta;
+import org.anime_game_servers.gi_lua.models.scene.block.SceneBlock;
+import org.anime_game_servers.gi_lua.models.scene.block.SceneGroupInfo;
+import org.anime_game_servers.gi_lua.models.scene.group.*;
+import org.anime_game_servers.lua.engine.LuaValue;
+import org.anime_game_servers.lua.models.BooleanLuaValue;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -49,14 +55,14 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static emu.grasscutter.scripts.constants.EventType.*;
-import static emu.grasscutter.scripts.data.SceneTrigger.INF_TRIGGERS;
+import static org.anime_game_servers.gi_lua.models.constants.EventType.EVENT_TIMER_EVENT;
+import static org.anime_game_servers.gi_lua.models.scene.group.SceneTrigger.INF_TRIGGERS;
 
 public class SceneScriptManager {
     private static final Logger logger = Loggers.getScriptSystem();
     private final Scene scene;
     private final Map<String, Integer> variables;
-    private SceneMeta meta;
+    @Getter private SceneMeta meta;
     private boolean isInit;
     /**
      * current triggers controlled by RefreshGroup
@@ -154,15 +160,17 @@ public class SceneScriptManager {
         currentTriggers.put(eventId, ConcurrentHashMap.newKeySet());
     }
 
-    public void resetTriggersForGroupSuite(SceneGroup group, int suiteIndex) {
-        logger.debug("reset triggers for group {} suite {}", group.getId(), suiteIndex);
-        var suite = group.getSuiteByIndex(suiteIndex);
+    public void resetTriggersForGroupSuite(SceneGroupInstance groupInstance, int suiteIndex) {
+        val groupId = groupInstance.getGroupId();
+        val luaGroup = meta.getGroups().get(groupId);
+        logger.debug("reset triggers for group {} suite {}", groupId, suiteIndex);
+        var suite = luaGroup.getSuiteByIndex(suiteIndex);
         if (suite == null) {
-            logger.warn("Trying to load null suite Triggers for group {} with suiteindex {}", group.getId(), suiteIndex);
+            logger.warn("Trying to load null suite Triggers for group {} with suiteindex {}", groupId, suiteIndex);
             return;
         }
 
-        var groupSceneTriggers = triggersByGroupScene.get(group.getId()+"_"+suiteIndex);
+        var groupSceneTriggers = triggersByGroupScene.get(groupId+"_"+suiteIndex);
         if(groupSceneTriggers == null){
             groupSceneTriggers = new HashSet<>();
         }
@@ -182,7 +190,7 @@ public class SceneScriptManager {
                     .add(trigger);*/
             }
         }
-        triggersByGroupScene.put(group.getId()+"_"+suiteIndex, groupSceneTriggers);
+        triggersByGroupScene.put(groupId+"_"+suiteIndex, groupSceneTriggers);
     }
 
     public void refreshGroup(int groupId, int suiteIndex, boolean excludePrevSuite) {
@@ -207,7 +215,8 @@ public class SceneScriptManager {
         return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, entitiesAdded, false);
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded, boolean dontLoad) {
-        SceneGroup group = groupInstance.getLuaGroup();
+        val groudId = groupInstance.getGroupId();
+        SceneGroup group = meta.getGroups().get(groudId);
         if(suiteIndex == 0) {
             if(excludePrevSuite) {
                 suiteIndex = group.findInitSuiteIndex(groupInstance.getActiveSuiteId());
@@ -218,7 +227,7 @@ public class SceneScriptManager {
 
         var suiteData = group.getSuiteByIndex(suiteIndex);
         if (suiteData == null) {
-            logger.warn("Group {} suite {} not found", group.getId(), suiteIndex);
+            logger.warn("Group {} suite {} not found", groudId, suiteIndex);
             return 0;
         }
 
@@ -228,7 +237,7 @@ public class SceneScriptManager {
         if(prevSuiteIndex != 0) {
             prevSuiteData = group.getSuiteByIndex(prevSuiteIndex);
             if (prevSuiteData != null) {
-                if(prevSuiteData.isBan_refresh() && !suiteData.isBan_refresh()) {
+                if(prevSuiteData.isBanRefresh() && !suiteData.isBanRefresh()) {
                     waitForOne = true;
                 }
             }
@@ -236,7 +245,7 @@ public class SceneScriptManager {
 
         if(waitForOne && (groupInstance.getTargetSuiteId() == 0 || prevSuiteIndex != groupInstance.getTargetSuiteId())) {
             groupInstance.setTargetSuiteId(suiteIndex);
-            logger.debug("Group {} suite {} wating one more refresh", group.getId(), suiteIndex);
+            logger.debug("Group {} suite {} wating one more refresh", groudId, suiteIndex);
             return 0;
         }
 
@@ -252,7 +261,7 @@ public class SceneScriptManager {
 
         //Refesh variables here
         group.getVariables().forEach(variable -> {
-            if(!variable.isNo_refresh())
+            if(!variable.isNoRefresh())
                 groupInstance.getCachedVariables().put(variable.getName(), variable.getValue());
         });
 
@@ -305,10 +314,10 @@ public class SceneScriptManager {
         }
         val monstersToSpawn = monsters.values().stream()
             .filter(m -> {
-                var entity = scene.getEntityByConfigId(m.getConfig_id());
-                return (entity == null || entity.getGroupId()!=group.getId());/*&& !groupInstance.getDeadEntities().contains(entity); */ //TODO: Investigate the usage of deadEntities
+                var entity = scene.getEntityByConfigId(m.getConfigId(), groupId);
+                return (entity == null || entity.getGroupId()!=group.getGroupInfo().getId());/*&& !groupInstance.getDeadEntities().contains(entity); */ //TODO: Investigate the usage of deadEntities
             })
-            .map(mob -> createMonster(group.getId(), group.block_id, mob))
+            .map(mob -> createMonster(group.getGroupInfo().getId(), group.getGroupInfo().getBlockId(), mob))
             .toList();//TODO check if it interferes with bigworld or anything else
         this.addEntities(monstersToSpawn);
 
@@ -320,7 +329,7 @@ public class SceneScriptManager {
 
     public void registerRegion(EntityRegion region) {
         regions.put(region.getId(), region);
-        logger.debug("Registered region {} from group {}", region.getMetaRegion().getConfig_id(), region.getGroupId());
+        logger.debug("Registered region {} from group {}", region.getMetaRegion().getConfigId(), region.getGroupId());
     }
     public void registerRegionInGroupSuite(SceneGroup group, SceneSuite suite) {
         suite.getSceneRegions().stream().map(region -> new EntityRegion(this.getScene(), region))
@@ -328,7 +337,7 @@ public class SceneScriptManager {
     }
     public synchronized void deregisterRegion(SceneRegion region) {
         var instance = regions.values().stream()
-            .filter(r -> r.getConfigId() == region.getConfig_id())
+            .filter(r -> r.getConfigId() == region.getConfigId())
             .findFirst();
         instance.ifPresent(entityRegion -> regions.remove(entityRegion.getId()));
     }
@@ -339,25 +348,17 @@ public class SceneScriptManager {
 
     // TODO optimize
     public SceneGroup getGroupById(int groupId) {
-        for (SceneBlock block : getBlocks().values()) {
-            getScene().loadBlock(block);
-            if(block.getGroups() == null){
-                logger.warn("Block {} in scene {} has no groups", block.getId(), getScene().getId());
-                continue;
-            }
+        val luaGroup = meta.getGroups().get(groupId);
 
-            var group = block.getGroups().get(groupId);
-            if (group == null) {
-                continue;
-            }
-
-            if (!this.sceneGroupsInstances.containsKey(groupId)) {
-                getScene().onLoadGroup(List.of(group));
-                getScene().onRegisterGroups();
-            }
-            return group;
+        if(luaGroup == null) {
+            logger.error("Group {} not found in scene {}", groupId, getScene().getId());
+            return null;
         }
-        return null;
+        if (!this.sceneGroupsInstances.containsKey(groupId)) {
+            getScene().onLoadGroup(List.of(luaGroup));
+            getScene().onRegisterGroups();
+        }
+        return luaGroup;
     }
 
     public SceneGroupInstance getGroupInstanceById(int groupId) {
@@ -378,14 +379,14 @@ public class SceneScriptManager {
         return instance;
     }
 
-    private static void addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, Set<Integer> visionLevels, SceneObject sceneObject, SceneGroup group){
+    private static void addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, Set<Integer> visionLevels, SceneObject sceneObject, SceneGroupInfo group){
         visionLevels.add(addEntityGridPosToMap(groupPositions, sceneObject, group));
     }
-    private static int addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, SceneObject sceneObject, SceneGroup group){
+    private static int addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, SceneObject sceneObject, SceneGroupInfo group){
         val visionLevel = switch (sceneObject.getType()){
-            case GADGET -> Math.max(getGadgetVisionLevel(((SceneGadget)sceneObject).getGadget_id()), sceneObject.getVision_level());
+            case GADGET -> Math.max(getGadgetVisionLevel(((SceneGadget)sceneObject).getGadgetId()), sceneObject.getVisionLevel());
             case REGION -> 0;
-            default -> sceneObject.getVision_level();
+            default -> sceneObject.getVisionLevel();
         };
         addGridPositionToMap(groupPositions.get(visionLevel), group.getId(), visionLevel, sceneObject.getPos());
         return visionLevel;
@@ -416,11 +417,13 @@ public class SceneScriptManager {
     }
 
     private void init() {
-        var meta = ScriptLoader.getSceneMeta(getScene().getId());
+        val scriptSystem = getScene().getWorld().getHost().getServer().getScriptSystem();
+        var meta = scriptSystem.getSceneMeta(getScene().getId());
         if (meta == null) {
             return;
         }
         this.meta = meta;
+        meta.loadActivity(ScriptSystem.getScriptLoader(), 2001);
 
         // TEMP
         this.isInit = true;
@@ -448,63 +451,58 @@ public class SceneScriptManager {
             for (int i = 0; i < 6; i++) groupPositions.add(new HashMap<>());
 
             var visionOptions = Grasscutter.config.server.game.visionOptions;
-            meta.getBlocks().values().forEach(block -> {
-                block.load(sceneId);
-                if(block.getGroups() == null){
-                    logger.error("block.groups null for block {}", block.getId());
-                    return;
+            val scriptLoader = ScriptSystem.getScriptLoader();
+            meta.getGroups().values().stream().filter(g -> !g.getGroupInfo().isDynamicLoad()).forEach(group -> {
+                val groupInfo = group.getGroupInfo();
+                val groupId = groupInfo.getId();
+                group.load(scriptLoader);
+
+                //Add all entities here
+                Set<Integer> vision_levels = new HashSet<>();
+
+                val monsters = group.getMonsters();
+                if (monsters != null) {
+                    monsters.values().forEach(m -> addEntityGridPosToMap(groupPositions, vision_levels, m, groupInfo));
+                } else {
+                    logger.error("group.monsters null for group {}", groupId);
                 }
-                logger.debug("Loading block grid " + block.getId());
-                block.getGroups().values().stream().filter(g -> !g.isDynamic_load()).forEach(group -> {
-                    group.load(this.scene.getId());
+                val gadgets = group.getGadgets();
+                if (gadgets != null) {
+                    gadgets.values().forEach(g -> addEntityGridPosToMap(groupPositions, vision_levels, g, groupInfo));
+                } else {
+                    logger.error("group.gadgets null for group {}", groupId);
+                }
 
-                    //Add all entities here
-                    Set<Integer> vision_levels = new HashSet<>();
+                val npcs = group.getNpcs();
+                if (npcs != null) {
+                    npcs.values().forEach(n -> addEntityGridPosToMap(groupPositions, n, groupInfo));
+                } else {
+                    logger.error("group.npcs null for group {}", groupId);
+                }
 
-                    val monsters = group.getMonsters();
-                    if (monsters != null) {
-                        monsters.values().forEach(m -> addEntityGridPosToMap(groupPositions, vision_levels, m, group));
-                    } else {
-                        logger.error("group.monsters null for group {}", group.getId());
+                val regions = group.getRegions();
+                if (regions != null) {
+                    regions.values().forEach(r -> addEntityGridPosToMap(groupPositions, r, groupInfo));
+                } else {
+                    logger.error("group.regions null for group {}", groupId);
+                }
+
+                // TODO should we add those to the grid?
+                val garbages = group.getGarbages();
+                if (garbages != null && garbages.getGadgets() != null) {
+                    garbages.getGadgets().forEach(g -> addEntityGridPosToMap(groupPositions, g, groupInfo));
+                }
+
+                int max_vision_level = -1;
+                if (!vision_levels.isEmpty()) {
+                    for (int vision_level : vision_levels) {
+                        if (max_vision_level == -1 || visionOptions[max_vision_level].visionRange < visionOptions[vision_level].visionRange)
+                            max_vision_level = vision_level;
                     }
-                    val gadgets = group.getGadgets();
-                    if (gadgets != null) {
-                        gadgets.values().forEach(g -> addEntityGridPosToMap(groupPositions, vision_levels, g, group));
-                    } else {
-                        logger.error("group.gadgets null for group {}", group.getId());
-                    }
+                }
+                if (max_vision_level == -1) max_vision_level = 0;
 
-                    val npcs = group.getNpcs();
-                    if (npcs != null) {
-                        npcs.values().forEach(n -> addEntityGridPosToMap(groupPositions, n, group));
-                    } else {
-                        logger.error("group.npcs null for group {}", group.getId());
-                    }
-
-                    val regions = group.getRegions();
-                    if (regions != null) {
-                        regions.values().forEach(r -> addEntityGridPosToMap(groupPositions, r, group));
-                    } else {
-                        logger.error("group.regions null for group {}", group.getId());
-                    }
-
-                    // TODO should we add those to the grid?
-                    val garbages = group.getGarbages();
-                    if (garbages != null && garbages.getGadgets() != null) {
-                        garbages.getGadgets().forEach(g -> addEntityGridPosToMap(groupPositions, g, group));
-                    }
-
-                    int max_vision_level = -1;
-                    if (!vision_levels.isEmpty()) {
-                        for (int vision_level : vision_levels) {
-                            if (max_vision_level == -1 || visionOptions[max_vision_level].visionRange < visionOptions[vision_level].visionRange)
-                                max_vision_level = vision_level;
-                        }
-                    }
-                    if (max_vision_level == -1) max_vision_level = 0;
-
-                    addGridPositionToMap(groupPositions.get(max_vision_level), group.getId(), max_vision_level, group.getPos());
-                });
+                addGridPositionToMap(groupPositions.get(max_vision_level), groupInfo.getId(), max_vision_level, groupInfo.getPos());
             });
 
             var groupGrids = new ArrayList<Grid>();
@@ -531,28 +529,26 @@ public class SceneScriptManager {
         return isInit;
     }
 
-    public void loadBlockFromScript(SceneBlock block) {
-        block.load(scene.getId());
-    }
-
     public void loadGroupFromScript(SceneGroup group) {
-        group.load(getScene().getId());
+        val scriptLoader = ScriptSystem.getScriptLoader();
+        val groupId = group.getGroupInfo().getId();
+        group.load(scriptLoader);
 
-        this.sceneGroups.put(group.getId(), group);
-        if(this.getCachedGroupInstanceById(group.getId()) != null) {
-            this.sceneGroupsInstances.put(group.getId(), this.cachedSceneGroupsInstances.get(group.getId()));
-            this.cachedSceneGroupsInstances.get(group.getId()).setCached(false);
-            this.cachedSceneGroupsInstances.get(group.getId()).setLuaGroup(group);
+        this.sceneGroups.put(groupId, group);
+        if(this.getCachedGroupInstanceById(groupId) != null) {
+            this.sceneGroupsInstances.put(groupId, this.cachedSceneGroupsInstances.get(groupId));
+            this.cachedSceneGroupsInstances.get(groupId).setCached(false);
+            this.cachedSceneGroupsInstances.get(groupId).setLuaGroup(group);
         } else {
             var instance = new SceneGroupInstance(group, getScene().getWorld().getHost());
-            this.sceneGroupsInstances.put(group.getId(), instance);
-            this.cachedSceneGroupsInstances.put(group.getId(), instance);
+            this.sceneGroupsInstances.put(groupId, instance);
+            this.cachedSceneGroupsInstances.put(groupId, instance);
             instance.save(); //Save the instance
         }
 
         if (group.getVariables() != null) {
             group.getVariables().forEach(variable -> {
-                val variables = this.getVariables(group.getId());
+                val variables = this.getVariables(groupId);
                 if(variables != null && !variables.containsKey(variable.getName()))
                     variables.put(variable.getName(), variable.getValue());
             });
@@ -560,7 +556,7 @@ public class SceneScriptManager {
     }
 
     public void unregisterGroup(SceneGroup group) {
-        this.sceneGroups.remove(group.getId());
+        this.sceneGroups.remove(group.getGroupInfo().getId());
         this.sceneGroupsInstances.values().removeIf(i -> i.getLuaGroup().equals(group));
         this.cachedSceneGroupsInstances.values().stream().filter(i -> Objects.equals(i.getLuaGroup(),group)).forEach(s -> s.setCached(true));
     }
@@ -602,25 +598,27 @@ public class SceneScriptManager {
     }
 
     public List<EntityGadget> getGadgetsInGroupSuite(SceneGroupInstance groupInstance, SceneSuite suite) {
-        var group = groupInstance.getLuaGroup();
+        val group = groupInstance.getLuaGroup();
+        val groupId =  group.getGroupInfo().getId();
         return suite.getSceneGadgets().stream()
             .filter(m -> {
-                var entity = scene.getEntityByConfigId(m.getConfig_id());
-                return (entity == null || entity.getGroupId()!=group.getId()) && (!m.isOneoff() || !m.isPersistent() || !groupInstance.getDeadEntities().contains(m.getConfig_id()));
+                val entity = scene.getEntityByConfigId(m.getConfigId(), groupId);
+                return (entity == null || entity.getGroupId()!=groupId) && (!m.isOneOff() || !m.isPersistent() || !groupInstance.getDeadEntities().contains(m.getConfigId()));
             })
-            .map(g -> createGadget(group.getId(), group.block_id, g, groupInstance.getCachedGadgetState(g)))
-            .peek(g -> groupInstance.cacheGadgetState(g.getMetaGadget(), g.getState()))
+            .map(g -> createGadget(groupId, group.getGroupInfo().getBlockId(), g, groupInstance.getCachedGadgetState(g)))
             .filter(Objects::nonNull)
+            .peek(g -> groupInstance.cacheGadgetState(g.getMetaGadget(), g.getState()))
             .toList();
     }
     public List<EntityMonster> getMonstersInGroupSuite(SceneGroupInstance groupInstance, SceneSuite suite) {
-        var group = groupInstance.getLuaGroup();
+        val group = groupInstance.getLuaGroup();
+        val groupId = group.getGroupInfo().getId();
         return suite.getSceneMonsters().stream()
             .filter(m -> {
-                var entity = scene.getEntityByConfigId(m.getConfig_id());
-                return (entity == null || entity.getGroupId()!=group.getId());/*&& !groupInstance.getDeadEntities().contains(entity); */ //TODO: Investigate the usage of deadEntities
+                var entity = scene.getEntityByConfigId(m.getConfigId(), groupId);
+                return (entity == null || entity.getGroupId()!=groupId);/*&& !groupInstance.getDeadEntities().contains(entity); */ //TODO: Investigate the usage of deadEntities
             }) //TODO: Add persistent monster cached data
-            .map(mob -> createMonster(group.getId(), group.block_id, mob))
+            .map(mob -> createMonster(groupId, group.getGroupInfo().getBlockId(), mob))
             .filter(Objects::nonNull)
             .toList();
     }
@@ -684,26 +682,27 @@ public class SceneScriptManager {
     }
     public void spawnMonstersByConfigId(SceneGroup group, int configId, int delayTime) {
         // TODO delay
-        var entity = scene.getEntityByConfigId(configId);
-        if(entity!=null && entity.getGroupId() == group.getId()){
-            logger.debug("entity already exists failed in group {} with config {}", group.getId(), configId);
+        val groupId = group.getGroupInfo().getId();
+        var entity = scene.getEntityByConfigId(configId, groupId);
+        if(entity!=null && entity.getGroupId() == groupId){
+            logger.debug("entity already exists failed in group {} with config {}", groupId, configId);
             return;
         }
         val groupMonsters = group.getMonsters();
         if(groupMonsters == null){
-            logger.warn("monsters in group {} are null, unable to get configId {}", group.getId(), configId);
+            logger.warn("monsters in group {} are null, unable to get configId {}", groupId, configId);
             return;
         }
         val monster = groupMonsters.get(configId);
         if(monster == null){
-            logger.warn("configId {} not found in group {}", configId, group.getId());
+            logger.warn("configId {} not found in group {}", configId, groupId);
             return;
         }
-        entity = createMonster(group.getId(), group.block_id, monster);
+        entity = createMonster(groupId, group.getGroupInfo().getBlockId(), monster);
         if(entity!=null){
             getScene().addEntity(entity);
         } else {
-            logger.warn("failed to create entity with group {} and config {}", group.getId(), configId);
+            logger.warn("failed to create entity with group {} and config {}", groupId, configId);
         }
     }
     // Events
@@ -724,7 +723,7 @@ public class SceneScriptManager {
         try {
             int eventType = params.type;
             Set<SceneTrigger> relevantTriggers = this.getTriggersByEvent(eventType).stream()
-                .filter(t -> params.getGroupId() == 0 || t.getCurrentGroup().getId() == params.getGroupId())
+                .filter(t -> params.getGroupId() == 0 || t.getGroupId() == params.getGroupId())
                 .filter(t ->  (t.getSource().isEmpty() || t.getSource().equals(params.getEventSource())))
                 .collect(Collectors.toSet());
 
@@ -739,8 +738,9 @@ public class SceneScriptManager {
     private boolean handleEventForTrigger(ScriptArgs params, SceneTrigger trigger ){
         logger.debug("checking trigger {} for event {}", trigger.getName(), params.type);
         try {
-            if (evaluateTriggerCondition(trigger, params)) {
-                callTrigger(trigger, params);
+            val group = trigger.getSceneMeta().getGroup(trigger.getGroupId());
+            if (evaluateTriggerCondition(trigger, group, params)) {
+                callTrigger(trigger, group, params);
                 return true;
             } else {
                 logger.debug("Condition Trigger {} returned false", trigger.getCondition());
@@ -760,22 +760,22 @@ public class SceneScriptManager {
      * @param params
      * @return true if there is no condition, otherwise the result of the condition call as boolean
      */
-    private boolean evaluateTriggerCondition(SceneTrigger trigger, ScriptArgs params){
+    private boolean evaluateTriggerCondition(SceneTrigger trigger, SceneGroup group, ScriptArgs params){
         logger.trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1, params.source_eid, params.target_eid);
         val condition = trigger.getCondition();
         if(condition == null || condition.isBlank()){
             return true;
         }
-        val ret = this.callScriptFunc(trigger.getCondition(), trigger.getCurrentGroup(), params);
+        val ret = this.callScriptFunc(trigger.getCondition(), group, params);
         return ret.isBoolean() && ret.asBoolean();
     }
 
-    private void callTrigger(SceneTrigger trigger, ScriptArgs params){
+    private void callTrigger(SceneTrigger trigger, SceneGroup group, ScriptArgs params){
         val action = trigger.getAction();
         LuaValue callResult = BooleanLuaValue.TRUE;
         if(action != null && !action.isBlank()){
             // the SetGroupVariableValueByGroup in tower need the param to record the first stage time
-            callResult = this.callScriptFunc(trigger.getAction(), trigger.getCurrentGroup(), params);
+            callResult = this.callScriptFunc(trigger.getAction(), group, params);
         }
 
         val invocationsCounter = triggerInvocations.get(trigger.getName());
@@ -797,7 +797,7 @@ public class SceneScriptManager {
         }
 
         if(trigger.getEvent() == EVENT_TIMER_EVENT){
-            cancelGroupTimerEvent(trigger.getCurrentGroup().getId(), trigger.getSource());
+            cancelGroupTimerEvent(trigger.getGroupId(), trigger.getSource());
         }
         // always deregister on error, otherwise only if the count is reached
         if(callResult.isBoolean() && !callResult.asBoolean() || callResult.isInteger() && callResult.asInteger()!=0
@@ -822,11 +822,11 @@ public class SceneScriptManager {
             return BooleanLuaValue.FALSE;
         }
 
-        val context = script.getGroupEventLuaContext(group, params, this);
+        val context = new GroupEventLuaContext(script.getEngine(), group, params, this);
         try{
             return script.callMethod(funcName, context, params);
         } catch (RuntimeException | ScriptException | NoSuchMethodException error){
-            logger.error("[LUA] call trigger failed in group {} with {},{}",group.getId(),funcName,params,error);
+            logger.error("[LUA] call trigger failed in group {} with {},{}",group.getGroupInfo().getId(),funcName,params,error);
             return new BooleanLuaValue(false);
         }
     }
@@ -844,29 +844,29 @@ public class SceneScriptManager {
     }
 
     public EntityGadget createGadget(int groupId, int blockId, SceneGadget g, int state) {
-        if (g.isOneoff()) {
+        if (g.isOneOff()) {
             var hasEntity = getScene().getEntities().values().stream()
                 .filter(e -> e instanceof EntityGadget)
-                .filter(e -> e.getGroupId() == g.getGroup().getId())
-                .filter(e -> e.getConfigId() == g.getConfig_id())
+                .filter(e -> e.getGroupId() == g.getGroupId())
+                .filter(e -> e.getConfigId() == g.getConfigId())
                 .findFirst();
             if (hasEntity.isPresent()) {
                 return null;
             }
         }
-        EntityGadget entity = new EntityGadget(getScene(), g.getGadget_id(), g.getPos());
+        EntityGadget entity = new EntityGadget(getScene(), g.getGadgetId(), new emu.grasscutter.utils.Position(g.getPos()));
 
         if (entity.getGadgetData() == null) {
             return null;
         }
 
         entity.setBlockId(blockId);
-        entity.setConfigId(g.getConfig_id());
+        entity.setConfigId(g.getConfigId());
         entity.setGroupId(groupId);
         entity.getRotation().set(g.getRot());
         entity.setState(state);
 
-        entity.setPointType(g.getPoint_type());
+        entity.setPointType(g.getPointType());
         entity.setRouteConfig(BaseRoute.fromSceneGadget(g));
         entity.setMetaGadget(g);
         entity.buildContent();
@@ -881,7 +881,7 @@ public class SceneScriptManager {
             return null;
         }
 
-        MonsterData data = GameData.getMonsterDataMap().get(monster.getMonster_id());
+        MonsterData data = GameData.getMonsterDataMap().get(monster.getMonsterId());
 
         if (data == null) {
             return null;
@@ -891,7 +891,7 @@ public class SceneScriptManager {
         int level = monster.getLevel();
 
         if (getScene().getDungeonManager() != null) {
-            level = getScene().getDungeonManager().getLevelForMonster(monster.getConfig_id());
+            level = getScene().getDungeonManager().getLevelForMonster(monster.getConfigId());
         } else if (getScene().getWorld().getWorldLevel() > 0) {
             WorldLevelData worldLevelData = GameData.getWorldLevelDataMap().get(getScene().getWorld().getWorldLevel());
 
@@ -901,12 +901,12 @@ public class SceneScriptManager {
         }
 
         // Spawn mob
-        EntityMonster entity = new EntityMonster(getScene(), data, monster.getPos(), level);
+        EntityMonster entity = new EntityMonster(getScene(), data, new emu.grasscutter.utils.Position(monster.getPos()), level);
         entity.getRotation().set(monster.getRot());
         entity.setGroupId(groupId);
         entity.setBlockId(blockId);
-        entity.setConfigId(monster.getConfig_id());
-        entity.setPoseId(monster.getPose_id());
+        entity.setConfigId(monster.getConfigId());
+        entity.setPoseId(monster.getPoseId());
         entity.setMetaMonster(monster);
 
         this.getScriptMonsterSpawnService()
@@ -920,7 +920,7 @@ public class SceneScriptManager {
     }
 
     public void meetEntities(List<? extends GameEntity> gameEntity) {
-        getScene().addEntities(gameEntity, VisionTypeOuterClass.VisionType.VISION_TYPE_MEET);
+        getScene().addEntities(gameEntity, VisionType.VISION_MEET);
     }
 
     public void addEntities(List<? extends GameEntity> gameEntity) {
@@ -931,16 +931,13 @@ public class SceneScriptManager {
         getScene().removeEntities(gameEntity.stream().map(e -> (GameEntity) e).collect(Collectors.toList()), VisionTypeOuterClass.VisionType.VISION_TYPE_REFRESH);
     }
 
-    public RTree<SceneBlock, Geometry> getBlocksIndex() {
-        return meta.getSceneBlockIndex();
-    }
     public void removeMonstersInGroup(SceneGroup group, SceneSuite suite) {
         var configSet = suite.getSceneMonsters().stream()
-                .map(SceneObject::getConfig_id)
+                .map(SceneObject::getConfigId)
                 .collect(Collectors.toSet());
         var toRemove = getScene().getEntities().values().stream()
                 .filter(e -> e instanceof EntityMonster)
-                .filter(e -> e.getGroupId() == group.getId())
+                .filter(e -> e.getGroupId() == group.getGroupInfo().getId())
                 .filter(e -> configSet.contains(e.getConfigId()))
                 .toList();
 
@@ -948,11 +945,11 @@ public class SceneScriptManager {
     }
     public void removeGadgetsInGroup(SceneGroup group, SceneSuite suite) {
         var configSet = suite.getSceneGadgets().stream()
-                .map(SceneObject::getConfig_id)
+                .map(SceneObject::getConfigId)
                 .collect(Collectors.toSet());
         var toRemove = getScene().getEntities().values().stream()
                 .filter(e -> e instanceof EntityGadget)
-                .filter(e -> e.getGroupId() == group.getId())
+                .filter(e -> e.getGroupId() == group.getGroupInfo().getId())
                 .filter(e -> configSet.contains(e.getConfigId()))
                 .toList();
 
@@ -961,11 +958,11 @@ public class SceneScriptManager {
 
     public void killMonstersInGroup(SceneGroup group, SceneSuite suite) {
         var configSet = suite.getSceneMonsters().stream()
-                .map(SceneObject::getConfig_id)
+                .map(SceneObject::getConfigId)
                 .collect(Collectors.toSet());
         var toRemove = getScene().getEntities().values().stream()
                 .filter(e -> e instanceof EntityMonster)
-                .filter(e -> e.getGroupId() == group.getId())
+                .filter(e -> e.getGroupId() == group.getGroupInfo().getId())
                 .filter(e -> configSet.contains(e.getConfigId()))
                 .toList();
 
@@ -973,11 +970,11 @@ public class SceneScriptManager {
     }
     public void killGadgetsInGroup(SceneGroup group, SceneSuite suite) {
         var configSet = suite.getSceneGadgets().stream()
-                .map(SceneObject::getConfig_id)
+                .map(SceneObject::getConfigId)
                 .collect(Collectors.toSet());
         var toRemove = getScene().getEntities().values().stream()
                 .filter(e -> e instanceof EntityGadget)
-                .filter(e -> e.getGroupId() == group.getId())
+                .filter(e -> e.getGroupId() == group.getGroupInfo().getId())
                 .filter(e -> configSet.contains(e.getConfigId()))
                 .toList();
 
@@ -1035,7 +1032,7 @@ public class SceneScriptManager {
         if(monsters == null || monsters.isEmpty()) return true;
 
         return monsters.values().stream().noneMatch(m -> {
-            val entity = scene.getEntityByConfigId(m.getConfig_id());
+            val entity = scene.getEntityByConfigId(m.getConfigId(), groupId);
             return entity != null && entity.getGroupId() == groupId;
         });
     }

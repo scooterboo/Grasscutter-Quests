@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import org.anime_game_servers.core.gi.enums.Element;
 
 public enum FightProperty {
     FIGHT_PROP_NONE(0),
@@ -230,5 +231,32 @@ public enum FightProperty {
 
     public static boolean isPercentage(FightProperty prop) {
         return !flatProps.contains(prop);
+    }
+
+    public static FightProperty getCurrentEnergyProp(Element element){
+        return switch (element){
+            case FIRE -> FIGHT_PROP_CUR_FIRE_ENERGY;
+            case WATER -> FIGHT_PROP_CUR_WATER_ENERGY;
+            case GRASS -> FIGHT_PROP_CUR_GRASS_ENERGY;
+            case ELECTRIC -> FIGHT_PROP_CUR_ELEC_ENERGY;
+            case ICE -> FIGHT_PROP_CUR_ICE_ENERGY;
+            case WIND -> FIGHT_PROP_CUR_WIND_ENERGY;
+            case ROCK -> FIGHT_PROP_CUR_ROCK_ENERGY;
+            default -> FIGHT_PROP_NONE;
+        };
+    }
+
+    public static FightProperty getMaxEnergyProp(Element element){
+        return switch (element){
+            case FIRE -> FIGHT_PROP_MAX_FIRE_ENERGY;
+            case WATER -> FIGHT_PROP_MAX_WATER_ENERGY;
+            case GRASS -> FIGHT_PROP_MAX_GRASS_ENERGY;
+            case ELECTRIC -> FIGHT_PROP_MAX_ELEC_ENERGY;
+            case ICE -> FIGHT_PROP_MAX_ICE_ENERGY;
+            case FROZEN -> FIGHT_PROP_MAX_ICE_ENERGY;
+            case WIND -> FIGHT_PROP_MAX_WIND_ENERGY;
+            case ROCK -> FIGHT_PROP_MAX_ROCK_ENERGY;
+            default -> FIGHT_PROP_NONE;
+        };
     }
 }

@@ -7,7 +7,7 @@ import emu.grasscutter.game.quest.QuestValueContent;
 import lombok.val;
 
 import static emu.grasscutter.game.quest.enums.QuestContent.QUEST_CONTENT_QUEST_STATE_NOT_EQUAL;
-import static emu.grasscutter.game.quest.enums.QuestState.QUEST_STATE_NONE;
+import static org.anime_game_servers.core.gi.enums.QuestState.QUEST_STATE_NONE;
 
 @QuestValueContent(QUEST_CONTENT_QUEST_STATE_NOT_EQUAL)
 public class ContentQuestStateNotEqual extends BaseContent {

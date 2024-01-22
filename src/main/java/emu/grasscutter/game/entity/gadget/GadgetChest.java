@@ -1,11 +1,9 @@
 package emu.grasscutter.game.entity.gadget;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.game.dungeons.DungeonManager;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.gadget.chest.BossChestInteractHandler;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.scripts.constants.ScriptGadgetState;
 import emu.grasscutter.server.packet.send.PacketGadgetInteractRsp;
 import lombok.val;
 import messages.gadget.GadgetInteractReq;
@@ -14,6 +12,8 @@ import messages.gadget.InteractType;
 import messages.gadget.ResinCostType;
 import messages.scene.entity.BossChestInfo;
 import messages.scene.entity.SceneGadgetInfo;
+import org.anime_game_servers.gi_lua.models.constants.ScriptGadgetState;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -60,9 +60,9 @@ public class GadgetChest extends GadgetContent {
         val playersUid = getGadget().getScene().getPlayers().stream().map(Player::getUid).toList();
 
         Optional.ofNullable(getGadget().getMetaGadget())
-            .map(g -> g.getBoss_chest())
+            .map(SceneGadget::getBossChest)
             .ifPresent(bossChest -> {
-                val chestProto = new BossChestInfo(bossChest.getMonster_config_id(), bossChest.getResin());
+                val chestProto = new BossChestInfo(bossChest.getMonsterConfigId(), bossChest.getResin());
 
                 // removing instead of creating new list directly below is because
                 // it also has to consider normal cases

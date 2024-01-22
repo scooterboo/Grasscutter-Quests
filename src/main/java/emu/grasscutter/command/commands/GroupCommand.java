@@ -5,8 +5,6 @@ import emu.grasscutter.command.CommandHandler;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.utils.Position;
 import lombok.Setter;
 import lombok.val;
 

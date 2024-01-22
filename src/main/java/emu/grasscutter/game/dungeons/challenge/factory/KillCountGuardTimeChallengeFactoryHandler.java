@@ -8,8 +8,8 @@ import emu.grasscutter.game.dungeons.challenge.trigger.GuardTrigger;
 import emu.grasscutter.game.dungeons.challenge.trigger.KillMonsterTrigger;
 import emu.grasscutter.game.dungeons.challenge.trigger.TimeTrigger;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.SceneGroup;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
 
 import java.util.List;
 import static emu.grasscutter.game.dungeons.challenge.enums.ChallengeType.CHALLENGE_GUARD_HP;
