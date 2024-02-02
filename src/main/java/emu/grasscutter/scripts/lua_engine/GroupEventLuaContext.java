@@ -47,6 +47,22 @@ public class GroupEventLuaContext implements org.anime_game_servers.gi_lua.scrip
         return Grasscutter.getGameServer().getScriptSystem().getScriptLibGroupHandlerProvider();
     }
 
+    @Override
+    public int getSourceEntityId() {
+        return args.getSourceEntityId();
+    }
+
+    @Override
+    public int getTargetEntityId() {
+        return args.getTargetEntityId();
+    }
+
+
+    @Override
+    public int getUid() {
+        return args.getUid();
+    }
+
     /*@Override
     public int source_entity_id() {
         return args.source_eid;

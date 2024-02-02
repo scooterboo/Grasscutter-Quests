@@ -126,6 +126,20 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
+    public int SetGadgetEnableInteract(GroupEventLuaContext context, int groupId, int configId, boolean enable) {
+        val manager = context.getSceneScriptManager();
+        val entity = manager.getScene().getEntityByConfigId(configId, groupId);
+        if(entity == null) return -1;
+
+        if((entity instanceof EntityGadget gadget)){
+            gadget.setInteractEnabled(enable);
+            return 0;
+        }
+
+        return -2;
+    }
+
+    @Override
     public int SetWorktopOptionsByGroupId(GroupEventLuaContext context, int groupId, int configId, LuaTable options) {
         logger.debug("[LUA] Call SetWorktopOptionsByGroupId with {},{},{}",
             groupId,configId,printTable(options));
@@ -1401,6 +1415,11 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
+    public int SetPlayerEyePointStream(GroupEventLuaContext context, int var1, int var2, boolean var3) {
+        return handleUnimplemented(var1, var2, var3);
+    }
+
+    @Override
     public int ClearPlayerEyePoint(GroupEventLuaContext context, int var1) {
         return handleUnimplemented();
     }
@@ -1921,6 +1940,11 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     @Override
     public int AssignPlayerUidOpNotify(GroupEventLuaContext context, LuaTable param1Table) {
         return handleUnimplemented(printTable(param1Table));
+    }
+
+    @Override
+    public int CreateTreasureMapSpotRewardGadget(GroupEventLuaContext context, int gadgetCfgId) {
+        return handleUnimplemented(gadgetCfgId);
     }
 
     /**

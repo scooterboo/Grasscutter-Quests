@@ -3,6 +3,9 @@ package emu.grasscutter.scripts;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Loggers;
 import emu.grasscutter.utils.FileUtils;
+import kotlinx.io.JvmCoreKt;
+import kotlinx.io.Source;
+import kotlinx.io.SourcesJvmKt;
 import lombok.Getter;
 import lombok.val;
 import org.anime_game_servers.gi_lua.models.loader.GIScriptLoader;
@@ -10,8 +13,10 @@ import org.anime_game_servers.gi_lua.models.loader.ScriptSource;
 import org.anime_game_servers.jnlua_engine.JNLuaEngine;
 import org.anime_game_servers.lua.engine.LuaEngine;
 import org.anime_game_servers.lua.engine.LuaScript;
+import org.anime_game_servers.lua.engine.RequireMode;
 import org.anime_game_servers.lua.engine.ScriptConfig;
 import org.anime_game_servers.lua.models.ScriptType;
+import org.anime_game_servers.lua.utils.LuaHelpersJvmKt;
 import org.anime_game_servers.luaj_engine.LuaJEngine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +58,7 @@ public class ScriptLoaderLib implements GIScriptLoader {
     private ScriptConfig fromGcConfig(){
         val gcConfig = Grasscutter.getConfig();
 
-        return new ScriptConfig(this, false);
+        return new ScriptConfig(this, RequireMode.ENABLED_WITH_WORKAROUND);
     }
 
     public static <T> Optional<T> tryGet(SoftReference<T> softReference) {
@@ -108,7 +113,7 @@ public class ScriptLoaderLib implements GIScriptLoader {
 
     @Nullable
     @Override
-    public InputStream openScript(@NotNull ScriptLoadParams scriptLoadParams) {
+    public Source openScript(@NotNull ScriptLoadParams scriptLoadParams) {
         val basePath = scriptLoadParams.getBasePath();
         val scriptPath = getScriptPath(basePath);
         if(scriptPath == null) {
@@ -117,7 +122,7 @@ public class ScriptLoaderLib implements GIScriptLoader {
         }
         if (Files.exists(scriptPath)) {
             try {
-                return Files.newInputStream(scriptPath);
+                return LuaHelpersJvmKt.asSource(scriptPath);
             } catch (IOException e) {
                 logger.error("[Lua] exception while reading file {}:", scriptPath, e);
             }
