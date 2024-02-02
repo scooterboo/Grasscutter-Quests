@@ -19,7 +19,6 @@ import emu.grasscutter.game.avatar.TowerAvatar;
 import emu.grasscutter.game.dungeons.dungeon_entry.PlayerDungeonExitInfo;
 import emu.grasscutter.plugin.PluginManager;
 import emu.grasscutter.plugin.api.ServerHook;
-import emu.grasscutter.scripts.ScriptLoader;
 import emu.grasscutter.server.game.GameServer;
 import emu.grasscutter.server.http.HttpServer;
 import emu.grasscutter.server.http.dispatch.DispatchHandler;
