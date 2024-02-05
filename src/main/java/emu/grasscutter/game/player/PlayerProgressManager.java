@@ -137,8 +137,17 @@ public class PlayerProgressManager extends BasePlayerDataManager {
                     }
                 }
                 // ToDo: Implement.
-                case OPEN_STATE_OFFERING_LEVEL, OPEN_STATE_CITY_REPUTATION_LEVEL -> {}
-
+                case OPEN_STATE_CITY_REPUTATION_LEVEL -> {
+                    // not implemented yet, opening them all seems to trigger the mine craft quest
+                    // param seems to be the city id
+                    // param2 seems to be the reputation level
+                    return false;
+                }
+                // ToDo: Implement.
+                case OPEN_STATE_OFFERING_LEVEL -> {
+                    // param offering id
+                    // param2 offering level
+                }
             }
         }
 
