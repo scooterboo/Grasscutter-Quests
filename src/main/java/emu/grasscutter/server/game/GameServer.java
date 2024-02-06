@@ -193,7 +193,7 @@ public final class GameServer extends KcpServer {
     }
 
     public Player getPlayerByAccountId(String accountId) {
-        Optional<Player> playerOpt = getPlayers().values().stream().filter(player -> player.getAccount().getId().equals(accountId)).findFirst();
+        Optional<Player> playerOpt = getPlayers().values().stream().filter(player -> player.getAccountId().equals(accountId)).findFirst();
         return playerOpt.orElse(null);
     }
 

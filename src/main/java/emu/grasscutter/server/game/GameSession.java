@@ -31,6 +31,8 @@ public class GameSession implements GameSessionManager.KcpChannel {
     private GameSessionManager.KcpTunnel tunnel;
 
     @Getter @Setter private Account account;
+    @Getter @Setter private String accountId;
+    @Getter @Setter private String sessionToken;
     @Getter private Player player;
 
     @Setter private boolean useSecretKey;
@@ -62,10 +64,6 @@ public class GameSession implements GameSessionManager.KcpChannel {
 
     public boolean useSecretKey() {
         return useSecretKey;
-    }
-
-    public String getAccountId() {
-        return this.getAccount().getId();
     }
 
     public synchronized void setPlayer(Player player) {

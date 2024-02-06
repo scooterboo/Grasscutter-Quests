@@ -14,13 +14,13 @@ public class HandlerPlayerLoginReq extends TypedPacketHandler<PlayerLoginReq> {
     @Override
     public void handle(GameSession session, byte[] header, PlayerLoginReq req) throws Exception {
         // Check
-        if (session.getAccount() == null) {
+        if (session.getAccountId() == null) {
             session.close();
             return;
         }
 
         // Authenticate session
-        if (!req.getToken().equals(session.getAccount().getToken())) {
+        if (!req.getToken().equals(session.getSessionToken())) {
             session.close();
             return;
         }

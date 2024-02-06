@@ -156,7 +156,7 @@ public final class SetPropCommand implements CommandHandler {
             if (targetPlayer == sender) {
                 CommandHandler.sendTranslatedMessage(sender, "commands.generic.set_to", prop.name, valueStr);
             } else {
-                val uidStr = targetPlayer.getAccount().getId();
+                val uidStr = targetPlayer.getAccountId();
                 CommandHandler.sendTranslatedMessage(sender, "commands.generic.set_for_to", prop.name, uidStr, valueStr);
             }
         } else {

@@ -177,6 +177,9 @@ public final class DatabaseHelper {
     public static Player getPlayerByAccount(Account account, Class<? extends Player> playerClass) {
         return DatabaseManager.getGameDatastore().find(playerClass).filter(Filters.eq("accountId", account.getId())).first();
     }
+    public static Player getPlayerByAccount(String accountId, Class<? extends Player> playerClass) {
+        return DatabaseManager.getGameDatastore().find(playerClass).filter(Filters.eq("accountId", accountId)).first();
+    }
 
     public static boolean checkIfPlayerExists(int uid) {
         return DatabaseManager.getGameDatastore().find(Player.class).filter(Filters.eq("_id", uid)).count() > 0;

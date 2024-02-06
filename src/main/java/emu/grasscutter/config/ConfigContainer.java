@@ -114,6 +114,7 @@ public class ConfigContainer {
     }
 
     public static class Account {
+        public String sdkServer = "";
         public boolean autoCreate = false;
         public boolean EXPERIMENTAL_RealPassword = false;
         public String[] defaultPermissions = {};

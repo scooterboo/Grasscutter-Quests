@@ -100,6 +100,7 @@ import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 @Entity(value = "players", useDiscriminator = false)
 public class Player {
     @Id private int id;
+    @Getter
     @Indexed(options = @IndexOptions(unique = true)) private String accountId;
     @Setter private transient Account account;
     @Getter @Setter private transient GameSession session;
@@ -298,7 +299,7 @@ public class Player {
     public Player(GameSession session) {
         this();
         this.account = session.getAccount();
-        this.accountId = this.getAccount().getId();
+        this.accountId = session.getAccountId();
         this.session = session;
         this.nickname = "Traveler";
         this.signature = "";

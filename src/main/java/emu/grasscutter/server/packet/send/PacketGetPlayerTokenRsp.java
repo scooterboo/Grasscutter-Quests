@@ -18,7 +18,7 @@ public class PacketGetPlayerTokenRsp extends BaseTypedPacket<GetPlayerTokenRsp> 
         this.setUseDispatchKey(true);
 
         proto.setUid(session.getPlayer().getUid());
-        proto.setToken(session.getAccount().getToken());
+        proto.setToken(session.getSessionToken());
         proto.setAccountType(1);
         proto.setProficientPlayer(session.getPlayer().getAvatars().getAvatarCount() > 0); // Not sure where this goes
         proto.setSecretKeySeed(Crypto.ENCRYPT_SEED);
@@ -52,7 +52,7 @@ public class PacketGetPlayerTokenRsp extends BaseTypedPacket<GetPlayerTokenRsp> 
         this.setUseDispatchKey(true);
 
         proto.setUid(session.getPlayer().getUid());
-        proto.setToken(session.getAccount().getToken());
+        proto.setToken(session.getSessionToken());
         proto.setAccountType(1);
         proto.setProficientPlayer(session.getPlayer().getAvatars().getAvatarCount() > 0); // Not sure where this goes
         proto.setSecretKeySeed(Crypto.ENCRYPT_SEED);
