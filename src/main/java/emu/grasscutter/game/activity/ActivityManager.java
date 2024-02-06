@@ -206,4 +206,11 @@ public class ActivityManager extends BasePlayerManager {
            .map(this::getInfoProtoByActivityId);
     }
 
+    public List<Integer> getActiveActivityIds() {
+        return activityConfigItemMap.values().stream()
+            .filter(x -> isActivityActive(x.getActivityId()))
+            .map(ActivityConfigItem::getActivityId)
+            .toList();
+    }
+
 }
