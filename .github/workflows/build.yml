@@ -33,9 +33,9 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
             ./.gradle/loom-cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle', 'gradle.properties', '**/*.accesswidener') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties', '**/*.accesswidener') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gradle-
       - name: Run Gradle
         run: ./gradlew && ./gradlew shadowJar
       - name: Upload build
