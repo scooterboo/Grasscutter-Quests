@@ -310,7 +310,7 @@ public class World implements Iterable<Player> {
         // }
         val config = newScene.getScriptManager().getConfig();
         if (teleportProperties.getTeleportTo() == null && config != null) {
-            Optional.ofNullable(config.getBeginPos()).map(Position::new).ifPresent(teleportProperties::setTeleportTo);
+            Optional.ofNullable(config.getBornPos()).map(Position::new).ifPresent(teleportProperties::setTeleportTo);
             Optional.ofNullable(config.getBornRot()).map(Position::new).ifPresent(teleportProperties::setTeleportRot);
         }
 

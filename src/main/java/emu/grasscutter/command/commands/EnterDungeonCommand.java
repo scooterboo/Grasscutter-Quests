@@ -2,7 +2,9 @@ package emu.grasscutter.command.commands;
 
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
+import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.player.Player;
+import lombok.val;
 
 import java.util.List;
 
@@ -20,7 +22,12 @@ public final class EnterDungeonCommand implements CommandHandler {
 
         try {
             int dungeonId = Integer.parseInt(args.get(0));
-            if (dungeonId == targetPlayer.getSceneId()) {
+            val dungeonData = GameData.getDungeonDataMap().get(dungeonId);
+            if(dungeonData == null) {
+                CommandHandler.sendMessage(sender, translate(sender, "commands.enter_dungeon.not_found_error"));
+                return;
+            }
+            if (dungeonData.getSceneId() == targetPlayer.getSceneId() && targetPlayer.getScene().getCurDungeonId() == dungeonId) {
                 CommandHandler.sendMessage(sender, translate(sender, "commands.enter_dungeon.in_dungeon_error"));
                 return;
             }

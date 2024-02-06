@@ -436,7 +436,7 @@ public class Scene {
     }
 
     private Position getDefaultLocation(Player player) {
-        val bornPost = this.scriptManager.getConfig().getBeginPos();
+        val bornPost = this.scriptManager.getConfig().getBornPos();
         return bornPost != null ? new Position(bornPost) : player.getPosition();
     }
 
