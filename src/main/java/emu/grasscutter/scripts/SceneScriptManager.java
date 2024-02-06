@@ -34,6 +34,7 @@ import lombok.val;
 import messages.scene.VisionType;
 import org.anime_game_servers.gi_lua.models.*;
 import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.constants.VisionLevelType;
 import org.anime_game_servers.gi_lua.models.scene.SceneConfig;
 import org.anime_game_servers.gi_lua.models.scene.SceneMeta;
 import org.anime_game_servers.gi_lua.models.scene.block.SceneBlock;
@@ -379,23 +380,28 @@ public class SceneScriptManager {
         return instance;
     }
 
-    private static void addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, Set<Integer> visionLevels, SceneObject sceneObject, SceneGroupInfo group){
+    private static void addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, Set<VisionLevelType> visionLevels, SceneObject sceneObject, SceneGroupInfo group){
         visionLevels.add(addEntityGridPosToMap(groupPositions, sceneObject, group));
     }
-    private static int addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, SceneObject sceneObject, SceneGroupInfo group){
+    private static VisionLevelType addEntityGridPosToMap(List<Map<GridPosition, Set<Integer>>> groupPositions, SceneObject sceneObject, SceneGroupInfo group){
         val visionLevel = switch (sceneObject.getType()){
-            case GADGET -> Math.max(getGadgetVisionLevel(((SceneGadget)sceneObject).getGadgetId()), sceneObject.getVisionLevel());
-            case REGION -> 0;
+            case GADGET -> {
+                val gadgetLevel = getGadgetVisionLevel(((SceneGadget)sceneObject).getGadgetId());
+                val scriptLevel = sceneObject.getVisionLevel();
+                if(gadgetLevel.getValue() > scriptLevel.getValue()) yield gadgetLevel;
+                else yield scriptLevel;
+            }
+            case REGION -> VisionLevelType.getDefault();
             default -> sceneObject.getVisionLevel();
         };
-        addGridPositionToMap(groupPositions.get(visionLevel), group.getId(), visionLevel, sceneObject.getPos());
+        addGridPositionToMap(groupPositions.get(visionLevel.getValue()), group.getId(), visionLevel, sceneObject.getPos());
         return visionLevel;
     }
 
-    private static void addGridPositionToMap(Map<GridPosition, Set<Integer>> map, int group_id, int vision_level, Position position) {
+    private static void addGridPositionToMap(Map<GridPosition, Set<Integer>> map, int group_id, VisionLevelType vision_level, Position position) {
         //Convert position to grid position
         GridPosition gridPos;
-        int width = Grasscutter.getConfig().server.game.visionOptions[vision_level].gridWidth;
+        int width = Grasscutter.getConfig().server.game.visionOptions[vision_level.getValue()].gridWidth;
         gridPos = new GridPosition((int)(position.getX() / width), (int)(position.getZ() / width), width);
 
         Set<Integer> groups = map.getOrDefault(gridPos, new HashSet<>());
@@ -403,17 +409,17 @@ public class SceneScriptManager {
         map.put(gridPos, groups);
     }
 
-    private static int getGadgetVisionLevel(int gadget_id) {
+    private static VisionLevelType getGadgetVisionLevel(int gadget_id) {
         var gadget = GameData.getGadgetDataMap().get(gadget_id);
-        if(gadget == null || gadget.getVisionLevel() == null) return 0;
+        if(gadget == null || gadget.getVisionLevel() == null) return VisionLevelType.getDefault();
 
         var visionOptions = Grasscutter.getConfig().server.game.visionOptions;
         for(int i = 0; i < visionOptions.length; i++)
             if(visionOptions[i].name.compareTo(gadget.getVisionLevel()) == 0) {
-                return i;
+                return VisionLevelType.valueOf(visionOptions[i].name);
             }
 
-        return 0;
+        return VisionLevelType.getDefault();
     }
 
     private void init() {
@@ -458,7 +464,7 @@ public class SceneScriptManager {
                 group.load(scriptLoader);
 
                 //Add all entities here
-                Set<Integer> vision_levels = new HashSet<>();
+                Set<VisionLevelType> vision_levels = new HashSet<>();
 
                 val monsters = group.getMonsters();
                 if (monsters != null) {
@@ -493,16 +499,15 @@ public class SceneScriptManager {
                     garbages.getGadgets().forEach(g -> addEntityGridPosToMap(groupPositions, g, groupInfo));
                 }
 
-                int max_vision_level = -1;
+                var maxVisionLevel = VisionLevelType.VISION_LEVEL_NORMAL;
                 if (!vision_levels.isEmpty()) {
-                    for (int vision_level : vision_levels) {
-                        if (max_vision_level == -1 || visionOptions[max_vision_level].visionRange < visionOptions[vision_level].visionRange)
-                            max_vision_level = vision_level;
+                    for (val visionLevel : vision_levels) {
+                        if (visionOptions[maxVisionLevel.getValue()].visionRange < visionOptions[visionLevel.getValue()].visionRange)
+                            maxVisionLevel = visionLevel;
                     }
                 }
-                if (max_vision_level == -1) max_vision_level = 0;
 
-                addGridPositionToMap(groupPositions.get(max_vision_level), groupInfo.getId(), max_vision_level, groupInfo.getPos());
+                addGridPositionToMap(groupPositions.get(maxVisionLevel.getValue()), groupInfo.getId(), maxVisionLevel, groupInfo.getPos());
             });
 
             var groupGrids = new ArrayList<Grid>();

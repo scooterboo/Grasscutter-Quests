@@ -921,4 +921,8 @@ public class Scene {
     public void saveGroups() {
         this.scriptManager.getCachedGroupInstances().values().forEach(SceneGroupInstance::save);
     }
+
+    public int getCurDungeonId(){
+        return dungeonManager != null ? dungeonManager.getDungeonData().getId() : 0;
+    }
 }

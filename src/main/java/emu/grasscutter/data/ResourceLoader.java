@@ -26,8 +26,6 @@ import emu.grasscutter.game.dungeons.DungeonDrop;
 import emu.grasscutter.game.dungeons.enums.DungeonType;
 import emu.grasscutter.game.managers.blossom.BlossomConfig;
 import emu.grasscutter.game.quest.QuestEncryptionKey;
-import emu.grasscutter.game.quest.RewindData;
-import emu.grasscutter.game.quest.TeleportData;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.SpawnDataEntry;
@@ -45,6 +43,8 @@ import lombok.val;
 
 import org.anime_game_servers.gi_lua.models.loader.SceneReplacementScriptLoadParams;
 import org.anime_game_servers.gi_lua.models.loader.ShardQuestScriptLoadParams;
+import org.anime_game_servers.gi_lua.models.quest.QuestData;
+import org.anime_game_servers.gi_lua.models.quest.RewindData;
 import org.anime_game_servers.gi_lua.models.scene.SceneGroupReplacement;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -766,7 +766,7 @@ public class ResourceLoader {
                 val sharedQuestParams = new ShardQuestScriptLoadParams(questId);
                 if(!ScriptSystem.getScriptLoader().loadData(sharedQuestParams, script -> {
                     // these are Map<String, class>
-                    val teleportDataMap = script.getGlobalVariableMap("quest_data", TeleportData.class);
+                    val teleportDataMap = script.getGlobalVariableMap("quest_data", QuestData.class);
                     val rewindDataMap = script.getGlobalVariableMap("rewind_data", RewindData.class);
 
                     // convert them to Map<Integer, class> and cache

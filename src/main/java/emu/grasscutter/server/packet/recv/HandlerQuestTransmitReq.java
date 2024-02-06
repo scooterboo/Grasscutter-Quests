@@ -2,7 +2,6 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.quest.GameQuest;
-import emu.grasscutter.game.quest.TeleportData;
 import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.quest.QuestData;
 
 @Opcodes(PacketOpcodes.QuestTransmitReq)
 public class HandlerQuestTransmitReq extends PacketHandler {
@@ -27,8 +27,8 @@ public class HandlerQuestTransmitReq extends PacketHandler {
         val player = session.getPlayer();
         val posAndRot = new ArrayList<Position>();
         final int sceneId = Optional.ofNullable(GameData.getTeleportDataMap().get(req.getQuestId()))
-            .map(TeleportData::getTransmit_points).stream().flatMap(List::stream).findFirst()
-            .map(TeleportData.TransmitPoint::getScene_id).orElse(3);
+            .map(QuestData::getTransmitPoints).stream().flatMap(List::stream).findFirst()
+            .map(QuestData.TransmitPoint::getSceneId).orElse(3);
 
         val result = Optional.ofNullable(player.getQuestManager().getQuestById(req.getQuestId()))
             .map(GameQuest::getMainQuest).filter(mainQuest -> mainQuest.hasTeleportPostion(req.getQuestId(), posAndRot))
