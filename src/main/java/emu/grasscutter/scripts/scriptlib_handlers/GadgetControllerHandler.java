@@ -117,9 +117,8 @@ public class GadgetControllerHandler extends BaseHandler implements org.anime_ga
     }
 
     @Override
-    public int DropSubfield(ControllerLuaContext context, LuaTable paramsTable) {
+    public int DropSubfield(ControllerLuaContext context, LuaTable params) {
         val gadget = context.getEntity();
-        val params = context.getEngine().getTable(paramsTable);
         String subfield_name = params.getString("subfield_name");
 
         gadget.dropSubfield(subfield_name);

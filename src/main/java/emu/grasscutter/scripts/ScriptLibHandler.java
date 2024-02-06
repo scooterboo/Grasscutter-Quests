@@ -380,10 +380,9 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     @Override
     public int StartChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, LuaTable challengeParams) {
         logger.info("[LUA] Call StartChallenge with {},{},{}", challengeIndex, challengeId, challengeParams);
-        val conditionParamTable = context.getEngine().getTable(challengeParams);
         val challenge = ChallengeFactory.getChallenge(
             new ChallengeInfo(challengeIndex, challengeId, 0),
-            Arrays.stream(conditionParamTable.getAsIntArray()).boxed().toList(),
+            Arrays.stream(challengeParams.getAsIntArray()).boxed().toList(),
             new ChallengeScoreInfo(0, 0),
             context.getSceneScriptManager().getScene(),
             context.getCurrentGroup()
@@ -953,15 +952,13 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
 
     @Override
     public int CreateFatherChallenge(GroupEventLuaContext context, int challengeIndex, int challengeId, int timeLimit, LuaTable conditionTable) {
-        val conditionLuaTable = context.getEngine().getTable(conditionTable);
-
         logger.debug("[LUA] Call CreateFatherChallenge with {} {} {} {}",
             challengeIndex, challengeId, timeLimit, conditionTable);
 
         WorldChallenge challenge = ChallengeFactory.getChallenge(
             new ChallengeInfo(challengeIndex, challengeId, challengeIndex),
-            List.of(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail"), timeLimit),
-            new ChallengeScoreInfo(conditionLuaTable.getInt("success"), conditionLuaTable.getInt("fail")),
+            List.of(conditionTable.getInt("success"), conditionTable.getInt("fail"), timeLimit),
+            new ChallengeScoreInfo(conditionTable.getInt("success"), conditionTable.getInt("fail")),
             context.getSceneScriptManager().getScene(),
             context.getCurrentGroup()
         );
@@ -1360,8 +1357,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
-    public int BeginCameraSceneLook(GroupEventLuaContext context, LuaTable sceneLookParamsTable) {
-        val sceneLookParams = context.getEngine().getTable(sceneLookParamsTable);
+    public int BeginCameraSceneLook(GroupEventLuaContext context, LuaTable sceneLookParams) {
         logger.debug("[LUA] Call BeginCameraSceneLook with {}", printTable(sceneLookParams));
         val luaLookPos = sceneLookParams.getTable("look_pos");
 
