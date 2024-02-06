@@ -288,12 +288,17 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call AddExtraGroupSuite with {},{}",
             groupId,suite);
         val scriptManager = context.getSceneScriptManager();
-        SceneGroup group = scriptManager.getGroupById(groupId);
-        SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(groupId);
 
-        if (group == null || groupInstance == null) {
+        SceneGroup group = getGroupOrCurrent(context, groupId);
+        if (group == null) {
             return 1;
         }
+
+        SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(group.getGroupInfo().getId());
+        if (groupInstance == null) {
+            return 1;
+        }
+
         var suiteData = group.getSuiteByIndex(suite);
         if(suiteData == null){
             logger.warn("trying to get suite that doesn't exist: {} {}", groupId, suite);
@@ -309,7 +314,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call RemoveExtraGroupSuite with {},{}",
             groupId,suite);
 
-        SceneGroup group = context.getSceneScriptManager().getGroupById(groupId);
+        SceneGroup group = getGroupOrCurrent(context, groupId);
         if (group == null) {
             return 1;
         }
@@ -328,7 +333,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call KillExtraGroupSuite with {},{}",
             groupId,suite);
 
-        SceneGroup group = context.getSceneScriptManager().getGroupById(groupId);
+        SceneGroup group = getGroupOrCurrent(context, groupId);
         if (group == null) {
             return 1;
         }
@@ -668,7 +673,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call KillEntityByConfigId with {}", killByConfigIdParams);
         SceneScriptManager scriptManager = groupEventLuaContext.getSceneScriptManager();
 
-        int groupId = killByConfigIdParams.getGroupId() != 0 ? killByConfigIdParams.getGroupId() : groupEventLuaContext.getCurrentGroup().getGroupInfo().getId();
+        int groupId = getGroupIdOrCurrentId(groupEventLuaContext, killByConfigIdParams.getGroupId());
         var entity = scriptManager.getScene().getEntityByConfigId(killByConfigIdParams.getConfigId(), groupId);
         if (entity == null) {
             return 0;
@@ -1053,7 +1058,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call check GetBlossomScheduleStateByGroupId with {}", groupId);
         if (context.getCurrentGroup() == null) return -1;
 
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().getGroupInfo().getId() : groupId;
+        val realGroupId = getGroupIdOrCurrentId(context, groupId);
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
         return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
             .map(BlossomSchedule::getState).orElse(-1);
@@ -1064,7 +1069,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call check SetBlossomScheduleStateByGroupId with {} {}", groupId, state);
 
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().getGroupInfo().getId() : groupId;
+        val realGroupId = getGroupIdOrCurrentId(context, groupId);
         val result = blossomManager.setBlossomState(realGroupId, state);
         if (result && state == 1) { // there should only be one gadget of this blossom at this point, which is the operator
             context.getSceneScriptManager().getScene().getEntities().values().stream()
@@ -1079,7 +1084,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call check RefreshBlossomGroup with {}", printTable(configTable));
 
         int groupId = configTable.optInt("group_id", context.getCurrentGroup().getGroupInfo().getId());
-        val group = groupId == 0 ? context.getCurrentGroup() : context.getSceneScriptManager().getGroupById(groupId);
+        val group = getGroupOrCurrent(context, groupId);
         if (group == null) return 1;
 
         groupId = group.getGroupInfo().getId();
@@ -1115,7 +1120,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     public int GetBlossomRefreshTypeByGroupId(GroupEventLuaContext context, int groupId) {
         logger.debug("[LUA] Call check GetBlossomRefreshTypeByGroupId with {}", groupId);
 
-        val realGroupId = groupId == 0 ? context.getCurrentGroup().getGroupInfo().getId() : groupId;
+        val realGroupId = getGroupIdOrCurrentId(context, groupId);
         val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
         return Optional.ofNullable(blossomManager.getBlossomSchedule().get(realGroupId))
             .map(BlossomSchedule::getRefreshType).map(BlossomRefreshType::getValue).orElse(2);
@@ -1634,10 +1639,10 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         }
         int[] targets = new int[monsters.length + gadgets.length];
         int targetsIndex = 0;
-        for (int i = 0; i <= monsters.length; i++, targetsIndex++) {
+        for (int i = 0; i < monsters.length; i++, targetsIndex++) {
             targets[targetsIndex] = monsters[i];
         }
-        for (int i = 0; i <= gadgets.length; i++, targetsIndex++) {
+        for (int i = 0; i < gadgets.length; i++, targetsIndex++) {
             targets[targetsIndex] = gadgets[i];
         }
 
