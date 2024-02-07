@@ -3,7 +3,6 @@ package emu.grasscutter.game.dungeons.dungeon_entry;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.ScenePointEntry;
 import emu.grasscutter.data.common.PointData;
-import emu.grasscutter.data.common.quest.SubQuestData;
 import emu.grasscutter.data.excels.DungeonData;
 import emu.grasscutter.data.excels.DungeonRosterData;
 import emu.grasscutter.data.excels.DungeonSerialData;
@@ -29,7 +28,7 @@ public class DungeonEntryManager extends BasePlayerManager {
     /**
      * entry: [(sceneId << 16) + pointId, dungeonId]
      * */
-    private final Map<Integer, List<Integer>> plotDungeonEntries = new Int2ObjectOpenHashMap<>();
+    private final Map<Integer, Set<Integer>> plotDungeonEntries = new Int2ObjectOpenHashMap<>();
 
     public DungeonEntryManager(@NonNull Player player) {
         super(player);
@@ -48,16 +47,32 @@ public class DungeonEntryManager extends BasePlayerManager {
         this.player.getQuestManager().getMainQuests().values().stream()
             .map(GameMainQuest::getChildQuests).map(Map::values).flatMap(Collection::stream)
             .filter(quest -> quest.getState() == QuestState.QUEST_STATE_UNFINISHED)
-            .map(GameQuest::getQuestData).map(SubQuestData::getFinishCond).flatMap(List::stream)
-            .filter(cond -> cond.getType() == QuestContent.QUEST_CONTENT_ENTER_DUNGEON)
-            .map(cond -> GameData.getDungeonEntriesMap().get(cond.getParam()[0]))
-            .forEach(entries -> this.plotDungeonEntries.computeIfAbsent(
-                entries.getEntryKey(), f -> new ArrayList<>()).add(entries.getDungeonId()));
+            .forEach(this::checkQuestForDungeonEntryUpdate);
 
         // builds weekly boss information if its missing
         getDungeonEntryItem().checkForNewBoss();
         getDungeonEntryItem().buildRosterDungeon();
         getDungeonEntryItem().resetWeeklyBoss();
+    }
+
+    public void checkQuestForDungeonEntryUpdate(GameQuest quest){
+        quest.getQuestData().getFinishCond().stream()
+            .filter(cond -> cond.getType() == QuestContent.QUEST_CONTENT_ENTER_DUNGEON)
+            .map(cond -> GameData.getDungeonEntriesMap().get(cond.getParam()[0]))
+            .forEach(entries -> {
+                // we need to enter this dungeon
+                if(quest.state == QuestState.QUEST_STATE_UNFINISHED) {
+                    this.plotDungeonEntries.computeIfAbsent(
+                        entries.getEntryKey(), f -> new HashSet<>()).add(entries.getDungeonId());
+                } else {
+                    // we probably finished or reset this quest, remove the entry
+                    this.plotDungeonEntries.computeIfPresent(
+                        entries.getEntryKey(), (k, v) -> {
+                            v.remove(entries.getDungeonId());
+                            return v;
+                        });
+                }
+            });
     }
 
     public DungeonEntryInfo toProto(DungeonData data) {
@@ -82,7 +97,7 @@ public class DungeonEntryManager extends BasePlayerManager {
         getDungeonEntryItem().updateWeeklyBossInfo(dungeonData.getSerialId());
     }
 
-    public List<Integer> getPlotDungeonById(int sceneId, int pointId){
+    public Set<Integer> getPlotDungeonById(int sceneId, int pointId){
         return this.plotDungeonEntries.get((sceneId << 16) + pointId);
     }
 
@@ -104,7 +119,7 @@ public class DungeonEntryManager extends BasePlayerManager {
 
         // quest entries
         val plotDungeons = Optional.ofNullable(getPlotDungeonById(sceneId, pointId)).stream().parallel()
-            .flatMap(List::stream).map(dungeonId -> GameData.getDungeonDataMap().get(dungeonId.intValue()))
+            .flatMap(Set::stream).map(dungeonId -> GameData.getDungeonDataMap().get(dungeonId.intValue()))
             .filter(Objects::nonNull).toList();
 
         // dungeon that will rotate regularly, like Azhdaha weekly boss

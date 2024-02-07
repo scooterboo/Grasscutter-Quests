@@ -102,6 +102,7 @@ public class GameQuest {
 
         getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
         getOwner().getQuestManager().checkQuestAlreadyFullfilled(this);
+        getOwner().getDungeonEntryManager().checkQuestForDungeonEntryUpdate(this);
 
         Grasscutter.getLogger().debug("Quest {} is started", subQuestId);
         save();
@@ -202,6 +203,7 @@ public class GameQuest {
                 getOwner().getInventory().addItem(item.getItemId(), item.getCount(), ActionReason.QuestItem);
             });
         }
+        getOwner().getDungeonEntryManager().checkQuestForDungeonEntryUpdate(this);
 
         save();
 
