@@ -34,10 +34,10 @@ jobs:
             ~/.gradle/wrapper
             ./.gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties', '**/*.accesswidener') }}
-#          restore-keys: |
-#            ${{ runner.os }}-gradle-
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Run Gradle
-        run: ./gradlew && ./gradlew shadowJar
+        run: ./gradlew --refresh-dependencies && ./gradlew --refresh-dependencies shadowJar
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
