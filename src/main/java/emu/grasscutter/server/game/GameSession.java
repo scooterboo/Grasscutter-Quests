@@ -15,13 +15,13 @@ import emu.grasscutter.server.event.game.SendPacketEvent;
 import emu.grasscutter.utils.Crypto;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.Utils;
-import interfaces.PackageIdProvider;
+import interfaces.PacketIdProvider;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import org.anime_game_servers.core.base.Version;
-import package_id.PackageIds;
+import packet_id.PacketIds;
 
 import static emu.grasscutter.config.Configuration.*;
 import static emu.grasscutter.utils.Language.translate;
@@ -42,7 +42,7 @@ public class GameSession implements GameSessionManager.KcpChannel {
     @Getter private long lastPingTime;
     private int lastClientSeq = 10;
     @Getter private Version version = Version.GI_3_2_0; // TODO actually get the version from the client
-    @Getter private PackageIdProvider packageIdProvider = PackageIds.getMapper(version);
+    @Getter private PacketIdProvider packageIdProvider = PacketIds.getMapper(version);
 
     public GameSession(GameServer server) {
         this.server = server;

@@ -78,7 +78,7 @@ public class GameServerPacketHandler {
 
     @Nullable
     private PacketHandler getHandler(GameSession session, int opcode) {
-        String name = session.getPackageIdProvider().getPackageName(opcode);
+        String name = session.getPackageIdProvider().getPacketName(opcode);
         PacketHandler handler = this.versionHandlers.get(name);
         return handler!= null ? handler : this.handlers.get(opcode);
     }
