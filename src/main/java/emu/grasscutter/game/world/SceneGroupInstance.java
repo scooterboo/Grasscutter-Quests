@@ -80,8 +80,7 @@ public class SceneGroupInstance implements SceneGroupUserData {
     }
 
     public int getCachedGadgetState(SceneGadget g) {
-        Integer state = cachedGadgetStates.getOrDefault(g.getConfigId(), null);
-        return (state == null) ? g.getState() : state;
+        return cachedGadgetStates.getOrDefault(g.getConfigId(), g.getState());
     }
 
     public void save() {
