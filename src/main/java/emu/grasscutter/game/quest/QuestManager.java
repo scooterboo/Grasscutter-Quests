@@ -172,6 +172,15 @@ public class QuestManager extends BasePlayerManager {
     }
 
     public void enableQuests() {
+        if(!player.isQuestsEnabled()){
+            val startQuest = getMainQuestById(351);
+            if (startQuest == null || !startQuest.isFinished()){
+                // offical seems to start with this, so we do this when quests get enabled
+                player.getWorld().setGameTimeLocked(true);
+                player.getWorld().changeTime(540, true);
+            }
+            player.setQuestsEnabled(true);
+        }
         triggerEvent(QuestCond.QUEST_COND_NONE, null, 0);
         triggerEvent(QuestCond.QUEST_COND_PLAYER_LEVEL_EQUAL_GREATER, null, 1);
     }

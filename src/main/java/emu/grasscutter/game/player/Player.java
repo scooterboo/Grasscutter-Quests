@@ -213,6 +213,7 @@ public class Player {
     @Getter @Setter private int nextResinRefresh;
     @Getter @Setter private int resinBuyCount;
     @Getter @Setter private int lastDailyReset;
+    @Getter @Setter private boolean questsEnabled;
     @Getter private transient MpSettingType mpSetting = MpSettingType.MP_SETTING_ENTER_AFTER_APPLY;  // TODO
     @Getter private long playerGameTime = 540;
 
