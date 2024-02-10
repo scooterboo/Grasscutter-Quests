@@ -38,6 +38,7 @@ public class DungeonData extends GameResource {
     private List<SettleShowType> settleShows;
     @SerializedName(value = "passRewardPreviewID", alternate = {"passRewardPreviewId"})
     private int passRewardPreviewId;
+    private int passJumpDungeon;
     private int statueCostID;
     private int statueCostCount;
     private String stateType;

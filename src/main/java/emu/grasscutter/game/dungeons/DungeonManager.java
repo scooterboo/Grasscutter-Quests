@@ -269,6 +269,9 @@ public class DungeonManager {
             if (this.dungeonData.getType().isCountsToBattlepass() && successfully) {
                 p.getBattlePassManager().triggerMission(WatcherTriggerType.TRIGGER_FINISH_DUNGEON);
             }
+            if(dungeonData.getPassJumpDungeon() > 0){
+                p.getServer().getDungeonSystem().enterDungeon(p, 0, dungeonData.getPassJumpDungeon());
+            }
         });
         this.scene.getScriptManager().callEvent(new ScriptArgs(0, EventType.EVENT_DUNGEON_SETTLE, successfully ? 1 : 0));
     }
