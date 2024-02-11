@@ -68,7 +68,10 @@ public class EntityRegion extends GameEntity{
         this.entityLeave = true;
     }
     public boolean entityLeave() {return this.entityLeave;}
-    public void resetEntityLeave() {this.entityLeave = false;}
+    public void resetEntityLeave() {
+        this.entityLeave = false;
+        leftEntities.clear();
+    }
     @Override public Int2FloatMap getFightProperties() {return null;}
 
     @Override public Position getPosition() {return position;}
