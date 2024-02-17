@@ -314,7 +314,11 @@ public final class DatabaseHelper {
     }
 
     public static void saveQuest(GameMainQuest quest) {
-        DatabaseManager.getGameDatastore().save(quest);
+        try {
+            DatabaseManager.getGameDatastore().save(quest);
+        } catch(Exception exception){
+            Grasscutter.getLogger().error("Failed to save quest m{}",quest.getParentQuestId(), exception);
+        }
     }
 
     public static boolean deleteQuest(GameMainQuest quest) {
