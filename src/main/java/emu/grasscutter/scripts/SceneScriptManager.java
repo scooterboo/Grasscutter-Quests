@@ -216,8 +216,8 @@ public class SceneScriptManager {
         return refreshGroup(groupInstance, suiteIndex, excludePrevSuite, entitiesAdded, false);
     }
     public int refreshGroup(SceneGroupInstance groupInstance, int suiteIndex, boolean excludePrevSuite, List<GameEntity> entitiesAdded, boolean dontLoad) {
-        val groudId = groupInstance.getGroupId();
-        SceneGroup group = meta.getGroups().get(groudId);
+        val groupId = groupInstance.getGroupId();
+        SceneGroup group = meta.getGroups().get(groupId);
         if(suiteIndex == 0) {
             if(excludePrevSuite) {
                 suiteIndex = group.findInitSuiteIndex(groupInstance.getActiveSuiteId());
@@ -228,7 +228,7 @@ public class SceneScriptManager {
 
         var suiteData = group.getSuiteByIndex(suiteIndex);
         if (suiteData == null) {
-            logger.warn("Group {} suite {} not found", groudId, suiteIndex);
+            logger.warn("Group {} suite {} not found", groupId, suiteIndex);
             return 0;
         }
 
@@ -246,7 +246,7 @@ public class SceneScriptManager {
 
         if(waitForOne && (groupInstance.getTargetSuiteId() == 0 || prevSuiteIndex != groupInstance.getTargetSuiteId())) {
             groupInstance.setTargetSuiteId(suiteIndex);
-            logger.debug("Group {} suite {} wating one more refresh", groudId, suiteIndex);
+            logger.debug("Group {} suite {} wating one more refresh", groupId, suiteIndex);
             return 0;
         }
 
@@ -573,12 +573,10 @@ public class SceneScriptManager {
 
         for (var region : this.regions.values()) {
             val metaRegion = region.getMetaRegion();
-            // currently all condition_ENTER_REGION Events check for avatar, so we have no necessary to add other types of entity
 
             getScene().getEntities().values().stream()
                 .filter(e -> metaRegion.contains(e.getPosition()) && !region.getEntities().contains(e))
                 .forEach(region::addEntity);
-
 
             region.getEntities().stream()
                 .filter(e -> !metaRegion.contains(e.getPosition()))
