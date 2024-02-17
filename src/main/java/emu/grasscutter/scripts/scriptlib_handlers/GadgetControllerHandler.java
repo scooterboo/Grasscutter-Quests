@@ -153,4 +153,11 @@ public class GadgetControllerHandler extends BaseHandler implements org.anime_ga
         scriptManager.getScene().killEntity(entity, 0);
         return 0;
     }
+
+    @NotNull
+    @Override
+    public int[] GetGadgetArguments(@NotNull ControllerLuaContext controllerLuaContext) {
+        val gadgetArguments = controllerLuaContext.getGadget().getMetaGadget().getArguments();
+        return gadgetArguments != null ? gadgetArguments.stream().mapToInt(Integer::intValue).toArray() : new int[0];
+    }
 }

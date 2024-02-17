@@ -98,34 +98,6 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
-    public int SetGadgetStateByConfigId(GroupEventLuaContext context, int configId, int gadgetState) {
-        logger.debug("[LUA] Call SetGadgetStateByConfigId with {},{}",
-            configId,gadgetState);
-        val entity = context.getSceneScriptManager().getScene().getEntityByConfigId(configId, context.getCurrentGroup().getGroupInfo().getId());
-
-        if (!(entity instanceof EntityGadget)) {
-            return 1;
-        }
-
-        ((EntityGadget) entity).updateState(gadgetState);
-        return 0;
-    }
-
-    @Override
-    public int SetGroupGadgetStateByConfigId(GroupEventLuaContext context, int groupId, int configId, int gadgetState) {
-        logger.debug("[LUA] Call SetGroupGadgetStateByConfigId with {},{},{}",
-            groupId,configId,gadgetState);
-
-        val entity = context.getSceneScriptManager().getScene().getEntityByConfigId(configId, groupId);
-        if(!(entity instanceof EntityGadget)){
-            return -1;
-        }
-        ((EntityGadget) entity).updateState(gadgetState);
-
-        return 0;
-    }
-
-    @Override
     public int SetGadgetEnableInteract(GroupEventLuaContext context, int groupId, int configId, boolean enable) {
         val manager = context.getSceneScriptManager();
         val entity = manager.getScene().getEntityByConfigId(configId, groupId);
@@ -744,19 +716,6 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
-    public int GetGadgetStateByConfigId(GroupEventLuaContext context, int groupId, int configId) {
-        logger.debug("[LUA] Call GetGadgetStateByConfigId with {},{}",
-            groupId, configId);
-
-        val scene = context.getSceneScriptManager().getScene();
-        val gadget = groupId == 0 ? scene.getEntityByConfigId(configId) : scene.getEntityByConfigId(configId, groupId);
-        if(!(gadget instanceof EntityGadget)){
-            return -1;
-        }
-        return ((EntityGadget)gadget).getState();
-    }
-
-    @Override
     public int MarkPlayerAction(GroupEventLuaContext context, int var1, int var2, int var3) {
         logger.debug("[LUA] Call MarkPlayerAction with {},{},{}",
             var1, var2,var3);
@@ -775,27 +734,6 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         }
 
         return 0;
-    }
-
-    @Override
-    public int ChangeGroupGadget(GroupEventLuaContext context, LuaTable table) {
-
-        logger.debug("[LUA] Call ChangeGroupGadget with {}",
-            printTable(table));
-        var configId = table.getInt("config_id");
-        var state = table.getInt("state");
-
-        var entity = context.getSceneScriptManager().getScene().getEntityByConfigId(configId, context.getCurrentGroup().getGroupInfo().getId());
-        if(entity == null){
-            return 1;
-        }
-
-        if (entity instanceof EntityGadget entityGadget) {
-            entityGadget.updateState(state);
-            return 0;
-        }
-
-        return 1;
     }
 
     @Override
@@ -1690,15 +1628,6 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
-    public int GetGadgetIdByEntityId(GroupEventLuaContext context, int entityId) {
-        var entity = context.getSceneScriptManager().getScene().getEntityById(entityId);
-        if(!(entity instanceof EntityBaseGadget)){
-            return 0;
-        }
-        return ((EntityBaseGadget) entity).getGadgetId();
-    }
-
-    @Override
     public int GetMonsterIdByEntityId(GroupEventLuaContext context, int entityId) {
         var entity = context.getSceneScriptManager().getScene().getEntityById(entityId);
         if(!(entity instanceof EntityMonster)){
@@ -1924,11 +1853,6 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     @Override
     public int ExecuteGroupLua(org.anime_game_servers.gi_lua.script_lib.GroupEventLuaContext groupEventLuaContext, int groupId, String functionName, LuaTable callParamsTable) {
         return handleUnimplemented(groupId, functionName, printTable(callParamsTable));
-    }
-
-    @Override
-    public int ExecuteGadgetLua(org.anime_game_servers.gi_lua.script_lib.GroupEventLuaContext groupEventLuaContext, int groupId, int gadgetCfgId, int activityType, int var4, int var5) {
-        return handleUnimplemented(groupId, gadgetCfgId, activityType, var4, var5);
     }
 
     /**
