@@ -21,7 +21,7 @@ public class RoutePoint {
 
     public RoutePointOuterClass.RoutePoint.Builder toProto(){
         val builder = RoutePointOuterClass.RoutePoint.newBuilder()
-            .setPosition(pos.toProto());
+            .setPosition(pos.toProtoOld());
         if(waitTime!=0){
             builder.setTime(waitTime);
         } else if(targetVelocity!=0){

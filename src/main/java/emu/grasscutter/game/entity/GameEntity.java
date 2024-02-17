@@ -10,11 +10,6 @@ import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SpawnDataEntry;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.proto.FightPropPairOuterClass.FightPropPair;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.MotionInfoOuterClass.MotionInfo;
-import emu.grasscutter.net.proto.MotionStateOuterClass.MotionState;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
 import emu.grasscutter.net.proto.VectorOuterClass.Vector;
 import emu.grasscutter.scripts.data.controller.EntityController;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
@@ -27,6 +22,11 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.scene.entity.FightPropPair;
+import messages.scene.entity.MotionInfo;
+import messages.scene.entity.MotionState;
+import messages.scene.entity.SceneEntityInfo;
 
 import javax.annotation.Nullable;
 
@@ -55,7 +55,7 @@ public abstract class GameEntity {
 
     public GameEntity(Scene scene) {
         this.scene = scene;
-        this.motionState = MotionState.MOTION_STATE_NONE;
+        this.motionState = MotionState.MOTION_NONE;
     }
 
     public EntityType getEntityType() {
@@ -114,24 +114,15 @@ public abstract class GameEntity {
         return props.containsKey(prop.getId());
     }
 
-    public void addAllFightPropsToEntityInfo(SceneEntityInfo.Builder entityInfo) {
-        this.getFightPropertiesOpt().ifPresent(map -> {
-            map.forEach((key, value) -> {
-                if (key == 0) return;
-                entityInfo.addFightPropList(FightPropPair.newBuilder().setPropType(key).setPropValue(value).build());
-            });
-        });
+    public void addAllFightPropsToEntityInfo(SceneEntityInfo entityInfo) {
+        this.getFightPropertiesOpt().ifPresent(map -> entityInfo.setFightPropList(map.int2FloatEntrySet().stream()
+            .filter(entry -> entry.getIntKey() != 0)
+            .map(entry -> new FightPropPair(entry.getIntKey(), entry.getFloatValue())).toList()));
     }
 
     protected MotionInfo getMotionInfo() {
-        MotionInfo proto = MotionInfo.newBuilder()
-            .setPos(this.getPosition().toProto())
-            .setRot(this.getRotation().toProto())
-            .setSpeed(Vector.newBuilder())
-            .setState(this.getMotionState())
-            .build();
-
-        return proto;
+        val speed = new messages.general.Vector();
+        return new MotionInfo(this.getPosition().toProto(), this.getRotation().toProto(), speed, this.getMotionState());
     }
 
     public float heal(float amount) {

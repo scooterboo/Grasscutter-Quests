@@ -1,19 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlayerApplyEnterMpNotifyOuterClass.PlayerApplyEnterMpNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.multiplayer.PlayerApplyEnterMpNotify;
 
-public class PacketPlayerApplyEnterMpNotify extends BasePacket {
-	
+public class PacketPlayerApplyEnterMpNotify extends BaseTypedPacket<PlayerApplyEnterMpNotify> {
+
 	public PacketPlayerApplyEnterMpNotify(Player srcPlayer) {
-		super(PacketOpcodes.PlayerApplyEnterMpNotify);
-
-		PlayerApplyEnterMpNotify proto = PlayerApplyEnterMpNotify.newBuilder()
-				.setSrcPlayerInfo(srcPlayer.getOnlinePlayerInfo())
-				.build();
-		
-		this.setData(proto);
+		super(new PlayerApplyEnterMpNotify(srcPlayer.getOnlinePlayerInfo()));
 	}
 }

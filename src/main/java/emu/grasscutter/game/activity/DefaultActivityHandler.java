@@ -1,12 +1,12 @@
 package emu.grasscutter.game.activity;
 
 import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass;
+import messages.activity.ActivityInfo;
 
 @GameActivity(ActivityType.NONE)
 public class DefaultActivityHandler extends ActivityHandler{
     @Override
-    public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfoOuterClass.ActivityInfo.Builder activityInfo) {
+    public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfo activityInfo) {
 
     }
 

@@ -3,13 +3,12 @@ package emu.grasscutter.game.activity.musicgame;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.MusicGameBasicData;
 import emu.grasscutter.database.DatabaseHelper;
-import emu.grasscutter.net.proto.MusicGameRecordOuterClass;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
 import lombok.val;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,12 +45,12 @@ public class MusicGamePlayerData {
                 .build();
         }
 
-        public MusicGameRecordOuterClass.MusicGameRecord toProto() {
-            return MusicGameRecordOuterClass.MusicGameRecord.newBuilder()
-                .setIsUnlock(true)
-                .setMaxCombo(maxCombo)
-                .setMaxScore(maxScore)
-                .build();
+        public messages.activity.music_game.MusicGameRecord toProto() {
+            return new messages.activity.music_game.MusicGameRecord(
+                true,
+                maxCombo,
+                maxScore
+            );
         }
     }
 
@@ -63,7 +62,7 @@ public class MusicGamePlayerData {
         int score;
         boolean settle;
 
-        public UgcMusicBriefInfo.Builder toPersonalBriefProto() {
+        public UgcMusicBriefInfo toPersonalBriefProto() {
             var musicGameBeatmap = MusicGameBeatmap.getByShareId(musicShareId);
             if(musicGameBeatmap == null){
                 return null;
@@ -71,30 +70,32 @@ public class MusicGamePlayerData {
 
             val player = DatabaseHelper.getPlayerByUid(musicGameBeatmap.getAuthorUid());
             val nickname = player!=null ? player.getNickname() : "UNKNOWN";
-            return UgcMusicBriefInfo.newBuilder()
-                .setIsPublished(true)
-                .setSaveTime(musicGameBeatmap.getCreateTime())
-                .setMusicId(musicGameBeatmap.getMusicId())
-                .setMaxScore(musicGameBeatmap.getMaxScore())
-                .setSaveIdx(musicGameBeatmap.getSavePosition())
-                .setSavePageType(musicGameBeatmap.getSavePageType())
-                .setVersion(musicGameBeatmap.getVersion())
-                .addAllAfterNoteList(musicGameBeatmap.getAfterNoteList())
-                .addAllBeforeNoteList(musicGameBeatmap.getBeforeNoteList())
-                .setTimeLineEditTime(musicGameBeatmap.getTimeLineEditTime())
-                .setPublishTime(musicGameBeatmap.getPublishTime())
-                .setRealTimeEditTime(musicGameBeatmap.getRealTimeEditTime())
-                .setNoteCount(musicGameBeatmap.getMusicNoteCount())
-                .setUgcGuid(musicGameBeatmap.getMusicShareId())
-                .setCreatorNickname(nickname);
+            val proto = new UgcMusicBriefInfo();
+            proto.setPublished(true);
+            proto.setSaveTime(musicGameBeatmap.getCreateTime());
+            proto.setMusicId(musicGameBeatmap.getMusicId());
+            proto.setMaxScore(musicGameBeatmap.getMaxScore());
+            proto.setSaveIdx(musicGameBeatmap.getSavePosition());
+            proto.setSavePageType(musicGameBeatmap.getSavePageType());
+            proto.setVersion(musicGameBeatmap.getVersion());
+            proto.setAfterNoteList(musicGameBeatmap.getAfterNoteList());
+            proto.setBeforeNoteList(musicGameBeatmap.getBeforeNoteList());
+            proto.setTimeLineEditTime(musicGameBeatmap.getTimeLineEditTime());
+            proto.setPublishTime(musicGameBeatmap.getPublishTime());
+            proto.setRealTimeEditTime(musicGameBeatmap.getRealTimeEditTime());
+            proto.setNoteCount(musicGameBeatmap.getMusicNoteCount());
+            proto.setUgcGuid(musicGameBeatmap.getMusicShareId());
+            proto.setCreatorNickname(nickname);
+            return proto;
         }
 
-        public UgcMusicBriefInfo.Builder toOthersBriefProto() {
+        public UgcMusicBriefInfo toOthersBriefProto() {
             var musicGameBeatmap = MusicGameBeatmap.getByShareId(musicShareId);
 
-            return musicGameBeatmap.toBriefProto()
-                .setSelfMaxScore(score)
-                .setIsPlayed(settle);
+            val proto = musicGameBeatmap.toBriefProto();
+            proto.setSelfMaxScore(score);
+            proto.setPlayed(settle);
+            return proto;
         }
 
     }

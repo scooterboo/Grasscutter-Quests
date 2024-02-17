@@ -6,9 +6,10 @@ import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.scripts.lua_engine.ControllerLuaContext;
-import emu.grasscutter.scripts.lua_engine.LuaValue;
-import emu.grasscutter.scripts.lua_engine.LuaScript;
-import emu.grasscutter.scripts.lua_engine.mock_results.IntLuaValue;
+import lombok.val;
+import org.anime_game_servers.lua.engine.LuaScript;
+import org.anime_game_servers.lua.engine.LuaValue;
+import org.anime_game_servers.lua.models.IntLuaValue;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -50,7 +51,7 @@ public class EntityController {
 
         if (entityController.hasMethod(funcName)) {
             try {
-                ControllerLuaContext context = entityController.getControllerLuaContext((EntityGadget) entity);
+                val context = new ControllerLuaContext(entityController.getEngine(), (EntityGadget) entity);
                 Object[] newArgs = new Object[args.length + 1];
                 newArgs[0] = context;
                 System.arraycopy(args, 0, newArgs, 1, args.length);

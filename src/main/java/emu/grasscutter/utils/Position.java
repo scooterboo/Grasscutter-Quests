@@ -6,12 +6,13 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import dev.morphia.annotations.Entity;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
+import emu.grasscutter.net.proto.VectorOuterClass;
 import lombok.Getter;
 import lombok.Setter;
+import messages.general.Vector;
 
 @Entity
-public class Position implements Serializable {
+public class Position implements Serializable, org.anime_game_servers.gi_lua.models.Position {
     private static final long serialVersionUID = -2001232313615923575L;
 
     @SerializedName(value="x", alternate={"_x", "X"})
@@ -24,6 +25,12 @@ public class Position implements Serializable {
     @Getter @Setter private float z;
 
     public Position() {}
+    public Position(org.anime_game_servers.core.gi.models.Vector luaPos) {
+        set(luaPos.getX(), luaPos.getY(), luaPos.getZ());
+    }
+    public Position(VectorOuterClass.Vector luaPos) {
+        set(luaPos.getX(), luaPos.getY(), luaPos.getZ());
+    }
 
     public Position(float x, float y) {
         set(x, y);
@@ -74,6 +81,9 @@ public class Position implements Serializable {
 
     // Deep copy
     public Position set(Position pos) {
+        return this.set(pos.getX(), pos.getY(), pos.getZ());
+    }
+    public Position set(org.anime_game_servers.core.gi.models.Vector pos) {
         return this.set(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -165,7 +175,11 @@ public class Position implements Serializable {
     }
 
     public Vector toProto() {
-        return Vector.newBuilder()
+        return new Vector(this.getX(), this.getY(), this.getZ());
+    }
+    @Deprecated
+    public VectorOuterClass.Vector toProtoOld() {
+        return VectorOuterClass.Vector.newBuilder()
             .setX(this.getX())
             .setY(this.getY())
             .setZ(this.getZ())

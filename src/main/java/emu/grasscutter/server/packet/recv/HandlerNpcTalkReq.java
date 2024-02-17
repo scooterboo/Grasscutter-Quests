@@ -1,23 +1,18 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.common.quest.MainQuestData;
 import emu.grasscutter.data.common.quest.MainQuestData.TalkData;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.NpcTalkReqOuterClass.NpcTalkReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketNpcTalkRsp;
 import lombok.val;
+import messages.npc.NpcTalkReq;
 
-@Opcodes(PacketOpcodes.NpcTalkReq)
-public class HandlerNpcTalkReq extends PacketHandler {
+public class HandlerNpcTalkReq extends TypedPacketHandler<NpcTalkReq> {
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        val req = NpcTalkReq.parseFrom(payload);
+    public void handle(GameSession session, byte[] header, NpcTalkReq req) throws Exception {
 
         //Check if mainQuest exists
         //remove last 2 digits to get a mainQuestId

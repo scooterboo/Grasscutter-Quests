@@ -1,62 +1,35 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ChatInfoOuterClass.ChatInfo;
-import emu.grasscutter.net.proto.PlayerChatNotifyOuterClass.PlayerChatNotify;
-import emu.grasscutter.net.proto.SystemHintOuterClass.SystemHint;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import messages.chat.ChatInfo;
+import messages.chat.PlayerChatNotify;
+import messages.chat.SystemHint;
 
-public class PacketPlayerChatNotify extends BasePacket {
-	
+public class PacketPlayerChatNotify extends BaseTypedPacket<PlayerChatNotify> {
+
 	public PacketPlayerChatNotify(Player sender, int channelId, String message) {
-		super(PacketOpcodes.PlayerChatNotify);
-		
-		ChatInfo info = ChatInfo.newBuilder()
-				.setTime((int) (System.currentTimeMillis() / 1000))
-				.setUid(sender.getUid())
-				.setText(message)
-				.build();
-		
-		PlayerChatNotify proto = PlayerChatNotify.newBuilder()
-				.setChannelId(channelId)
-				.setChatInfo(info)
-				.build();
-		
-		this.setData(proto);
+		this(sender, channelId, new ChatInfo.Content.Text(message));
 	}
-	
+
 	public PacketPlayerChatNotify(Player sender, int channelId, int emote) {
-		super(PacketOpcodes.PlayerChatNotify);
-		
-		ChatInfo info = ChatInfo.newBuilder()
-				.setTime((int) (System.currentTimeMillis() / 1000))
-				.setUid(sender.getUid())
-				.setIcon(emote)
-				.build();
-		
-		PlayerChatNotify proto = PlayerChatNotify.newBuilder()
-				.setChannelId(channelId)
-				.setChatInfo(info)
-				.build();
-		
-		this.setData(proto);
+        this(sender, channelId, new ChatInfo.Content.Icon(emote));
 	}
-	
-	public PacketPlayerChatNotify(Player sender, int channelId, ChatInfo.SystemHint systemHint) {
-		super(PacketOpcodes.PlayerChatNotify);
-		
-		ChatInfo info = ChatInfo.newBuilder()
-				.setTime((int) (System.currentTimeMillis() / 1000))
-				.setUid(sender.getUid())
-				.setSystemHint(systemHint)
-				.build();
-		
-		PlayerChatNotify proto = PlayerChatNotify.newBuilder()
-				.setChannelId(channelId)
-				.setChatInfo(info)
-				.build();
-		
-		this.setData(proto);
+
+	public PacketPlayerChatNotify(Player sender, int channelId, SystemHint systemHint) {
+
+        this(sender, channelId, new ChatInfo.Content.SystemHint(systemHint));
 	}
+
+
+    public PacketPlayerChatNotify(Player sender, int channelId, ChatInfo.Content<?> content) {
+        super(new PlayerChatNotify());
+
+        val info = new ChatInfo((int) (System.currentTimeMillis() / 1000), sender.getUid());
+        info.setContent(content);
+
+        proto.setChannelId(channelId);
+        proto.setChatInfo(info);
+    }
 }

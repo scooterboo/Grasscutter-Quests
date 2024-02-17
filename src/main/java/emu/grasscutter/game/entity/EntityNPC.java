@@ -2,11 +2,16 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.*;
-import emu.grasscutter.scripts.data.SceneNPC;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
+import lombok.val;
+import messages.general.Vector;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.scene.entity.*;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneNPC;
+
+import java.util.List;
 
 public class EntityNPC extends GameEntity {
     @Getter(onMethod = @__(@Override))
@@ -19,12 +24,12 @@ public class EntityNPC extends GameEntity {
     public EntityNPC(Scene scene, SceneNPC metaNPC, int blockId, int suiteId) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.NPC);
-        setConfigId(metaNPC.getConfig_id());
-        setGroupId(metaNPC.getGroup().getId());
+        setConfigId(metaNPC.getConfigId());
+        setGroupId(metaNPC.getGroupId());
         setBlockId(blockId);
         this.suiteId = suiteId;
-        this.position = metaNPC.getPos().clone();
-        this.rotation = metaNPC.getRot().clone();
+        this.position = new Position(metaNPC.getPos());
+        this.rotation = new Position(metaNPC.getRot());
         this.metaNpc = metaNPC;
 
     }
@@ -40,35 +45,25 @@ public class EntityNPC extends GameEntity {
     }
 
     @Override
-    public SceneEntityInfoOuterClass.SceneEntityInfo toProto() {
+    public SceneEntityInfo toProto() {
+        val protoBornPos = getPosition().toProto();
+        val protoPos = getPosition().toProto();
+        val protoRot = getRotation().toProto();
+        val aiInfo = new SceneEntityAiInfo(true, protoBornPos);
+        val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, protoBornPos);
 
-        EntityAuthorityInfoOuterClass.EntityAuthorityInfo authority = EntityAuthorityInfoOuterClass.EntityAuthorityInfo.newBuilder()
-            .setAbilityInfo(AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo.newBuilder())
-            .setRendererChangedInfo(EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo.newBuilder())
-            .setAiInfo(SceneEntityAiInfoOuterClass.SceneEntityAiInfo.newBuilder()
-                .setIsAiOpen(true)
-                .setBornPos(getPosition().toProto()))
-            .setBornPos(getPosition().toProto())
-            .build();
-
-        SceneEntityInfoOuterClass.SceneEntityInfo.Builder entityInfo = SceneEntityInfoOuterClass.SceneEntityInfo.newBuilder()
-            .setEntityId(getId())
-            .setEntityType(ProtEntityTypeOuterClass.ProtEntityType.PROT_ENTITY_TYPE_NPC)
-            .setMotionInfo(MotionInfoOuterClass.MotionInfo.newBuilder()
-                .setPos(getPosition().toProto())
-                .setRot(getRotation().toProto())
-                .setSpeed(VectorOuterClass.Vector.newBuilder()))
-            .addAnimatorParaList(AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair.newBuilder())
-            .setEntityClientData(EntityClientDataOuterClass.EntityClientData.newBuilder())
-            .setEntityAuthorityInfo(authority)
-            .setLifeState(1);
+        val entityInfo = new SceneEntityInfo(ProtEntityType.PROT_ENTITY_NPC, getId());
+        entityInfo.setMotionInfo(new MotionInfo(protoPos, protoRot, new Vector()));
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLifeState(1);
 
 
-        entityInfo.setNpc(SceneNpcInfoOuterClass.SceneNpcInfo.newBuilder()
-            .setNpcId(metaNpc.getNpc_id())
-            .setBlockId(getBlockId())
-            .build());
+        val npc = new SceneNpcInfo(metaNpc.getNpc_id());
+        npc.setBlockId(getBlockId());
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Npc(npc));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 }

@@ -26,7 +26,7 @@ import emu.grasscutter.game.tower.TowerSystem;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.game.world.WorldDataSystem;
 import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.proto.SocialDetailOuterClass.SocialDetail;
+import emu.grasscutter.scripts.ScriptSystem;
 import emu.grasscutter.server.event.types.ServerEvent;
 import emu.grasscutter.server.event.game.ServerTickEvent;
 import emu.grasscutter.server.event.internal.ServerStartEvent;
@@ -36,6 +36,7 @@ import emu.grasscutter.task.TaskMap;
 import kcp.highway.ChannelConfig;
 import kcp.highway.KcpServer;
 import lombok.Getter;
+import messages.chat.SocialDetail;
 
 import java.net.InetSocketAddress;
 import java.time.Instant;
@@ -55,6 +56,7 @@ public final class GameServer extends KcpServer {
     private final Set<World> worlds;
 
     // Server systems
+    private final ScriptSystem scriptSystem;
     private final InventorySystem inventorySystem;
     private final GachaSystem gachaSystem;
     private final ShopSystem shopSystem;
@@ -108,6 +110,7 @@ public final class GameServer extends KcpServer {
         this.taskMap = new TaskMap(true);
 
         // Create game systems
+        this.scriptSystem = new ScriptSystem(this);
         this.inventorySystem = new InventorySystem(this);
         this.gachaSystem = new GachaSystem(this);
         this.shopSystem = new ShopSystem(this);
@@ -190,11 +193,11 @@ public final class GameServer extends KcpServer {
     }
 
     public Player getPlayerByAccountId(String accountId) {
-        Optional<Player> playerOpt = getPlayers().values().stream().filter(player -> player.getAccount().getId().equals(accountId)).findFirst();
+        Optional<Player> playerOpt = getPlayers().values().stream().filter(player -> player.getAccountId().equals(accountId)).findFirst();
         return playerOpt.orElse(null);
     }
 
-    public SocialDetail.Builder getSocialDetailByUid(int id) {
+    public SocialDetail getSocialDetailByUid(int id) {
         // Get from online players
         Player player = this.getPlayerByUid(id, true);
 

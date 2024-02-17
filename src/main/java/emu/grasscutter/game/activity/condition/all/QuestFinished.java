@@ -5,7 +5,7 @@ import emu.grasscutter.game.activity.PlayerActivityData;
 import emu.grasscutter.game.activity.condition.ActivityCondition;
 import emu.grasscutter.game.activity.condition.ActivityConditionBaseHandler;
 import emu.grasscutter.game.quest.GameQuest;
-import emu.grasscutter.game.quest.enums.QuestState;
+import org.anime_game_servers.core.gi.enums.QuestState;
 
 import static emu.grasscutter.game.activity.condition.ActivityConditions.NEW_ACTIVITY_COND_QUEST_FINISH;
 

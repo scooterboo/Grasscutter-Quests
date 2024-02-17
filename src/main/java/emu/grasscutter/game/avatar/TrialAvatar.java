@@ -10,19 +10,20 @@ import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.inventory.EquipType;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.props.EntityIdType;
-import emu.grasscutter.net.proto.AvatarInfoOuterClass;
-import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord;
 import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason;
-import emu.grasscutter.net.proto.TrialAvatarInfoOuterClass.TrialAvatarInfo;
 import emu.grasscutter.server.packet.send.PacketAvatarEquipChangeNotify;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.general.avatar.AvatarInfo;
+import messages.general.avatar.TrialAvatarGrantRecord;
+import messages.general.avatar.TrialAvatarInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class TrialAvatar extends Avatar{
     // trial avatar property
@@ -133,26 +134,24 @@ public class TrialAvatar extends Avatar{
     }
 
     public TrialAvatarInfo trialAvatarInfoProto(){
-        TrialAvatarInfo.Builder trialAvatar = TrialAvatarInfo.newBuilder()
-            .setTrialAvatarId(this.getTrialAvatarId())
-            .setGrantRecord(TrialAvatarGrantRecord.newBuilder()
-                .setGrantReason(this.getGrantReason())
-                .setFromParentQuestId(this.getFromParentQuestId()));
+        val trialAvatar = new TrialAvatarInfo(this.getTrialAvatarId());
+
+        trialAvatar.setGrantRecord(new TrialAvatarGrantRecord(this.getGrantReason(), this.getFromParentQuestId()));
 
         if (this.getTrialAvatarId() > 0){ // if it is actual trial avatar
             // add artifacts and weapon for trial character
-            AtomicInteger itemCount = new AtomicInteger();
-            this.getEquips().values().forEach(item ->
-                trialAvatar.addTrialEquipList(itemCount.getAndIncrement(), item.toProto()));
+            trialAvatar.setTrialEquipList(this.getEquips().values().stream().map(GameItem::toProto).toList());
         }
 
-        return trialAvatar.build();
+        return trialAvatar;
     }
 
     @Override
-    public AvatarInfoOuterClass.AvatarInfo.Builder protoBuilder() {
-        return super.protoBuilder()
-            .setAvatarType(getAvatarType())
-            .setTrialAvatarInfo(this.trialAvatarInfoProto());
+    public AvatarInfo protoBuilder() {
+        val proto =  super.protoBuilder();
+
+        proto.setAvatarType(getAvatarType());
+        proto.setTrialAvatarInfo(this.trialAvatarInfoProto());
+        return proto;
     }
 }

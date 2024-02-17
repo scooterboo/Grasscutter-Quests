@@ -1,22 +1,16 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ChangeGameTimeReqOuterClass.ChangeGameTimeReq;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketChangeGameTimeRsp;
+import lombok.val;
+import messages.player.ChangeGameTimeReq;
 
-@Opcodes(PacketOpcodes.ChangeGameTimeReq)
-public class HandlerChangeGameTimeReq extends PacketHandler {
+public class HandlerChangeGameTimeReq extends TypedPacketHandler<ChangeGameTimeReq> {
 
-	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		ChangeGameTimeReq req = ChangeGameTimeReq.parseFrom(payload);
-
-		session.getPlayer().getWorld().changeTime(req.getGameTime(), req.getExtraDays(), req.getIsForceSet());
-		session.getPlayer().sendPacket(new PacketChangeGameTimeRsp(session.getPlayer(), req.getExtraDays()));
-	}
-
+    @Override
+    public void handle(GameSession session, byte[] header, ChangeGameTimeReq req) throws Exception {
+        val result = session.getPlayer().getWorld().changeTime(req.getGameTime(), req.getExtraDays(), req.isForceSet());
+        session.getPlayer().sendPacket(new PacketChangeGameTimeRsp(session.getPlayer(), req.getExtraDays(), result));
+    }
 }

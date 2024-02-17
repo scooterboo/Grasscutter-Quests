@@ -9,16 +9,16 @@ import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.props.ElementReactionType;
 import emu.grasscutter.game.props.WatcherTriggerType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneTrigger;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketDungeonChallengeBeginNotify;
 import emu.grasscutter.server.packet.send.PacketDungeonChallengeFinishNotify;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneTrigger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class WorldChallenge {
      * Get the monster group id spawned by the challenge
      */
     public int getGroupId(){
-        return group!=null ? group.getId() : 0;
+        return group!=null ? group.getGroupInfo().getId() : 0;
     }
 
 
@@ -184,7 +184,7 @@ public class WorldChallenge {
 
     public void onGroupTriggerDeath(SceneTrigger trigger){
         if(!inProgress()) return;
-        if(Optional.ofNullable(trigger.getCurrentGroup()).filter(g -> g.getId() == getGroupId()).isEmpty()) return;
+        if(trigger.getGroupId() != getGroupId()) return;
 
         Optional.ofNullable(this.challengeTriggers.get(TriggerGroupTriggerTrigger.class))
             .ifPresent(t -> t.onGroupTrigger(this, trigger));

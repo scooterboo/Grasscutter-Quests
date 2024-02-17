@@ -173,7 +173,7 @@ public final class SetStatsCommand implements CommandHandler {
         if (targetPlayer == sender) {
             CommandHandler.sendTranslatedMessage(sender, action.messageKeySelf, stat.name, valueStr);
         } else {
-            String uidStr = targetPlayer.getAccount().getId();
+            String uidStr = targetPlayer.getAccountId();
             CommandHandler.sendTranslatedMessage(sender, action.messageKeyOther, stat.name, uidStr, valueStr);
         }
         return;

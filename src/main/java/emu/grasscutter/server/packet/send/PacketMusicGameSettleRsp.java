@@ -1,34 +1,23 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.MusicGameSettleReqOuterClass.MusicGameSettleReq;
-import emu.grasscutter.net.proto.MusicGameSettleRspOuterClass.MusicGameSettleRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
+import messages.activity.music_game.MusicGameSettleReq;
+import messages.activity.music_game.MusicGameSettleRsp;
 
-public class PacketMusicGameSettleRsp extends BasePacket {
+public class PacketMusicGameSettleRsp extends BaseTypedPacket<MusicGameSettleRsp> {
 
     public PacketMusicGameSettleRsp(int musicBasicId, long musicShareId, boolean isNewRecord) {
-        super(PacketOpcodes.MusicGameSettleRsp);
+        super(new MusicGameSettleRsp(musicBasicId));
 
-        var proto = MusicGameSettleRsp.newBuilder();
-
-        proto.setMusicBasicId(musicBasicId)
-            .setUgcGuid(musicShareId)
-            .setIsNewRecord(isNewRecord);
-
-        this.setData(proto);
+        proto.setUgcGuid(musicShareId);
+        proto.setNewRecord(isNewRecord);
     }
 
     public PacketMusicGameSettleRsp(Retcode errorCode, MusicGameSettleReq req) {
-        super(PacketOpcodes.MusicGameSettleRsp);
+        super(new MusicGameSettleRsp(req.getMusicBasicId()));
 
-        var proto = MusicGameSettleRsp.newBuilder()
-            .setRetcode(errorCode.getNumber())
-            .setMusicBasicId(req.getMusicBasicId())
-            .setUgcGuid(req.getUgcGuid());
-
-
-        this.setData(proto);
+        proto.setRetcode(errorCode.getNumber());
+        proto.setUgcGuid(req.getUgcGuid());
     }
 }

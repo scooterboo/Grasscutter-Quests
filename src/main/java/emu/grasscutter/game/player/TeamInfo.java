@@ -1,13 +1,15 @@
 package emu.grasscutter.game.player;
 
 import static emu.grasscutter.config.Configuration.*;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dev.morphia.annotations.Entity;
 import emu.grasscutter.game.avatar.Avatar;
-import emu.grasscutter.net.proto.AvatarTeamOuterClass.AvatarTeam;
+import lombok.val;
+import messages.team.AvatarTeam;
 
 @Entity
 public class TeamInfo {
@@ -84,14 +86,14 @@ public class TeamInfo {
     }
 
     public AvatarTeam toProto(Player player) {
-        AvatarTeam.Builder avatarTeam = AvatarTeam.newBuilder()
-            .setTeamName(this.getName());
+        val avatarTeam = new AvatarTeam();
+        avatarTeam.setTeamName(this.getName());
 
-        for (int i = 0; i < this.getAvatars().size(); i++) {
-            Avatar avatar = player.getAvatars().getAvatarById(this.getAvatars().get(i));
-            avatarTeam.addAvatarGuidList(avatar.getGuid());
-        }
 
-        return avatarTeam.build();
+        avatarTeam.setAvatarGuidList(getAvatars().stream().map( a ->
+            player.getAvatars().getAvatarById(a).getGuid()
+        ).toList());
+
+        return avatarTeam;
     }
 }

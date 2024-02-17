@@ -20,7 +20,7 @@ public class PacketMarkMapRsp extends BasePacket {
                 MapMarkPointOuterClass.MapMarkPoint.Builder markPoint = MapMarkPointOuterClass.MapMarkPoint.newBuilder();
                 markPoint.setSceneId(mapMark.getSceneId());
                 markPoint.setName(mapMark.getName());
-                markPoint.setPos(mapMark.getPosition().toProto());
+                markPoint.setPos(mapMark.getPosition().toProtoOld());
                 markPoint.setPointType(mapMark.getMapMarkPointType());
                 markPoint.setFromType(mapMark.getMapMarkFromType());
                 markPoint.setMonsterId(mapMark.getMonsterId());

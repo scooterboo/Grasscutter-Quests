@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.utils.JsonUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.val;
+import messages.VERSION;
 
 public class PacketOpcodesUtils {
     private static Int2ObjectMap<String> opcodeMap;
@@ -28,7 +31,13 @@ public class PacketOpcodesUtils {
         PacketOpcodes.WorldPlayerRTTNotify,
         PacketOpcodes.UnionCmdNotify,
         PacketOpcodes.QueryPathReq,
-        PacketOpcodes.QueryPathRsp
+        PacketOpcodes.QueryPathRsp,
+
+        // Satiation sends these every tick
+        PacketOpcodes.PlayerTimeNotify,
+        PacketOpcodes.PlayerGameTimeNotify,
+        PacketOpcodes.AvatarPropNotify,
+        PacketOpcodes.AvatarSatiationDataNotify
     );
 
     static {
@@ -47,9 +56,10 @@ public class PacketOpcodesUtils {
         }
     }
 
-    public static String getOpcodeName(int opcode) {
+    public static String getOpcodeName(int opcode, GameSession session) {
         if (opcode <= 0) return "UNKNOWN";
-        return opcodeMap.getOrDefault(opcode, "UNKNOWN");
+        val name = session.getPackageIdProvider().getPacketName(opcode);
+        return name != null ? name : opcodeMap.getOrDefault(opcode, "UNKNOWN");
     }
 
     public static void dumpPacketIds() {

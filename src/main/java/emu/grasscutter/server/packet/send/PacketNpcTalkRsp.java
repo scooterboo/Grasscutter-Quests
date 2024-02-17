@@ -1,19 +1,13 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.NpcTalkRspOuterClass.NpcTalkRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.npc.NpcTalkRsp;
 
-public class PacketNpcTalkRsp extends BasePacket {
+public class PacketNpcTalkRsp extends BaseTypedPacket<NpcTalkRsp> {
     public PacketNpcTalkRsp(int npcEntityId, int curTalkId, int entityId) {
-        super(PacketOpcodes.NpcTalkRsp);
+        super(new NpcTalkRsp(npcEntityId));
 
-        NpcTalkRsp p = NpcTalkRsp.newBuilder()
-                .setNpcEntityId(npcEntityId)
-                .setCurTalkId(curTalkId)
-                .setEntityId(entityId)
-                .build();
-
-        this.setData(p);
+        proto.setCurTalkId(curTalkId);
+        proto.setEntityId(entityId);
     }
 }

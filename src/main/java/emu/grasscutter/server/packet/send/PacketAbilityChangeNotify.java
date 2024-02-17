@@ -1,20 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.entity.EntityAvatar;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AbilityChangeNotifyOuterClass.AbilityChangeNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.ability.AbilityChangeNotify;
 
-public class PacketAbilityChangeNotify extends BasePacket {
-	
+public class PacketAbilityChangeNotify extends BaseTypedPacket<AbilityChangeNotify> {
+
 	public PacketAbilityChangeNotify(EntityAvatar entity) {
-		super(PacketOpcodes.AbilityChangeNotify, true);
-
-		AbilityChangeNotify proto = AbilityChangeNotify.newBuilder()
-				.setEntityId(entity.getId())
-				.setAbilityControlBlock(entity.getAbilityControlBlock())
-				.build();
-		
-		this.setData(proto);
+		super(new AbilityChangeNotify(entity.getId(), entity.getAbilityControlBlock()), true);
 	}
 }

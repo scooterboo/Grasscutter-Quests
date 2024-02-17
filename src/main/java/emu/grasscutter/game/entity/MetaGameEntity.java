@@ -1,9 +1,9 @@
 package emu.grasscutter.game.entity;
 
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import messages.scene.entity.SceneEntityInfo;
 
 public abstract class MetaGameEntity extends GameEntity {
     public MetaGameEntity(Scene scene) {
@@ -26,7 +26,7 @@ public abstract class MetaGameEntity extends GameEntity {
     }
 
     @Override
-    public SceneEntityInfoOuterClass.SceneEntityInfo toProto() {
+    public SceneEntityInfo toProto() {
         return null;
     }
 }

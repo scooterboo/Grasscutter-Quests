@@ -2,24 +2,23 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.WorldPlayerInfoNotifyOuterClass.WorldPlayerInfoNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import messages.scene.WorldPlayerInfoNotify;
+import messages.scene.entity.OnlinePlayerInfo;
 
-public class PacketWorldPlayerInfoNotify extends BasePacket {
-	
+import java.util.ArrayList;
+
+public class PacketWorldPlayerInfoNotify extends BaseTypedPacket<WorldPlayerInfoNotify> {
+
 	public PacketWorldPlayerInfoNotify(World world) {
-		super(PacketOpcodes.WorldPlayerInfoNotify);
-		
-		WorldPlayerInfoNotify.Builder proto = WorldPlayerInfoNotify.newBuilder();
-		
-		for (int i = 0; i < world.getPlayers().size(); i++) {
-			Player p = world.getPlayers().get(i);
-			
-			proto.addPlayerInfoList(p.getOnlinePlayerInfo());
-			proto.addPlayerUidList(p.getUid());
-		}
-		
-		this.setData(proto.build());
+		super(new WorldPlayerInfoNotify());
+
+        val playerInfoList = new ArrayList<OnlinePlayerInfo>();
+        val playerUidList = new ArrayList<Integer>();
+        world.getPlayers().forEach(p -> {
+            playerInfoList.add(p.getOnlinePlayerInfo());
+            playerUidList.add(p.getUid());
+        });
 	}
 }

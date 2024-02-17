@@ -14,8 +14,6 @@ import emu.grasscutter.game.props.SceneType;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.proto.EnterTypeOuterClass.EnterType;
-import emu.grasscutter.scripts.data.SceneConfig;
 import emu.grasscutter.server.event.player.PlayerTeleportEvent;
 import emu.grasscutter.server.event.player.PlayerTeleportEvent.TeleportType;
 import emu.grasscutter.server.game.GameServer;
@@ -25,6 +23,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.*;
+import messages.scene.EnterType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -202,7 +201,7 @@ public class World implements Iterable<Player> {
                 World world = new World(victim);
                 world.addPlayer(victim);
 
-                victim.sendPacket(new PacketPlayerEnterSceneNotify(victim, EnterType.ENTER_TYPE_SELF, EnterReason.TeamKick, victim.getSceneId(), victim.getPosition()));
+                victim.sendPacket(new PacketPlayerEnterSceneNotify(victim, EnterType.ENTER_SELF, EnterReason.TeamKick, victim.getSceneId(), victim.getPosition()));
             }
         }
     }
@@ -255,7 +254,7 @@ public class World implements Iterable<Player> {
             .enterReason(enterReason)
             .teleportTo(teleportTo)
             .teleportRot(newRot)
-            .enterType(EnterType.ENTER_TYPE_JUMP)
+            .enterType(EnterType.ENTER_JUMP)
             .dungeonId(Optional.ofNullable(dungeonData).map(DungeonData::getId).orElse(0))
             .prevPos(player.getPosition())
             .prevSceneId(player.getSceneId())
@@ -263,13 +262,13 @@ public class World implements Iterable<Player> {
 
         val sceneData = GameData.getSceneDataMap().get(sceneId);
         if (dungeonData != null) {
-            teleportProps.enterType(EnterType.ENTER_TYPE_DUNGEON)
+            teleportProps.enterType(EnterType.ENTER_DUNGEON)
                 .enterReason(EnterReason.DungeonEnter);
         } else if (player.getSceneId() == sceneId) {
-            teleportProps.enterType(EnterType.ENTER_TYPE_GOTO);
+            teleportProps.enterType(EnterType.ENTER_GOTO);
         } else if (sceneData!= null && sceneData.getSceneType() == SceneType.SCENE_HOME_WORLD) {
             // Home
-            teleportProps.enterType(EnterType.ENTER_TYPE_SELF_HOME)
+            teleportProps.enterType(EnterType.ENTER_SELF_HOME)
                 .enterReason(EnterReason.EnterHome);
         }
         return transferPlayerToScene(player, teleportProps.build());
@@ -309,10 +308,10 @@ public class World implements Iterable<Player> {
         //     var dungeonManager = new DungeonManager(newScene, dungeonData);
         //     dungeonManager.startDungeon();
         // }
-        SceneConfig config = newScene.getScriptManager().getConfig();
+        val config = newScene.getScriptManager().getConfig();
         if (teleportProperties.getTeleportTo() == null && config != null) {
-            Optional.ofNullable(config.getBorn_pos()).ifPresent(teleportProperties::setTeleportTo);
-            Optional.ofNullable(config.getBorn_rot()).ifPresent(teleportProperties::setTeleportRot);
+            Optional.ofNullable(config.getBornPos()).map(Position::new).ifPresent(teleportProperties::setTeleportTo);
+            Optional.ofNullable(config.getBornRot()).map(Position::new).ifPresent(teleportProperties::setTeleportRot);
         }
 
         // Set player position and rotation
@@ -395,6 +394,17 @@ public class World implements Iterable<Player> {
 
     public void close() {
 
+    }
+
+    public boolean changeTime(int targetTime, boolean forced){
+        if(!forced && isGameTimeLocked){
+            return false;
+        }
+        this.currentGameTime = targetTime;
+        this.owner.updatePlayerGameTime(currentGameTime);
+        this.players.forEach(player -> player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_GAME_TIME_TICK,
+            getGameTimeHours()));
+        return true;
     }
 
     public boolean changeTime(int time, int days, boolean forced) {

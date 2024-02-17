@@ -11,12 +11,13 @@ import emu.grasscutter.game.entity.gadget.chest.ChestInteractHandler;
 import emu.grasscutter.game.entity.gadget.chest.NormalChestInteractHandler;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.proto.InvestigationMonsterOuterClass;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneMonster;
+import emu.grasscutter.scripts.ScriptSystem;
 import emu.grasscutter.server.game.BaseGameSystem;
 import emu.grasscutter.server.game.GameServer;
+import emu.grasscutter.utils.Position;
 import lombok.val;
-import org.luaj.vm2.LuaError;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneMonster;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +69,15 @@ public class WorldDataSystem extends BaseGameSystem {
 
     private SceneGroup getInvestigationGroup(int sceneId, int groupId) {
         val key = sceneId + "_" + groupId;
+        val sceneMeta = getServer().getScriptSystem().getSceneMeta(sceneId);
         if (!sceneInvestigationGroupMap.containsKey(key)) {
             try{
-                val group = SceneGroup.of(groupId).load(sceneId);
+                val group = sceneMeta.getGroup(groupId);
+                if(group == null){
+                    Grasscutter.getLogger().error("Null investigationGroup {} in scene{}:", groupId, sceneId);
+                    return null;
+                }
+                group.load(ScriptSystem.getScriptLoader());
                 sceneInvestigationGroupMap.putIfAbsent(key, group);
                 return group;
             } catch (Exception luaError){
@@ -98,6 +105,7 @@ public class WorldDataSystem extends BaseGameSystem {
         var groupId = imd.getGroupIdList().get(0);
         var monsterId = imd.getMonsterIdList().get(0);
         var sceneId = imd.getCityData().getSceneId();
+        // scene id of the city doesn't match the scene id of the investigation group in some cases ( e.g. investigation data 37 has city 1 (scene 3) but group 155005095 is from scene 5)
         var group = getInvestigationGroup(sceneId, groupId);
 
         if (group == null || group.getMonsters() == null) {
@@ -105,7 +113,7 @@ public class WorldDataSystem extends BaseGameSystem {
         }
 
         val monsterOpt = group.getMonsters().values().stream()
-                .filter(x -> x.getMonster_id() == monsterId)
+                .filter(x -> x.getMonsterId() == monsterId)
                 .findFirst();
         if (monsterOpt.isEmpty()) {
             return null;
@@ -128,13 +136,13 @@ public class WorldDataSystem extends BaseGameSystem {
                 .setIsAlive(true)
                 .setNextRefreshTime(Integer.MAX_VALUE)
                 .setRefreshInterval(Integer.MAX_VALUE)
-                .setPos(monsterPos.toProto());
+                .setPos(new Position(monsterPos).toProtoOld());
 
         if ("Boss".equals(imd.getMonsterCategory())) {
             var bossChest = group.searchBossChestInGroup();
             if (bossChest.isPresent()) {
                 builder.setResin(bossChest.get().getResin());
-                builder.setBossChestNum(bossChest.get().getTake_num());
+                builder.setBossChestNum(bossChest.get().getTakeNum());
             }
         }
         return builder.build();

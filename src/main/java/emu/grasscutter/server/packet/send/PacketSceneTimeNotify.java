@@ -2,25 +2,16 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.SceneTimeNotifyOuterClass.SceneTimeNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.SceneTimeNotify;
 
-public class PacketSceneTimeNotify extends BasePacket {
+public class PacketSceneTimeNotify extends BaseTypedPacket<SceneTimeNotify> {
 
     public PacketSceneTimeNotify(Player player) {
         this(player.getScene());
     }
 
     public PacketSceneTimeNotify(Scene scene) {
-        super(PacketOpcodes.SceneTimeNotify);
-
-        SceneTimeNotify proto = SceneTimeNotify.newBuilder()
-                .setSceneId(scene.getId())
-                .setSceneTime(scene.getSceneTime())
-                .setIsPaused(scene.isPaused())
-                .build();
-
-        this.setData(proto);
+        super(new SceneTimeNotify(scene.getId(), scene.isPaused(), scene.getSceneTime()));
     }
 }

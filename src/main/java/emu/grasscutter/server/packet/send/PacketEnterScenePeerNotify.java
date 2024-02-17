@@ -1,22 +1,17 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.EnterScenePeerNotifyOuterClass.EnterScenePeerNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.EnterScenePeerNotify;
 
-public class PacketEnterScenePeerNotify extends BasePacket {
+public class PacketEnterScenePeerNotify extends BaseTypedPacket<EnterScenePeerNotify> {
 
 	public PacketEnterScenePeerNotify(Player player) {
-		super(PacketOpcodes.EnterScenePeerNotify);
-		
-		EnterScenePeerNotify proto = EnterScenePeerNotify.newBuilder()
-				.setDestSceneId(player.getSceneId())
-				.setPeerId(player.getPeerId())
-				.setHostPeerId(player.getWorld().getHost().getPeerId())
-				.setEnterSceneToken(player.getEnterSceneToken()) 
-				.build();
-
-		this.setData(proto);
+		super(new EnterScenePeerNotify(
+            player.getSceneId(),
+            player.getPeerId(),
+            player.getWorld().getHost().getPeerId(),
+            player.getEnterSceneToken())
+        );
 	}
 }

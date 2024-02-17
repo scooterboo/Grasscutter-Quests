@@ -1,24 +1,24 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PropValueOuterClass.PropValue;
-import emu.grasscutter.net.proto.WorldDataNotifyOuterClass.WorldDataNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.val;
+import messages.general.PropValue;
+import messages.world.WorldDataNotify;
 
-public class PacketWorldDataNotify extends BasePacket {
-	
+public class PacketWorldDataNotify extends BaseTypedPacket<WorldDataNotify> {
+
 	public PacketWorldDataNotify(World world) {
-		super(PacketOpcodes.WorldDataNotify);
-		
+		super(new WorldDataNotify());
+
 		int worldLevel = world.getWorldLevel();
 		int isMp = world.isMultiplayer() ? 1 : 0;
 
-		WorldDataNotify proto = WorldDataNotify.newBuilder()
-				.putWorldPropMap(1, PropValue.newBuilder().setType(1).setIval(worldLevel).setVal(worldLevel).build())
-				.putWorldPropMap(2, PropValue.newBuilder().setType(2).setIval(isMp).setVal(isMp).build())
-				.build();
+        val props = new Int2ObjectOpenHashMap<PropValue>();
+        props.put(1, new PropValue(1, worldLevel, new PropValue.Value.Ival(worldLevel)));
+        props.put(1, new PropValue(2, isMp, new PropValue.Value.Ival(isMp)));
 
-		this.setData(proto);
+        proto.setWorldPropMap(props);
 	}
 }

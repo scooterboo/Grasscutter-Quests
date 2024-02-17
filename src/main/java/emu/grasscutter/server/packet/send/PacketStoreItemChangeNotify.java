@@ -1,37 +1,29 @@
 package emu.grasscutter.server.packet.send;
 
 import java.util.Collection;
+import java.util.List;
 
 import emu.grasscutter.game.inventory.GameItem;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.StoreItemChangeNotifyOuterClass.StoreItemChangeNotify;
-import emu.grasscutter.net.proto.StoreTypeOuterClass.StoreType;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.storage.StoreItemChangeNotify;
+import messages.storage.StoreType;
 
-public class PacketStoreItemChangeNotify extends BasePacket {
-	
+public class PacketStoreItemChangeNotify extends BaseTypedPacket<StoreItemChangeNotify> {
+
 	private PacketStoreItemChangeNotify() {
-		super(PacketOpcodes.StoreItemChangeNotify);
+		super(new StoreItemChangeNotify());
 	}
-	
+
 	public PacketStoreItemChangeNotify(GameItem item) {
 		this();
-		
-		StoreItemChangeNotify.Builder proto = StoreItemChangeNotify.newBuilder()
-				.setStoreType(StoreType.STORE_TYPE_PACK)
-				.addItemList(item.toProto());
-		
-		this.setData(proto);
+        proto.setStoreType(StoreType.STORE_PACK);
+        proto.setItemList(List.of(item.toProto()));
 	}
-	
+
 	public PacketStoreItemChangeNotify(Collection<GameItem> items) {
 		this();
 
-		StoreItemChangeNotify.Builder proto = StoreItemChangeNotify.newBuilder()
-				.setStoreType(StoreType.STORE_TYPE_PACK);
-		
-		items.forEach(item -> proto.addItemList(item.toProto()));
-		
-		this.setData(proto);
+        proto.setStoreType(StoreType.STORE_PACK);
+        proto.setItemList(items.stream().map(GameItem::toProto).toList());
 	}
 }

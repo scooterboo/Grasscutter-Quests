@@ -1,7 +1,6 @@
 package emu.grasscutter.game.entity;
 
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.binout.AbilityData;
 import emu.grasscutter.data.binout.config.ConfigEntityMonster;
 import emu.grasscutter.data.binout.config.fields.ConfigAbilityData;
 import emu.grasscutter.data.common.PropGrowCurve;
@@ -11,30 +10,12 @@ import emu.grasscutter.data.excels.MonsterCurveData;
 import emu.grasscutter.data.excels.MonsterData;
 import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
-import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.entity.interfaces.StringAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SceneGroupInstance;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair;
-import emu.grasscutter.net.proto.EntityAuthorityInfoOuterClass.EntityAuthorityInfo;
-import emu.grasscutter.net.proto.EntityClientDataOuterClass.EntityClientData;
-import emu.grasscutter.net.proto.EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.MonsterBornTypeOuterClass.MonsterBornType;
-import emu.grasscutter.net.proto.PropPairOuterClass.PropPair;
-import emu.grasscutter.net.proto.ProtEntityTypeOuterClass.ProtEntityType;
-import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
-import emu.grasscutter.net.proto.SceneMonsterInfoOuterClass.SceneMonsterInfo;
-import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneMonster;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.ProtoHelper;
@@ -43,12 +24,20 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.general.entity.SceneWeaponInfo;
+import messages.scene.entity.*;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneMonster;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
+import static org.anime_game_servers.gi_lua.models.constants.EventType.EVENT_SPECIFIC_MONSTER_HP_CHANGE;
 
 public class EntityMonster extends GameEntity implements StringAbilityEntity {
     @Getter(onMethod = @__(@Override))
@@ -132,7 +121,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
         ArrayList<String> abilityNames = new ArrayList<>();
         val defaultAbilities = GameData.getConfigGlobalCombat().getDefaultAbilities();
         //Affix abilities
-        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getId() == getGroupId()).findAny();
+        Optional<SceneGroup> optionalGroup = getScene().getLoadedGroups().stream().filter(g -> g.getGroupInfo().getId() == getGroupId()).findAny();
         List<MonsterAffixData> affixes = getAffixes(optionalGroup.orElse(null));
 
         // first add pre add affix abilities
@@ -286,7 +275,7 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
 
         SceneGroupInstance groupInstance = scene.getScriptManager().getGroupInstanceById(this.getGroupId());
         if(groupInstance != null && metaMonster != null)
-            groupInstance.getDeadEntities().add(metaMonster.getConfig_id());
+            groupInstance.getDeadEntities().add(metaMonster.getConfigId());
 
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_GROUP_MONSTER, this.getGroupId());
         scene.triggerDungeonEvent(DungeonPassConditionType.DUNGEON_COND_KILL_TYPE_MONSTER, this.getMonsterData().getType().getValue());
@@ -325,62 +314,52 @@ public class EntityMonster extends GameEntity implements StringAbilityEntity {
 
     @Override
     public SceneEntityInfo toProto() {
-        var authority = EntityAuthorityInfo.newBuilder()
-            .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
-            .setRendererChangedInfo(EntityRendererChangedInfo.newBuilder())
-            .setAiInfo(SceneEntityAiInfo.newBuilder().setIsAiOpen(true).setBornPos(this.getBornPos().toProto()))
-            .setBornPos(this.getBornPos().toProto())
-            .build();
+        val bornPosProto = getBornPos().toProto();
+        val aiInfo = new SceneEntityAiInfo(true, bornPosProto);
+        var authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, bornPosProto);
 
-        var entityInfo = SceneEntityInfo.newBuilder()
-            .setEntityId(getId())
-            .setEntityType(ProtEntityType.PROT_ENTITY_TYPE_MONSTER)
-            .setMotionInfo(this.getMotionInfo())
-            .addAnimatorParaList(AnimatorParameterValueInfoPair.newBuilder())
-            .setEntityClientData(EntityClientData.newBuilder())
-            .setEntityAuthorityInfo(authority)
-            .setLifeState(this.getLifeState().getValue());
+        var entityInfo = new SceneEntityInfo(ProtEntityType.PROT_ENTITY_MONSTER, getId());
+        entityInfo.setMotionInfo(this.getMotionInfo());
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLifeState(this.getLifeState().getValue());
+
 
         this.addAllFightPropsToEntityInfo(entityInfo);
 
-        entityInfo.addPropList(PropPair.newBuilder()
-            .setType(PlayerProperty.PROP_LEVEL.getId())
-            .setPropValue(ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getLevel()))
-            .build());
+        val pair = new PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getLevel()));
+        entityInfo.setPropList(List.of(pair));
 
-        var monsterInfo = SceneMonsterInfo.newBuilder()
-            .setMonsterId(getMonsterId())
-            .setGroupId(this.getGroupId())
-            .setConfigId(this.getConfigId())
-            .addAllAffixList(getMonsterData().getAffix())
-            .setAuthorityPeerId(getWorld().getHostPeerId())
-            .setPoseId(this.getPoseId())
-            .setBlockId(getScene().getId())
-            .setBornType(MonsterBornType.MONSTER_BORN_TYPE_DEFAULT);
+        var monsterInfo = new SceneMonsterInfo(getMonsterId(), getGroupId(), getConfigId());
 
-        if(metaMonster!=null && metaMonster.getSpecial_name_id()!=0){
-            monsterInfo.setTitleId(this.metaMonster.getTitle_id())
-                .setSpecialNameId(this.metaMonster.getSpecial_name_id());
+        monsterInfo.setAffixList(getMonsterData().getAffix());
+        monsterInfo.setAuthorityPeerId(getWorld().getHostPeerId());
+        monsterInfo.setPoseId(this.getPoseId());
+        monsterInfo.setBlockId(getScene().getId());
+        monsterInfo.setBornType(MonsterBornType.MONSTER_BORN_DEFAULT);
+
+        if(metaMonster!=null && metaMonster.getSpecialNameId()!=0){
+            monsterInfo.setTitleId(this.metaMonster.getTitleId());
+            monsterInfo.setSpecialNameId(this.metaMonster.getSpecialNameId());
         } else if (monsterData.getDescribeData() != null) {
-            monsterInfo.setTitleId(monsterData.getDescribeData().getTitleId())
-                .setSpecialNameId(monsterData.getSpecialNameId());
+            monsterInfo.setTitleId(monsterData.getDescribeData().getTitleId());
+            monsterInfo.setSpecialNameId(monsterData.getSpecialNameId());
         }
 
         if (this.getMonsterWeaponId() > 0) {
-            SceneWeaponInfo weaponInfo = SceneWeaponInfo.newBuilder()
-                .setEntityId(this.getWeaponEntity() != null ? this.getWeaponEntity().getId() : 0)
-                .setGadgetId(this.getMonsterWeaponId())
-                .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
-                .build();
+            val entityId = this.getWeaponEntity() != null ? this.getWeaponEntity().getId() : 0;
+            val weaponInfo = new SceneWeaponInfo(entityId, this.getMonsterWeaponId());
+            weaponInfo.setAbilityInfo(new AbilitySyncStateInfo());
 
-            monsterInfo.addWeaponList(weaponInfo);
+            monsterInfo.setWeaponList(List.of(weaponInfo));
         }
         if (this.aiId != -1) {
             monsterInfo.setAiConfigId(aiId);
         }
 
-        entityInfo.setMonster(monsterInfo);
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Monster(monsterInfo));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 }

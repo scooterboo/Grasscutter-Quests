@@ -17,6 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import com.google.gson.stream.MalformedJsonException;
 import emu.grasscutter.data.common.DynamicFloat;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
@@ -80,6 +81,8 @@ public final class JsonUtils {
     public static <T> List<T> loadToList(Path filename, Class<T> classType) throws IOException {
         try (var fileReader = Files.newBufferedReader(filename, StandardCharsets.UTF_8)) {
             return loadToList(fileReader, classType);
+        } catch (Exception ex){
+            throw new MalformedJsonException("in "+filename, ex);
         }
     }
 

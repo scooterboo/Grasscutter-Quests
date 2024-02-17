@@ -1,57 +1,48 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.game.entity.EntityAvatar;
-import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AbilityControlBlockOuterClass;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.AvatarEnterSceneInfoOuterClass.AvatarEnterSceneInfo;
-import emu.grasscutter.net.proto.MPLevelEntityInfoOuterClass.MPLevelEntityInfo;
-import emu.grasscutter.net.proto.PlayerEnterSceneInfoNotifyOuterClass.PlayerEnterSceneInfoNotify;
-import emu.grasscutter.net.proto.TeamEnterSceneInfoOuterClass.TeamEnterSceneInfo;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import messages.general.ability.AbilityControlBlock;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.scene.AvatarEnterSceneInfo;
+import messages.scene.PlayerEnterSceneInfoNotify;
+import messages.scene.entity.MPLevelEntityInfo;
 
-public class PacketPlayerEnterSceneInfoNotify extends BasePacket {
+public class PacketPlayerEnterSceneInfoNotify extends BaseTypedPacket<PlayerEnterSceneInfoNotify> {
 
 	public PacketPlayerEnterSceneInfoNotify(Player player) {
-		super(PacketOpcodes.PlayerEnterSceneInfoNotify);
+		super(new PlayerEnterSceneInfoNotify());
 
-		AbilitySyncStateInfo empty = AbilitySyncStateInfo.newBuilder().build();
+		val empty = new AbilitySyncStateInfo();
 
-		PlayerEnterSceneInfoNotify.Builder proto = PlayerEnterSceneInfoNotify.newBuilder()
-				.setCurAvatarEntityId(player.getTeamManager().getCurrentAvatarEntity().getId())
-				.setEnterSceneToken(player.getEnterSceneToken());
+        proto.setCurAvatarEntityId(player.getTeamManager().getCurrentAvatarEntity().getId());
+        proto.setEnterSceneToken(player.getEnterSceneToken());
 
 		proto.setTeamEnterInfo(
-				TeamEnterSceneInfo.newBuilder()
-					.setTeamEntityId(player.getTeamManager().getEntity().getId()) // 150995833
-					.setTeamAbilityInfo(empty)
-					.setAbilityControlBlock(AbilityControlBlockOuterClass.AbilityControlBlock.newBuilder().build())
+				new messages.scene.TeamEnterSceneInfo(
+                    player.getTeamManager().getEntity().getId(), // 150995833
+                    empty,
+                    new AbilityControlBlock()
+                )
 		);
 		proto.setMpLevelEntityInfo(
-				MPLevelEntityInfo.newBuilder()
-					.setEntityId(player.getWorld().getLevelEntityId()) // 184550274
-					.setAuthorityPeerId(player.getWorld().getHostPeerId())
-					.setAbilityInfo(empty)
+				new MPLevelEntityInfo(
+                    player.getWorld().getLevelEntityId(), // 184550274
+                    player.getWorld().getHostPeerId(),
+                    empty
+                )
 		);
 
-		for (EntityAvatar avatarEntity : player.getTeamManager().getActiveTeam()) {
-			GameItem weapon = avatarEntity.getAvatar().getWeapon();
-			long weaponGuid = weapon != null ? weapon.getGuid() : 0;
+        proto.setAvatarEnterInfo(player.getTeamManager().getActiveTeam().stream().map(avatarEntity -> {
+            val weapon = avatarEntity.getAvatar().getWeapon();
+            long weaponGuid = weapon != null ? weapon.getGuid() : 0;
 
-			AvatarEnterSceneInfo avatarInfo = AvatarEnterSceneInfo.newBuilder()
-					.setAvatarGuid(avatarEntity.getAvatar().getGuid())
-					.setAvatarEntityId(avatarEntity.getId())
-					.setWeaponGuid(weaponGuid)
-					.setWeaponEntityId(avatarEntity.getWeaponEntityId())
-					.setAvatarAbilityInfo(empty)
-					.setWeaponAbilityInfo(empty)
-					.build();
-
-			proto.addAvatarEnterInfo(avatarInfo);
-		}
-
-		this.setData(proto.build());
+            val avatarInfo = new AvatarEnterSceneInfo(avatarEntity.getAvatar().getGuid(), avatarEntity.getId(), empty);
+            avatarInfo.setWeaponGuid(weaponGuid);
+            avatarInfo.setWeaponEntityId(avatarEntity.getWeaponEntityId());
+            avatarInfo.setWeaponAbilityInfo(empty);
+            return avatarInfo;
+        }).toList());
 	}
 }

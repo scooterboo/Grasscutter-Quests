@@ -3,9 +3,9 @@ package emu.grasscutter.game.dungeons.dungeon_entry;
 import dev.morphia.annotations.Entity;
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.data.excels.DungeonSerialData;
-import emu.grasscutter.net.proto.WeeklyBossResinDiscountInfoOuterClass;
 import lombok.Builder;
 import lombok.Getter;
+import messages.scene.entity.WeeklyBossResinDiscountInfo;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -77,12 +77,8 @@ public class WeeklyBossRecord {
         return this.takeNum < this.maxTakeNumLimit;
     }
 
-    public WeeklyBossResinDiscountInfoOuterClass.WeeklyBossResinDiscountInfo toProto() {
-        return WeeklyBossResinDiscountInfoOuterClass.WeeklyBossResinDiscountInfo.newBuilder()
-            .setDiscountNum(this.discountNum)
-            .setDiscountNumLimit(this.discountNumLimit)
-            .setResinCost(getResinCost())
-            .setOriginalResinCost(this.originalResinCost)
-            .build();
+    public WeeklyBossResinDiscountInfo toProto() {
+        return new WeeklyBossResinDiscountInfo(this.discountNum, this.discountNumLimit,
+            getResinCost(), this.originalResinCost);
     }
 }

@@ -16,11 +16,11 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.props.EnterReason;
 import emu.grasscutter.game.world.data.TeleportProperties;
-import emu.grasscutter.net.proto.EnterTypeOuterClass;
 import emu.grasscutter.net.proto.TowerCurLevelRecordOuterClass.TowerCurLevelRecord;
 import emu.grasscutter.net.proto.TowerTeamOuterClass.TowerTeam;
 import emu.grasscutter.server.packet.send.*;
 import lombok.val;
+import messages.scene.EnterType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -164,7 +164,7 @@ public class TowerManager extends BasePlayerManager {
         val teleportProps = TeleportProperties.builder()
             .sceneId(this.player.getSceneId())
             .enterReason(EnterReason.LuaSkipUi)
-            .enterType(EnterTypeOuterClass.EnterType.ENTER_TYPE_GOTO)
+            .enterType(EnterType.ENTER_GOTO)
             .dungeonId(dungeonData.map(DungeonData::getId).orElse(0))
             .prevPos(this.player.getPosition())
             .prevSceneId(this.player.getSceneId())

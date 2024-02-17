@@ -12,10 +12,8 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.net.proto.ChapterStateOuterClass;
 import emu.grasscutter.net.proto.QuestOuterClass.Quest;
-import emu.grasscutter.scripts.data.SceneGroup;
 
 import emu.grasscutter.server.packet.send.PacketChapterStateNotify;
 import emu.grasscutter.server.packet.send.PacketDelQuestNotify;
@@ -24,6 +22,7 @@ import emu.grasscutter.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.anime_game_servers.core.gi.enums.QuestState;
 
 import javax.annotation.Nullable;
 import javax.script.Bindings;
@@ -82,7 +81,8 @@ public class GameQuest {
                     }
                     triggerData.put(newTrigger.getTriggerName(), newTrigger);
                     triggers.put(newTrigger.getTriggerName(), false);
-                    SceneGroup group = SceneGroup.of(newTrigger.getGroupId()).load(newTrigger.getSceneId());
+                    val scene = getOwner().getWorld().getSceneById(newTrigger.getSceneId());
+                    val group = scene.getScriptManager().getGroupById(newTrigger.getGroupId());
                     getOwner().getWorld().getSceneById(newTrigger.getSceneId()).loadTriggerFromGroup(group, newTrigger.getTriggerName());
                 }
             }
@@ -102,6 +102,7 @@ public class GameQuest {
 
         getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
         getOwner().getQuestManager().checkQuestAlreadyFullfilled(this);
+        getOwner().getDungeonEntryManager().checkQuestForDungeonEntryUpdate(this);
 
         Grasscutter.getLogger().debug("Quest {} is started", subQuestId);
         save();
@@ -202,6 +203,7 @@ public class GameQuest {
                 getOwner().getInventory().addItem(item.getItemId(), item.getCount(), ActionReason.QuestItem);
             });
         }
+        getOwner().getDungeonEntryManager().checkQuestForDungeonEntryUpdate(this);
 
         save();
 

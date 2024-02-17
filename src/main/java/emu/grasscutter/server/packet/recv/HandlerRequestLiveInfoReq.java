@@ -1,20 +1,15 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.RequestLiveInfoReqOuterClass.RequestLiveInfoReq;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketLiveStartNotify;
 import emu.grasscutter.server.packet.send.PacketRequestLiveInfoRsp;
+import messages.gadget.RequestLiveInfoReq;
 
-@Opcodes(PacketOpcodes.RequestLiveInfoReq)
-public class HandlerRequestLiveInfoReq extends PacketHandler {
+public class HandlerRequestLiveInfoReq extends TypedPacketHandler<RequestLiveInfoReq> {
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        RequestLiveInfoReq req = RequestLiveInfoReq.parseFrom(payload);
-
+    public void handle(GameSession session, byte[] header, RequestLiveInfoReq req) throws Exception {
         Grasscutter.getLogger().warn("STARTING LIVE ID " + req.getLiveId());
 
         //idc of live_id

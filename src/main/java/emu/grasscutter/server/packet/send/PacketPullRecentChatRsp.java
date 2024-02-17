@@ -1,24 +1,13 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.game.player.Player;
-import emu.grasscutter.GameConstants;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ChatInfoOuterClass.ChatInfo;
-import emu.grasscutter.net.proto.PullRecentChatRspOuterClass.PullRecentChatRsp;
-import emu.grasscutter.utils.Utils;
-
-import static emu.grasscutter.config.Configuration.*;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.chat.ChatInfo;
+import messages.chat.PullRecentChatRsp;
 
 import java.util.List;
 
-public class PacketPullRecentChatRsp extends BasePacket {
+public class PacketPullRecentChatRsp extends BaseTypedPacket<PullRecentChatRsp> {
     public PacketPullRecentChatRsp(List<ChatInfo> messages) {
-        super(PacketOpcodes.PullRecentChatRsp);
-
-        PullRecentChatRsp.Builder proto = PullRecentChatRsp.newBuilder()
-            .addAllChatInfo(messages);
-
-        this.setData(proto);
+        super(new PullRecentChatRsp(messages));
     }
 }

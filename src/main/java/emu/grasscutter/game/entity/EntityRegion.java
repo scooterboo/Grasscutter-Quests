@@ -2,11 +2,11 @@ package emu.grasscutter.game.entity;
 
 import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass;
-import emu.grasscutter.scripts.data.SceneRegion;
 import emu.grasscutter.utils.Position;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
+import messages.scene.entity.SceneEntityInfo;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneRegion;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,10 +24,10 @@ public class EntityRegion extends GameEntity{
     public EntityRegion(Scene scene, SceneRegion region) {
         super(scene);
         this.id = getScene().getWorld().getNextEntityId(EntityIdType.REGION);
-        setGroupId(region.getGroup().getId());
-        setBlockId(region.getGroup().block_id);
-        setConfigId(region.getConfig_id());
-        this.position = region.getPos().clone();
+        setGroupId(region.getGroupId());
+        setBlockId(region.getBlockId());
+        setConfigId(region.getConfigId());
+        this.position = new Position(region.getPos());
         this.entities = ConcurrentHashMap.newKeySet();
         this.newEntities = ConcurrentHashMap.newKeySet();
         this.leftEntities = ConcurrentHashMap.newKeySet();
@@ -45,7 +45,7 @@ public class EntityRegion extends GameEntity{
 
     @Override
     public int getEntityTypeId() {
-        return metaRegion.getConfig_id();
+        return metaRegion.getConfigId();
     }
 
     public boolean hasNewEntities() {
@@ -68,7 +68,10 @@ public class EntityRegion extends GameEntity{
         this.entityLeave = true;
     }
     public boolean entityLeave() {return this.entityLeave;}
-    public void resetEntityLeave() {this.entityLeave = false;}
+    public void resetEntityLeave() {
+        this.entityLeave = false;
+        leftEntities.clear();
+    }
     @Override public Int2FloatMap getFightProperties() {return null;}
 
     @Override public Position getPosition() {return position;}
@@ -76,7 +79,7 @@ public class EntityRegion extends GameEntity{
     @Override public Position getRotation() {return null;}
 
     @Override
-    public SceneEntityInfoOuterClass.SceneEntityInfo toProto() {
+    public SceneEntityInfo toProto() {
         /**
          * The Region Entity would not be sent to client.
          */

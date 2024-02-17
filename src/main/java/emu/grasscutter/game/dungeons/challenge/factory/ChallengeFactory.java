@@ -8,8 +8,8 @@ import emu.grasscutter.game.dungeons.challenge.ChallengeScoreInfo;
 import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.challenge.enums.ChallengeType;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.SceneGroup;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
 
 import java.util.*;
 

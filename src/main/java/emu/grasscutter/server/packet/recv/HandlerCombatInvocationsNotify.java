@@ -9,18 +9,17 @@ import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
 import emu.grasscutter.net.proto.CombatInvocationsNotifyOuterClass.CombatInvocationsNotify;
 import emu.grasscutter.net.proto.CombatInvokeEntryOuterClass.CombatInvokeEntry;
-import emu.grasscutter.net.proto.EntityMoveInfoOuterClass.EntityMoveInfo;
 import emu.grasscutter.net.proto.EvtAnimatorParameterInfoOuterClass.EvtAnimatorParameterInfo;
 import emu.grasscutter.net.proto.EvtBeingHitInfoOuterClass.EvtBeingHitInfo;
 import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.proto.MotionInfoOuterClass.MotionInfo;
-import emu.grasscutter.net.proto.MotionStateOuterClass.MotionState;
 import emu.grasscutter.net.proto.PlayerDieTypeOuterClass;
 import emu.grasscutter.server.event.entity.EntityMoveEvent;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropUpdateNotify;
 import emu.grasscutter.utils.Position;
 import lombok.val;
+import messages.general.entity.EntityMoveInfo;
+import messages.scene.entity.MotionState;
 
 @Opcodes(PacketOpcodes.CombatInvocationsNotify)
 public class HandlerCombatInvocationsNotify extends PacketHandler {
@@ -52,24 +51,29 @@ public class HandlerCombatInvocationsNotify extends PacketHandler {
                 }
                 case COMBAT_TYPE_ARGUMENT_ENTITY_MOVE -> {
                     // Handle movement
-                    EntityMoveInfo moveInfo = EntityMoveInfo.parseFrom(entry.getCombatData());
+                    EntityMoveInfo moveInfo = EntityMoveInfo.parseBy(entry.getCombatData().toByteArray(), session.getVersion());
                     val scene = session.getPlayer().getScene();
                     GameEntity entity = scene != null ? scene.getEntityById(moveInfo.getEntityId()) : null;
                     if (entity != null) {
                         // Move player
-                        MotionInfo motionInfo = moveInfo.getMotionInfo();
-                        MotionState motionState = motionInfo.getState();
+                        val motionInfo = moveInfo.getMotionInfo();
+                        val motionState = motionInfo.getState();
+
+                        val position = motionInfo.getPos() != null ? new Position(motionInfo.getPos()) : null;
+                        val rotation = motionInfo.getRot() != null ? new Position(motionInfo.getRot()) : null;
+                        val speed = motionInfo.getSpeed() != null ? new Position(motionInfo.getSpeed()) : null;
 
                         // Call entity move event.
-                        EntityMoveEvent event = new EntityMoveEvent(
-                            entity, new Position(motionInfo.getPos()),
-                            new Position(motionInfo.getRot()), motionState);
+                        EntityMoveEvent event = new EntityMoveEvent(entity, position, rotation, speed, motionState);
                         event.call();
 
-                        entity.move(event.getPosition(), event.getRotation());
+                        if(position != null) {
+                            entity.move(event.getPosition(), event.getRotation());
+                        }
                         entity.setLastMoveSceneTimeMs(moveInfo.getSceneTime());
                         entity.setLastMoveReliableSeq(moveInfo.getReliableSeq());
-                        entity.setMotionState(motionState);
+                        if(motionState!= null)
+                            entity.setMotionState(motionState);
 
                         session.getPlayer().getStaminaManager().handleCombatInvocationsNotify(session, moveInfo, entity);
 
@@ -79,20 +83,20 @@ public class HandlerCombatInvocationsNotify extends PacketHandler {
 
                         // MOTION_LAND_SPEED and MOTION_FALL_ON_GROUND arrive in different packets.
                         // Cache land speed for later use.
-                        if (motionState == MotionState.MOTION_STATE_LAND_SPEED) {
+                        if (motionState == MotionState.MOTION_LAND_SPEED) {
                             cachedLandingSpeed = motionInfo.getSpeed().getY();
                             cachedLandingTimeMillisecond = System.currentTimeMillis();
                             monitorLandingEvent = true;
                         }
                         if (monitorLandingEvent) {
-                            if (motionState == MotionState.MOTION_STATE_FALL_ON_GROUND) {
+                            if (motionState == MotionState.MOTION_FALL_ON_GROUND) {
                                 monitorLandingEvent = false;
                                 handleFallOnGround(session, entity, motionState);
                             }
                         }
 
                         // MOTION_STATE_NOTIFY = Dont send to other players
-                        if (motionState == MotionState.MOTION_STATE_NOTIFY) {
+                        if (motionState == MotionState.MOTION_NOTIFY) {
                             continue;
                         }
                     }
@@ -105,6 +109,7 @@ public class HandlerCombatInvocationsNotify extends PacketHandler {
                     }
                 }
                 default -> {
+                    Grasscutter.getLogger().debug("Unhandled type: " + entry.getArgumentType().name());
                 }
             }
 

@@ -6,10 +6,10 @@ import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.proto.GatherGadgetInfoOuterClass.GatherGadgetInfo;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.SceneGadgetInfoOuterClass.SceneGadgetInfo;
 import lombok.val;
+import messages.gadget.GadgetInteractReq;
+import messages.scene.entity.GatherGadgetInfo;
+import messages.scene.entity.SceneGadgetInfo;
 
 /**
  * Spawner for the gather objects
@@ -54,13 +54,10 @@ public class GadgetGatherPoint extends GadgetContent {
         return true;
     }
 
-    public void onBuildProto(SceneGadgetInfo.Builder gadgetInfo) {
+    @Override
+    public void onBuildProto(SceneGadgetInfo gadgetInfo) {
         //todo does official use this for the spawners?
-        GatherGadgetInfo gatherGadgetInfo = GatherGadgetInfo.newBuilder()
-                .setItemId(this.getItemId())
-                .setIsForbidGuest(this.isForbidGuest())
-                .build();
-
-        gadgetInfo.setGatherGadget(gatherGadgetInfo);
+        val gatherGadgetInfo = new GatherGadgetInfo(this.getItemId(), this.isForbidGuest());
+        gadgetInfo.setContent(new SceneGadgetInfo.Content.GatherGadget(gatherGadgetInfo));
     }
 }

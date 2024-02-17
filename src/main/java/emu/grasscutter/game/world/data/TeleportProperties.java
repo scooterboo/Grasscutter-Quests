@@ -1,11 +1,11 @@
 package emu.grasscutter.game.world.data;
 
 import emu.grasscutter.game.props.EnterReason;
-import emu.grasscutter.net.proto.EnterTypeOuterClass;
 import emu.grasscutter.server.event.player.PlayerTeleportEvent;
 import emu.grasscutter.utils.Position;
 import lombok.Builder;
 import lombok.Data;
+import messages.scene.EnterType;
 
 @Data
 @Builder
@@ -15,7 +15,7 @@ public class TeleportProperties {
     private final EnterReason enterReason;
     private Position teleportTo;
     private Position teleportRot;
-    private EnterTypeOuterClass.EnterType enterType;
+    private EnterType enterType;
     private int dungeonId;
     private Position prevPos;
     private int prevSceneId;

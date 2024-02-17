@@ -2,21 +2,14 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.WorldPlayerLocationNotifyOuterClass.WorldPlayerLocationNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.WorldPlayerLocationNotify;
 
-public class PacketWorldPlayerLocationNotify extends BasePacket {
-	
+public class PacketWorldPlayerLocationNotify extends BaseTypedPacket<WorldPlayerLocationNotify> {
+
 	public PacketWorldPlayerLocationNotify(World world) {
-		super(PacketOpcodes.WorldPlayerLocationNotify);
+		super(new WorldPlayerLocationNotify());
 
-		WorldPlayerLocationNotify.Builder proto = WorldPlayerLocationNotify.newBuilder();
-		
-		for (Player p : world.getPlayers()) {
-			proto.addPlayerWorldLocList(p.getWorldPlayerLocationInfo());
-		}
-		
-		this.setData(proto);
+        proto.setPlayerWorldLocList(world.getPlayers().stream().map(Player::getWorldPlayerLocationInfo).toList());
 	}
 }

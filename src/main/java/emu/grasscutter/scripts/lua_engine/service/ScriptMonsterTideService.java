@@ -2,12 +2,12 @@ package emu.grasscutter.scripts.lua_engine.service;
 
 import emu.grasscutter.game.entity.EntityMonster;
 import emu.grasscutter.scripts.SceneScriptManager;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.SceneGroup;
-import emu.grasscutter.scripts.data.SceneMonster;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.scripts.listener.ScriptMonsterListener;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneGroup;
+import org.anime_game_servers.gi_lua.models.scene.group.SceneMonster;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,7 +42,7 @@ public class ScriptMonsterTideService {
         this.sceneScriptManager.getScriptMonsterSpawnService().addMonsterDeadListener(onMonsterDead);
         // spawn the first turn
         for (int i = 0; i < this.monsterSceneLimit; i++) {
-            sceneScriptManager.addEntity(this.sceneScriptManager.createMonster(group.getId(), group.block_id, getNextMonster()));
+            sceneScriptManager.addEntity(this.sceneScriptManager.createMonster(group.getGroupInfo().getId(), group.getGroupInfo().getBlockId(), getNextMonster()));
         }
     }
 
@@ -82,11 +82,11 @@ public class ScriptMonsterTideService {
             monsterKillCount.incrementAndGet();
             if (monsterTideCount.get() > 0) {
                 // add more
-                sceneScriptManager.addEntity(sceneScriptManager.createMonster(currentGroup.getId(), currentGroup.block_id, getNextMonster()));
+                sceneScriptManager.addEntity(sceneScriptManager.createMonster(currentGroup.getGroupInfo().getId(), currentGroup.getGroupInfo().getBlockId(), getNextMonster()));
             }
             // spawn the last turn of monsters
             // fix the 5-2
-            sceneScriptManager.callEvent(new ScriptArgs(currentGroup.getId(), EventType.EVENT_MONSTER_TIDE_DIE, monsterKillCount.get())
+            sceneScriptManager.callEvent(new ScriptArgs(currentGroup.getGroupInfo().getId(), EventType.EVENT_MONSTER_TIDE_DIE, monsterKillCount.get())
                 .setEventSource(String.valueOf(challengeIndex)));
         }
 

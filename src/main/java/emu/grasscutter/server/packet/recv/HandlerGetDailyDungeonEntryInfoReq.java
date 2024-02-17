@@ -1,20 +1,14 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.GetDailyDungeonEntryInfoReqOuterClass.GetDailyDungeonEntryInfoReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketGetDailyDungeonEntryInfoRsp;
-import lombok.val;
+import messages.dungeon.GetDailyDungeonEntryInfoReq;
 
-@Opcodes(PacketOpcodes.GetDailyDungeonEntryInfoReq)
-public class HandlerGetDailyDungeonEntryInfoReq extends PacketHandler {
+public class HandlerGetDailyDungeonEntryInfoReq extends TypedPacketHandler<GetDailyDungeonEntryInfoReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        val req = GetDailyDungeonEntryInfoReq.parseFrom(payload);
-
+    public void handle(GameSession session, byte[] header, GetDailyDungeonEntryInfoReq req) throws Exception {
         session.send(new PacketGetDailyDungeonEntryInfoRsp(session.getPlayer(), req.getSceneId()));
     }
 }

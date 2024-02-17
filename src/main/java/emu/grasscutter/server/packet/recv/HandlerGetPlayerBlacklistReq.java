@@ -1,17 +1,17 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.*;
 import emu.grasscutter.server.game.GameSession;
+import lombok.val;
+import messages.chat.GetPlayerBlacklistReq;
+import messages.chat.GetPlayerBlacklistRsp;
 
-@Opcodes(PacketOpcodes.GetPlayerBlacklistReq)
-public class HandlerGetPlayerBlacklistReq extends PacketHandler {
-	
+public class HandlerGetPlayerBlacklistReq extends TypedPacketHandler<GetPlayerBlacklistReq> {
+
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		session.send(new BasePacket(PacketOpcodes.GetPlayerBlacklistRsp).buildHeader(3));
+	public void handle(GameSession session, byte[] header, GetPlayerBlacklistReq payload) throws Exception {
+        val rsp = new BaseTypedPacket<>(new GetPlayerBlacklistRsp()){};
+		session.send(rsp.buildHeader(3));
 	}
 
 }

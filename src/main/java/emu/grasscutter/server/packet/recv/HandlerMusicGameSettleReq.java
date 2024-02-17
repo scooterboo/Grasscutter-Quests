@@ -4,23 +4,18 @@ import emu.grasscutter.game.activity.musicgame.MusicGameActivityHandler;
 import emu.grasscutter.game.activity.musicgame.MusicGamePlayerData;
 import emu.grasscutter.game.props.ActivityType;
 import emu.grasscutter.game.props.WatcherTriggerType;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.MusicGameSettleReqOuterClass.MusicGameSettleReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketActivityInfoNotify;
 import emu.grasscutter.server.packet.send.PacketMusicGameSettleRsp;
 import lombok.val;
+import messages.activity.music_game.MusicGameSettleReq;
 
-@Opcodes(PacketOpcodes.MusicGameSettleReq)
-public class HandlerMusicGameSettleReq extends PacketHandler {
+public class HandlerMusicGameSettleReq extends TypedPacketHandler<MusicGameSettleReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        val req = MusicGameSettleReq.parseFrom(payload);
-
+    public void handle(GameSession session, byte[] header, MusicGameSettleReq req) throws Exception {
         val activityManager = session.getPlayer().getActivityManager();
 
         val playerDataOpt = activityManager.getPlayerActivityDataByActivityType(ActivityType.NEW_ACTIVITY_MUSIC_GAME);
@@ -55,7 +50,7 @@ public class HandlerMusicGameSettleReq extends PacketHandler {
                 MusicGamePlayerData.CustomBeatmapRecord.of()
                     .musicShareId(req.getUgcGuid())
                     .score(req.getMaxCombo())
-                    .settle(req.getIsSaveScore())
+                    .settle(req.isSaveScore())
                     .build());
         }
 

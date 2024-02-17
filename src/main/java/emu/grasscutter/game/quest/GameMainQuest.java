@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import org.anime_game_servers.core.gi.enums.QuestState;
+
 @Entity(value = "quests", useDiscriminator = false)
 public class GameMainQuest {
     public static final Logger logger = Loggers.getQuestSystem();
@@ -264,7 +266,7 @@ public class GameMainQuest {
 
         if (highestActiveQuest == null) {
             var firstUnstarted = getChildQuests().values().stream()
-                .filter(q -> q.getQuestData() != null && q.getState().getValue() != QuestState.FINISHED.getValue())
+                .filter(q -> q.getQuestData() != null && q.getState().getValue() != QuestState.QUEST_STATE_FINISHED.getValue())
                 .min(Comparator.comparingInt(a -> a.getQuestData().getOrder()));
             if(firstUnstarted.isEmpty()){
                 // all quests are probably finished, do don't rewind and maybe also set the mainquest to finished?
@@ -286,10 +288,10 @@ public class GameMainQuest {
     }
 
     public boolean hasRewindPosition(int subId, List<Position> posAndRot){
-        RewindData questRewind = GameData.getRewindDataMap().get(subId);
+        val questRewind = GameData.getRewindDataMap().get(subId);
         if (questRewind == null) return false;
 
-        RewindData.AvatarData avatarData = questRewind.getAvatar();
+        val avatarData = questRewind.getAvatar();
         if (avatarData == null) return false;
 
         String avatarPos = avatarData.getPos();
@@ -317,14 +319,14 @@ public class GameMainQuest {
     }
 
     public boolean hasTeleportPostion(int subId, List<Position> posAndRot){
-        TeleportData questTransmit = GameData.getTeleportDataMap().get(subId);
+        val questTransmit = GameData.getTeleportDataMap().get(subId);
         if (questTransmit == null) return false;
 
-        TeleportData.TransmitPoint transmitPoint = questTransmit.getTransmit_points().size() > 0 ? questTransmit.getTransmit_points().get(0) : null;
+        val transmitPoint = questTransmit.getTransmitPoints().size() > 0 ? questTransmit.getTransmitPoints().get(0) : null;
         if (transmitPoint == null) return false;
 
         String transmitPos = transmitPoint.getPos();
-        int sceneId = transmitPoint.getScene_id();
+        int sceneId = transmitPoint.getSceneId();
         ScriptSceneData fullGlobals = GameData.getScriptSceneDataMap().get("flat.luas.scenes.full_globals.lua.json");
         if (fullGlobals == null) return false;
 

@@ -8,13 +8,13 @@ import emu.grasscutter.game.activity.condition.ActivityConditionExecutor;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.WatcherTriggerType;
 import emu.grasscutter.game.quest.enums.QuestCond;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass;
 import emu.grasscutter.utils.DateHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
+import messages.activity.ActivityInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public abstract class ActivityHandler {
     @Getter ActivityData activityData;
     Map<WatcherTriggerType, List<ActivityWatcher>> watchersMap = new HashMap<>();
 
-    abstract public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfoOuterClass.ActivityInfo.Builder activityInfo);
+    abstract public void onProtoBuild(PlayerActivityData playerActivityData, ActivityInfo activityInfo);
     abstract public void onInitPlayerActivityData(PlayerActivityData playerActivityData);
 
     public void initWatchers(Map<WatcherTriggerType, ConstructorAccess<?>> activityWatcherTypeMap){
@@ -100,23 +100,23 @@ public abstract class ActivityHandler {
         return playerActivityData;
     }
 
-    public ActivityInfoOuterClass.ActivityInfo toProto(PlayerActivityData playerActivityData, ActivityConditionExecutor conditionExecutor){
-        var proto = ActivityInfoOuterClass.ActivityInfo.newBuilder();
-        proto.setActivityId(activityConfigItem.getActivityId())
-            .setActivityType(activityConfigItem.getActivityType())
-            .setScheduleId(activityConfigItem.getScheduleId())
-            .setBeginTime(DateHelper.getUnixTime(activityConfigItem.getBeginTime()))
-            .setFirstDayStartTime(DateHelper.getUnixTime(activityConfigItem.getBeginTime()))
-            .setEndTime(DateHelper.getUnixTime(activityConfigItem.getEndTime()))
-            .addAllMeetCondList(getMeetConditions(conditionExecutor));
+    public ActivityInfo toProto(PlayerActivityData playerActivityData, ActivityConditionExecutor conditionExecutor){
+        val proto = new ActivityInfo();
+        proto.setActivityId(activityConfigItem.getActivityId());
+        proto.setActivityType(activityConfigItem.getActivityType());
+        proto.setScheduleId(activityConfigItem.getScheduleId());
+        proto.setBeginTime(DateHelper.getUnixTime(activityConfigItem.getBeginTime()));
+        proto.setFirstDayStartTime(DateHelper.getUnixTime(activityConfigItem.getBeginTime()));
+        proto.setEndTime(DateHelper.getUnixTime(activityConfigItem.getEndTime()));
+        proto.setMeetCondList(getMeetConditions(conditionExecutor));
 
         if (playerActivityData != null){
-            proto.addAllWatcherInfoList(playerActivityData.getAllWatcherInfoList());
+            proto.setWatcherInfoList(playerActivityData.getAllWatcherInfoList());
         }
 
         onProtoBuild(playerActivityData, proto);
 
-        return proto.build();
+        return proto;
     }
 
 }

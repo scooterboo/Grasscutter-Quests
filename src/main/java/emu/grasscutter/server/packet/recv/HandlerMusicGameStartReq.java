@@ -1,20 +1,15 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.MusicGameStartReqOuterClass;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketMusicGameStartRsp;
+import messages.activity.music_game.MusicGameStartReq;
 
-@Opcodes(PacketOpcodes.MusicGameStartReq)
-public class HandlerMusicGameStartReq extends PacketHandler {
+public class HandlerMusicGameStartReq extends TypedPacketHandler<MusicGameStartReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		var req = MusicGameStartReqOuterClass.MusicGameStartReq.parseFrom(payload);
-
-		session.send(new PacketMusicGameStartRsp(req.getMusicBasicId(), req.getMusicShareId()));
+	public void handle(GameSession session, byte[] header, MusicGameStartReq req) throws Exception {
+		session.send(new PacketMusicGameStartRsp(req.getMusicBasicId(), req.getMusicBasicId()));
 	}
 
 }

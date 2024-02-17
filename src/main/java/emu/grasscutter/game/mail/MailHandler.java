@@ -71,7 +71,7 @@ public class MailHandler extends BasePlayerManager {
             }
         }
 
-        player.getSession().send(new PacketDelMailRsp(player, deleted));
+        player.getSession().send(new PacketDelMailRsp(deleted));
         player.getSession().send(new PacketMailChangeNotify(player, null, deleted));
     }
 

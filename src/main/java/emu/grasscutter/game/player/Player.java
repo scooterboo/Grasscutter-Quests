@@ -57,19 +57,9 @@ import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
 import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
 import emu.grasscutter.net.proto.CombatInvokeEntryOuterClass.CombatInvokeEntry;
-import emu.grasscutter.net.proto.GadgetInteractReqOuterClass.GadgetInteractReq;
-import emu.grasscutter.net.proto.MpSettingTypeOuterClass.MpSettingType;
-import emu.grasscutter.net.proto.OnlinePlayerInfoOuterClass.OnlinePlayerInfo;
 import emu.grasscutter.net.proto.PlayerApplyEnterMpResultNotifyOuterClass;
-import emu.grasscutter.net.proto.PlayerLocationInfoOuterClass.PlayerLocationInfo;
-import emu.grasscutter.net.proto.PlayerWorldLocationInfoOuterClass;
-import emu.grasscutter.net.proto.ProfilePictureOuterClass.ProfilePicture;
 import emu.grasscutter.net.proto.PropChangeReasonOuterClass.PropChangeReason;
-import emu.grasscutter.net.proto.ShowAvatarInfoOuterClass;
-import emu.grasscutter.net.proto.SocialDetailOuterClass.SocialDetail;
-import emu.grasscutter.net.proto.SocialShowAvatarInfoOuterClass;
 import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason;
-import emu.grasscutter.scripts.data.SceneRegion;
 import emu.grasscutter.server.event.player.PlayerJoinEvent;
 import emu.grasscutter.server.event.player.PlayerQuitEvent;
 import emu.grasscutter.server.game.GameServer;
@@ -85,6 +75,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.chat.FriendEnterHomeOption;
+import messages.chat.SocialDetail;
+import messages.chat.SocialShowAvatarInfo;
+import messages.gadget.GadgetInteractReq;
+import messages.general.ProfilePicture;
+import messages.general.avatar.ShowAvatarInfo;
+import messages.scene.PlayerLocationInfo;
+import messages.scene.PlayerWorldLocationInfo;
+import messages.scene.entity.MpSettingType;
+import messages.scene.entity.OnlinePlayerInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.DayOfWeek;
@@ -100,6 +100,7 @@ import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 @Entity(value = "players", useDiscriminator = false)
 public class Player {
     @Id private int id;
+    @Getter
     @Indexed(options = @IndexOptions(unique = true)) private String accountId;
     @Setter private transient Account account;
     @Getter @Setter private transient GameSession session;
@@ -212,7 +213,8 @@ public class Player {
     @Getter @Setter private int nextResinRefresh;
     @Getter @Setter private int resinBuyCount;
     @Getter @Setter private int lastDailyReset;
-    @Getter private transient MpSettingType mpSetting = MpSettingType.MP_SETTING_TYPE_ENTER_AFTER_APPLY;  // TODO
+    @Getter @Setter private boolean questsEnabled;
+    @Getter private transient MpSettingType mpSetting = MpSettingType.MP_SETTING_ENTER_AFTER_APPLY;  // TODO
     @Getter private long playerGameTime = 540;
 
     @Getter private PlayerProgress playerProgress;
@@ -298,7 +300,7 @@ public class Player {
     public Player(GameSession session) {
         this();
         this.account = session.getAccount();
-        this.accountId = this.getAccount().getId();
+        this.accountId = session.getAccountId();
         this.session = session;
         this.nickname = "Traveler";
         this.signature = "";
@@ -1030,14 +1032,12 @@ public class Player {
     }
 
     public OnlinePlayerInfo getOnlinePlayerInfo() {
-        OnlinePlayerInfo.Builder onlineInfo = OnlinePlayerInfo.newBuilder()
-                .setUid(this.getUid())
-                .setNickname(this.getNickname())
-                .setPlayerLevel(this.getLevel())
-                .setMpSettingType(this.getMpSetting())
-                .setNameCardId(this.getNameCardId())
-                .setSignature(this.getSignature())
-                .setProfilePicture(ProfilePicture.newBuilder().setAvatarId(this.getHeadImage()));
+         val onlineInfo = new OnlinePlayerInfo(this.getUid(), this.getNickname());
+        onlineInfo.setPlayerLevel(this.getLevel());
+        onlineInfo.setMpSettingType(this.getMpSetting());
+        onlineInfo.setNameCardId(this.getNameCardId());
+        onlineInfo.setSignature(this.getSignature());
+        onlineInfo.setProfilePicture(new ProfilePicture(this.getHeadImage()));
 
         if (this.getWorld() != null) {
             onlineInfo.setCurPlayerNumInWorld(getWorld().getPlayerCount());
@@ -1045,7 +1045,7 @@ public class Player {
             onlineInfo.setCurPlayerNumInWorld(1);
         }
 
-        return onlineInfo.build();
+        return onlineInfo;
     }
 
     public void setBirthday(int d, int m) {
@@ -1057,18 +1057,20 @@ public class Player {
         return this.birthday.getDay() > 0;
     }
 
-    public SocialDetail.Builder getSocialDetail() {
-        List<SocialShowAvatarInfoOuterClass.SocialShowAvatarInfo> socialShowAvatarInfoList = new ArrayList<>();
+    public SocialDetail getSocialDetail() {
+        val socialShowAvatarInfoList = new ArrayList<SocialShowAvatarInfo>();
         if (this.isOnline()) {
             if (this.getShowAvatarList() != null) {
                 for (int avatarId : this.getShowAvatarList()) {
+                    val avatar = this.getAvatars().getAvatarById(avatarId);
+                    if(avatar == null){
+                        continue;
+                    }
+                    val level = avatar.getLevel();
+                    val costumeId = avatar.getCostume();
                     socialShowAvatarInfoList.add(
                             socialShowAvatarInfoList.size(),
-                            SocialShowAvatarInfoOuterClass.SocialShowAvatarInfo.newBuilder()
-                                    .setAvatarId(avatarId)
-                                    .setLevel(getAvatars().getAvatarById(avatarId).getLevel())
-                                    .setCostumeId(getAvatars().getAvatarById(avatarId).getCostume())
-                                    .build()
+                            new SocialShowAvatarInfo(avatarId, level, costumeId)
                     );
                 }
             }
@@ -1078,37 +1080,39 @@ public class Player {
             avatars.loadFromDatabase();
             if (showAvatarList != null) {
                 for (int avatarId : showAvatarList) {
+                    val avatar = this.getAvatars().getAvatarById(avatarId);
+                    if(avatar == null){
+                        continue;
+                    }
+                    val level = avatar.getLevel();
+                    val costumeId = avatar.getCostume();
                     socialShowAvatarInfoList.add(
-                            socialShowAvatarInfoList.size(),
-                            SocialShowAvatarInfoOuterClass.SocialShowAvatarInfo.newBuilder()
-                                    .setAvatarId(avatarId)
-                                    .setLevel(avatars.getAvatarById(avatarId).getLevel())
-                                    .setCostumeId(avatars.getAvatarById(avatarId).getCostume())
-                                    .build()
+                        socialShowAvatarInfoList.size(),
+                        new SocialShowAvatarInfo(avatarId, level, costumeId)
                     );
                 }
             }
         }
 
-        SocialDetail.Builder social = SocialDetail.newBuilder()
-                .setUid(this.getUid())
-                .setProfilePicture(ProfilePicture.newBuilder().setAvatarId(this.getHeadImage()))
-                .setNickname(this.getNickname())
-                .setSignature(this.getSignature())
-                .setLevel(this.getLevel())
-                .setBirthday(this.getBirthday().getFilledProtoWhenNotEmpty())
-                .setWorldLevel(this.getWorldLevel())
-                .setNameCardId(this.getNameCardId())
-                .setIsShowAvatar(this.isShowAvatars())
-                .addAllShowAvatarInfoList(socialShowAvatarInfoList)
-                .addAllShowNameCardIdList(this.getShowNameCardInfoList())
-                .setFinishAchievementNum(0)
-                .setFriendEnterHomeOptionValue(this.getHome() == null ? 0 : this.getHome().getEnterHomeOption());
+        val social = new SocialDetail(this.getUid());
+        social.setProfilePicture(new ProfilePicture(this.getHeadImage()));
+        social.setNickname(this.getNickname());
+        social.setSignature(this.getSignature());
+        social.setLevel(this.getLevel());
+        social.setBirthday(this.getBirthday().getFilledProtoWhenNotEmpty());
+        social.setWorldLevel(this.getWorldLevel());
+        social.setNameCardId(this.getNameCardId());
+        social.setShowAvatar(this.isShowAvatars());
+        social.setShowAvatarInfoList(socialShowAvatarInfoList);
+        social.setShowNameCardIdList(this.getShowNameCardInfoList());
+        social.setFinishAchievementNum(0);
+        social.setFriendEnterHomeOption(this.getHome() == null ? FriendEnterHomeOption.FRIEND_ENTER_HOME_OPTION_NEED_CONFIRM :
+            FriendEnterHomeOption.values()[this.getHome().getEnterHomeOption()]);
         return social;
     }
 
-    public List<ShowAvatarInfoOuterClass.ShowAvatarInfo> getShowAvatarInfoList() {
-        List<ShowAvatarInfoOuterClass.ShowAvatarInfo> showAvatarInfoList = new ArrayList<>();
+    public List<ShowAvatarInfo> getShowAvatarInfoList() {
+        List<ShowAvatarInfo> showAvatarInfoList = new ArrayList<>();
 
         Player player;
         boolean shouldRecalc;
@@ -1141,19 +1145,12 @@ public class Player {
         return info == null ? new ArrayList<>() : info;
     }
 
-    public PlayerWorldLocationInfoOuterClass.PlayerWorldLocationInfo getWorldPlayerLocationInfo() {
-        return PlayerWorldLocationInfoOuterClass.PlayerWorldLocationInfo.newBuilder()
-                .setSceneId(this.getSceneId())
-                .setPlayerLoc(this.getPlayerLocationInfo())
-                .build();
+    public PlayerWorldLocationInfo getWorldPlayerLocationInfo() {
+        return new PlayerWorldLocationInfo(this.getSceneId(), this.getPlayerLocationInfo());
     }
 
     public PlayerLocationInfo getPlayerLocationInfo() {
-        return PlayerLocationInfo.newBuilder()
-                .setUid(this.getUid())
-                .setPos(this.getPosition().toProto())
-                .setRot(this.getRotation().toProto())
-                .build();
+        return new PlayerLocationInfo(this.getUid(), this.getPosition().toProto(), this.getRotation().toProto());
     }
 
     public void loadBattlePassManager() {
@@ -1342,7 +1339,7 @@ public class Player {
         world.addPlayer(this);
 
         // Multiplayer setting
-        this.setProperty(PlayerProperty.PROP_PLAYER_MP_SETTING_TYPE, this.getMpSetting().getNumber(), false);
+        this.setProperty(PlayerProperty.PROP_PLAYER_MP_SETTING_TYPE, this.getMpSetting().ordinal(), false);
         this.setProperty(PlayerProperty.PROP_IS_MP_MODE_AVAILABLE, 1, false);
 
         // Execute daily reset logic if this is a new day.

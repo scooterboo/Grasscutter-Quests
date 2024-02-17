@@ -228,7 +228,7 @@ public final class CommandMap {
         String[] split = rawMessage.split(" ");
         String label = split[0].toLowerCase();
         List<String> args = new ArrayList<>(Arrays.asList(split).subList(1, split.length));
-        String playerId = (player == null) ? consoleId : player.getAccount().getId();
+        String playerId = (player == null) ? consoleId : player.getAccountId();
 
         // Check for special cases - currently only target command.
         if (label.startsWith("@")) { // @[UID]

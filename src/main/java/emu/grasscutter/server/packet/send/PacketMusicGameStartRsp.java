@@ -1,19 +1,11 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.MusicGameStartRspOuterClass;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.activity.music_game.MusicGameStartRsp;
 
-public class PacketMusicGameStartRsp extends BasePacket {
+public class PacketMusicGameStartRsp extends BaseTypedPacket<MusicGameStartRsp> {
 
 	public PacketMusicGameStartRsp(int musicBasicId, long musicShareId) {
-		super(PacketOpcodes.MusicGameStartRsp);
-
-		var proto = MusicGameStartRspOuterClass.MusicGameStartRsp.newBuilder();
-
-		proto.setMusicBasicId(musicBasicId)
-            .setMusicShareId(musicShareId);
-
-		this.setData(proto);
+		super(new MusicGameStartRsp(musicBasicId, musicShareId));
 	}
 }

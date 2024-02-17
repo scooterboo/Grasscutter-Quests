@@ -26,19 +26,12 @@ import emu.grasscutter.game.dungeons.DungeonDrop;
 import emu.grasscutter.game.dungeons.enums.DungeonType;
 import emu.grasscutter.game.managers.blossom.BlossomConfig;
 import emu.grasscutter.game.quest.QuestEncryptionKey;
-import emu.grasscutter.game.quest.RewindData;
-import emu.grasscutter.game.quest.TeleportData;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.game.world.GroupReplacementData;
 import emu.grasscutter.game.world.SpawnDataEntry;
 import emu.grasscutter.game.world.SpawnDataEntry.GridBlockId;
 import emu.grasscutter.game.world.SpawnDataEntry.SpawnGroupEntry;
-import emu.grasscutter.scripts.EntityControllerScriptManager;
-import emu.grasscutter.scripts.SceneIndexManager;
-import emu.grasscutter.scripts.ScriptLoader;
-import emu.grasscutter.scripts.data.DummyPoint;
-import emu.grasscutter.scripts.lua_engine.ScriptType;
+import emu.grasscutter.scripts.*;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.JsonUtils;
 import emu.grasscutter.utils.TsvUtils;
@@ -48,13 +41,16 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import lombok.val;
 
+import org.anime_game_servers.gi_lua.models.loader.SceneReplacementScriptLoadParams;
+import org.anime_game_servers.gi_lua.models.loader.ShardQuestScriptLoadParams;
+import org.anime_game_servers.gi_lua.models.quest.QuestData;
+import org.anime_game_servers.gi_lua.models.quest.RewindData;
+import org.anime_game_servers.gi_lua.models.scene.SceneGroupReplacement;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 
 import java.io.*;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -755,7 +751,6 @@ public class ResourceLoader {
     private static void loadScriptData(){
         loadQuestShareConfig();
         loadGroupReplacements();
-        loadDummyPoints();
     }
 
     private static void loadQuestShareConfig(){
@@ -766,20 +761,18 @@ public class ResourceLoader {
             stream.forEach(path -> {
                 val matcher = pattern.matcher(path.getFileName().toString());
                 if (!matcher.find()) return;
+                val questId = Integer.parseInt(matcher.group(1));
 
-                val cs = ScriptLoader.getScript("Quest/Share/"+path.getFileName().toString(), ScriptType.DATA_STORAGE);
-                if (cs == null) return;
-
-                try{
-                    cs.evaluate();
+                val sharedQuestParams = new ShardQuestScriptLoadParams(questId);
+                if(!ScriptSystem.getScriptLoader().loadData(sharedQuestParams, script -> {
                     // these are Map<String, class>
-                    val teleportDataMap = cs.getGlobalVariableMap("quest_data", TeleportData.class);
-                    val rewindDataMap = cs.getGlobalVariableMap("rewind_data", RewindData.class);
+                    val teleportDataMap = script.getGlobalVariableMap("quest_data", QuestData.class);
+                    val rewindDataMap = script.getGlobalVariableMap("rewind_data", RewindData.class);
+
                     // convert them to Map<Integer, class> and cache
                     GameData.getTeleportDataMap().putAll(teleportDataMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getKey()), Entry::getValue)));
                     GameData.getRewindDataMap().putAll(rewindDataMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getKey()), Entry::getValue)));
-
-                } catch (Throwable e){
+                })) {
                     logger.error("Error while loading Quest Share Config: {}", path.getFileName().toString());
                 }
             });
@@ -790,38 +783,6 @@ public class ResourceLoader {
         if (GameData.getTeleportDataMap() == null || GameData.getTeleportDataMap().isEmpty()
             || GameData.getRewindDataMap() == null || GameData.getRewindDataMap().isEmpty()) {
             logger.error("No Quest Share Config loaded!");
-        }
-    }
-
-    private static void loadDummyPoints(){
-        // Load from scene scripts
-
-        try(val stream = Files.newDirectoryStream(getResourcePath("Scripts/Scene/"), p -> Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS))) {
-            stream.forEach(path -> {
-                int sceneId = Integer.parseInt(path.getFileName().toString());
-                val targetScript = "Scene/"+sceneId+"/scene"+sceneId+"_dummy_points.lua";
-                val targetPath = FileUtils.getScriptPath(targetScript);
-                if(Files.notExists(targetPath)) return;
-                val cs =  ScriptLoader.getScript(targetScript, ScriptType.DATA_STORAGE);
-                if (cs == null) return;
-
-                try{
-                    cs.evaluate();
-                    val teleportDataMap = cs.getGlobalVariableMap("dummy_points",DummyPoint.class);
-                    GameData.getDummyPointMap().put(sceneId, teleportDataMap);
-                    logger.info("Loaded {} dummy points for scene {}.", teleportDataMap.size(), sceneId);
-                } catch (Throwable e){
-                    logger.error("Error while loading Quest Share Config: {}", path.getFileName().toString());
-                }
-            });
-        } catch (IOException e) {
-            logger.error("Error loading Quest Share Config: no files found");
-            return;
-        }
-        if (GameData.getDummyPointMap() == null || GameData.getDummyPointMap().isEmpty()) {
-            logger.error("No scene dummy points loaded!");
-        } else {
-            logger.info("Loaded dummy points for {} scenes.", GameData.getDummyPointMap().size());
         }
     }
 
@@ -931,32 +892,14 @@ public class ResourceLoader {
     }
 
     private static void loadGroupReplacements(){
-
-        val cs = ScriptLoader.getScript("Scene/groups_replacement.lua", ScriptType.DATA_STORAGE);
-        if (cs == null) {
-            logger.error("Error while loading Group Replacements: file not found");
-            return;
-        }
-
-        try{
-            cs.evaluate();
+        val scriptParams = new SceneReplacementScriptLoadParams();
+        if(!ScriptSystem.getScriptLoader().loadData(scriptParams, script -> {
             // these are Map<String, class>
-            var replacementsMap = cs.getGlobalVariableMap("replacements", GroupReplacementData.class);
+            var replacementsMap = script.getGlobalVariableMap("replacements", SceneGroupReplacement.class);
             // convert them to Map<Integer, class> and cache
             GameData.getGroupReplacements().putAll(replacementsMap.entrySet().stream().collect(Collectors.toMap(entry -> Integer.valueOf(entry.getValue().getId()), Entry::getValue)));
-
-        } catch (Throwable e){
+        })) {
             logger.error("Error while loading Group Replacements");
-        }
-
-        if (GameData.getGroupReplacements() == null || GameData.getGroupReplacements().isEmpty()) {
-            logger.error("No Group Replacements loaded!");
-            return;
-        } else {
-            logger.debug("Loaded {} group replacements.", GameData.getGroupReplacements().size());
-            GameData.getGroupReplacements().forEach((group, groups) -> {
-                logger.debug("{} -> {}", group, groups.getReplace_groups().stream().map(String::valueOf).collect(Collectors.joining(",")));
-            });
         }
     }
 

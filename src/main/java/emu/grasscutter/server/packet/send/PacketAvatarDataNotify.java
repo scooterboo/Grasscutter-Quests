@@ -2,37 +2,42 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AvatarDataNotifyOuterClass.AvatarDataNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.val;
+import messages.team.AvatarDataNotify;
+import messages.team.AvatarTeam;
 
-public class PacketAvatarDataNotify extends BasePacket {
+import java.util.ArrayList;
+
+public class PacketAvatarDataNotify extends BaseTypedPacket<AvatarDataNotify> {
 
     public PacketAvatarDataNotify(Player player) {
-        super(PacketOpcodes.AvatarDataNotify, true);
+        super(new AvatarDataNotify(), true);
 
-        AvatarDataNotify.Builder proto = AvatarDataNotify.newBuilder()
-                .setCurAvatarTeamId(player.getTeamManager().getCurrentTeamId())
+        proto.setCurAvatarTeamId(player.getTeamManager().getCurrentTeamId());
                 //.setChooseAvatarGuid(player.getTeamManager().getCurrentCharacterGuid())
-                .addAllOwnedFlycloakList(player.getFlyCloakList())
-                .addAllOwnedCostumeList(player.getCostumeList());
+        proto.setOwnedFlycloakList(player.getFlyCloakList().stream().toList());
+        proto.setOwnedFlycloakList(player.getCostumeList().stream().toList());
 
-        player.getAvatars().forEach(avatar -> proto.addAvatarList(avatar.toProto()));
+        proto.setAvatarList(player.getAvatars().getAvatars().values().stream().map(Avatar::toProto).toList());
 
+        val avatarTeamMap = new Int2ObjectOpenHashMap<AvatarTeam>();
+        val backupAvatarTeamOrderList = new ArrayList<Integer>();
         player.getTeamManager().getTeams().forEach((id, teamInfo) -> {
-            proto.putAvatarTeamMap(id, teamInfo.toProto(player));
+            avatarTeamMap.put((int)id, teamInfo.toProto(player));
             if (id > 4) {  // Add the id list for custom teams.
-                proto.addCustomTeamIds(id);
+                backupAvatarTeamOrderList.add(id);
             }
         });
+        proto.setAvatarTeamMap(avatarTeamMap);
+        proto.setBackupAvatarTeamOrderList(backupAvatarTeamOrderList);
 
         // Set main character
         Avatar mainCharacter = player.getAvatars().getAvatarById(player.getMainCharacterId());
         if (mainCharacter != null) {
             proto.setChooseAvatarGuid(mainCharacter.getGuid());
         }
-
-        this.setData(proto.build());
     }
 
 }

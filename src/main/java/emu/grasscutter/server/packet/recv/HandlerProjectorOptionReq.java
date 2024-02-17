@@ -2,30 +2,26 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.entity.EntityGadget;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ProjectorOptionReqOuterClass.ProjectorOptionReq;
-import emu.grasscutter.net.proto.ProjectorOptionReqOuterClass.ProjectorOptionReq.ProjectorOpType;
-import emu.grasscutter.scripts.constants.ScriptGadgetState;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketProjectorOptionRsp;
+import messages.gadget.ProjectorOpType;
+import messages.gadget.ProjectorOptionReq;
+import org.anime_game_servers.gi_lua.models.constants.ScriptGadgetState;
 
-@Opcodes(PacketOpcodes.ProjectorOptionReq)
-public class HandlerProjectorOptionReq extends PacketHandler {
+public class HandlerProjectorOptionReq extends TypedPacketHandler<ProjectorOptionReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        ProjectorOptionReq req = ProjectorOptionReq.parseFrom(payload);
+    public void handle(GameSession session, byte[] header, ProjectorOptionReq req) throws Exception {
 
         Grasscutter.getLogger().debug("JUST SOME DEBUG " + req.getOpType());
 
         if(session.getPlayer().getScene().getEntityById(req.getEntityId()) instanceof EntityGadget gadget) {
-            ProjectorOpType type = ProjectorOpType.forNumber(req.getOpType());
-            if(type == ProjectorOpType.PROJECTOR_OP_TYPE_CREATE) {
+            ProjectorOpType type = ProjectorOpType.values()[req.getOpType()];
+            if(type == ProjectorOpType.PROJECTOR_OP_CREATE) {
                 if(gadget.getState() != ScriptGadgetState.GearStart)
                     gadget.setState(ScriptGadgetState.GearStart);
-            } else if(type == ProjectorOpType.PROJECTOR_OP_TYPE_DESTROY) {
+            } else if(type == ProjectorOpType.PROJECTOR_OP_DESTROY) {
                 if(gadget.getState() != ScriptGadgetState.GearStop)
                     gadget.setState(ScriptGadgetState.GearStop);
             }

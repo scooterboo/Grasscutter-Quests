@@ -2,11 +2,20 @@ package emu.grasscutter.game.avatar;
 
 import dev.morphia.annotations.*;
 import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
+import static emu.grasscutter.game.props.PlayerProperty.PROP_SATIATION_PENALTY_TIME;
+import static emu.grasscutter.game.props.PlayerProperty.PROP_SATIATION_VAL;
 
 import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.*;
+import messages.general.PropValue;
+import messages.general.avatar.*;
+import messages.general.avatar.FetterData;
 import org.bson.types.ObjectId;
 
 import emu.grasscutter.data.GameData;
@@ -24,13 +33,6 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.inventory.ItemType;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
-import emu.grasscutter.net.proto.AvatarFetterInfoOuterClass.AvatarFetterInfo;
-import emu.grasscutter.net.proto.AvatarInfoOuterClass.AvatarInfo;
-import emu.grasscutter.net.proto.AvatarSkillInfoOuterClass.AvatarSkillInfo;
-import emu.grasscutter.net.proto.FetterDataOuterClass.FetterData;
-import emu.grasscutter.net.proto.ShowAvatarInfoOuterClass;
-import emu.grasscutter.net.proto.ShowAvatarInfoOuterClass.ShowAvatarInfo;
-import emu.grasscutter.net.proto.ShowEquipOuterClass.ShowEquip;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.ProtoHelper;
 import it.unimi.dsi.fastutil.ints.*;
@@ -820,98 +822,104 @@ public class Avatar {
         DatabaseHelper.saveAvatar(this);
     }
 
-    public AvatarInfo.Builder protoBuilder() {
+    public AvatarInfo protoBuilder() {
         int fetterLevel = this.getFetterLevel();
-        AvatarFetterInfo.Builder avatarFetter = AvatarFetterInfo.newBuilder()
-                .setExpLevel(fetterLevel);
+        val avatarFetter = new AvatarFetterInfo();
+        avatarFetter.setExpLevel(fetterLevel);
 
         if (fetterLevel != 10) {
             avatarFetter.setExpNumber(this.getFetterExp());
         }
 
-        this.fetters.forEach(fetterId -> avatarFetter.addFetterList(
-            FetterData.newBuilder()
-                .setFetterId(fetterId)
-                .setFetterState(FetterState.FINISH.getValue())));
+        avatarFetter.setFetterList(this.fetters.stream().map(fetterId ->
+            new FetterData(fetterId, FetterState.FINISH.getValue())).toList());
 
-        AvatarInfo.Builder avatarInfo = AvatarInfo.newBuilder()
-                .setAvatarId(this.getAvatarId())
-                .setGuid(this.getGuid())
-                .setLifeState(1)
-                .addAllTalentIdList(this.getTalentIdList())
-                .putAllFightPropMap(this.getFightProperties())
-                .setSkillDepotId(this.getSkillDepotId())
-                .setCoreProudSkillLevel(this.getCoreProudSkillLevel())
-                .putAllSkillLevelMap(this.getSkillLevelMap())
-                .addAllInherentProudSkillList(this.getProudSkillList())
-                .putAllProudSkillExtraLevelMap(getProudSkillBonusMap())
-                .setAvatarType(1)
-                .setBornTime(this.getBornTime())
-                .setWearingFlycloakId(this.getFlyCloak())
-                .setCostumeId(this.getCostume())
-                .setIsFocus(false);
+        val avatarInfo = new AvatarInfo(this.getAvatarId(), this.getGuid());
+        avatarInfo.setLifeState(1);
+        avatarInfo.setTalentIdList(this.getTalentIdList().stream().toList());
+        avatarInfo.setFightPropMap(this.getFightProperties());
+        avatarInfo.setSkillDepotId(this.getSkillDepotId());
+        avatarInfo.setCoreProudSkillLevel(this.getCoreProudSkillLevel());
+        avatarInfo.setSkillLevelMap(this.getSkillLevelMap());
+        avatarInfo.setInherentProudSkillList(this.getProudSkillList().stream().toList());
+        avatarInfo.setProudSkillExtraLevelMap(getProudSkillBonusMap());
+        avatarInfo.setAvatarType(1);
+        avatarInfo.setBornTime(this.getBornTime());
+        avatarInfo.setWearingFlycloakId(this.getFlyCloak());
+        avatarInfo.setCostumeId(this.getCostume());
+        avatarInfo.setFocus(false);
 
         avatarInfo.setFetterInfo(avatarFetter);
         if (this.getPlayer().getNameCardList().contains(this.getNameCardId())) {
-            avatarFetter.addRewardedFetterLevelList(10);
+            avatarFetter.setRewardedFetterLevelList(List.of(10));
         }
 
-        this.getSkillExtraChargeMap().forEach((skillId, count) ->
-            avatarInfo.putSkillMap(skillId, AvatarSkillInfo.newBuilder().setMaxChargeCount(count).build()));
+        avatarInfo.setSkillMap(this.getSkillExtraChargeMap().entrySet().stream().collect(
+            // key == skillId
+            Collectors.toMap(Map.Entry::getKey,
+                entry -> {
+                    val skillInfo = new AvatarSkillInfo();
+                    skillInfo.setMaxChargeCount(entry.getValue());
+                    return skillInfo;
+                })));
 
-        this.getEquips().forEach((k, item) -> avatarInfo.addEquipGuidList(item.getGuid()));
+        avatarInfo.setEquipGuidList(this.getEquips().values().stream().map(GameItem::getGuid).toList());
 
-        avatarInfo.putPropMap(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, this.getLevel()));
-        avatarInfo.putPropMap(PlayerProperty.PROP_EXP.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_EXP, this.getExp()));
-        avatarInfo.putPropMap(PlayerProperty.PROP_BREAK_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_BREAK_LEVEL, this.getPromoteLevel()));
-        avatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_VAL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_VAL, 0));
-        avatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_PENALTY_TIME.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_PENALTY_TIME, 0));
+        val propMap = new Int2ObjectOpenHashMap<PropValue>();
 
+        propMap.put(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, this.getLevel()));
+        propMap.put(PlayerProperty.PROP_EXP.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_EXP, this.getExp()));
+        propMap.put(PlayerProperty.PROP_BREAK_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_BREAK_LEVEL, this.getPromoteLevel()));
+        propMap.put(PROP_SATIATION_VAL.getId(), ProtoHelper.newPropValue(PROP_SATIATION_VAL, 0));
+        propMap.put(PlayerProperty.PROP_SATIATION_PENALTY_TIME.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_PENALTY_TIME, 0));
+
+        avatarInfo.setPropMap(propMap);
         return avatarInfo;
     }
 
     public AvatarInfo toProto() {
-        return this.protoBuilder().build();
+        return this.protoBuilder();
     }
 
     // used only in character showcase
     public ShowAvatarInfo toShowAvatarInfoProto() {
-        AvatarFetterInfo.Builder avatarFetter = AvatarFetterInfo.newBuilder()
-                .setExpLevel(this.getFetterLevel());
+        val avatarFetter = new AvatarFetterInfo();
+        avatarFetter.setExpLevel(this.getFetterLevel());
 
-        ShowAvatarInfo.Builder showAvatarInfo = ShowAvatarInfoOuterClass.ShowAvatarInfo.newBuilder()
-                .setAvatarId(avatarId)
-                .addAllTalentIdList(this.getTalentIdList())
-                .putAllFightPropMap(this.getFightProperties())
-                .setSkillDepotId(this.getSkillDepotId())
-                .setCoreProudSkillLevel(this.getCoreProudSkillLevel())
-                .addAllInherentProudSkillList(this.getProudSkillList())
-                .putAllSkillLevelMap(this.getSkillLevelMap())
-                .putAllProudSkillExtraLevelMap(this.getProudSkillBonusMap())
-                .setFetterInfo(avatarFetter)
-                .setCostumeId(this.getCostume());
+        val showAvatarInfo = new ShowAvatarInfo(avatarId);
+        showAvatarInfo.setTalentIdList(this.getTalentIdList().stream().toList());
+        showAvatarInfo.setFightPropMap(this.getFightProperties());
+        showAvatarInfo.setSkillDepotId(this.getSkillDepotId());
+        showAvatarInfo.setCoreProudSkillLevel(this.getCoreProudSkillLevel());
+        showAvatarInfo.setInherentProudSkillList(this.getProudSkillList().stream().toList());
+        showAvatarInfo.setSkillLevelMap(this.getSkillLevelMap());
+        showAvatarInfo.setProudSkillExtraLevelMap(this.getProudSkillBonusMap());
+        showAvatarInfo.setFetterInfo(avatarFetter);
+        showAvatarInfo.setCostumeId(this.getCostume());
 
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, this.getLevel()));
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_EXP.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_EXP, this.getExp()));
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_BREAK_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_BREAK_LEVEL, this.getPromoteLevel()));
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_VAL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_VAL, this.getSatiation()));
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_SATIATION_PENALTY_TIME.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_PENALTY_TIME, this.getSatiationPenalty()));
+        val propMap = new Int2ObjectOpenHashMap<PropValue>();
+        propMap.put(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, this.getLevel()));
+        propMap.put(PlayerProperty.PROP_EXP.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_EXP, this.getExp()));
+        propMap.put(PlayerProperty.PROP_BREAK_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_BREAK_LEVEL, this.getPromoteLevel()));
+        propMap.put(PROP_SATIATION_VAL.getId(), ProtoHelper.newPropValue(PROP_SATIATION_VAL, this.getSatiation()));
+        propMap.put(PlayerProperty.PROP_SATIATION_PENALTY_TIME.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_SATIATION_PENALTY_TIME, this.getSatiationPenalty()));
         int maxStamina = this.getPlayer().getProperty(PlayerProperty.PROP_MAX_STAMINA);
-        showAvatarInfo.putPropMap(PlayerProperty.PROP_MAX_STAMINA.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_MAX_STAMINA, maxStamina));
+        propMap.put(PlayerProperty.PROP_MAX_STAMINA.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_MAX_STAMINA, maxStamina));
 
-        for (GameItem item : this.getEquips().values()) {
+        showAvatarInfo.setPropMap(propMap);
+
+        val equips = this.getEquips().values().stream().map(item -> {
+            val equip = new ShowEquip(item.getItemId());
             if (item.getItemType() == ItemType.ITEM_RELIQUARY) {
-                showAvatarInfo.addEquipList(ShowEquip.newBuilder()
-                        .setItemId(item.getItemId())
-                        .setReliquary(item.toReliquaryProto()));
+                equip.setDetail(new ShowEquip.Detail.Reliquary(item.toReliquaryProto()));
             } else if (item.getItemType() == ItemType.ITEM_WEAPON) {
-                showAvatarInfo.addEquipList(ShowEquip.newBuilder()
-                        .setItemId(item.getItemId())
-                        .setWeapon(item.toWeaponProto()));
+                equip.setDetail(new ShowEquip.Detail.Weapon(item.toWeaponProto()));
             }
-        }
+            return equip;
+        }).toList();
+        showAvatarInfo.setEquipList(equips);
 
-        return showAvatarInfo.build();
+        return showAvatarInfo;
     }
 
     @PostLoad

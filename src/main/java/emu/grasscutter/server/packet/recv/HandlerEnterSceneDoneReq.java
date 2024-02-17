@@ -2,18 +2,15 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.player.Player.SceneLoadState;
-import emu.grasscutter.game.quest.QuestGroupSuite;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.packet.PacketHandler;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
+import messages.scene.EnterSceneDoneReq;
 
-@Opcodes(PacketOpcodes.EnterSceneDoneReq)
-public class HandlerEnterSceneDoneReq extends PacketHandler {
+public class HandlerEnterSceneDoneReq extends TypedPacketHandler<EnterSceneDoneReq> {
 
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
+    public void handle(GameSession session, byte[] header, EnterSceneDoneReq req) throws Exception {
         // Finished loading
         session.getPlayer().setSceneLoadState(SceneLoadState.LOADED);
 

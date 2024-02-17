@@ -11,21 +11,16 @@ import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.FightProperty;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.EquipOuterClass.Equip;
-import emu.grasscutter.net.proto.FurnitureOuterClass.Furniture;
 import emu.grasscutter.net.proto.ItemHintOuterClass.ItemHint;
-import emu.grasscutter.net.proto.ItemOuterClass.Item;
 import emu.grasscutter.net.proto.ItemParamOuterClass.ItemParam;
-import emu.grasscutter.net.proto.MaterialOuterClass.Material;
-import emu.grasscutter.net.proto.ReliquaryOuterClass.Reliquary;
-import emu.grasscutter.net.proto.SceneReliquaryInfoOuterClass.SceneReliquaryInfo;
-import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
-import emu.grasscutter.net.proto.WeaponOuterClass.Weapon;
 import emu.grasscutter.utils.WeightedList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.general.entity.SceneReliquaryInfo;
+import messages.general.entity.SceneWeaponInfo;
+import messages.general.item.*;
 import org.bson.types.ObjectId;
 
 import java.util.*;
@@ -231,64 +226,56 @@ public class GameItem {
     }
 
     public SceneWeaponInfo createSceneWeaponInfo() {
-        val weaponInfo = SceneWeaponInfo.newBuilder()
-            .setEntityId(Optional.ofNullable(this.weaponEntity).map(EntityWeapon::getId).orElse(0))
-            .setItemId(this.itemId)
-            .setGuid(this.guid)
-            .setLevel(this.level)
-            .setGadgetId(this.itemData.getGadgetId())
-            .setAbilityInfo(AbilitySyncStateInfo.newBuilder().setIsInited(!this.affixes.isEmpty()));
+        val entityId = Optional.ofNullable(this.weaponEntity).map(EntityWeapon::getId).orElse(0);
+        val weaponInfo = new SceneWeaponInfo(entityId, this.itemData.getGadgetId(), this.itemId, this.guid, this.level);
+        weaponInfo.setAbilityInfo(new AbilitySyncStateInfo(!this.affixes.isEmpty()));
 
-        this.affixes.forEach(affix -> weaponInfo.putAffixMap(affix, getRefinement()));
+        weaponInfo.setAffixMap(this.affixes.stream().collect(Collectors.toMap(affix->affix, affix->getRefinement())));
 
-        return weaponInfo.build();
+        return weaponInfo;
     }
 
     public SceneReliquaryInfo createSceneReliquaryInfo() {
-        return SceneReliquaryInfo.newBuilder()
-                .setItemId(this.itemId)
-                .setGuid(this.guid)
-                .setLevel(this.level)
-                .build();
+        return new SceneReliquaryInfo(this.itemId, this.guid, this.level);
     }
 
     public Weapon toWeaponProto() {
-        val weapon = Weapon.newBuilder()
-            .setLevel(this.level)
-            .setExp(this.exp)
-            .setPromoteLevel(this.promoteLevel);
+        val weapon = new Weapon(this.level, this.exp, this.promoteLevel);
 
-        getAffixes().forEach(affix -> weapon.putAffixMap(affix, getRefinement()));
+        weapon.setAffixMap(getAffixes().stream().collect(Collectors.toMap(affix -> affix, affix -> getRefinement())));
 
-        return weapon.build();
+        return weapon;
     }
 
     public Reliquary toReliquaryProto() {
-        return Reliquary.newBuilder()
-            .setLevel(this.level)
-            .setExp(this.exp)
-            .setPromoteLevel(this.promoteLevel)
-            .setMainPropId(this.mainPropId)
-            .addAllAppendPropIdList(this.appendPropIdList).build();
+        return new Reliquary(this.level, this.exp, this.promoteLevel, this.mainPropId, this.appendPropIdList);
     }
 
     public Item toProto() {
-        val proto = Item.newBuilder()
-                .setGuid(this.guid)
-                .setItemId(this.itemId);
+        val proto = new Item(this.itemId, this.guid);
 
-        switch (getItemType()) {
-            case ITEM_WEAPON -> proto.setEquip(Equip.newBuilder().setWeapon(toWeaponProto()).setIsLocked(this.locked).build());
-            case ITEM_RELIQUARY -> proto.setEquip(Equip.newBuilder().setReliquary(toReliquaryProto()).setIsLocked(this.locked).build());
-            case ITEM_FURNITURE -> proto.setFurniture(Furniture.newBuilder()
-                .setCount(this.count)
-                .build());
-            default -> proto.setMaterial(Material.newBuilder()
-                .setCount(this.count)
-                .build());
-        }
+        proto.setDetail(switch (getItemType()) {
+            case ITEM_WEAPON -> {
+                val weapon = new Equip.Detail.Weapon(toWeaponProto());
+                val equip = new Equip(weapon, this.locked);
+                yield new Item.Detail.Equip(equip);
+            }
+            case ITEM_RELIQUARY -> {
+                val reliquary = new Equip.Detail.Reliquary(toReliquaryProto());
+                val equip = new Equip(reliquary, this.locked);
+                yield new Item.Detail.Equip(equip);
+            }
+            case ITEM_FURNITURE -> {
+                val furniture = new Furniture(this.count);
+                yield new Item.Detail.Furniture(furniture);
+            }
+            default -> {
+                val material = new Material(this.count);
+                yield new Item.Detail.Material(material);
+            }
+        });
 
-        return proto.build();
+        return proto;
     }
 
     public ItemHint toItemHintProto() {

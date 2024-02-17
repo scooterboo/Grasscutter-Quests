@@ -1,20 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.entity.EntityGadget;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.PlatformStartRouteNotifyOuterClass.PlatformStartRouteNotify;
-import lombok.val;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.PlatformStartRouteNotify;
 
-public class PacketPlatformStartRouteNotify extends BasePacket {
+public class PacketPlatformStartRouteNotify extends BaseTypedPacket<PlatformStartRouteNotify> {
     public PacketPlatformStartRouteNotify(EntityGadget gadgetEntity) {
-        super(PacketOpcodes.PlatformStartRouteNotify);
-
-        val notify = PlatformStartRouteNotify.newBuilder()
-            .setEntityId(gadgetEntity.getId())
-            .setSceneTime(gadgetEntity.getScene().getSceneTime())
-            .setPlatform(gadgetEntity.getPlatformInfo());
-
-        this.setData(notify);
+        super(new PlatformStartRouteNotify(gadgetEntity.getId(), gadgetEntity.getPlatformInfo(),
+            gadgetEntity.getScene().getSceneTime()));
     }
 }

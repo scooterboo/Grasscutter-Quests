@@ -12,25 +12,11 @@ import emu.grasscutter.game.props.EntityIdType;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.game.props.PlayerProperty;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.net.proto.AbilityControlBlockOuterClass.AbilityControlBlock;
-import emu.grasscutter.net.proto.AbilityEmbryoOuterClass.AbilityEmbryo;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.AnimatorParameterValueInfoPairOuterClass.AnimatorParameterValueInfoPair;
 import emu.grasscutter.net.proto.ChangeEnergyReasonOuterClass.ChangeEnergyReason;
 import emu.grasscutter.net.proto.ChangeHpReasonOuterClass.ChangeHpReason;
-import emu.grasscutter.net.proto.EntityAuthorityInfoOuterClass.EntityAuthorityInfo;
-import emu.grasscutter.net.proto.EntityClientDataOuterClass.EntityClientData;
-import emu.grasscutter.net.proto.EntityRendererChangedInfoOuterClass.EntityRendererChangedInfo;
 import emu.grasscutter.net.proto.PlayerDieTypeOuterClass.PlayerDieType;
 import emu.grasscutter.net.proto.PropChangeReasonOuterClass.PropChangeReason;
-import emu.grasscutter.net.proto.PropPairOuterClass.PropPair;
-import emu.grasscutter.net.proto.ProtEntityTypeOuterClass.ProtEntityType;
-import emu.grasscutter.net.proto.SceneAvatarInfoOuterClass.SceneAvatarInfo;
-import emu.grasscutter.net.proto.SceneEntityAiInfoOuterClass.SceneEntityAiInfo;
-import emu.grasscutter.net.proto.SceneEntityInfoOuterClass.SceneEntityInfo;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
 import emu.grasscutter.server.event.player.PlayerMoveEvent;
-import emu.grasscutter.server.packet.send.PacketAvatarFightPropUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropChangeReasonNotify;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropUpdateNotify;
 import emu.grasscutter.utils.Position;
@@ -39,6 +25,16 @@ import emu.grasscutter.utils.Utils;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
 import lombok.val;
+import messages.general.ability.AbilityControlBlock;
+import messages.general.ability.AbilityEmbryo;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.general.entity.SceneReliquaryInfo;
+import messages.scene.entity.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EntityAvatar extends GameEntity {
     @Getter private final Avatar avatar;
@@ -206,52 +202,49 @@ public class EntityAvatar extends GameEntity {
     public SceneAvatarInfo getSceneAvatarInfo() {
         val avatar = this.getAvatar();
         val player = this.getPlayer();
-        SceneAvatarInfo.Builder avatarInfo = SceneAvatarInfo.newBuilder()
-            .setUid(player.getUid())
-            .setAvatarId(avatar.getAvatarId())
-            .setGuid(avatar.getGuid())
-            .setPeerId(player.getPeerId())
-            .addAllTalentIdList(avatar.getTalentIdList())
-            .setCoreProudSkillLevel(avatar.getCoreProudSkillLevel())
-            .putAllSkillLevelMap(avatar.getSkillLevelMap())
-            .setSkillDepotId(avatar.getSkillDepotId())
-            .addAllInherentProudSkillList(avatar.getProudSkillList())
-            .putAllProudSkillExtraLevelMap(avatar.getProudSkillBonusMap())
-            .addAllTeamResonanceList(player.getTeamManager().getTeamResonances())
-            .setWearingFlycloakId(avatar.getFlyCloak())
-            .setCostumeId(avatar.getCostume())
-            .setBornTime(avatar.getBornTime());
+        val avatarInfo = new SceneAvatarInfo(player.getUid(), avatar.getAvatarId(), avatar.getGuid(), player.getPeerId());
+        avatarInfo.setTalentIdList(avatar.getTalentIdList().stream().toList());
+        avatarInfo.setCoreProudSkillLevel(avatar.getCoreProudSkillLevel());
+        avatarInfo.setSkillLevelMap(avatar.getSkillLevelMap());
+        avatarInfo.setSkillDepotId(avatar.getSkillDepotId());
+        avatarInfo.setInherentProudSkillList(avatar.getProudSkillList().stream().toList());
+        avatarInfo.setProudSkillExtraLevelMap(avatar.getProudSkillBonusMap());
+        avatarInfo.setTeamResonanceList(player.getTeamManager().getTeamResonances().stream().toList());
+        avatarInfo.setWearingFlycloakId(avatar.getFlyCloak());
+        avatarInfo.setCostumeId(avatar.getCostume());
+        avatarInfo.setBornTime(avatar.getBornTime());
+
+        val reliquaryList = new ArrayList<SceneReliquaryInfo>();
+        val equipList = new ArrayList<Integer>();
 
         for (GameItem item : avatar.getEquips().values()) {
             if (item.getItemData().getEquipType() == EquipType.EQUIP_WEAPON) {
                 avatarInfo.setWeapon(item.createSceneWeaponInfo());
             } else {
-                avatarInfo.addReliquaryList(item.createSceneReliquaryInfo());
+                reliquaryList.add(item.createSceneReliquaryInfo());
             }
-            avatarInfo.addEquipIdList(item.getItemId());
+            equipList.add(item.getItemId());
         }
 
-        return avatarInfo.build();
+        avatarInfo.setReliquaryList(reliquaryList);
+        avatarInfo.setEquipIdList(equipList);
+
+        return avatarInfo;
     }
 
     @Override
     public SceneEntityInfo toProto() {
-        EntityAuthorityInfo authority = EntityAuthorityInfo.newBuilder()
-            .setAbilityInfo(AbilitySyncStateInfo.newBuilder())
-            .setRendererChangedInfo(EntityRendererChangedInfo.newBuilder())
-            .setAiInfo(SceneEntityAiInfo.newBuilder().setIsAiOpen(true).setBornPos(Vector.newBuilder()))
-            .setBornPos(Vector.newBuilder())
-            .build();
+        val bornPosProto = new messages.general.Vector();
+        val aiInfo = new SceneEntityAiInfo(true, bornPosProto);
+        val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, bornPosProto);
 
-        SceneEntityInfo.Builder entityInfo = SceneEntityInfo.newBuilder()
-            .setEntityId(getId())
-            .setEntityType(ProtEntityType.PROT_ENTITY_TYPE_AVATAR)
-            .addAnimatorParaList(AnimatorParameterValueInfoPair.newBuilder())
-            .setEntityClientData(EntityClientData.newBuilder())
-            .setEntityAuthorityInfo(authority)
-            .setLastMoveSceneTimeMs(this.getLastMoveSceneTimeMs())
-            .setLastMoveReliableSeq(this.getLastMoveReliableSeq())
-            .setLifeState(this.getLifeState().getValue());
+        val entityInfo = new SceneEntityInfo(messages.scene.entity.ProtEntityType.PROT_ENTITY_AVATAR, getId());
+        entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
+        entityInfo.setEntityClientData(new EntityClientData());
+        entityInfo.setEntityAuthorityInfo(authority);
+        entityInfo.setLastMoveSceneTimeMs(this.getLastMoveSceneTimeMs());
+        entityInfo.setLastMoveReliableSeq(this.getLastMoveReliableSeq());
+        entityInfo.setLifeState(this.getLifeState().getValue());
 
         if (this.getScene() != null) {
             entityInfo.setMotionInfo(this.getMotionInfo());
@@ -259,77 +252,42 @@ public class EntityAvatar extends GameEntity {
 
         this.addAllFightPropsToEntityInfo(entityInfo);
 
-        PropPair pair = PropPair.newBuilder()
-            .setType(PlayerProperty.PROP_LEVEL.getId())
-            .setPropValue(ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getAvatar().getLevel()))
-            .build();
-        entityInfo.addPropList(pair);
+        val pair = new messages.scene.entity.PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getAvatar().getLevel()));
+        entityInfo.setPropList(List.of(pair));
 
-        entityInfo.setAvatar(this.getSceneAvatarInfo());
+        entityInfo.setEntity(new SceneEntityInfo.Entity.Avatar(this.getSceneAvatarInfo()));
 
-        return entityInfo.build();
+        return entityInfo;
     }
 
     public AbilityControlBlock getAbilityControlBlock() {
         AvatarData data = this.getAvatar().getAvatarData();
-        AbilityControlBlock.Builder abilityControlBlock = AbilityControlBlock.newBuilder();
-        int embryoId = 0;
+        val abilityControlBlock = new AbilityControlBlock();
+        val embryoId = new AtomicInteger(0);
+        val embrioList = new ArrayList<AbilityEmbryo>();
 
+        val abilities = data.getAbilities();
         // Add avatar abilities
-        if (data.getAbilities() != null) {
-            for (int id : data.getAbilities()) {
-                AbilityEmbryo emb = AbilityEmbryo.newBuilder()
-                    .setAbilityId(++embryoId)
-                    .setAbilityNameHash(id)
-                    .setAbilityOverrideNameHash(GameConstants.DEFAULT_ABILITY_NAME)
-                    .build();
-                abilityControlBlock.addAbilityEmbryoList(emb);
-            }
+        if (abilities != null) {
+            embrioList.addAll(abilities.stream().map(id -> new AbilityEmbryo(embryoId.incrementAndGet(), id, GameConstants.DEFAULT_ABILITY_NAME)).toList());
         }
         // Add default abilities
-        for (int id : GameConstants.DEFAULT_ABILITY_HASHES) {
-            AbilityEmbryo emb = AbilityEmbryo.newBuilder()
-                .setAbilityId(++embryoId)
-                .setAbilityNameHash(id)
-                .setAbilityOverrideNameHash(GameConstants.DEFAULT_ABILITY_NAME)
-                .build();
-            abilityControlBlock.addAbilityEmbryoList(emb);
-        }
+        embrioList.addAll(Arrays.stream(GameConstants.DEFAULT_ABILITY_HASHES).mapToObj(id -> new AbilityEmbryo(embryoId.incrementAndGet(), id, GameConstants.DEFAULT_ABILITY_NAME)).toList());
         // Add team resonances
-        for (int id : this.getPlayer().getTeamManager().getTeamResonancesConfig()) {
-            AbilityEmbryo emb = AbilityEmbryo.newBuilder()
-                .setAbilityId(++embryoId)
-                .setAbilityNameHash(id)
-                .setAbilityOverrideNameHash(GameConstants.DEFAULT_ABILITY_NAME)
-                .build();
-            abilityControlBlock.addAbilityEmbryoList(emb);
-        }
+        embrioList.addAll(this.getPlayer().getTeamManager().getTeamResonancesConfig().stream().map(id -> new AbilityEmbryo(embryoId.incrementAndGet(), id, GameConstants.DEFAULT_ABILITY_NAME)).toList());
         // Add skill depot abilities
         AvatarSkillDepotData skillDepot = GameData.getAvatarSkillDepotDataMap().get(this.getAvatar().getSkillDepotId());
         if (skillDepot != null && skillDepot.getAbilities() != null) {
-            for (int id : skillDepot.getAbilities()) {
-                AbilityEmbryo emb = AbilityEmbryo.newBuilder()
-                    .setAbilityId(++embryoId)
-                    .setAbilityNameHash(id)
-                    .setAbilityOverrideNameHash(GameConstants.DEFAULT_ABILITY_NAME)
-                    .build();
-                abilityControlBlock.addAbilityEmbryoList(emb);
-            }
+            embrioList.addAll(skillDepot.getAbilities().stream().map(id -> new AbilityEmbryo(embryoId.incrementAndGet(), id, GameConstants.DEFAULT_ABILITY_NAME)).toList());
         }
         // Add equip abilities
         if (this.getAvatar().getExtraAbilityEmbryos().size() > 0) {
-            for (String skill : this.getAvatar().getExtraAbilityEmbryos()) {
-                AbilityEmbryo emb = AbilityEmbryo.newBuilder()
-                    .setAbilityId(++embryoId)
-                    .setAbilityNameHash(Utils.abilityHash(skill))
-                    .setAbilityOverrideNameHash(GameConstants.DEFAULT_ABILITY_NAME)
-                    .build();
-                abilityControlBlock.addAbilityEmbryoList(emb);
-            }
+            embrioList.addAll(this.getAvatar().getExtraAbilityEmbryos().stream().map(id -> new AbilityEmbryo(embryoId.incrementAndGet(), Utils.abilityHash(id), GameConstants.DEFAULT_ABILITY_NAME)).toList());
         }
+        abilityControlBlock.setAbilityEmbryoList(embrioList);
 
         //
-        return abilityControlBlock.build();
+        return abilityControlBlock;
     }
 
     /**

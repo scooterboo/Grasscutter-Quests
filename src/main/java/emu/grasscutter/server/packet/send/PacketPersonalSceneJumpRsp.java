@@ -12,9 +12,9 @@ public class PacketPersonalSceneJumpRsp extends BasePacket {
 
 		PersonalSceneJumpRsp proto = PersonalSceneJumpRsp.newBuilder()
 				.setDestSceneId(sceneId)
-				.setDestPos(pos.toProto())
+				.setDestPos(pos.toProtoOld())
 				.build();
-		
+
 		this.setData(proto);
 	}
 }

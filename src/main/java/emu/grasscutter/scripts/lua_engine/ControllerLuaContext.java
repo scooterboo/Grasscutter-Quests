@@ -1,9 +1,15 @@
 package emu.grasscutter.scripts.lua_engine;
 
+import emu.grasscutter.Grasscutter;
+import emu.grasscutter.game.entity.EntityBaseGadget;
 import emu.grasscutter.game.entity.EntityGadget;
 import lombok.Getter;
+import org.anime_game_servers.gi_lua.script_lib.ScriptLibControllerHandlerProvider;
+import org.anime_game_servers.gi_lua.script_lib.ScriptLibHandler;
+import org.anime_game_servers.lua.engine.LuaEngine;
+import org.jetbrains.annotations.NotNull;
 
-public class ControllerLuaContext implements LuaContext {
+public class ControllerLuaContext implements org.anime_game_servers.gi_lua.script_lib.ControllerLuaContext<EntityGadget> {
     @Getter
     final private EntityGadget gadget;
 
@@ -17,5 +23,11 @@ public class ControllerLuaContext implements LuaContext {
 
     public EntityGadget getEntity() {
         return gadget;
+    }
+
+    @NotNull
+    @Override
+    public ScriptLibControllerHandlerProvider<EntityGadget, ControllerLuaContext> getScriptLibHandlerProvider() {
+        return Grasscutter.getGameServer().getScriptSystem().getScriptLibControllerHandlerProvider();
     }
 }

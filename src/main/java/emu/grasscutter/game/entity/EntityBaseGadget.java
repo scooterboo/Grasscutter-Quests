@@ -4,12 +4,12 @@ import emu.grasscutter.data.binout.config.ConfigEntityGadget;
 import emu.grasscutter.game.props.FightProperty;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.utils.Position;
 import lombok.Getter;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
 
-import static emu.grasscutter.scripts.constants.EventType.EVENT_SPECIFIC_GADGET_HP_CHANGE;
+import static org.anime_game_servers.gi_lua.models.constants.EventType.EVENT_SPECIFIC_GADGET_HP_CHANGE;
 
 public abstract class EntityBaseGadget extends GameEntity {
     @Getter(onMethod = @__(@Override))

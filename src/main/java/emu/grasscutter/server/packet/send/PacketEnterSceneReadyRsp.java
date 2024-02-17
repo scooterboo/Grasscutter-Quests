@@ -1,19 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.EnterSceneReadyRspOuterClass.EnterSceneReadyRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.EnterSceneReadyRsp;
 
-public class PacketEnterSceneReadyRsp extends BasePacket {
+public class PacketEnterSceneReadyRsp extends BaseTypedPacket<EnterSceneReadyRsp> {
 
 	public PacketEnterSceneReadyRsp(Player player) {
-		super(PacketOpcodes.EnterSceneReadyRsp, 11);
-		
-		EnterSceneReadyRsp p = EnterSceneReadyRsp.newBuilder()
-				.setEnterSceneToken(player.getEnterSceneToken())
-				.build();
-		
-		this.setData(p.toByteArray());
+		super(new EnterSceneReadyRsp(player.getEnterSceneToken()), 11);
 	}
 }

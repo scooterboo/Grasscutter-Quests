@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import emu.grasscutter.scripts.constants.IntValueEnum;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.anime_game_servers.core.base.interfaces.IntValueEnum;
 
-public enum CampTargetType implements IntValueEnum{
+public enum CampTargetType implements IntValueEnum {
     None (0),
     Alliance (1),
     Enemy (2),

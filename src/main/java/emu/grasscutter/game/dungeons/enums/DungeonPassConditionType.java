@@ -1,7 +1,7 @@
 package emu.grasscutter.game.dungeons.enums;
 
-import emu.grasscutter.scripts.constants.IntValueEnum;
 import lombok.Getter;
+import org.anime_game_servers.core.base.interfaces.IntValueEnum;
 
 public enum DungeonPassConditionType implements IntValueEnum {
     DUNGEON_COND_NONE(0),

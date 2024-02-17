@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import dev.morphia.annotations.Entity;
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.data.excels.BlossomRefreshData.*;
@@ -15,16 +16,16 @@ import emu.grasscutter.game.managers.blossom.enums.BlossomRefreshType;
 import emu.grasscutter.game.player.BasePlayerDataManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.proto.BlossomBriefInfoOuterClass.BlossomBriefInfo;
-import emu.grasscutter.net.proto.BlossomChestInfoOuterClass.BlossomChestInfo;
-import emu.grasscutter.scripts.constants.EventType;
-import emu.grasscutter.scripts.data.ScriptArgs;
+import emu.grasscutter.net.proto.BlossomBriefInfoOuterClass;
 import emu.grasscutter.server.packet.send.PacketBlossomBriefInfoNotify;
 import emu.grasscutter.server.packet.send.PacketWorldOwnerBlossomScheduleInfoNotify;
 import emu.grasscutter.utils.Utils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
+import messages.gadget.BlossomChestInfo;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
+import org.anime_game_servers.gi_lua.models.constants.EventType;
 
 @Getter
 @Entity
@@ -54,11 +55,11 @@ public class BlossomManager extends BasePlayerDataManager {
     /**
      * BlossomBriefInfo proto
      * */
-    public List<BlossomBriefInfo> getBriefInfo() {
+    public List<BlossomBriefInfoOuterClass.BlossomBriefInfo> getBriefInfo() {
         return this.blossomSchedule.values().stream()
             .map(BlossomSchedule::toBriefProto)
-            .sorted(Comparator.comparing(BlossomBriefInfo::getRefreshId)
-                .thenComparing(BlossomBriefInfo::getCircleCampId))
+            .sorted(Comparator.comparing(BlossomBriefInfoOuterClass.BlossomBriefInfo::getRefreshId)
+                .thenComparing(BlossomBriefInfoOuterClass.BlossomBriefInfo::getCircleCampId))
             .toList();
     }
 
@@ -133,13 +134,13 @@ public class BlossomManager extends BasePlayerDataManager {
         val scheduleOption = Optional.ofNullable(this.spawnedChest.get(chestConfigId))
             .map(this.blossomSchedule::get);
         scheduleOption.ifPresent(schedule -> schedule.getRemainingUid().addAll(playersUid));
-        return scheduleOption.map(schedule -> BlossomChestInfo.newBuilder()
-            .setResin(schedule.getResin())
-            .addAllQualifyUidList(playersUid)
-            .addAllRemainUidList(playersUid)
-            .setRefreshId(schedule.getRefreshId())
-            .setBlossomRefreshType(schedule.getRefreshType().getValue())
-            .build()).orElse(null);
+        return scheduleOption.map(schedule -> {
+            val proto = new BlossomChestInfo(schedule.getResin(), playersUid, playersUid);
+
+            proto.setRefreshId(schedule.getRefreshId());
+            proto.setBlossomRefreshType(schedule.getRefreshType().getValue());
+            return proto;
+        }).orElse(null);
     }
 
     /**
@@ -174,6 +175,7 @@ public class BlossomManager extends BasePlayerDataManager {
     public void buildNextCamp(int groupId) {
         val schedule = this.blossomSchedule.remove(groupId);
         if(schedule == null) return;
+        val world = player.getWorld();
 
         Optional.ofNullable(GameData.getBlossomGroupsDataMap().get(schedule.getCircleCampId()))
             .map(BlossomGroupsData::getNextCampId)
@@ -181,14 +183,20 @@ public class BlossomManager extends BasePlayerDataManager {
             // if next camp overlaps with existing schedule, get further next camp
             .map(groupsData -> this.blossomSchedule.containsKey(groupsData.getNewGroupId()) ?
                 GameData.getBlossomGroupsDataMap().get(groupsData.getNextCampId()) : groupsData).stream()
-            .map(groupData -> BlossomSchedule.create(schedule, groupData, getWorldLevel()))
+            .map(groupData -> BlossomSchedule.create(world, schedule, groupData, getWorldLevel()))
             .filter(Objects::nonNull)
-            .peek(newSchedule -> this.blossomSchedule.put(newSchedule.getGroupId(), newSchedule))
-            .peek(newSchedule -> this.player.getScene().runWhenFinished(() -> this.player.getScene().loadDynamicGroup(newSchedule.getGroupId())))
 //            .peek(newSchedule -> Grasscutter.getLogger().info("[BlossomManager] New {}", newSchedule))
-            .map(BlossomSchedule::getDecorateGroupId)
-            .forEach(decorateGroupId -> this.player.getScene().runWhenFinished(() -> this.player.getScene().loadDynamicGroup(decorateGroupId)));
-//            .forEach(decorateId -> Grasscutter.getLogger().info("[BlossomManager] New Decorate Group: {}", decorateId));
+            .forEach(newSchedule -> {
+                this.blossomSchedule.put(newSchedule.getGroupId(), newSchedule);
+                this.player.getScene().runWhenFinished(() -> {
+                    this.player.getScene().loadDynamicGroup(newSchedule.getGroupId());
+                    val decorateGroupId = newSchedule.getDecorateGroupId();
+                    if(decorateGroupId != 0) {
+                        Grasscutter.getLogger().debug("[BlossomManager] New Decorate Group: {}", decorateGroupId);
+                        this.player.getScene().loadDynamicGroup(decorateGroupId);
+                    }
+                });
+            });
         notifyPlayerIcon(); // notify all camps again
     }
 
@@ -196,13 +204,20 @@ public class BlossomManager extends BasePlayerDataManager {
      * Rebuild all Blossom Camp gadget (not chest gadget) for scene
      * */
     public void loadBlossomGroup() {
-        Optional.ofNullable(this.player.getScene()).ifPresent(scene -> this.blossomSchedule.values().stream()
+        val scene = this.player.getScene();
+        if (scene == null) return;
+
+        this.blossomSchedule.values().stream()
             .filter(schedule -> schedule.getSceneId() == scene.getId())
-            .peek(schedule -> scene.loadDynamicGroup(schedule.getGroupId()))
+            .forEach(schedule -> {
+                scene.loadDynamicGroup(schedule.getGroupId());
+                val decorateGroupId = schedule.getDecorateGroupId();
+                if(decorateGroupId != 0) {
+                    Grasscutter.getLogger().debug("[BlossomManager] Decorate Group: {}", decorateGroupId);
+                    scene.loadDynamicGroup(decorateGroupId);
+                }
+            });
 //            .peek(schedule -> Grasscutter.getLogger().info("[Blossom Manager] Loading Blossom Group: {}", schedule.getGroupId()))
-            .map(BlossomSchedule::getDecorateGroupId)
-            .forEach(scene::loadDynamicGroup));
-//            .forEach(decorateId -> Grasscutter.getLogger().info("[Blossom Manager] Loading Decorate Group:{}", decorateId)));
     }
 
     private int getWorldLevel() {
@@ -266,7 +281,7 @@ public class BlossomManager extends BasePlayerDataManager {
                     .map(sectionList -> IntStream.range(0, data.getRefreshCount()).mapToObj(e ->
                             Stream.ofNullable(groupList).filter(gl -> !gl.isEmpty()).map(Utils::drawRandomListElement)// draw a new random group
                                 .peek(randomGroup -> appendedGroupId.add(randomGroup.getId())).peek(groupList::remove)
-                                .map(randomGroup -> BlossomSchedule.create(data, randomGroup, getWorldLevel())) // build blossom schedule
+                                .map(randomGroup -> BlossomSchedule.create(player.getWorld(), data, randomGroup, getWorldLevel())) // build blossom schedule
                                 .filter(Objects::nonNull).findFirst().orElse(null))
                         .filter(Objects::nonNull).toList())
                     .findFirst().orElse(null);

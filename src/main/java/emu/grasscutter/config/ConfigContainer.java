@@ -86,6 +86,7 @@ public class ConfigContainer {
         public String data = "./data/";
         public String packets = "./packets/";
         public String scripts = "resources:Scripts/";
+        public String scriptOverwrites = "./overwrites/Scripts/";
         public String plugins = "./plugins/";
         public String cache = "./server/cache/";
 
@@ -113,6 +114,7 @@ public class ConfigContainer {
     }
 
     public static class Account {
+        public String sdkServer = "";
         public boolean autoCreate = false;
         public boolean EXPERIMENTAL_RealPassword = false;
         public String[] defaultPermissions = {};

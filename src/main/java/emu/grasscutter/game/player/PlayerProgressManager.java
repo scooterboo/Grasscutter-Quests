@@ -8,20 +8,20 @@ import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.quest.enums.ParentQuestState;
 import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
-import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
-import emu.grasscutter.scripts.data.ScriptArgs;
 import emu.grasscutter.server.packet.send.PacketOpenStateChangeNotify;
 import emu.grasscutter.server.packet.send.PacketOpenStateUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketSceneAreaUnlockNotify;
 import emu.grasscutter.server.packet.send.PacketScenePointUnlockNotify;
 import emu.grasscutter.server.packet.send.PacketSetOpenStateRsp;
 import lombok.val;
+import org.anime_game_servers.core.gi.enums.QuestState;
+import org.anime_game_servers.gi_lua.models.ScriptArgs;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static emu.grasscutter.scripts.constants.EventType.EVENT_UNLOCK_TRANS_POINT;
+import static org.anime_game_servers.gi_lua.models.constants.EventType.EVENT_UNLOCK_TRANS_POINT;
 
 // @Entity
 public class PlayerProgressManager extends BasePlayerDataManager {
@@ -137,8 +137,17 @@ public class PlayerProgressManager extends BasePlayerDataManager {
                     }
                 }
                 // ToDo: Implement.
-                case OPEN_STATE_OFFERING_LEVEL, OPEN_STATE_CITY_REPUTATION_LEVEL -> {}
-
+                case OPEN_STATE_CITY_REPUTATION_LEVEL -> {
+                    // not implemented yet, opening them all seems to trigger the mine craft quest
+                    // param seems to be the city id
+                    // param2 seems to be the reputation level
+                    return false;
+                }
+                // ToDo: Implement.
+                case OPEN_STATE_OFFERING_LEVEL -> {
+                    // param offering id
+                    // param2 offering level
+                }
             }
         }
 

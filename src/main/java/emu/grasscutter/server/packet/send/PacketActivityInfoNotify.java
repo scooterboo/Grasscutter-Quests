@@ -1,19 +1,12 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ActivityInfoNotifyOuterClass;
-import emu.grasscutter.net.proto.ActivityInfoOuterClass;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.activity.ActivityInfo;
+import messages.activity.ActivityInfoNotify;
 
-public class PacketActivityInfoNotify extends BasePacket {
+public class PacketActivityInfoNotify extends BaseTypedPacket<ActivityInfoNotify> {
 
-	public PacketActivityInfoNotify(ActivityInfoOuterClass.ActivityInfo activityInfo) {
-		super(PacketOpcodes.ActivityInfoNotify);
-
-        var proto = ActivityInfoNotifyOuterClass.ActivityInfoNotify.newBuilder();
-
-        proto.setActivityInfo(activityInfo);
-
-        this.setData(proto);
+	public PacketActivityInfoNotify(ActivityInfo activityInfo) {
+		super(new ActivityInfoNotify(activityInfo));
 	}
 }

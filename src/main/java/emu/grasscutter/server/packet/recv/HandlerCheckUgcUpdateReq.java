@@ -1,20 +1,15 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CheckUgcUpdateReqOuterClass.CheckUgcUpdateReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCheckUgcUpdateRsp;
+import messages.activity.user_generated_content.music_game.CheckUgcUpdateReq;
 
-@Opcodes(PacketOpcodes.CheckUgcUpdateReq)
-public class HandlerCheckUgcUpdateReq extends PacketHandler {
+public class HandlerCheckUgcUpdateReq extends TypedPacketHandler<CheckUgcUpdateReq> {
 
-	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        var req = CheckUgcUpdateReq.parseFrom(payload);
-
-		session.send(new PacketCheckUgcUpdateRsp(req.getUgcType()));
-	}
+    @Override
+    public void handle(GameSession session, byte[] header, CheckUgcUpdateReq payload) throws Exception {
+        session.send(new PacketCheckUgcUpdateRsp(payload.getUgcType()));
+    }
 
 }

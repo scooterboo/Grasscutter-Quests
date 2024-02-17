@@ -5,33 +5,31 @@ import emu.grasscutter.game.activity.musicgame.MusicGameActivityHandler;
 import emu.grasscutter.game.activity.musicgame.MusicGameBeatmap;
 import emu.grasscutter.game.activity.musicgame.MusicGamePlayerData;
 import emu.grasscutter.game.props.ActivityType;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
-import emu.grasscutter.net.proto.SaveUgcReqOuterClass;
-import emu.grasscutter.net.proto.UgcTypeOuterClass;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketActivityInfoNotify;
 import emu.grasscutter.server.packet.send.PacketMusicGameCreateBeatmapRsp;
 import emu.grasscutter.utils.Utils;
 import lombok.val;
+import messages.activity.user_generated_content.SaveUgcReq;
+import messages.activity.user_generated_content.UgcType;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
+import messages.activity.user_generated_content.music_game.UgcMusicRecord;
 
 import java.util.Objects;
 
-@Opcodes(PacketOpcodes.SaveUgcReq)
-public class HandlerSaveUgcReq extends PacketHandler {
+public class HandlerSaveUgcReq extends TypedPacketHandler<SaveUgcReq> {
 
 	@Override
-	public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-		val req = SaveUgcReqOuterClass.SaveUgcReq.parseFrom(payload);
+	public void handle(GameSession session, byte[] header, SaveUgcReq req) throws Exception {
 
         // We only support music game user generated content
-        if(req.getUgcType() != UgcTypeOuterClass.UgcType.UGC_TYPE_MUSIC_GAME){
+        if(req.getUgcType() != UgcType.UGC_TYPE_MUSIC_GAME){
             session.send(new PacketMusicGameCreateBeatmapRsp(RetcodeOuterClass.Retcode.RET_UGC_DISABLED, req.getUgcType()));
             return;
         }
-        val briefInfo = req.getMusicBriefInfo();
+        val briefInfo = (UgcMusicBriefInfo)req.getBrief().getValue();
 
         val musicGameBeatmap = MusicGameBeatmap.of()
             .musicId(briefInfo.getMusicId())
@@ -39,14 +37,14 @@ public class HandlerSaveUgcReq extends PacketHandler {
             .savePosition(briefInfo.getSaveIdx())
             .savePageType(briefInfo.getSavePageType())
             .version(briefInfo.getVersion())
-            .afterNoteList(briefInfo.getAfterNoteListList())
-            .beforeNoteList(briefInfo.getBeforeNoteListList())
+            .afterNoteList(briefInfo.getAfterNoteList())
+            .beforeNoteList(briefInfo.getBeforeNoteList())
             .timeLineEditTime(briefInfo.getTimeLineEditTime())
             .publishTime(briefInfo.getPublishTime())
             .realTimeEditTime(briefInfo.getRealTimeEditTime())
             .maxScore(briefInfo.getMaxScore())
             .authorUid(session.getPlayer().getUid())
-            .beatmap(MusicGameBeatmap.parse(req.getMusicRecord().getMusicTrackListList()))
+            .beatmap(MusicGameBeatmap.parse(((UgcMusicRecord)(req.getRecord().getValue())).getMusicTrackList()))
             .createTime(Utils.getCurrentSeconds())
             .build();
 
@@ -66,8 +64,8 @@ public class HandlerSaveUgcReq extends PacketHandler {
             .map(DatabaseHelper::getMusicGameBeatmap)
             .filter(Objects::nonNull)
             .filter(item -> item.getAuthorUid() == session.getPlayer().getUid())
-            .filter(item -> item.getMusicId() == req.getMusicBriefInfo().getMusicId())
-            .filter(item -> item.getSavePosition() == req.getMusicBriefInfo().getSaveIdx())
+            .filter(item -> item.getMusicId() == briefInfo.getMusicId())
+            .filter(item -> item.getSavePosition() == briefInfo.getSaveIdx())
             .findFirst();
 
         // delete old beatmap for player

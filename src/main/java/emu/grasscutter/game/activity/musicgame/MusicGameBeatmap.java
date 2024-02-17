@@ -7,10 +7,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import emu.grasscutter.net.proto.UgcMusicBriefInfoOuterClass.UgcMusicBriefInfo;
-import emu.grasscutter.net.proto.UgcMusicNoteOuterClass.UgcMusicNote;
-import emu.grasscutter.net.proto.UgcMusicRecordOuterClass.UgcMusicRecord;
-import emu.grasscutter.net.proto.UgcMusicTrackOuterClass.UgcMusicTrack;
+import lombok.val;
+import messages.activity.user_generated_content.music_game.UgcMusicBriefInfo;
+import messages.activity.user_generated_content.music_game.UgcMusicNote;
+import messages.activity.user_generated_content.music_game.UgcMusicRecord;
+import messages.activity.user_generated_content.music_game.UgcMusicTrack;
 
 import java.util.List;
 import java.util.Random;
@@ -52,47 +53,44 @@ public class MusicGameBeatmap {
 
     public static List<List<BeatmapNote>> parse(List<UgcMusicTrack> beatmapItemListList) {
         return beatmapItemListList.stream()
-            .map(item -> item.getMusicNoteListList().stream()
+            .map(item -> item.getMusicNoteList().stream()
                 .map(BeatmapNote::parse)
                 .toList())
             .toList();
     }
 
     public UgcMusicRecord toProto(){
-        return UgcMusicRecord.newBuilder()
-            .setMusicId(musicId)
-            .addAllMusicTrackList(beatmap.stream()
+        return new UgcMusicRecord(musicId,
+            beatmap.stream()
                 .map(this::musicBeatmapListToProto)
-                .toList())
-            .build();
+                .toList()
+            );
     }
 
-    public UgcMusicBriefInfo.Builder toBriefProto(){
+    public UgcMusicBriefInfo toBriefProto(){
         var player = DatabaseHelper.getPlayerByUid(authorUid);
 
-        return UgcMusicBriefInfo.newBuilder()
-            .setMusicId(musicId)
-            .setNoteCount(musicNoteCount)
-            .setUgcGuid(musicShareId)
-            .setMaxScore(maxScore)
-            .setPublishTime(createTime)
-            .setCreatorNickname(player.getNickname())
-            .setSavePageType(savePageType)
-            .setVersion(version)
-            .addAllAfterNoteList(afterNoteList)
-            .addAllBeforeNoteList(beforeNoteList)
-            .setTimeLineEditTime(timeLineEditTime)
-            .setPublishTime(publishTime)
-            .setRealTimeEditTime(realTimeEditTime)
-            ;
+        val proto = new UgcMusicBriefInfo();
+        proto.setMusicId(musicId);
+        proto.setNoteCount(musicNoteCount);
+        proto.setUgcGuid(musicShareId);
+        proto.setMaxScore(maxScore);
+        proto.setPublishTime(createTime);
+        proto.setCreatorNickname(player.getNickname());
+        proto.setSavePageType(savePageType);
+        proto.setVersion(version);
+        proto.setAfterNoteList(afterNoteList);
+        proto.setBeforeNoteList(beforeNoteList);
+        proto.setTimeLineEditTime(timeLineEditTime);
+        proto.setPublishTime(publishTime);
+        proto.setRealTimeEditTime(realTimeEditTime);
+        return proto;
     }
 
-    private UgcMusicTrack musicBeatmapListToProto(List<BeatmapNote> beatmapNoteList){
-        return UgcMusicTrack.newBuilder()
-            .addAllMusicNoteList(beatmapNoteList.stream()
-                .map(BeatmapNote::toProto)
-                .toList())
-            .build();
+    private UgcMusicTrack musicBeatmapListToProto(List<BeatmapNote> beatmapNoteList) {
+        return new UgcMusicTrack(beatmapNoteList.stream()
+            .map(BeatmapNote::toProto)
+            .toList());
     }
 
     @Data
@@ -111,10 +109,7 @@ public class MusicGameBeatmap {
         }
 
         public UgcMusicNote toProto(){
-            return UgcMusicNote.newBuilder()
-                .setStartTime(startTime)
-                .setEndTime(endTime)
-                .build();
+            return new UgcMusicNote(startTime, endTime);
         }
     }
 }

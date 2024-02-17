@@ -24,6 +24,8 @@ plugins {
     // Apply the java plugin to add support for Java
     id 'java'
 
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+
     // Apply the protobuf auto generator
     id 'com.google.protobuf' version "0.8.18"
 
@@ -94,9 +96,17 @@ dependencies {
 
     implementation group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
     implementation group: 'org.quartz-scheduler', name: 'quartz-jobs', version: '2.3.2'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 
+    implementation("org.anime_game_servers.core:gi:0.1")
     implementation("org.anime_game_servers:luaj:3.0.3")
     implementation("org.anime_game_servers:JNLua_GC:0.1.0")
+    implementation("org.anime_game_servers.lua:base:0.1")
+    implementation("org.anime_game_servers.lua:GIlua:0.1")
+    implementation("org.anime_game_servers.lua:LuaJEngine:0.1")
+    implementation("org.anime_game_servers.lua:JNLuaEngine:0.1")
+
+    implementation("org.anime_game_servers.multi_proto:gi-jvm:0.1.32")
 
     implementation group:  'com.esotericsoftware', name : 'reflectasm', version: '1.11.9'
     implementation group:  'com.github.davidmoten', name : 'rtree-multi', version: '0.1'
@@ -121,6 +131,19 @@ application {
     getMainClass().set('emu.grasscutter.Grasscutter')
 }
 
+shadowJar {
+    exclude("*.proto")
+    zip64 = true
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    mergeServiceFiles()
+
+    archiveBaseName = 'grasscutter'
+    if (project.hasProperty('jarFilename')) {
+        archiveFileName = "${jarFilename}.${extension}"
+    }
+
+    destinationDirectory = file(".")
+}
 
 jar {
     exclude '*.proto'
@@ -128,6 +151,7 @@ jar {
     manifest {
         attributes 'Main-Class': 'emu.grasscutter.Grasscutter'
     }
+    zip64 = true
 
     archiveBaseName = 'grasscutter'
     if (project.hasProperty('jarFilename')) {

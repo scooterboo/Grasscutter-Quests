@@ -1,49 +1,32 @@
 package emu.grasscutter.server.packet.send;
 
 import java.util.Collection;
+import java.util.List;
 
 import emu.grasscutter.game.entity.GameEntity;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.SceneEntityAppearNotifyOuterClass.SceneEntityAppearNotify;
-import emu.grasscutter.net.proto.VisionTypeOuterClass.VisionType;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.SceneEntityAppearNotify;
+import messages.scene.VisionType;
 
-public class PacketSceneEntityAppearNotify extends BasePacket {
-	
+public class PacketSceneEntityAppearNotify extends BaseTypedPacket<SceneEntityAppearNotify> {
+
 	public PacketSceneEntityAppearNotify(GameEntity entity) {
-		super(PacketOpcodes.SceneEntityAppearNotify, true);
-
-		SceneEntityAppearNotify.Builder proto = SceneEntityAppearNotify.newBuilder()
-				.setAppearType(VisionType.VISION_TYPE_BORN)
-				.addEntityList(entity.toProto());
-
-		this.setData(proto.build());
+		super(new SceneEntityAppearNotify(VisionType.VISION_BORN), true);
+        proto.setEntityList(List.of(entity.toProto()));
 	}
-	
+
 	public PacketSceneEntityAppearNotify(GameEntity entity, VisionType vision, int param) {
-		super(PacketOpcodes.SceneEntityAppearNotify, true);
-
-		SceneEntityAppearNotify.Builder proto = SceneEntityAppearNotify.newBuilder()
-				.setAppearType(vision)
-				.setParam(param)
-				.addEntityList(entity.toProto());
-
-		this.setData(proto.build());
+		super(new SceneEntityAppearNotify(vision, param, List.of(entity.toProto())), true);
 	}
-	
+
 	public PacketSceneEntityAppearNotify(Player player) {
 		this(player.getTeamManager().getCurrentAvatarEntity());
 	}
 
 	public PacketSceneEntityAppearNotify(Collection<? extends GameEntity> entities, VisionType visionType) {
-		super(PacketOpcodes.SceneEntityAppearNotify, true);
-		
-		SceneEntityAppearNotify.Builder proto = SceneEntityAppearNotify.newBuilder()
-				.setAppearType(visionType);
-		
-		entities.forEach(e -> proto.addEntityList(e.toProto()));
+        super(new SceneEntityAppearNotify(visionType), true);
 
-		this.setData(proto.build());
+		proto.setEntityList(entities.stream().map(GameEntity::toProto).toList());
 	}
 }

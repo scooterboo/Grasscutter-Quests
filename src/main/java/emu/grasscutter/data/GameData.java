@@ -27,11 +27,7 @@ import emu.grasscutter.data.server.MonsterMapping;
 import emu.grasscutter.data.server.SubfieldMapping;
 import emu.grasscutter.game.dungeons.DungeonDropEntry;
 import emu.grasscutter.game.quest.QuestEncryptionKey;
-import emu.grasscutter.game.quest.RewindData;
-import emu.grasscutter.game.quest.TeleportData;
-import emu.grasscutter.game.world.GroupReplacementData;
 import emu.grasscutter.game.quest.enums.QuestCond;
-import emu.grasscutter.scripts.data.DummyPoint;
 import emu.grasscutter.utils.Utils;
 import emu.grasscutter.data.excels.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -46,6 +42,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Tolerate;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.quest.QuestData;
+import org.anime_game_servers.gi_lua.models.quest.RewindData;
+import org.anime_game_servers.gi_lua.models.scene.DummyPoint;
+import org.anime_game_servers.gi_lua.models.scene.SceneGroupReplacement;
 
 import javax.annotation.Nullable;
 
@@ -168,7 +168,7 @@ public class GameData {
     private static final Int2ObjectMap<ReliquaryLevelData> reliquaryLevelDataMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<ShopGoodsData> shopGoodsDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<RewindData> rewindDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<TeleportData> teleportDataMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<QuestData> teleportDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<Map<String, DummyPoint>> dummyPointMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<RefreshPolicyExcelConfigData> refreshPolicyExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
     // The following are accessed via getMapByResourceDef, and will show as unused
@@ -188,7 +188,7 @@ public class GameData {
     @Getter private static final Int2ObjectMap<DropTableExcelConfigData> dropTableExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<MonsterMapping> monsterMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<ActivityCondGroup> activityCondGroupMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Int2ObjectMap<GroupReplacementData> groupReplacements = new Int2ObjectOpenHashMap<>();
+    @Getter private static final Int2ObjectMap<SceneGroupReplacement> groupReplacements = new Int2ObjectOpenHashMap<>();
 
     // Cache
     @Getter private static final IntList scenePointIdList = new IntArrayList();
