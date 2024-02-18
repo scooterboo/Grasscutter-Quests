@@ -90,7 +90,7 @@ public class GameMainQuest {
         }
     }
 
-    public Collection<GameQuest> getUnfinishedQuests(){
+    public Collection<GameQuest> getActiveQuests(){
         return childQuests.values().stream()
             .filter(q->q.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue())
             .toList();
@@ -258,8 +258,7 @@ public class GameMainQuest {
         if (this.questManager == null) {
             this.questManager = getOwner().getQuestManager();
         }
-        var activeQuests = getChildQuests().values().stream()
-                .filter(p -> (p.getState() == QuestState.QUEST_STATE_UNFINISHED || p.getState() == QuestState.QUEST_STATE_FINISHED)).toList();
+        var activeQuests = getActiveQuests();
         var highestActiveQuest = activeQuests.stream()
             .filter(q -> q.getQuestData() != null)
             .max(Comparator.comparing(q -> q.getQuestData().getOrder()))
@@ -348,8 +347,13 @@ public class GameMainQuest {
     }
 
     public void checkProgress(){
+        if (this.questManager == null) {
+            this.questManager = getOwner().getQuestManager();
+        }
         for (var quest : getChildQuests().values()){
             if(quest.getState() == QuestState.QUEST_STATE_UNFINISHED) {
+                quest.clearProgress(false);
+                quest.start();
                 questManager.checkQuestAlreadyFullfilled(quest);
             }
         }

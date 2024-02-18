@@ -245,24 +245,11 @@ public class GameQuest {
 
     // Return true if it did the rewind
     public boolean rewind(boolean notifyDelete) {
-        //rewind everything after the rewind target
         getMainQuest().getChildQuests().values().stream().filter(p -> p.getQuestData().getOrder() > this.getQuestData().getOrder()).forEach(q -> {
             q.clearProgress(notifyDelete);
         });
-
-        //rewind and restart everything UNFINISHED before the rewind target
-        getMainQuest().getChildQuests().values().stream().filter(p -> p.getQuestData().getOrder() < this.getQuestData().getOrder()
-                && p.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue()).forEach(q -> {
-            q.clearProgress(notifyDelete);
-            q.start();
-        });
-
-        //rewind and restart itself if it is UNFINISHED
-        if(this.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue()) {
-            clearProgress(notifyDelete);
-            this.start();
-        }
-
+        clearProgress(notifyDelete);
+        this.start();
         return true;
     }
 
