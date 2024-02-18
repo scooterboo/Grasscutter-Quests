@@ -109,14 +109,9 @@ public class QuestManager extends BasePlayerManager {
         List<GameQuest> activeSubs = new ArrayList<>(activeQuests.size());
         for (GameMainQuest quest : activeQuests) {
             List<Position> rewindPos = quest.rewind(); // <pos, rotation>
-            var activeQuest = quest.getActiveQuests();
             if (rewindPos != null) {
                 getPlayer().getPosition().set(rewindPos.get(0));
                 getPlayer().getRotation().set(rewindPos.get(1));
-            }
-            if(activeQuest!=null && rewindPos!=null){
-                //activeSubs.add(activeQuest);
-                //player.sendPacket(new PacketQuestProgressUpdateNotify(activeQuest));
             }
             quest.checkProgress();
         }
