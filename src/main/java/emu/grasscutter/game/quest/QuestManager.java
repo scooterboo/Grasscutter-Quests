@@ -106,7 +106,7 @@ public class QuestManager extends BasePlayerManager {
     public void onLogin() {
         List<GameMainQuest> activeQuests = getActiveMainQuests();
         for (GameMainQuest quest : activeQuests) {
-            quest.checkProgress();
+            quest.restartProgress();
         }
         player.getActivityManager().triggerActivityConditions();
     }

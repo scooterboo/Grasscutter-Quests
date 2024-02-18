@@ -346,7 +346,7 @@ public class GameMainQuest {
         return true;
     }
 
-    public void checkProgress(){
+    public void restartProgress(){
         if (this.questManager == null) {
             this.questManager = getOwner().getQuestManager();
         }
