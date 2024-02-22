@@ -11,7 +11,7 @@ import emu.grasscutter.server.packet.send.PacketScenePlayerLocationNotify;
 public class ExecRollbackParentQuest extends QuestExecHandler {
     @Override
     public boolean execute(GameQuest quest, QuestExecParam condition, String... paramStr) {
-        var targetPosition = quest.getMainQuest().rewind();
+        var targetPosition = quest.getMainQuest().rewind(false);
         if(targetPosition == null){
             return false;
         }

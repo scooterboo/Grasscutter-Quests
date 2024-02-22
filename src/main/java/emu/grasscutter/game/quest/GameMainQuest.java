@@ -90,7 +90,7 @@ public class GameMainQuest {
         }
     }
 
-    public Collection<GameQuest> getActiveQuests(){
+    public Collection<GameQuest> getUnfinishedQuests(){
         return childQuests.values().stream()
             .filter(q->q.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue())
             .toList();
@@ -253,12 +253,9 @@ public class GameMainQuest {
         return null;
     }
 
-    // Rewinds to the last finished/unfinished rewind quest, and returns the avatar rewind position (if it exists)
-    public List<Position> rewind() {
-        if (this.questManager == null) {
-            this.questManager = getOwner().getQuestManager();
-        }
-        var activeQuests = getActiveQuests();
+    public GameQuest findRewindTarget(){
+        var activeQuests = getChildQuests().values().stream()
+            .filter(p -> (p.getState() == QuestState.QUEST_STATE_UNFINISHED || p.getState() == QuestState.QUEST_STATE_FINISHED)).toList();
         var highestActiveQuest = activeQuests.stream()
             .filter(q -> q.getQuestData() != null)
             .max(Comparator.comparing(q -> q.getQuestData().getOrder()))
@@ -282,9 +279,29 @@ public class GameMainQuest {
             .filter(q -> q.getQuestData() != null)
             .filter(q -> q.getQuestData().isRewind() && q.getQuestData().getOrder() <= highestOrder)
             .max(Comparator.comparingInt(a -> a.getQuestData().getOrder()))
-            .orElse(null);
+            .orElse(highestActiveQuest);
 
-        return rewindTo(rewindTarget!=null? rewindTarget : highestActiveQuest, false);
+        return rewindTarget;
+    }
+
+    // Rewinds to the last finished/unfinished rewind quest, and returns the avatar rewind position (if it exists)
+    public List<Position> rewind(boolean onLogin) {
+        if (this.questManager == null) {
+            this.questManager = getOwner().getQuestManager();
+        }
+        val rewindTarget = findRewindTarget();
+        if(rewindTarget == null) return null;
+        val position = rewindTo(rewindTarget, false);
+
+        if(onLogin) {
+            //execute all the beginExec before the rewind target on UNFINISHED quests on login only
+            this.getChildQuests().values().stream().filter(p -> p.getQuestData().getOrder() < rewindTarget.getQuestData().getOrder()
+                    && p.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue()).forEach(q -> {
+                q.getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(q, e, e.getParam()));
+            });
+        }
+
+        return position;
     }
 
     public boolean hasRewindPosition(int subId, List<Position> posAndRot){
@@ -346,14 +363,9 @@ public class GameMainQuest {
         return true;
     }
 
-    public void restartProgress(){
-        if (this.questManager == null) {
-            this.questManager = getOwner().getQuestManager();
-        }
+    public void checkProgress(){
         for (var quest : getChildQuests().values()){
             if(quest.getState() == QuestState.QUEST_STATE_UNFINISHED) {
-                quest.clearProgress(false);
-                quest.start();
                 questManager.checkQuestAlreadyFullfilled(quest);
             }
         }
