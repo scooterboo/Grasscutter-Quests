@@ -290,6 +290,7 @@ public class GameMainQuest {
             this.questManager = getOwner().getQuestManager();
         }
         val rewindTarget = findRewindTarget();
+        if(rewindTarget == null) return null;
         val position = rewindTo(rewindTarget, false);
 
         if(onLogin) {
