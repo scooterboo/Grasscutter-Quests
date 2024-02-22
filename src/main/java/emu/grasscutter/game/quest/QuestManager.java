@@ -106,7 +106,7 @@ public class QuestManager extends BasePlayerManager {
     public void onLogin() {
         List<GameMainQuest> activeQuests = getActiveMainQuests();
         for (GameMainQuest quest : activeQuests) {
-            List<Position> rewindPos = quest.rewind(); // <pos, rotation>
+            List<Position> rewindPos = quest.rewind(true); // <pos, rotation>
             if (rewindPos != null) {
                 getPlayer().getPosition().set(rewindPos.get(0));
                 getPlayer().getRotation().set(rewindPos.get(1));
