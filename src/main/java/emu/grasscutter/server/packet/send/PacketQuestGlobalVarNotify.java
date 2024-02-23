@@ -1,26 +1,13 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.QuestGlobalVarNotifyOuterClass.QuestGlobalVarNotify;
-import emu.grasscutter.net.proto.QuestGlobalVarOuterClass.QuestGlobalVar;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.quest.QuestGlobalVarNotify;
+import messages.quest.QuestGlobalVar;
 
-public final class PacketQuestGlobalVarNotify extends BasePacket {
+public class PacketQuestGlobalVarNotify extends BaseTypedPacket<QuestGlobalVarNotify> {
     public PacketQuestGlobalVarNotify(Player player) {
-        super(PacketOpcodes.QuestGlobalVarNotify);
-
-        this.setData(
-                QuestGlobalVarNotify.newBuilder()
-                        .addAllVarList(
-                                player.getQuestGlobalVariables().entrySet().stream()
-                                        .map(
-                                                entry ->
-                                                        QuestGlobalVar.newBuilder()
-                                                                .setKey(entry.getKey())
-                                                                .setValue(entry.getValue())
-                                                                .build())
-                                        .toList())
-                        .build());
+        super(new QuestGlobalVarNotify(player.getQuestGlobalVariables().entrySet().stream()
+            .map(entry -> new QuestGlobalVar(entry.getKey(),entry.getValue())).toList()));
     }
 }
