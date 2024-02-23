@@ -1051,7 +1051,9 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
 
     @Override
     public int AddBlossomScheduleProgressByGroupId(GroupEventLuaContext context, int groupId) {
-        return handleUnimplemented(groupId);
+        logger.debug("[LUA] Call check AddBlossomScheduleProgressByGroupId with {}", groupId);
+        val blossomManager = context.getSceneScriptManager().getScene().getWorld().getHost().getBlossomManager();
+        return blossomManager.addBlossomProgress(groupId) ? 0 : 1;
     }
 
     @Override
