@@ -195,19 +195,29 @@ public class QuestManager extends BasePlayerManager {
     public void setQuestGlobalVarValue(Integer variable, Integer value) {
         Integer previousValue = getPlayer().getQuestGlobalVariables().put(variable,value);
         QuestSystem.getLogger().debug("Changed questGlobalVar {} value from {} to {}", variable, previousValue==null ? 0: previousValue, value);
+        this.triggerQuestGlobalVarAction(variable, value);
     }
+
     public void incQuestGlobalVarValue(Integer variable, Integer inc) {
-        //
         Integer previousValue = getPlayer().getQuestGlobalVariables().getOrDefault(variable,0);
         getPlayer().getQuestGlobalVariables().put(variable,previousValue + inc);
         QuestSystem.getLogger().debug("Incremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue + inc);
+        this.triggerQuestGlobalVarAction(variable, inc);
     }
+
     //In MainQuest 998, dec is passed as a positive integer
     public void decQuestGlobalVarValue(Integer variable, Integer dec) {
-        //
         Integer previousValue = getPlayer().getQuestGlobalVariables().getOrDefault(variable,0);
         getPlayer().getQuestGlobalVariables().put(variable,previousValue - dec);
         QuestSystem.getLogger().debug("Decremented questGlobalVar {} value from {} to {}", variable, previousValue, previousValue - dec);
+        this.triggerQuestGlobalVarAction(variable, dec);
+    }
+
+    public void triggerQuestGlobalVarAction(int variable, int value) {
+        this.queueEvent(QuestCond.QUEST_COND_QUEST_GLOBAL_VAR_EQUAL, variable, value);
+        this.queueEvent(QuestCond.QUEST_COND_QUEST_GLOBAL_VAR_GREATER, variable, value);
+        this.queueEvent(QuestCond.QUEST_COND_QUEST_GLOBAL_VAR_LESS, variable, value);
+        this.getPlayer().sendPacket(new PacketQuestGlobalVarNotify(getPlayer()));
     }
 
     public GameMainQuest getMainQuestById(int mainQuestId) {
