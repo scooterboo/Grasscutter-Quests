@@ -1473,6 +1473,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         }
 
         configRoute.setRouteId(routeId);
+        entityGadget.startPlatform();
         context.getSceneScriptManager().getScene().broadcastPacket(new PacketPlatformChangeRouteNotify(entityGadget));
         return 0;
     }

@@ -5,6 +5,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.GameDepot;
 import emu.grasscutter.data.binout.SceneNpcBornEntry;
 import emu.grasscutter.data.binout.routes.Route;
+import emu.grasscutter.data.binout.routes.RouteType;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.dungeons.DungeonManager;
@@ -13,6 +14,7 @@ import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.GadgetWorktop;
+import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.TeamInfo;
 import emu.grasscutter.game.props.*;
@@ -85,6 +87,7 @@ public class Scene {
     @Getter private boolean isPaused = false;
 
     @Getter private final GameEntity sceneEntity;
+    @Getter @Setter private Map<Integer, Double> scheduledPlatforms = new ConcurrentHashMap<>();
 
     public Scene(World world, SceneData sceneData) {
         this.world = world;
@@ -327,6 +330,15 @@ public class Scene {
             entity != player.getTeamManager().getCurrentAvatarEntity()).toList();
 
         player.sendPacket(new PacketSceneEntityAppearNotify(entities, VisionType.VISION_MEET));
+
+        //start platforms
+        entities.forEach(x -> {
+            if (!(x instanceof EntityGadget entityGadget)) return;
+            var routeConfig = entityGadget.getRouteConfig();
+            if (routeConfig == null) return;
+            routeConfig.startRoute(player.getScene());
+            player.getScene().broadcastPacket(new PacketPlatformStartRouteNotify(entityGadget));
+        });
     }
 
     public void handleAttack(AttackResult result) {
@@ -417,9 +429,11 @@ public class Scene {
 
         this.entities.values().forEach(e -> e.onTick(getSceneTimeSeconds()));
 
+        checkPlatforms();
         checkNpcGroup();
         finishLoading();
         checkPlayerRespawn();
+
         if (this.tickCount % 10 == 0) {
             broadcastPacket(new PacketSceneTimeNotify(this));
         }
@@ -924,5 +938,97 @@ public class Scene {
 
     public int getCurDungeonId(){
         return dungeonManager != null ? dungeonManager.getDungeonData().getId() : 0;
+    }
+
+    private void checkPlatforms() {
+        val curTime = this.world.getWorldTime();
+        var iter = scheduledPlatforms.entrySet().iterator();
+        while (iter.hasNext()) {
+            val entry = iter.next();
+            val key = entry.getKey();
+            val value = entry.getValue();
+            if (value < curTime) {
+                val entity = getEntityById(key);
+
+                // Deleted entity
+                if (entity == null) {
+                    scheduledPlatforms.remove(key);
+                    return;
+                }
+
+                // Not a platform
+                if (!(entity instanceof EntityGadget entityGadget)) {
+                    scheduledPlatforms.remove(key);
+                    return;
+                }
+
+                // No configRoute
+                if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) {
+                    scheduledPlatforms.remove(key);
+                    return;
+                }
+
+                // No route in file
+                val route = this.getSceneRouteById(configRoute.getRouteId());
+                if (route == null) {
+                    scheduledPlatforms.remove(key);
+                    return;
+                }
+
+                val points = route.getPoints();
+
+                // Increment the index
+                var index = 1 + entityGadget.getRouteConfig().getStartIndex();
+                if (index == points.length) index = 0;
+                entityGadget.getRouteConfig().setStartIndex(index);
+
+                // Update position
+
+                entity.getPosition().set(points[index].getPos());
+
+                // If the point has a Reach Event:
+                if (points[index].isHasReachEvent()) {
+                    callPlatformEvent(key);
+                }
+
+                Grasscutter.getLogger().info("platform {} arrived at point {}", route.getLocalId(), index);
+
+                //we are done with this entry
+                scheduledPlatforms.remove(key);
+
+                //if there is a Reach Stop, or we have reached the end, call stop
+                if (points[index].isReachStop() || (index == points.length - 1 /*&& route.getType().equals(RouteType.OneWay)*/)) {
+                    entityGadget.stopPlatform();
+                    //otherwise, schedule the next one.
+                } else {
+                    double distance;
+                    if (index == points.length - 1 && route.getType().equals(RouteType.Loop)) {
+                        distance = points[index].getPos().computeDistance(points[0].getPos());
+                    } else {
+                        distance = points[index].getPos().computeDistance(points[index + 1].getPos());
+                    }
+                    double time = distance / points[index].getTargetVelocity();
+                    scheduledPlatforms.put(key, value + time);
+                }
+            }
+        }
+    }
+
+    public boolean callPlatformEvent(int entityId) {
+        val entity = getEntityById(entityId);
+        if (entity == null) return false;
+        if (!(entity instanceof EntityGadget entityGadget)) return false;
+        if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) return false;
+
+        val groupId = entityGadget.getGroupId();
+        val configId = entityGadget.getConfigId();
+        val routeId = configRoute.getRouteId();
+        val index = configRoute.getStartIndex();
+
+        Grasscutter.getLogger().info("platform {} event at point {} config {}, route {}", routeId, index, configId, routeId);
+        this.scriptManager.callEvent(new ScriptArgs(groupId, EventType.EVENT_PLATFORM_REACH_POINT, configId, routeId)
+                .setParam3(index)
+                .setEventSource(configId));
+        return true;
     }
 }

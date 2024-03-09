@@ -16,6 +16,7 @@ public class RoutePoint {
     private float waitTime; //optional
     private float targetVelocity; //optional
     private boolean hasReachEvent; //optional
+    private boolean reachStop; //optional
     // rotRoundReachDir //optional Pos with optional values
     // rotRoundLeaveDir //optional Pos with optional values
 

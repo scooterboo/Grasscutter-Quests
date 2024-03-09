@@ -1022,7 +1022,7 @@ public class SceneScriptManager {
         }
 
         logger.warn("trying to cancel a timer that's not active {} {}", groupID, source);
-        return 1;
+        return 0;
     }
 
     // todo use killed monsters instead of spawned entites for check?
