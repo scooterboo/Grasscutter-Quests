@@ -270,7 +270,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         if(routeConfig == null){
             return false;
         }
-
+        this.getScene().getScheduledPlatforms().remove(this.getId());
         routeConfig.stopRoute(getScene());
         getScene().broadcastPacket(new PacketPlatformStopRouteNotify(this));
 
