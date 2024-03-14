@@ -941,39 +941,24 @@ public class Scene {
     }
 
     private void checkPlatforms() {
-        val curTime = this.world.getWorldTime();
+        val curTime = this.getSceneTime();
         var iter = scheduledPlatforms.entrySet().iterator();
         while (iter.hasNext()) {
             val entry = iter.next();
             val key = entry.getKey();
             val value = entry.getValue();
             if (value < curTime) {
+                scheduledPlatforms.remove(key);
                 val entity = getEntityById(key);
-
                 // Deleted entity
-                if (entity == null) {
-                    scheduledPlatforms.remove(key);
-                    return;
-                }
-
+                if (entity == null) return;
                 // Not a platform
-                if (!(entity instanceof EntityGadget entityGadget)) {
-                    scheduledPlatforms.remove(key);
-                    return;
-                }
-
+                if (!(entity instanceof EntityGadget entityGadget)) return;
                 // No configRoute
-                if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) {
-                    scheduledPlatforms.remove(key);
-                    return;
-                }
-
+                if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) return;
                 // No route in file
                 val route = this.getSceneRouteById(configRoute.getRouteId());
-                if (route == null) {
-                    scheduledPlatforms.remove(key);
-                    return;
-                }
+                if (route == null) return;
 
                 val points = route.getPoints();
 
@@ -983,18 +968,12 @@ public class Scene {
                 entityGadget.getRouteConfig().setStartIndex(index);
 
                 // Update position
-
                 entity.getPosition().set(points[index].getPos());
 
                 // If the point has a Reach Event:
                 if (points[index].isHasReachEvent()) {
                     callPlatformEvent(key);
                 }
-
-                Grasscutter.getLogger().info("platform {} arrived at point {}", route.getLocalId(), index);
-
-                //we are done with this entry
-                scheduledPlatforms.remove(key);
 
                 //if there is a Reach Stop, or we have reached the end, call stop
                 if (points[index].isReachStop() || (index == points.length - 1 /*&& route.getType().equals(RouteType.OneWay)*/)) {
@@ -1025,7 +1004,6 @@ public class Scene {
         val routeId = configRoute.getRouteId();
         val index = configRoute.getStartIndex();
 
-        Grasscutter.getLogger().info("platform {} event at point {} config {}, route {}", routeId, index, configId, routeId);
         this.scriptManager.callEvent(new ScriptArgs(groupId, EventType.EVENT_PLATFORM_REACH_POINT, configId, routeId)
                 .setParam3(index)
                 .setEventSource(configId));

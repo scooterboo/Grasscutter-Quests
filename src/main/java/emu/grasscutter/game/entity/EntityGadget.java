@@ -260,7 +260,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
 
         double distance = points[currIndex].getPos().computeDistance(points[currIndex + 1].getPos());
         double time = distance / points[currIndex].getTargetVelocity();
-        time += this.getScene().getWorld().getWorldTime();
+        time += this.getScene().getSceneTime();
         this.getScene().getScheduledPlatforms().put(this.getId(), time);
 
         return true;
