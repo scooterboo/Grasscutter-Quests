@@ -226,6 +226,10 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
             return false;
         }
 
+        if (routeConfig.isStarted()) {
+            return true;
+        }
+
         schedulePlatform();
 
         getScene().broadcastPacket(new PacketSceneTimeNotify(getScene()));
