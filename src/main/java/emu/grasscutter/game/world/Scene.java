@@ -983,7 +983,7 @@ public class Scene {
                     } else {
                         distance = points[index].getPos().computeDistance(points[index + 1].getPos());
                     }
-                    double time = distance / points[index].getTargetVelocity();
+                    double time = 1000 * distance / points[index].getTargetVelocity();
                     scheduledPlatforms.put(key, value + time);
                 }
             }
