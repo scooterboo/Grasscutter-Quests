@@ -252,12 +252,13 @@ public class Scene {
     public synchronized void addEntity(GameEntity entity) {
         addEntityDirectly(entity);
         broadcastPacket(new PacketSceneEntityAppearNotify(entity));
+        sendStartPlatformPacket(entity,null);
     }
 
     public synchronized void addEntityToSingleClient(Player player, GameEntity entity) {
         addEntityDirectly(entity);
         player.sendPacket(new PacketSceneEntityAppearNotify(entity));
-
+        sendStartPlatformPacket(entity, player);
     }
 
     public void addEntities(Collection<? extends GameEntity> entities) {
@@ -283,7 +284,10 @@ public class Scene {
 
         entities.forEach(this::addEntityDirectly);
 
-        chopped(entities.stream().toList(), 100).forEach(l -> broadcastPacket(new PacketSceneEntityAppearNotify(l, visionType)));
+        chopped(entities.stream().toList(), 100).forEach(l -> {
+            broadcastPacket(new PacketSceneEntityAppearNotify(l, visionType));
+            l.forEach(x-> sendStartPlatformPacket(x,null));
+        });
     }
 
     private GameEntity removeEntityDirectly(GameEntity entity) {
@@ -330,15 +334,7 @@ public class Scene {
             entity != player.getTeamManager().getCurrentAvatarEntity()).toList();
 
         player.sendPacket(new PacketSceneEntityAppearNotify(entities, VisionType.VISION_MEET));
-
-        //start platforms
-        entities.forEach(x -> {
-            if (!(x instanceof EntityGadget entityGadget)) return;
-            var routeConfig = entityGadget.getRouteConfig();
-            if (routeConfig == null) return;
-            routeConfig.startRoute(player.getScene());
-            player.getScene().broadcastPacket(new PacketPlatformStartRouteNotify(entityGadget));
-        });
+        entities.forEach(x-> sendStartPlatformPacket(x,player));
     }
 
     public void handleAttack(AttackResult result) {
@@ -599,6 +595,7 @@ public class Scene {
         if (!toAdd.isEmpty()) {
             toAdd.forEach(this::addEntityDirectly);
             broadcastPacket(new PacketSceneEntityAppearNotify(toAdd, VisionType.VISION_BORN));
+            toAdd.forEach(x-> sendStartPlatformPacket(x,null));
         }
         if (!toRemove.isEmpty()) {
             toRemove.forEach(this::removeEntityDirectly);
@@ -1008,5 +1005,18 @@ public class Scene {
                 .setParam3(index)
                 .setEventSource(configId));
         return true;
+    }
+    
+    public void sendStartPlatformPacket(GameEntity entity, Player player){
+        if (!(entity instanceof EntityGadget entityGadget)) return;
+        if (entityGadget.getMetaGadget() != null && !entityGadget.getMetaGadget().isStartRoute()) return;
+        var routeConfig = entityGadget.getRouteConfig();
+        if (routeConfig == null) return;
+        routeConfig.startRoute(this);
+        if(player == null) {
+            this.broadcastPacket(new PacketPlatformStartRouteNotify(entityGadget));
+        } else {
+            player.sendPacket(new PacketPlatformStartRouteNotify(entityGadget));
+        }
     }
 }
