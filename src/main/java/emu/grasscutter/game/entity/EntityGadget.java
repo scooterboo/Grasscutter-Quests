@@ -191,9 +191,8 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
     @Override
     public void afterCreate(List<Player> players) {
         if (this.getMetaGadget() != null && !this.getMetaGadget().isStartRoute()) return;
-        var routeConfig = this.getRouteConfig();
-        if (routeConfig == null) return;
-        routeConfig.startRoute(this.getScene());
+        if (this.routeConfig == null) return;
+        this.routeConfig.startRoute(this.getScene());
         players.forEach(p -> p.sendPacket(new PacketPlatformStartRouteNotify(this)));
     }
 
