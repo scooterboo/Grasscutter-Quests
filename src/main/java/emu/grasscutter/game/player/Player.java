@@ -16,6 +16,7 @@ import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.avatar.AvatarStorage;
 import emu.grasscutter.game.avatar.TrialAvatar;
 import emu.grasscutter.game.battlepass.BattlePassManager;
+import emu.grasscutter.game.city.CityInfoData;
 import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryItem;
 import emu.grasscutter.game.dungeons.dungeon_entry.DungeonEntryManager;
 import emu.grasscutter.game.dungeons.dungeon_entry.PlayerDungeonExitInfo;
@@ -177,6 +178,9 @@ public class Player {
     @Getter private transient PlayerProgressManager progressManager;
     @Getter private transient DungeonEntryManager dungeonEntryManager;
 
+    @Getter private transient int lastWeatherAreaId = 0;
+    @Getter @Setter private transient int weatherAreaId = 0;
+
     @Getter @Setter private transient Position lastCheckedPosition = null;
     private transient PlayerDungeonExitInfo dungeonExitInfo;
 
@@ -220,6 +224,8 @@ public class Player {
     @Getter private PlayerProgress playerProgress;
     @Getter private final DungeonEntryItem dungeonEntryItem;
     @Getter private Set<Integer> activeQuestTimers;
+
+    @Getter @Setter private Map<Integer, CityInfoData> cityInfoData; // cityId -> CityData
 
     @Deprecated
     @SuppressWarnings({"rawtypes", "unchecked"}) // Morphia only!
@@ -267,6 +273,7 @@ public class Player {
         this.playerProgress = new PlayerProgress();
         this.dungeonEntryItem = new DungeonEntryItem();
         this.activeQuestTimers = new HashSet<>();
+        this.cityInfoData = new HashMap<>();
 
         this.attackResults = new LinkedBlockingQueue<>();
         this.coopRequests = new Int2ObjectOpenHashMap<>();
@@ -1517,6 +1524,8 @@ public class Player {
             // Make the Adventure EXP pop-up show on screen.
             if (prop == PlayerProperty.PROP_PLAYER_EXP) {
                 this.sendPacket(new PacketPlayerPropChangeReasonNotify(this, prop, currentValue, value, PropChangeReason.PROP_CHANGE_REASON_PLAYER_ADD_EXP));
+            } else if(prop == PlayerProperty.PROP_MAX_STAMINA) {
+                this.sendPacket(new PacketPlayerPropChangeReasonNotify(this, prop, currentValue, value, PropChangeReason.PROP_CHANGE_REASON_CITY_LEVELUP));
             }
         }
         return true;

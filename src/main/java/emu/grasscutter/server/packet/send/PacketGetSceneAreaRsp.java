@@ -4,7 +4,6 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CityInfoOuterClass.CityInfo;
 import emu.grasscutter.net.proto.GetSceneAreaRspOuterClass.GetSceneAreaRsp;
 import lombok.val;
 
@@ -20,10 +19,7 @@ public class PacketGetSceneAreaRsp extends BasePacket {
                 .addAllAreaIdList(player.getUnlockedSceneAreas(sceneId));
 
         GameData.getCityDataMap().values().stream().filter(cityData -> cityData.getSceneId() == sceneId).forEach(cityData -> {
-            p.addCityInfoList(CityInfo.newBuilder()
-                .setCityId(cityData.getCityId())
-                .setLevel(1)
-                .build());
+            p.addCityInfoList(player.getSotsManager().getCityInfo(cityData.getCityId()).toProto());
         });
 
         this.setData(p);

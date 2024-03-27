@@ -1397,7 +1397,10 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     @Override
     public int SetWeatherAreaState(GroupEventLuaContext context, int var1, int var2) {
         logger.warn("[LUA] Call unimplemented SetWeatherAreaState with {} {}", var1, var2);
-        context.getSceneScriptManager().getScene().getPlayers().forEach(p -> p.setWeather(var1, ClimateType.getTypeByValue(var2)));
+        var area = context.getSceneScriptManager().getScene().getWeatherAreas().get(var1);
+        if(area == null)
+            return 1;
+        area.setClimateType(ClimateType.getTypeByValue(var2));
         return 0;
     }
 

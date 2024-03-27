@@ -1,6 +1,7 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import messages.scene.SceneAreaWeatherNotify;
 
@@ -11,5 +12,13 @@ public class PacketSceneAreaWeatherNotify extends BaseTypedPacket<SceneAreaWeath
 
 		proto.setWeatherAreaId(player.getWeatherId());
         proto.setClimateType(player.getClimate().getValue());
+	}
+
+	public PacketSceneAreaWeatherNotify(int areaId, ClimateType type, float transDuration) {
+		super(new SceneAreaWeatherNotify());
+
+		proto.setWeatherAreaId(areaId);
+        proto.setClimateType(type.getValue());
+		proto.setTransDuration(transDuration);
 	}
 }

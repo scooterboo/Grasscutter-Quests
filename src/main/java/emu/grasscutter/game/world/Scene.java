@@ -5,6 +5,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.GameDepot;
 import emu.grasscutter.data.binout.SceneNpcBornEntry;
 import emu.grasscutter.data.binout.routes.Route;
+import emu.grasscutter.data.common.WeatherAreaPointData;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.dungeons.DungeonManager;
@@ -83,6 +84,7 @@ public class Scene {
     @Getter private boolean finishedLoading = false;
     @Getter private int tickCount = 0;
     @Getter private boolean isPaused = false;
+    @Getter private final Map<Integer, WeatherArea> weatherAreas = new ConcurrentHashMap<>();
 
     @Getter private final GameEntity sceneEntity;
 
@@ -924,5 +926,66 @@ public class Scene {
 
     public int getCurDungeonId(){
         return dungeonManager != null ? dungeonManager.getDungeonData().getId() : 0;
+    }
+
+    public WeatherArea getWeatherArea(Position position) {
+        List<WeatherAreaPointData> data = GameData.getWeatherAreaPointData().get(getId());
+
+        int areaId = 0;
+        for (WeatherAreaPointData points : data) {
+            if(points.isInside(position)) areaId = points.area_id;
+        }
+
+        if(areaId == 0) return null;
+
+        return weatherAreas.get(areaId);
+    }
+
+    public boolean removeWeatherArea(int areaId) {
+        if(!weatherAreas.containsKey(areaId)) return true;
+
+        val area = weatherAreas.get(areaId);
+        area.remove();
+        weatherAreas.remove(areaId);
+
+        return true;
+    }
+
+    public boolean addWeatherArea(int areaId) {
+        if(weatherAreas.containsKey(areaId)) return false;
+
+        WeatherData w = GameData.getWeatherDataMap().get(areaId);
+        if (w != null) {
+            return false;
+        }
+
+        WeatherArea area = new WeatherArea(this, w);
+        area.init();
+        weatherAreas.put(areaId, area);
+
+        //update all weather areas affected by players on this scene
+        for (Player player : this.players) {
+            val aVal = getWeatherArea(player.getPosition());
+            if(aVal != null) {
+                if(player.getWeatherAreaId() != aVal.getConfig().getAreaID()) {
+                    aVal.enterArea(player);
+                    WeatherArea lastArea = weatherAreas.get(player.getWeatherAreaId());
+                    if(lastArea != null) lastArea.leaveArea(player);
+                }
+                player.setWeatherAreaId(aVal.getConfig().getAreaID());
+
+                //TODO
+                player.sendPacket(new PacketSceneAreaWeatherNotify(aVal.getConfig().getAreaID(), aVal.getCurrentClimateType(), aVal.getTransDuration()));
+            } else {
+                WeatherArea lastArea = weatherAreas.get(player.getWeatherAreaId());
+                if(lastArea != null) {
+                    lastArea.leaveArea(player);
+                }
+
+                player.sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
+            }
+        }
+
+        return true;
     }
 }
