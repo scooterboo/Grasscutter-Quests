@@ -20,6 +20,6 @@ public class WeatherTemplateData extends GameResource {
     @Override
     public void onLoad() {
         super.onLoad();
-        GameData.getWeatherTemplateDataMap().put(templateName + weatherType.getValue(), this);
+        GameData.getWeatherTemplateDataByNameMap().put(templateName + weatherType.getValue(), this);
     }
 }

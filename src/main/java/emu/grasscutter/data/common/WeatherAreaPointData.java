@@ -22,11 +22,11 @@ public class WeatherAreaPointData {
 
     public boolean isInside(Position position) {
         float posX = position.getX();
-        float posY = position.getY();
+        float posZ = position.getZ();
         boolean result = false;
         for(int i = 0, j = points.length - 1; i < points.length; j = i++) {
-            if((points[i].y > posY) != (points[j].y > posY) &&
-                (posX < (points[j].x - points[i].x) * (posY - points[i].y) / (points[j].y-points[i].y) + points[i].x)) {
+            if((points[i].y > posZ) != (points[j].y > posZ) &&
+                (posX < (points[j].x - points[i].x) * (posZ - points[i].y) / (points[j].y-points[i].y) + points[i].x)) {
                 result = !result;
             }
         }

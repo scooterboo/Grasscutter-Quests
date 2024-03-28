@@ -271,33 +271,36 @@ public class ResourceLoader {
         }
     }
 
-    public static class SceneWeatherAreaConfig {  // Sadly this doesn't work as a local class in loadScenePoints()
-        public List<WeatherAreaPointData> areas;
-    }
     private static void loadSceneWeatherAreas() {
-        val pattern = Pattern.compile("scene([0-9]+)_weather_area\\.json");
-        try (val stream = Files.newDirectoryStream(getResourcePath("BinOutput/Scene/Point"), "scene*_weather_area.json")){
-            stream.forEach(path -> {
-                val matcher = pattern.matcher(path.getFileName().toString());
-                if (!matcher.find()) return;
-                int sceneId = Integer.parseInt(matcher.group(1));
+        val pattern = Pattern.compile("scene([0-9]+)_weather_areas\\.json");
+        try (val dirStream = Files.newDirectoryStream(getResourcePath("Scripts/Scene"))) {
+            dirStream.forEach(dirPath -> {
+                try (val stream = Files.newDirectoryStream(dirPath, "scene*_weather_areas.json")){
+                    stream.forEach(path -> {
+                        val matcher = pattern.matcher(path.getFileName().toString());
+                        if (!matcher.find()) return;
+                        int sceneId = Integer.parseInt(matcher.group(1));
 
-                SceneWeatherAreaConfig config;
-                try {
-                    config = JsonUtils.loadToClass(path, SceneWeatherAreaConfig.class);
-                } catch (Exception e) {
-                    logger.error("Error loading scene point file: {}", path, e);
-                    return;
+                        List<WeatherAreaPointData> config;
+                        try {
+                            config = JsonUtils.loadToList(path, WeatherAreaPointData.class);
+                        } catch (Exception e) {
+                            logger.error("Error loading weather area file: {}", path, e);
+                            return;
+                        }
+
+                        if (config == null) return;
+
+                        config.forEach((area) -> {
+                            GameData.getWeatherAreaPointData().put(sceneId, config);
+                        });
+                    });
+                } catch (IOException e) {
+                    logger.error("Weather area files cannot be found");
                 }
-
-                if (config.areas == null) return;
-
-                config.areas.forEach((area) -> {
-                    GameData.getWeatherAreaPointData().put(sceneId, config.areas);
-                });
             });
         } catch (IOException e) {
-            logger.error("Scene point files cannot be found, you cannot use teleport waypoints!");
+            logger.error("Weather area files cannot be found");
         }
     }
 

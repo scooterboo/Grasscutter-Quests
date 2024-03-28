@@ -53,6 +53,7 @@ import emu.grasscutter.game.shop.ShopLimit;
 import emu.grasscutter.game.tower.TowerData;
 import emu.grasscutter.game.tower.TowerManager;
 import emu.grasscutter.game.world.Scene;
+import emu.grasscutter.game.world.WeatherArea;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
@@ -1529,6 +1530,29 @@ public class Player {
             }
         }
         return true;
+    }
+
+    public void updateWeather(Scene scene) {
+        val aVal = scene.getWeatherArea(getPosition());
+        if(aVal != null) {
+            if(getWeatherAreaId() != aVal.getConfig().getAreaID()) {
+                aVal.enterArea(this);
+                WeatherArea lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
+                if(lastArea != null) lastArea.leaveArea(this);
+            }
+            setWeatherAreaId(aVal.getConfig().getAreaID());
+
+            if(sceneLoadState.getValue() >= SceneLoadState.INIT.getValue())
+                sendPacket(new PacketSceneAreaWeatherNotify(aVal.getConfig().getAreaID(), aVal.getCurrentClimateType(), aVal.getTransDuration()));
+        } else {
+            WeatherArea lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
+            if(lastArea != null) {
+                lastArea.leaveArea(this);
+            }
+
+            if(sceneLoadState.getValue() >= SceneLoadState.INIT.getValue())
+                sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
+        }
     }
 
 }

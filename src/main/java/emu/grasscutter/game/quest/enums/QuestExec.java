@@ -30,7 +30,7 @@ public enum QuestExec implements QuestTrigger {
     QUEST_EXEC_REFRESH_GROUP_SUITE (19),
     QUEST_EXEC_REMOVE_TRIAL_AVATAR (20),
     QUEST_EXEC_SET_GAME_TIME (21),
-    QUEST_EXEC_SET_WEATHER_GADGET (22), // missing
+    QUEST_EXEC_SET_WEATHER_GADGET (22),
     QUEST_EXEC_ADD_QUEST_PROGRESS (23),
     QUEST_EXEC_NOTIFY_DAILY_TASK (24), // missing
     QUEST_EXEC_CREATE_PATTERN_GROUP (25), // missing, used for random quests

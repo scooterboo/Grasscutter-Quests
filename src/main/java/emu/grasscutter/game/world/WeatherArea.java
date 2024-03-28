@@ -5,6 +5,7 @@ import emu.grasscutter.data.excels.WeatherData;
 import emu.grasscutter.data.excels.WeatherTemplateData;
 import emu.grasscutter.data.server.WeatherMapping;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.server.packet.send.PacketSceneAreaWeatherNotify;
 import lombok.Getter;
@@ -87,7 +88,8 @@ public class WeatherArea {
     public void remove() {
         for (Player player : this.players) {
             //Remove player from this area and notify it
-            player.sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
+            if(player.getSceneLoadState().getValue() >= SceneLoadState.INIT.getValue())
+                player.sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
         }
     }
 
@@ -97,7 +99,7 @@ public class WeatherArea {
 
         ClimateType searchType = climateType;
         if(searchType == ClimateType.CLIMATE_NONE) searchType = config.getDefaultClimate();
-        WeatherTemplateData templateData = GameData.getWeatherTemplateDataMap().get(mapping.getTemplate()+searchType.getValue());
+        WeatherTemplateData templateData = GameData.getWeatherTemplateDataByNameMap().get(mapping.getTemplate()+searchType.getValue());
         if(templateData == null) return ClimateType.CLIMATE_SUNNY;
 
         float maxNumber = templateData.getSunnyProb() +
@@ -142,7 +144,7 @@ public class WeatherArea {
             int sceneTime = scene.getSceneTimeSeconds();
             int nextTime = sceneTime + (refreshInterval - sceneTime % refreshInterval);
             if(currentTime <= sceneTime) {
-                if(forcastList.isEmpty() || (nextTime <= currentTime)) return;
+                if(/*forcastList.isEmpty() || */(nextTime <= currentTime)) return;
 
                 ClimateType cType = ClimateType.CLIMATE_NONE;
                 if(currentTime < nextTime) {
@@ -168,7 +170,8 @@ public class WeatherArea {
                 if(oldClimateType != climateType) {
                     if(type == WeatherRefreshType.REFRESH_WEATHER_HOUR) {
                         for (Player player : this.players) {
-                            player.sendPacket(new PacketSceneAreaWeatherNotify(this.config.getAreaID(), climateType, transDuration));
+                            if(player.getSceneLoadState().getValue() >= SceneLoadState.INIT.getValue())
+                                player.sendPacket(new PacketSceneAreaWeatherNotify(this.config.getAreaID(), climateType, transDuration));
                         }
                     }
                     if(type == WeatherRefreshType.REFRESH_WEATHER_NONE ||

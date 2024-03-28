@@ -164,7 +164,8 @@ public class GameData {
     @Getter private static final Int2ObjectMap<WeaponPromoteData> weaponPromoteDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<StatuePromoteData> statuePromoteDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WeatherData> weatherDataMap = new Int2ObjectOpenHashMap<>();
-    @Getter private static final Map<String, WeatherTemplateData> weatherTemplateDataMap = new HashMap<>();
+    @Getter private static final Int2ObjectMap<WeatherTemplateData> weatherTemplateDataMap = new Int2ObjectOpenHashMap<>(); //Unused
+    @Getter private static final Map<String, WeatherTemplateData> weatherTemplateDataByNameMap = new HashMap<>();
     @Getter private static final Int2ObjectMap<WorldAreaData> worldAreaDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WorldLevelData> worldLevelDataMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<AvatarPromoteData> avatarPromoteDataMap = new Int2ObjectOpenHashMap<>();

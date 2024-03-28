@@ -15,12 +15,10 @@ public class ExecSetWeatherGadget extends QuestExecHandler {
         val openWeather = Integer.parseInt(paramStr[1]) == 1 ? true : false; //0 -> remove weather area, 1-> add weather area
 
         if(openWeather) {
-            quest.getOwner().getScene().addWeatherArea(weatherAreaId);
+            return quest.getOwner().getScene().addWeatherArea(weatherAreaId);
         } else {
-            quest.getOwner().getScene().removeWeatherArea(weatherAreaId);
+            return quest.getOwner().getScene().removeWeatherArea(weatherAreaId);
         }
-
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
 
 }

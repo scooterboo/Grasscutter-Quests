@@ -930,10 +930,21 @@ public class Scene {
 
     public WeatherArea getWeatherArea(Position position) {
         List<WeatherAreaPointData> data = GameData.getWeatherAreaPointData().get(getId());
+        if(data == null) return null;
 
         int areaId = 0;
+        int maxPriority = -1;
         for (WeatherAreaPointData points : data) {
-            if(points.isInside(position)) areaId = points.area_id;
+            if(points.isInside(position)) {
+                WeatherArea area = weatherAreas.get(points.getArea_id());
+                if(area == null) continue;
+
+                int priority = area.getConfig().getPriority();
+                if(priority > maxPriority) {
+                    areaId = points.area_id;
+                    maxPriority = priority;
+                }
+            }
         }
 
         if(areaId == 0) return null;
@@ -941,10 +952,14 @@ public class Scene {
         return weatherAreas.get(areaId);
     }
 
+    //TODO: notify(recalculate current player weather) and save the current weather to database
+
     public boolean removeWeatherArea(int areaId) {
         if(!weatherAreas.containsKey(areaId)) return true;
 
         val area = weatherAreas.get(areaId);
+        Grasscutter.getLogger().error("Removing Weather Area {}({})", areaId, area.getConfig().getProfileName());
+
         area.remove();
         weatherAreas.remove(areaId);
 
@@ -955,7 +970,7 @@ public class Scene {
         if(weatherAreas.containsKey(areaId)) return false;
 
         WeatherData w = GameData.getWeatherDataMap().get(areaId);
-        if (w != null) {
+        if (w == null) {
             return false;
         }
 
@@ -964,27 +979,9 @@ public class Scene {
         weatherAreas.put(areaId, area);
 
         //update all weather areas affected by players on this scene
-        for (Player player : this.players) {
-            val aVal = getWeatherArea(player.getPosition());
-            if(aVal != null) {
-                if(player.getWeatherAreaId() != aVal.getConfig().getAreaID()) {
-                    aVal.enterArea(player);
-                    WeatherArea lastArea = weatherAreas.get(player.getWeatherAreaId());
-                    if(lastArea != null) lastArea.leaveArea(player);
-                }
-                player.setWeatherAreaId(aVal.getConfig().getAreaID());
+        this.players.forEach(p -> p.updateWeather(this));
 
-                //TODO
-                player.sendPacket(new PacketSceneAreaWeatherNotify(aVal.getConfig().getAreaID(), aVal.getCurrentClimateType(), aVal.getTransDuration()));
-            } else {
-                WeatherArea lastArea = weatherAreas.get(player.getWeatherAreaId());
-                if(lastArea != null) {
-                    lastArea.leaveArea(player);
-                }
-
-                player.sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
-            }
-        }
+        Grasscutter.getLogger().error("Added Weather Area {}({}), climateType {}", areaId, area.getConfig().getProfileName(), area.getCurrentClimateType().name());
 
         return true;
     }
