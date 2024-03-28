@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import messages.scene.SceneAreaWeatherNotify;
+import messages.scene.weather.SceneAreaWeatherNotify;
 
 public class PacketSceneAreaWeatherNotify extends BaseTypedPacket<SceneAreaWeatherNotify> {
 
