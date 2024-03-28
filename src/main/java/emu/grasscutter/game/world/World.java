@@ -334,6 +334,7 @@ public class World implements Iterable<Player> {
 
         // Teleport packet
         player.sendPacket(new PacketPlayerEnterSceneNotify(player, teleportProperties));
+        player.updateWeather(newScene);
 
         if(teleportProperties.getTeleportType() != TeleportType.INTERNAL && teleportProperties.getTeleportType() != SCRIPT) {
             player.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_ANY_MANUAL_TRANSPORT);
