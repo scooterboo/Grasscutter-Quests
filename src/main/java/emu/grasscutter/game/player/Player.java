@@ -1549,8 +1549,10 @@ public class Player {
                 lastArea.leaveArea(this);
             }
 
+            setWeatherAreaId(0);
+
             if(sceneLoadState.getValue() >= SceneLoadState.INIT.getValue())
-                sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_NONE, 0));
+                sendPacket(new PacketSceneAreaWeatherNotify(0, ClimateType.CLIMATE_SUNNY, 0));
         }
     }
 
