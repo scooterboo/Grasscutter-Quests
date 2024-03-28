@@ -9,7 +9,6 @@ import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.server.packet.send.PacketSceneAreaWeatherNotify;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import com.mongodb.lang.Nullable;
 public class WeatherArea {
     @Getter private final Scene scene;
     @Getter private WeatherData config;
-    @Getter @Setter private ClimateType climateType;
+    @Getter private ClimateType climateType;
     @Getter private float transDuration = 0;
     @Nullable
     private ClimateType currentClimateType = null; //TODO: Related to abilities
@@ -29,6 +28,11 @@ public class WeatherArea {
         if(currentClimateType == null)
             return climateType;
         return currentClimateType;
+    }
+
+    public void setClimateType(ClimateType type) {
+        this.scene.getSceneInstanceData().updateWeather(config.getAreaID(), type);
+        this.climateType = type;
     }
 
     public static float WeatherChangeInterval = 4;
@@ -134,8 +138,10 @@ public class WeatherArea {
         if(config.isDefaultValid()) {
             //Easy part
 
-            climateType = config.getDefaultClimate();
+            setClimateType(config.getDefaultClimate());
         } else {
+            if(scene.getWorld().isWeatherLocked()) return;
+
             int refreshInterval = (int)(WeatherChangeInterval * GameHourSeconds);
 
             ClimateType oldClimateType = climateType;
@@ -154,7 +160,7 @@ public class WeatherArea {
                         cType = randWeather();
                     }
 
-                    climateType = cType;
+                    setClimateType(cType);
                     currentTime = nextTime;
                 }
                 for(int i = forcastList.size(); i < WeatherForcastNum; i++) {

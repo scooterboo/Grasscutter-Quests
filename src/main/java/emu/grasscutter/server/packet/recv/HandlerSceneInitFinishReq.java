@@ -29,6 +29,9 @@ public class HandlerSceneInitFinishReq extends TypedPacketHandler<SceneInitFinis
 		session.send(new PacketSceneTimeNotify(session.getPlayer()));
 		session.send(new PacketPlayerGameTimeNotify(session.getPlayer()));
 		session.send(new PacketPlayerEnterSceneInfoNotify(session.getPlayer()));
+
+		session.getPlayer().getScene().reloadWeathers();
+		session.getPlayer().updateWeather(session.getPlayer().getScene());
 		WeatherArea area = session.getPlayer().getScene().getWeatherAreas().get(session.getPlayer().getWeatherAreaId());
 		if(area != null)
 			session.send(new PacketSceneAreaWeatherNotify(area.getConfig().getAreaID(), area.getCurrentClimateType(), area.getTransDuration()));
