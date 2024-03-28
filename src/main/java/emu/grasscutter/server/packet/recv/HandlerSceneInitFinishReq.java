@@ -35,7 +35,7 @@ public class HandlerSceneInitFinishReq extends TypedPacketHandler<SceneInitFinis
 		WeatherArea area = session.getPlayer().getScene().getWeatherAreas().get(session.getPlayer().getWeatherAreaId());
 		if(area != null)
 			session.send(new PacketSceneAreaWeatherNotify(area.getConfig().getAreaID(), area.getCurrentClimateType(), area.getTransDuration()));
-		else
+		else //TODO: Remove old climate implementation, you can use areaId 0 and climate type none, but needs testing
 			session.send(new PacketSceneAreaWeatherNotify(session.getPlayer()));
 		session.send(new PacketScenePlayerInfoNotify(session.getPlayer().getWorld()));
 		session.send(new PacketSceneTeamUpdateNotify(session.getPlayer()));

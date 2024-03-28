@@ -24,17 +24,6 @@ public class WeatherArea {
     @Nullable
     private ClimateType currentClimateType = null; //TODO: Related to abilities
 
-    public ClimateType getCurrentClimateType() {
-        if(currentClimateType == null)
-            return climateType;
-        return currentClimateType;
-    }
-
-    public void setClimateType(ClimateType type) {
-        this.scene.getSceneInstanceData().updateWeather(config.getAreaID(), type);
-        this.climateType = type;
-    }
-
     public static float WeatherChangeInterval = 4;
     public static int WeatherForcastNum = 0xC;
     public static int GameHourSeconds = 10000;
@@ -67,6 +56,17 @@ public class WeatherArea {
     public WeatherArea(Scene scene, WeatherData config) {
         this.scene = scene;
         this.config = config;
+    }
+
+    public ClimateType getCurrentClimateType() {
+        if(currentClimateType == null)
+            return climateType;
+        return currentClimateType;
+    }
+
+    public void setClimateType(ClimateType type) {
+        this.scene.getSceneInstanceData().updateWeather(config.getAreaID(), type);
+        this.climateType = type;
     }
 
     public void init() {
