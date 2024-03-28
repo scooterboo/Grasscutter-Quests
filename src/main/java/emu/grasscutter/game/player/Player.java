@@ -53,7 +53,6 @@ import emu.grasscutter.game.shop.ShopLimit;
 import emu.grasscutter.game.tower.TowerData;
 import emu.grasscutter.game.tower.TowerManager;
 import emu.grasscutter.game.world.Scene;
-import emu.grasscutter.game.world.WeatherArea;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
@@ -1537,7 +1536,7 @@ public class Player {
         if(aVal != null) {
             if(getWeatherAreaId() != aVal.getConfig().getAreaID()) {
                 aVal.enterArea(this);
-                WeatherArea lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
+                val lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
                 if(lastArea != null) lastArea.leaveArea(this);
             }
             setWeatherAreaId(aVal.getConfig().getAreaID());
@@ -1545,7 +1544,7 @@ public class Player {
             if(sceneLoadState.getValue() >= SceneLoadState.INIT.getValue())
                 sendPacket(new PacketSceneAreaWeatherNotify(aVal.getConfig().getAreaID(), aVal.getCurrentClimateType(), aVal.getTransDuration()));
         } else {
-            WeatherArea lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
+            val lastArea = scene.getWeatherAreas().get(getWeatherAreaId());
             if(lastArea != null) {
                 lastArea.leaveArea(this);
             }

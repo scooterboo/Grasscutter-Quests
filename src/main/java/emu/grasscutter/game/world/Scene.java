@@ -5,7 +5,6 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.GameDepot;
 import emu.grasscutter.data.binout.SceneNpcBornEntry;
 import emu.grasscutter.data.binout.routes.Route;
-import emu.grasscutter.data.common.WeatherAreaPointData;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.avatar.Avatar;
@@ -706,7 +705,7 @@ public class Scene {
     public void onRegisterGroups() {
         // Create the graph
         val groupList = new HashSet<Integer>();
-        val groupIds = this.loadedGroups.stream().map(SceneGroup::getGroupInfo).map(SceneGroupInfo::getId).toList();
+        //val groupIds = this.loadedGroups.stream().map(SceneGroup::getGroupInfo).map(SceneGroupInfo::getId).toList();
         val replacements = GameData.getGroupReplacements().values().stream()
             .filter(replacement -> this.loadedGroups.stream()
                 .filter(g-> g.getGroupInfo().isDynamicLoad())
@@ -946,14 +945,14 @@ public class Scene {
     }
 
     public WeatherArea getWeatherArea(Position position) {
-        List<WeatherAreaPointData> data = GameData.getWeatherAreaPointData().get(getId());
+        val data = GameData.getWeatherAreaPointData().get(getId());
         if(data == null) return null;
 
         int areaId = 0;
         int maxPriority = -1;
-        for (WeatherAreaPointData points : data) {
+        for (val points : data) {
             if(points.isInside(position)) {
-                WeatherArea area = weatherAreas.get(points.getArea_id());
+                val area = weatherAreas.get(points.getArea_id());
                 if(area == null) continue;
 
                 int priority = area.getConfig().getPriority();
@@ -987,7 +986,7 @@ public class Scene {
     public boolean addWeatherArea(int areaId) {
         if(weatherAreas.containsKey(areaId)) return false;
 
-        WeatherData w = GameData.getWeatherDataMap().get(areaId);
+        val w = GameData.getWeatherDataMap().get(areaId);
         if (w == null) {
             return false;
         }
@@ -1009,7 +1008,7 @@ public class Scene {
         if(weatherLoaded) return;
 
         this.sceneInstanceData.getWeatherAreas().entrySet().forEach(e -> {
-            WeatherData w = GameData.getWeatherDataMap().get((int)e.getKey());
+            val w = GameData.getWeatherDataMap().get((int)e.getKey());
 
             if(w != null && !this.weatherAreas.containsKey(e.getKey())) {
                 WeatherArea area = new WeatherArea(this, w);

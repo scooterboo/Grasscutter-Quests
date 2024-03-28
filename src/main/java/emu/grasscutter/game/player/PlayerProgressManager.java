@@ -265,7 +265,7 @@ public class PlayerProgressManager extends BasePlayerDataManager {
     }
 
     public boolean lockTransPoint(int sceneId, int pointId) {
-        ScenePointEntry scenePointEntry = GameData.getScenePointEntryById(sceneId, pointId);
+        val scenePointEntry = GameData.getScenePointEntryById(sceneId, pointId);
 
         if (scenePointEntry == null || !this.player.getUnlockedScenePoints(sceneId).contains(pointId)) {
             return false;

@@ -2,13 +2,12 @@ package emu.grasscutter.game.world;
 
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.WeatherData;
-import emu.grasscutter.data.excels.WeatherTemplateData;
-import emu.grasscutter.data.server.WeatherMapping;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.props.ClimateType;
 import emu.grasscutter.server.packet.send.PacketSceneAreaWeatherNotify;
 import lombok.Getter;
+import lombok.val;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -98,12 +97,12 @@ public class WeatherArea {
     }
 
     public ClimateType randWeather(ClimateType initClimateType) {
-        WeatherMapping mapping = GameData.getWeatherMappingMap().get(config.getAreaID());
+        val mapping = GameData.getWeatherMappingMap().get(config.getAreaID());
         if(mapping == null) return ClimateType.CLIMATE_SUNNY;
 
-        ClimateType searchType = climateType;
+        var searchType = climateType;
         if(searchType == ClimateType.CLIMATE_NONE) searchType = config.getDefaultClimate();
-        WeatherTemplateData templateData = GameData.getWeatherTemplateDataByNameMap().get(mapping.getTemplate()+searchType.getValue());
+        val templateData = GameData.getWeatherTemplateDataByNameMap().get(mapping.getTemplate()+searchType.getValue());
         if(templateData == null) return ClimateType.CLIMATE_SUNNY;
 
         float maxNumber = templateData.getSunnyProb() +
