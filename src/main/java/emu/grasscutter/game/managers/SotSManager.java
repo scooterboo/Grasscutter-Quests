@@ -3,7 +3,6 @@ package emu.grasscutter.game.managers;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.CityData;
-import emu.grasscutter.data.excels.RewardData;
 import emu.grasscutter.game.city.CityInfoData;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.player.BasePlayerManager;
@@ -17,6 +16,7 @@ import emu.grasscutter.net.proto.PropChangeReasonOuterClass.PropChangeReason;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropChangeReasonNotify;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketSceneForceUnlockNotify;
+import lombok.val;
 import emu.grasscutter.server.packet.send.PacketLevelupCityRsp;
 
 import org.slf4j.Logger;
@@ -264,12 +264,12 @@ public class SotSManager extends BasePlayerManager {
             // Add items to inventory
             if (nextStatuePromoteData.getRewardIdList() != null) {
                 for (var rewardId : nextStatuePromoteData.getRewardIdList()) {
-                    RewardData rewardData = GameData.getRewardDataMap().get(rewardId);
+                    val rewardData = GameData.getRewardDataMap().get(rewardId);
                     if (rewardData == null) continue;
 
                     player
-                            .getInventory()
-                            .addItemParamDatas(rewardData.getRewardItemList(), ActionReason.CityLevelupReward);
+                        .getInventory()
+                        .addItemParamDatas(rewardData.getRewardItemList(), ActionReason.CityLevelupReward);
                 }
             }
 

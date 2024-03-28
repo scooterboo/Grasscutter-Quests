@@ -6,6 +6,7 @@ import emu.grasscutter.game.world.WeatherArea;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
+import lombok.val;
 import messages.scene.SceneInitFinishReq;
 
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class HandlerSceneInitFinishReq extends TypedPacketHandler<SceneInitFinis
 
 		session.getPlayer().getScene().reloadWeathers();
 		session.getPlayer().updateWeather(session.getPlayer().getScene());
-		WeatherArea area = session.getPlayer().getScene().getWeatherAreas().get(session.getPlayer().getWeatherAreaId());
+		val area = session.getPlayer().getScene().getWeatherAreas().get(session.getPlayer().getWeatherAreaId());
 		if(area != null)
 			session.send(new PacketSceneAreaWeatherNotify(area.getConfig().getAreaID(), area.getCurrentClimateType(), area.getTransDuration()));
 		else //TODO: Remove old climate implementation, you can use areaId 0 and climate type none, but needs testing
