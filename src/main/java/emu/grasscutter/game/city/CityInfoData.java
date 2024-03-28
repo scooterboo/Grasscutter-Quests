@@ -1,7 +1,7 @@
 package emu.grasscutter.game.city;
 
+import messages.scene.CityInfo;
 import dev.morphia.annotations.Entity;
-import emu.grasscutter.net.proto.CityInfoOuterClass.CityInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +19,6 @@ public class CityInfoData {
     }
 
     public CityInfo toProto() {
-        return CityInfo.newBuilder()
-                .setCityId(cityId)
-                .setLevel(level)
-                .setCrystalNum(numCrystal)
-                .build();
+        return new CityInfo(cityId, numCrystal, level);
     }
 }

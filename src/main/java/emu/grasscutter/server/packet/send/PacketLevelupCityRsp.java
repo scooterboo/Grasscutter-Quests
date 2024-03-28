@@ -1,29 +1,18 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.CityInfoOuterClass.CityInfo;
-import emu.grasscutter.net.proto.LevelupCityRspOuterClass.LevelupCityRsp;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import messages.scene.CityInfo;
+import messages.scene.LevelupCityRsp;
 
-public class PacketLevelupCityRsp extends BasePacket {
+public class PacketLevelupCityRsp extends BaseTypedPacket<LevelupCityRsp> {
 
     public PacketLevelupCityRsp(
             int sceneId, int level, int cityId, int crystalNum, int areaId, int retcode) {
-        super(PacketOpcodes.LevelupCityRsp);
+        super(new LevelupCityRsp());
 
-        LevelupCityRsp proto =
-                LevelupCityRsp.newBuilder()
-                        .setSceneId(sceneId)
-                        .setCityInfo(
-                                CityInfo.newBuilder()
-                                        .setCityId(cityId)
-                                        .setLevel(level)
-                                        .setCrystalNum(crystalNum)
-                                        .build())
-                        .setAreaId(areaId)
-                        .setRetcode(retcode)
-                        .build();
-
-        this.setData(proto);
+        proto.setSceneId(sceneId);
+        proto.setCityInfo(new CityInfo(cityId, crystalNum, level));
+        proto.setAreaId(areaId);
+        proto.setRetcode(retcode);
     }
 }
