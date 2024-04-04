@@ -764,7 +764,8 @@ public class SceneScriptManager {
      * @return true if there is no condition, otherwise the result of the condition call as boolean
      */
     private boolean evaluateTriggerCondition(SceneTrigger trigger, SceneGroup group, ScriptArgs params){
-        logger.trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1, params.source_eid, params.target_eid);
+        logger.trace("Call Condition Trigger {}, [{},{},{}]", trigger.getCondition(), params.param1,
+            params.getSourceEntityId(), params.getTargetEntityId());
         val condition = trigger.getCondition();
         if(condition == null || condition.isBlank()){
             return true;

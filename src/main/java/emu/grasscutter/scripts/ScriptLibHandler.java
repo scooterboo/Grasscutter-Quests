@@ -142,7 +142,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         if(callParams == null || group == null){
             return 1;
         }
-        val eid = callParams.source_eid;
+        val eid = callParams.getSourceEntityId();
         val entity = scene.getEntityById(eid);
 
 
@@ -191,7 +191,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         if(callParams == null || group == null){
             return 1;
         }
-        var eid = callParams.source_eid;
+        var eid = callParams.getSourceEntityId();
         var entity = scene.getEntityById(eid);
         if (!(entity instanceof EntityGadget gadget)) {
             return 1;
@@ -1233,13 +1233,18 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
     }
 
     @Override
-    public int AddPlayerGroupVisionType(GroupEventLuaContext context, LuaTable uidsTable, LuaTable var2) {
-        return handleUnimplemented(printTable(uidsTable), printTable(var2));
+    public int AddPlayerGroupVisionType(GroupEventLuaContext context, int[] uids, int[] visionTypeList) {
+        return handleUnimplemented(uids, visionTypeList);
     }
 
     @Override
-    public int DelPlayerGroupVisionType(GroupEventLuaContext context, LuaTable uidsTable, LuaTable var2) {
-        return handleUnimplemented(printTable(uidsTable), printTable(var2));
+    public int DelPlayerGroupVisionType(GroupEventLuaContext context, int[] uids, int[] visionTypeList) {
+        return handleUnimplemented(uids, visionTypeList);
+    }
+
+    @Override
+    public int SetPlayerGroupVisionType(GroupEventLuaContext context, int[] uids, int[] visionTypeList) {
+        return handleUnimplemented(uids, visionTypeList);
     }
 
     @Override
