@@ -95,6 +95,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 
@@ -142,6 +143,7 @@ public class Player {
     @Getter private Map<Integer, ActiveCookCompoundData> activeCookCompounds;
     @Getter private Map<Integer, Integer> questGlobalVariables;
     @Getter private Map<Integer, Integer> openStates;
+    @Getter private Map<Integer, Map<Integer, Boolean>> sceneTags;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedSceneAreas;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedScenePoints;
     @Getter @Setter private List<Integer> chatEmojiIdList;
@@ -267,6 +269,7 @@ public class Player {
         this.unlockedRecipies = new HashMap<>();
         this.questGlobalVariables = new HashMap<>();
         this.openStates = new HashMap<>();
+        this.sceneTags = new HashMap<>();
         this.unlockedSceneAreas = new HashMap<>();
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();
@@ -395,6 +398,15 @@ public class Player {
 
     public synchronized void setScene(Scene scene) {
         this.scene = scene;
+    }
+
+    public void visitScene(int sceneId) {
+        val sceneTagData = GameData.getSceneTagDataMap().values();
+        val tags = this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>());
+        sceneTagData.stream()
+                .filter(tagData -> tagData.getSceneId() == sceneId && tagData.isDefaultValid())
+                .map(SceneTagData::getId)
+                .forEach(k -> tags.putIfAbsent(k, true));
     }
 
     synchronized public void setClimate(ClimateType climate) {
@@ -1556,4 +1568,17 @@ public class Player {
         }
     }
 
+    public void setSceneTag(int sceneId, int sceneTagNumber, Boolean value) {
+        this.getSceneTags().computeIfAbsent(sceneId, k -> new HashMap<>()).put(sceneTagNumber, value);
+        this.sendPacket(new PacketSceneDataNotify(this));
+        this.sendPacket(new PacketPlayerWorldSceneInfoListNotify(this));
+    }
+
+    public List<Integer> getSceneTagList(int sceneId) {
+        return this.sceneTags.getOrDefault(sceneId, new HashMap<>())
+                .entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
 }
