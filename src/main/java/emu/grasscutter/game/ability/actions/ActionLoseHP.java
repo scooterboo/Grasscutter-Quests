@@ -42,7 +42,10 @@ public class ActionLoseHP extends AbilityActionHandler {
         float amountToLose = amount;
         amountToLose += amountByCasterMaxHPRatio * owner.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
         amountToLose += amountByCasterAttackRatio * owner.getFightProperty(FightProperty.FIGHT_PROP_CUR_ATTACK);
-        amountToLose += amountByCasterCurrentHPRatio * owner.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
+        //Ignore amountByCasterCurrentHPRatio if owner has Infinite HP
+        if(owner.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP) != Float.POSITIVE_INFINITY) {
+            amountToLose += amountByCasterCurrentHPRatio * owner.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
+        }
 
         float currentHp = target.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
         float maxHp = target.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
