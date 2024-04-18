@@ -86,6 +86,7 @@ import messages.scene.PlayerLocationInfo;
 import messages.scene.PlayerWorldLocationInfo;
 import messages.scene.entity.MpSettingType;
 import messages.scene.entity.OnlinePlayerInfo;
+import messages.coop.CoopPointState;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.DayOfWeek;
@@ -95,7 +96,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
 import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 
@@ -144,6 +144,7 @@ public class Player {
     @Getter private Map<Integer, Integer> questGlobalVariables;
     @Getter private Map<Integer, Integer> openStates;
     @Getter private Map<Integer, Map<Integer, Boolean>> sceneTags;
+    @Getter private Map<Integer, CoopCardEntry> coopCards;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedSceneAreas;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedScenePoints;
     @Getter @Setter private List<Integer> chatEmojiIdList;
@@ -270,6 +271,7 @@ public class Player {
         this.questGlobalVariables = new HashMap<>();
         this.openStates = new HashMap<>();
         this.sceneTags = new HashMap<>();
+        this.coopCards = new Int2ObjectOpenHashMap<>();
         this.unlockedSceneAreas = new HashMap<>();
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();
@@ -1389,6 +1391,7 @@ public class Player {
         session.send(new PacketCodexDataFullNotify(this));
         session.send(new PacketAllWidgetDataNotify(this));
         session.send(new PacketWidgetGadgetAllDataNotify());
+        session.send(new PacketCoopDataNotify(this));
         session.send(new PacketCombineDataNotify(this.unlockedCombines));
         session.send(new PacketGetChatEmojiCollectionRsp(this.getChatEmojiIdList()));
 
@@ -1581,4 +1584,38 @@ public class Player {
                 .map(Map.Entry::getKey)
                 .toList();
     }
+
+    @Entity
+    public static class CoopCardEntry {
+        @Getter @Setter private Boolean accepted;
+        @Getter @Setter private Boolean viewed;
+        @Getter private int totalEndCount;
+        @Getter @Setter private int finishedEndCount;
+        @Getter private Map<Integer, CoopPointEntry> points;
+
+        public CoopCardEntry(int chapterId) {
+            this.accepted = false;
+            this.viewed = false;
+            totalEndCount = (int) GameData.getCoopPointDataMap().values().stream()
+                    .filter(j -> j.getChapterId() == chapterId && j.getType().equals("POINT_END"))
+                    .count();
+            points = new HashMap<>();
+            GameData.getCoopPointDataMap().values().stream()
+                    .filter(j -> j.getChapterId() == chapterId)
+                    .forEach(j -> points.put(j.getId(), new CoopPointEntry()));
+            finishedEndCount = 0;
+        }
+
+        @Entity
+        public static class CoopPointEntry {
+            @Getter @Setter private int selfConfidence;
+            @Getter @Setter private CoopPointState state;
+
+            private CoopPointEntry() {
+                selfConfidence = 0;
+                state = CoopPointState.STATE_UNSTARTED;
+            }
+        }
+    }
+
 }
