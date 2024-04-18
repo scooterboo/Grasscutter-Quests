@@ -35,16 +35,16 @@ public class PacketCoopDataNotify extends BaseTypedPacket<CoopDataNotify> {
                     switch (condition.getType()) {
                         case "COOP_COND_FINISH_QUEST" -> {
                             val quest = player.getQuestManager().getQuestById(arg);
-                            if (!(quest != null && quest.getState().equals(QuestState.QUEST_STATE_FINISHED)))
+                            if (quest == null || !quest.getState().equals(QuestState.QUEST_STATE_FINISHED))
                                 lockReasonList.add(i + 1);
                         }
                         case "COOP_COND_PLAYER_LEVEL" -> {
-                            if (!(player.getLevel() >= arg))
+                            if (player.getLevel() < arg)
                                 lockReasonList.add(i + 1);
                         }
                         case "COOP_COND_CHAPTER_END_ALL_FINISH" -> {
                             val card = player.getCoopCards().get(arg);
-                            if (!(card.getFinishedEndCount() == card.getTotalEndCount()))
+                            if (card.getFinishedEndCount() != card.getTotalEndCount())
                                 lockReasonList.add(i + 1);
                         }
                         default -> {
