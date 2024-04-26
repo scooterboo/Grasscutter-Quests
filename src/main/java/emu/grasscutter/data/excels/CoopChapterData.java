@@ -16,6 +16,7 @@ public class CoopChapterData extends GameResource {
 	private int id;
 	private int avatarId;
 	List<CoopCondition> unlockCond;
+	private int confidenceValue;
 
 	@Data
 	@Getter

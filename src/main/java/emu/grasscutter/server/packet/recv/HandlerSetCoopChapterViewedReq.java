@@ -11,7 +11,7 @@ public class HandlerSetCoopChapterViewedReq extends TypedPacketHandler<SetCoopCh
 	@Override
 	public void handle(GameSession session, byte[] header, SetCoopChapterViewedReq req) throws Exception {
 		session.getPlayer().getCoopCards()
-				.computeIfAbsent(req.getChapterId(), v -> new CoopCardEntry(req.getChapterId()))
+				.get(req.getChapterId())
 				.setViewed(true);
 		session.send(new PacketSetCoopChapterViewedRsp(req.getChapterId()));
 	}

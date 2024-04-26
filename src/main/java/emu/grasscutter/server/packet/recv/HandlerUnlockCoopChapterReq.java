@@ -14,8 +14,7 @@ public class HandlerUnlockCoopChapterReq extends TypedPacketHandler<UnlockCoopCh
 
 	@Override
 	public void handle(GameSession session, byte[] header, UnlockCoopChapterReq req) throws Exception {
-		val coopCard = session.getPlayer().getCoopCards()
-				.computeIfAbsent(req.getChapterId(), v -> new CoopCardEntry(req.getChapterId()));
+		val coopCard = session.getPlayer().getCoopCards().get(req.getChapterId());
 
 		//set card as accepted
 		coopCard.setAccepted(true);
