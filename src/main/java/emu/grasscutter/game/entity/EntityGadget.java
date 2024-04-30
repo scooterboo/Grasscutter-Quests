@@ -8,6 +8,7 @@ import emu.grasscutter.data.excels.GadgetData;
 import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.entity.gadget.*;
 import emu.grasscutter.game.entity.gadget.platform.BaseRoute;
+import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.entity.interfaces.ConfigAbilityDataAbilityEntity;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.EntityIdType;
@@ -188,6 +189,14 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
     }
 
     @Override
+    public void afterCreate(List<Player> players) {
+        if (this.getMetaGadget() != null && !this.getMetaGadget().isStartRoute()) return;
+        if (this.routeConfig == null) return;
+        this.routeConfig.startRoute(this.getScene());
+        players.forEach(p -> p.sendPacket(new PacketPlatformStartRouteNotify(this)));
+    }
+
+    @Override
     public void onRemoved() {
         super.onRemoved();
         if(!children.isEmpty()) {
@@ -225,12 +234,46 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
             return false;
         }
 
-        if(routeConfig.isStarted()){
+        if (routeConfig.isStarted()) {
             return true;
         }
+
+        schedulePlatform();
+
         getScene().broadcastPacket(new PacketSceneTimeNotify(getScene()));
         routeConfig.startRoute(getScene());
         getScene().broadcastPacket(new PacketPlatformStartRouteNotify(this));
+
+        return true;
+    }
+
+    public boolean schedulePlatform() {
+        if (!(routeConfig instanceof ConfigRoute configRoute)) {
+            return false;
+        }
+
+        var route = this.getScene().getSceneRouteById(configRoute.getRouteId());
+
+        if (route == null) {
+            return false;
+        }
+
+        var points = route.getPoints();
+
+        //restart platform if at end and told to start
+        if (configRoute.getStartIndex() == points.length - 1) {
+            configRoute.setStartIndex(0);
+        }
+
+        val currIndex = configRoute.getStartIndex();
+        if (currIndex == 0) {
+            this.getScene().callPlatformEvent(this.getId());
+        }
+
+        double distance = points[currIndex].getPos().computeDistance(points[currIndex + 1].getPos());
+        double time = 1000 * distance / points[currIndex].getTargetVelocity();
+        time += this.getScene().getSceneTime();
+        this.getScene().getScheduledPlatforms().put(this.getId(), time);
 
         return true;
     }
@@ -239,10 +282,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
         if(routeConfig == null){
             return false;
         }
-
-        if(!routeConfig.isStarted()){
-            return true;
-        }
+        this.getScene().getScheduledPlatforms().remove(this.getId());
         routeConfig.stopRoute(getScene());
         getScene().broadcastPacket(new PacketPlatformStopRouteNotify(this));
 
