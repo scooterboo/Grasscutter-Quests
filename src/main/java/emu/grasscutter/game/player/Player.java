@@ -1339,20 +1339,6 @@ public class Player {
     }
 
     public void onLogin() {
-        // Quest - Commented out because a problem is caused if you log out while this quest is active
-        /*
-        if (getQuestManager().getMainQuestById(351) == null) {
-            GameQuest quest = getQuestManager().addQuest(35104);
-            if (quest != null) {
-                quest.finish();
-            }
-            getQuestManager().addQuest(35101);
-
-            this.setSceneId(3);
-            this.getPos().set(GameConstants.START_POSITION);
-        }
-        */
-
         // Create world
         World world = new World(this);
         world.addPlayer(this);
