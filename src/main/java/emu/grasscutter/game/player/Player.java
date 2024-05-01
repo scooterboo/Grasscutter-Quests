@@ -55,12 +55,8 @@ import emu.grasscutter.game.tower.TowerManager;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
-import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
-import emu.grasscutter.net.proto.CombatInvokeEntryOuterClass.CombatInvokeEntry;
 import emu.grasscutter.net.proto.PlayerApplyEnterMpResultNotifyOuterClass;
 import emu.grasscutter.net.proto.PropChangeReasonOuterClass.PropChangeReason;
-import emu.grasscutter.net.proto.TrialAvatarGrantRecordOuterClass.TrialAvatarGrantRecord.GrantReason;
 import emu.grasscutter.server.event.player.PlayerJoinEvent;
 import emu.grasscutter.server.event.player.PlayerQuitEvent;
 import emu.grasscutter.server.game.GameServer;
@@ -76,11 +72,15 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.ability.AbilityInvokeEntry;
+import messages.battle.AttackResult;
+import messages.battle.CombatInvokeEntry;
 import messages.chat.FriendEnterHomeOption;
 import messages.chat.SocialDetail;
 import messages.chat.SocialShowAvatarInfo;
 import messages.gadget.GadgetInteractReq;
 import messages.general.ProfilePicture;
+import messages.general.avatar.GrantReason;
 import messages.general.avatar.ShowAvatarInfo;
 import messages.scene.PlayerLocationInfo;
 import messages.scene.PlayerWorldLocationInfo;
@@ -868,7 +868,7 @@ public class Player {
         getTeamManager().setupTrialAvatarTeamForQuest();
         if (!addTrialAvatar(
             trialAvatarId,
-            GrantReason.GRANT_REASON_BY_QUEST,
+            GrantReason.GRANT_BY_QUEST,
             questMainId)) return false;
         // Packet, mimic official server behaviour, necessary to stop player from modifying team
         sendPacket(new PacketAvatarTeamUpdateNotify(this));
