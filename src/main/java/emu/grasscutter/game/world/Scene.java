@@ -5,6 +5,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.GameDepot;
 import emu.grasscutter.data.binout.SceneNpcBornEntry;
 import emu.grasscutter.data.binout.routes.Route;
+import emu.grasscutter.data.binout.routes.RouteType;
 import emu.grasscutter.data.excels.*;
 import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.avatar.Avatar;
@@ -14,13 +15,13 @@ import emu.grasscutter.game.dungeons.challenge.WorldChallenge;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.entity.gadget.GadgetWorktop;
+import emu.grasscutter.game.entity.gadget.platform.ConfigRoute;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.TeamInfo;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.QuestGroupSuite;
 import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.proto.AttackResultOuterClass.AttackResult;
 import emu.grasscutter.net.proto.VisionTypeOuterClass;
 import emu.grasscutter.scripts.SceneIndexManager;
 import emu.grasscutter.scripts.SceneScriptManager;
@@ -33,6 +34,7 @@ import kotlin.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import messages.battle.AttackResult;
 import messages.gadget.SelectWorktopOptionReq;
 import messages.scene.EnterType;
 import messages.scene.VisionType;
@@ -89,6 +91,7 @@ public class Scene {
     private boolean weatherLoaded = false;
 
     @Getter private final GameEntity sceneEntity;
+    @Getter @Setter private Map<Integer, Double> scheduledPlatforms = new ConcurrentHashMap<>();
 
     public Scene(World world, SceneData sceneData) {
         this.world = world;
@@ -264,12 +267,13 @@ public class Scene {
     public synchronized void addEntity(GameEntity entity) {
         addEntityDirectly(entity);
         broadcastPacket(new PacketSceneEntityAppearNotify(entity));
+        entity.afterCreate(this.players);
     }
 
     public synchronized void addEntityToSingleClient(Player player, GameEntity entity) {
         addEntityDirectly(entity);
         player.sendPacket(new PacketSceneEntityAppearNotify(entity));
-
+        entity.afterCreate(List.of(player));
     }
 
     public void addEntities(Collection<? extends GameEntity> entities) {
@@ -295,7 +299,10 @@ public class Scene {
 
         entities.forEach(this::addEntityDirectly);
 
-        chopped(entities.stream().toList(), 100).forEach(l -> broadcastPacket(new PacketSceneEntityAppearNotify(l, visionType)));
+        chopped(entities.stream().toList(), 100).forEach(l -> {
+            broadcastPacket(new PacketSceneEntityAppearNotify(l, visionType));
+            l.forEach(x -> x.afterCreate(this.players));
+        });
     }
 
     private GameEntity removeEntityDirectly(GameEntity entity) {
@@ -342,6 +349,7 @@ public class Scene {
             entity != player.getTeamManager().getCurrentAvatarEntity()).toList();
 
         player.sendPacket(new PacketSceneEntityAppearNotify(entities, VisionType.VISION_MEET));
+        entities.forEach(x -> x.afterCreate(List.of(player)));
     }
 
     public void handleAttack(AttackResult result) {
@@ -432,9 +440,11 @@ public class Scene {
 
         this.entities.values().forEach(e -> e.onTick(getSceneTimeSeconds()));
 
+        checkPlatforms();
         checkNpcGroup();
         finishLoading();
         checkPlayerRespawn();
+
         if (this.tickCount % 10 == 0) {
             broadcastPacket(new PacketSceneTimeNotify(this));
         }
@@ -600,6 +610,7 @@ public class Scene {
         if (!toAdd.isEmpty()) {
             toAdd.forEach(this::addEntityDirectly);
             broadcastPacket(new PacketSceneEntityAppearNotify(toAdd, VisionType.VISION_BORN));
+            toAdd.forEach(x -> x.afterCreate(this.players));
         }
         if (!toRemove.isEmpty()) {
             toRemove.forEach(this::removeEntityDirectly);
@@ -943,6 +954,77 @@ public class Scene {
 
     public int getCurDungeonId(){
         return dungeonManager != null ? dungeonManager.getDungeonData().getId() : 0;
+    }
+
+    private void checkPlatforms() {
+        val curTime = this.getSceneTime();
+        var iter = scheduledPlatforms.entrySet().iterator();
+        while (iter.hasNext()) {
+            val entry = iter.next();
+            val key = entry.getKey();
+            val value = entry.getValue();
+            if (value < curTime) {
+                scheduledPlatforms.remove(key);
+                val entity = getEntityById(key);
+                // Deleted entity
+                if (entity == null) return;
+                // Not a platform
+                if (!(entity instanceof EntityGadget entityGadget)) return;
+                // No configRoute
+                if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) return;
+                // No route in file
+                val route = this.getSceneRouteById(configRoute.getRouteId());
+                if (route == null) return;
+
+                val points = route.getPoints();
+
+                // Increment the index
+                var index = 1 + entityGadget.getRouteConfig().getStartIndex();
+                if (index == points.length) index = 0;
+                entityGadget.getRouteConfig().setStartIndex(index);
+
+                // Update position
+
+                entity.getPosition().set(points[index].getPos());
+
+                // If the point has a Reach Event:
+                if (points[index].isHasReachEvent()) {
+                    callPlatformEvent(key);
+                }
+
+                //if there is a Reach Stop, or we have reached the end, call stop
+                if (points[index].isReachStop() || (index == points.length - 1 /*&& route.getType().equals(RouteType.OneWay)*/)) {
+                    entityGadget.stopPlatform();
+                    //otherwise, schedule the next one.
+                } else {
+                    double distance;
+                    if (index == points.length - 1 && route.getType().equals(RouteType.Loop)) {
+                        distance = points[index].getPos().computeDistance(points[0].getPos());
+                    } else {
+                        distance = points[index].getPos().computeDistance(points[index + 1].getPos());
+                    }
+                    double time = 1000 * distance / points[index].getTargetVelocity();
+                    scheduledPlatforms.put(key, value + time);
+                }
+            }
+        }
+    }
+
+    public boolean callPlatformEvent(int entityId) {
+        val entity = getEntityById(entityId);
+        if (entity == null) return false;
+        if (!(entity instanceof EntityGadget entityGadget)) return false;
+        if (!(entityGadget.getRouteConfig() instanceof ConfigRoute configRoute)) return false;
+
+        val groupId = entityGadget.getGroupId();
+        val configId = entityGadget.getConfigId();
+        val routeId = configRoute.getRouteId();
+        val index = configRoute.getStartIndex();
+
+        this.scriptManager.callEvent(new ScriptArgs(groupId, EventType.EVENT_PLATFORM_REACH_POINT, configId, routeId)
+                .setParam3(index)
+                .setEventSource(configId));
+        return true;
     }
 
     public WeatherArea getWeatherArea(Position position) {
