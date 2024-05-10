@@ -1,7 +1,6 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.data.GameData;
-import emu.grasscutter.game.player.Player.CoopCardEntry;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCoopDataNotify;
@@ -14,7 +13,7 @@ public class HandlerUnlockCoopChapterReq extends TypedPacketHandler<UnlockCoopCh
 
 	@Override
 	public void handle(GameSession session, byte[] header, UnlockCoopChapterReq req) throws Exception {
-		val coopCard = session.getPlayer().getCoopCards().get(req.getChapterId());
+		val coopCard = session.getPlayer().getCoopHandler().getCoopCards().get(req.getChapterId());
 
 		//set card as accepted
 		coopCard.setAccepted(true);
@@ -33,6 +32,7 @@ public class HandlerUnlockCoopChapterReq extends TypedPacketHandler<UnlockCoopCh
 		session.getPlayer().useLegendaryKey(2);
 
 		//TODO: verify this packet gets sent here.
+		//No, this should be a PacketCoopChapterUpdateNotify
 		session.send(new PacketCoopDataNotify(session.getPlayer()));
 
 		session.send(new PacketUnlockCoopChapterRsp(req.getChapterId()));

@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.game.player.Player.CoopCardEntry;
+import emu.grasscutter.game.player.CoopHandler.CoopCardEntry;
 import lombok.val;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import messages.coop.*;
@@ -18,11 +18,12 @@ public class PacketCoopDataNotify extends BaseTypedPacket<CoopDataNotify> {
         super(new CoopDataNotify());
 
         val chapterList = new ArrayList<CoopChapter>();
+        val coopCards = player.getCoopHandler().getCoopCards();
 
         GameData.getCoopChapterDataMap().values().forEach(c -> {
             val chapter = new CoopChapter();
             chapter.setId(c.getId());
-            val coopCardEntry = player.getCoopCards().computeIfAbsent(c.getId(), v -> new CoopCardEntry(c.getId()));
+            val coopCardEntry = coopCards.computeIfAbsent(c.getId(), v -> new CoopCardEntry(c.getId()));
 
             //State
             if (coopCardEntry.getAccepted()) {
@@ -43,7 +44,7 @@ public class PacketCoopDataNotify extends BaseTypedPacket<CoopDataNotify> {
                                 lockReasonList.add(i + 1);
                         }
                         case "COOP_COND_CHAPTER_END_ALL_FINISH" -> {
-                            val card = player.getCoopCards().get(arg);
+                            val card = coopCards.get(arg);
                             if (card.getFinishedEndCount() != card.getTotalEndCount())
                                 lockReasonList.add(i + 1);
                         }
@@ -80,8 +81,13 @@ public class PacketCoopDataNotify extends BaseTypedPacket<CoopDataNotify> {
             chapterList.add(chapter);
         });
 
+        if (player.getCoopHandler().getCurCoopPoint() > 0) {
+            proto.setCurCoopPoint(player.getCoopHandler().getCurCoopPoint());
+            proto.setHaveProgress(true);
+        }
+
         //viewed list
-        proto.setViewedChapterList(player.getCoopCards()
+        proto.setViewedChapterList(coopCards
                 .entrySet().stream()
                 .filter(x -> x.getValue().getViewed())
                 .map(Map.Entry::getKey)

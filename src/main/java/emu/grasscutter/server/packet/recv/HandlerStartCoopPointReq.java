@@ -33,9 +33,10 @@ public class HandlerStartCoopPointReq extends TypedPacketHandler<StartCoopPointR
             mCoop.setSelfConfidence(chapterData.getConfidenceValue());
             mCoop.setStatus(Status.RUNNING);
             val tempMap = new HashMap<Integer, Integer>();
+            //TODO: investigate this tempMap variable
             tempMap.put(3, 3);
             mCoop.setTempVarMap(tempMap);
-            session.getPlayer().getCoopCards().get(chapterId).getMainCoop().fromProto(mCoop);
+            session.getPlayer().getCoopHandler().getCoopCards().get(chapterId).getMainCoop().fromProto(mCoop);
 
             //quests
             val acceptQuest = coopPoint.get(0).getAcceptQuest();
