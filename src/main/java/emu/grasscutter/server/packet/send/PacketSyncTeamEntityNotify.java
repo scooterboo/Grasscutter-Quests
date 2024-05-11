@@ -1,21 +1,21 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
-import emu.grasscutter.net.proto.SyncTeamEntityNotifyOuterClass.SyncTeamEntityNotify;
-import emu.grasscutter.net.proto.TeamEntityInfoOuterClass.TeamEntityInfo;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import messages.general.ability.AbilitySyncStateInfo;
+import messages.team.SyncTeamEntityNotify;
+import messages.team.TeamEntityInfo;
 
-public class PacketSyncTeamEntityNotify extends BasePacket {
+import java.util.ArrayList;
+
+public class PacketSyncTeamEntityNotify extends BaseTypedPacket<SyncTeamEntityNotify> {
 
 	public PacketSyncTeamEntityNotify(Player player) {
-		super(PacketOpcodes.SyncTeamEntityNotify);
-
-		SyncTeamEntityNotify.Builder proto = SyncTeamEntityNotify.newBuilder()
-				.setSceneId(player.getSceneId());
+		super(new SyncTeamEntityNotify(player.getSceneId()));
 
 		if (player.getWorld().isMultiplayer()) {
+            val infoList = new ArrayList<TeamEntityInfo>();
 			for (Player p : player.getWorld().getPlayers()) {
 				// Skip if same player
 				if (player == p) {
@@ -23,16 +23,14 @@ public class PacketSyncTeamEntityNotify extends BasePacket {
 				}
 
 				// Set info
-				TeamEntityInfo info = TeamEntityInfo.newBuilder()
-						.setTeamEntityId(p.getTeamManager().getEntity().getId())
-						.setAuthorityPeerId(p.getPeerId())
-						.setTeamAbilityInfo(AbilitySyncStateInfo.newBuilder())
-						.build();
+				val info = new TeamEntityInfo();
+                info.setTeamEntityId(p.getTeamManager().getEntity().getId());
+                info.setAuthorityPeerId(p.getPeerId());
+                info.setTeamAbilityInfo(new AbilitySyncStateInfo());
 
-				proto.addTeamEntityInfoList(info);
+                infoList.add(info);
 			}
+            proto.setTeamEntityInfoList(infoList);
 		}
-
-		this.setData(proto);
 	}
 }
