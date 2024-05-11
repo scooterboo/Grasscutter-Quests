@@ -270,7 +270,7 @@ public class Player {
         this.questGlobalVariables = new HashMap<>();
         this.openStates = new HashMap<>();
         this.sceneTags = new HashMap<>();
-        this.coopHandler = new CoopHandler();
+        this.coopHandler = new CoopHandler(this);
         this.unlockedSceneAreas = new HashMap<>();
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();

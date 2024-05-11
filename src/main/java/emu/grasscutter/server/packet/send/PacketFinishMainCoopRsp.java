@@ -5,7 +5,7 @@ import messages.coop.FinishMainCoopRsp;
 
 public class PacketFinishMainCoopRsp extends BaseTypedPacket<FinishMainCoopRsp> {
 
-    public PacketFinishMainCoopRsp(int Id, int endingSavePointId) {
-        super(new FinishMainCoopRsp(endingSavePointId, Id));
+    public PacketFinishMainCoopRsp(int id, int endingSavePointId) {
+        super(new FinishMainCoopRsp(endingSavePointId, id));
     }
 }
