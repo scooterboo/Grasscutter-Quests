@@ -270,7 +270,6 @@ public class Player {
         this.questGlobalVariables = new HashMap<>();
         this.openStates = new HashMap<>();
         this.sceneTags = new HashMap<>();
-        this.coopHandler = new CoopHandler(this);
         this.unlockedSceneAreas = new HashMap<>();
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();
@@ -305,6 +304,7 @@ public class Player {
         this.cookingCompoundManager=new CookingCompoundManager(this);
         this.blossomManager = new BlossomManager(this);
         this.dungeonEntryManager = new DungeonEntryManager(this);
+        this.coopHandler = new CoopHandler(this);
     }
 
     // On player creation
@@ -494,6 +494,7 @@ public class Player {
             this.getProgressManager().tryUnlockOpenStates();
             this.getQuestManager().queueEvent(QuestContent.QUEST_CONTENT_PLAYER_LEVEL_UP, level);
             this.getQuestManager().queueEvent(QuestCond.QUEST_COND_PLAYER_LEVEL_EQUAL_GREATER, level);
+            this.getCoopHandler().conditionMetChapterUpdateNotify(level, "COOP_COND_PLAYER_LEVEL");
 
             return true;
         }
@@ -1301,6 +1302,7 @@ public class Player {
         this.getProgressManager().setPlayer(this);
         this.getTeamManager().setPlayer(this);
         this.getBlossomManager().setPlayer(this);
+        this.getCoopHandler().setPlayer(this);
     }
 
     public void save() {

@@ -2,13 +2,16 @@ package emu.grasscutter.game.player;
 
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Transient;
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.excels.CoopChapterData;
 import emu.grasscutter.server.packet.send.PacketCoopChapterUpdateNotify;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import messages.coop.*;
+import org.anime_game_servers.core.gi.enums.QuestState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +23,13 @@ public class CoopHandler {
     @Getter private Map<Integer, CoopCardEntry> coopCards;
     @Getter @Setter private int curCoopPoint;
 
-    public CoopHandler() {
+    public CoopHandler(Player player) {
+        this.player = player;
         this.coopCards = new Int2ObjectOpenHashMap<>();
         this.curCoopPoint = 0;
     }
 
-    public CoopHandler(Player player) {
-        this();
+    public void setPlayer(Player player) {
         this.player = player;
     }
 
@@ -80,7 +83,119 @@ public class CoopHandler {
         coopChapter.setCoopRewardList(coopRewardList);
 
         //send packet
-        this.player.sendPacket(new PacketCoopChapterUpdateNotify(coopChapter));
+        this.player.sendPacket(new PacketCoopChapterUpdateNotify(List.of(coopChapter)));
+    }
+
+    //todo: modifying finishedEndCount needs to call this with "COOP_COND_CHAPTER_END_ALL_FINISH"
+    public void conditionMetChapterUpdateNotify(int arg, String condType) {
+        //get a list of everything we need to update
+        val updateList = GameData.getCoopChapterDataMap().values().stream().filter(x -> !x.getUnlockCond().stream().filter(y -> y.getArgs()[0] == arg && y.getType().equals(condType)).toList().isEmpty());
+        val coopChapterList = new ArrayList<CoopChapter>();
+        updateList.forEach(chapter -> {
+            Grasscutter.getLogger().info("trying: {}", chapter.getId());
+            val coopChapter = new CoopChapter();
+
+            //id
+            coopChapter.setId(chapter.getId());
+
+            //state, lockReasonList
+            val coopCardEntry = this.coopCards.computeIfAbsent(chapter.getId(), v -> new CoopCardEntry(chapter.getId()));
+            if (coopCardEntry.getAccepted()) {
+                coopChapter.setState(CoopChapterState.STATE_ACCEPT);
+            } else {
+                List<Integer> lockReasonList = this.getLockReasonList(chapter);
+                if (lockReasonList.isEmpty()) {
+                    coopChapter.setState(CoopChapterState.STATE_COND_MEET);
+                } else {
+                    coopChapter.setState(CoopChapterState.STATE_COND_NOT_MEET);
+                    coopChapter.setLockReasonList(lockReasonList);
+                }
+            }
+
+            //totalEndCount
+            coopChapter.setTotalEndCount(coopCardEntry.getTotalEndCount());
+
+            coopChapterList.add(coopChapter);
+        });
+
+        //send packet
+        if (coopChapterList.isEmpty()) return;
+        this.player.sendPacket(new PacketCoopChapterUpdateNotify(coopChapterList));
+    }
+
+    public List<CoopChapter> getFullCoopDataList() {
+        val chapterList = new ArrayList<CoopChapter>();
+
+        GameData.getCoopChapterDataMap().values().forEach(chapter -> {
+            val coopChapter = new CoopChapter();
+
+            //id
+            coopChapter.setId(chapter.getId());
+
+            //state, lockReasonList
+            val coopCardEntry = this.coopCards.computeIfAbsent(chapter.getId(), v -> new CoopCardEntry(chapter.getId()));
+            if (coopCardEntry.getAccepted()) {
+                coopChapter.setState(CoopChapterState.STATE_ACCEPT);
+            } else {
+                List<Integer> lockReasonList = this.getLockReasonList(chapter);
+                if (lockReasonList.isEmpty()) {
+                    coopChapter.setState(CoopChapterState.STATE_COND_MEET);
+                } else {
+                    coopChapter.setState(CoopChapterState.STATE_COND_NOT_MEET);
+                    coopChapter.setLockReasonList(lockReasonList);
+                }
+            }
+
+            //totalEndCount
+            coopChapter.setTotalEndCount(coopCardEntry.getTotalEndCount());
+
+            //points
+            List<CoopPoint> pointList = new ArrayList<>();
+            coopCardEntry.getPoints().entrySet().stream()
+                    .filter(e -> e.getValue().getState() != CoopPointState.STATE_UNSTARTED)
+                    .forEach(e -> {
+                        val point = new CoopPoint();
+                        point.setId(e.getKey());
+                        point.setState(e.getValue().getState());
+                        pointList.add(point);
+                    });
+            coopChapter.setCoopPointList(pointList);
+
+            chapterList.add(coopChapter);
+        });
+
+        return chapterList;
+    }
+
+    private List<Integer> getLockReasonList(CoopChapterData chapter) {
+        val lockReasonList = new ArrayList<Integer>();
+
+        for (int i = 0; i < chapter.getUnlockCond().size(); ++i) {
+            val condition = chapter.getUnlockCond().get(i);
+            val arg = condition.getArgs()[0];
+            switch (condition.getType()) {
+                case "COOP_COND_FINISH_QUEST" -> {
+                    val quest = this.player.getQuestManager().getQuestById(arg);
+                    if (quest == null || !quest.getState().equals(QuestState.QUEST_STATE_FINISHED))
+                        lockReasonList.add(i + 1);
+                }
+                case "COOP_COND_PLAYER_LEVEL" -> {
+                    if (this.player.getLevel() < arg)
+                        lockReasonList.add(i + 1);
+                }
+                case "COOP_COND_CHAPTER_END_ALL_FINISH" -> {
+                    val card = this.coopCards.get(arg);
+                    if (card.getFinishedEndCount() != card.getTotalEndCount())
+                        lockReasonList.add(i + 1);
+                }
+                default -> {
+                    Grasscutter.getLogger().warn("Unknown Coop condition type {} in coop chapter {}", condition.getType(), chapter.getId());
+                    lockReasonList.add(i + 1);
+                }
+            }
+
+        }
+        return lockReasonList;
     }
 
 
@@ -91,8 +206,8 @@ public class CoopHandler {
         @Getter private int totalEndCount;
         @Getter @Setter private int finishedEndCount;
         @Getter private Map<Integer, CoopPointEntry> points;
-        @Getter private Map<Integer, CoopCGEntry> CGs;
-        @Getter private Map<Integer, CoopRewardEntry> Rewards;
+        @Getter private Map<Integer, CoopCGEntry> cgs;
+        @Getter private Map<Integer, CoopRewardEntry> rewards;
         @Getter @Setter private MainCoopData mainCoop;
         @Getter @Setter private int curCoopPoint;
 
@@ -100,10 +215,10 @@ public class CoopHandler {
             this.accepted = false;
             this.viewed = false;
             //CGs
-            this.CGs = new HashMap<>();
+            this.cgs = new HashMap<>();
             GameData.getCoopCGDataMap().values().stream()
                     .filter(j -> j.getChapterId() == chapterId)
-                    .forEach(j -> this.CGs.put(j.getId(), new CoopCGEntry()));
+                    .forEach(j -> this.cgs.put(j.getId(), new CoopCGEntry()));
             //points
             val coopPoints = GameData.getCoopPointDataMap().values().stream()
                     .filter(j -> j.getChapterId() == chapterId)
@@ -114,10 +229,10 @@ public class CoopHandler {
             this.points = new HashMap<>();
             coopPoints.forEach(j -> this.points.put(j.getId(), new CoopPointEntry()));
             //Rewards
-            this.Rewards = new HashMap<>();
+            this.rewards = new HashMap<>();
             GameData.getCoopRewardDataMap().values().stream()
                     .filter(j -> j.getChapterId() == chapterId)
-                    .forEach(j -> this.Rewards.put(j.getId(), new CoopRewardEntry()));
+                    .forEach(j -> this.rewards.put(j.getId(), new CoopRewardEntry()));
             this.finishedEndCount = 0;
             this.mainCoop = new MainCoopData();
         }

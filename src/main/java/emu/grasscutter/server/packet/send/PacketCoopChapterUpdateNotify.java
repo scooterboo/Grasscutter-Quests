@@ -7,8 +7,7 @@ import java.util.List;
 
 public class PacketCoopChapterUpdateNotify extends BaseTypedPacket<CoopChapterUpdateNotify> {
 
-    public PacketCoopChapterUpdateNotify(CoopChapter coopChapter) {
-        super(new CoopChapterUpdateNotify());
-        proto.setChapterList(List.of(coopChapter));
+    public PacketCoopChapterUpdateNotify(List<CoopChapter> coopChapterList) {
+        super(new CoopChapterUpdateNotify(coopChapterList));
     }
 }
