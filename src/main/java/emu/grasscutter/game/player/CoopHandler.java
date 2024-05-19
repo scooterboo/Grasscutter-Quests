@@ -6,6 +6,8 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.CoopChapterData;
 import emu.grasscutter.server.packet.send.PacketCoopChapterUpdateNotify;
+import emu.grasscutter.server.packet.send.PacketCoopPointUpdateNotify;
+import emu.grasscutter.server.packet.send.PacketCoopProgressUpdateNotify;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,10 +72,15 @@ public class CoopHandler {
         val coopPointList = new ArrayList<CoopPoint>();
         GameData.getCoopPointDataMap().values().stream()
                 .filter(x -> x.getChapterId() == chapterId)
-                .forEach(x -> coopPointList.add(new CoopPoint(x.getId())));
-        //add first point
-        coopPointList.get(startPointId).setSelfConfidence(5);
-        coopPointList.get(startPointId).setState(CoopPointState.STATE_STARTED);
+                .forEach(x -> {
+                    val coopPoint = new CoopPoint(x.getId());
+                    //set first point
+                    if (startPointId == x.getId()) {
+                        coopPoint.setSelfConfidence(5);
+                        coopPoint.setState(CoopPointState.STATE_STARTED);
+                    }
+                    coopPointList.add(coopPoint);
+                });
         coopChapter.setCoopPointList(coopPointList);
         //coopRewardList
         val coopRewardList = new ArrayList<CoopReward>();
@@ -196,6 +203,50 @@ public class CoopHandler {
 
         }
         return lockReasonList;
+    }
+
+    public void checkNextCoopPointAccept(int questId) {
+        val coopPointCanidateList = GameData.getCoopPointDataMap().values().stream().filter(x -> x.getAcceptQuest() == questId).toList();
+        if (coopPointCanidateList.isEmpty()) return;
+        //there's always only one
+        val coopPointData = coopPointCanidateList.get(0);
+
+        //finish previous coopPoint if it exists
+        if (this.curCoopPoint != 0) {
+            val curCoopPointCanidateList = GameData.getCoopPointDataMap().values().stream().filter(x -> x.getId() == this.curCoopPoint).toList();
+            if (!curCoopPointCanidateList.isEmpty()) {
+                val curSelfConfidence = this.coopCards.get(curCoopPointCanidateList.get(0).getChapterId()).getMainCoop().selfConfidence;
+                //save and send packet
+                updateCoopPoint(curCoopPoint, curSelfConfidence, CoopPointState.STATE_FINISHED, true);
+            }
+        }
+
+        //new current coop point
+        this.curCoopPoint = coopPointData.getId();
+
+        //start current coop point and notify if it isn't already started (from a UnlockCoopChapterReq)
+        val curChapter = this.coopCards.get(coopPointData.getChapterId());
+        boolean shouldNotify = curChapter.getPoints().get(coopPointData.getId()).getState() != CoopPointState.STATE_STARTED;
+        //save and it may send packet
+        updateCoopPoint(coopPointData.getId(), curChapter.getMainCoop().selfConfidence, CoopPointState.STATE_FINISHED, shouldNotify);
+
+        this.player.sendPacket(new PacketCoopProgressUpdateNotify(coopPointData.getId(), true));
+    }
+
+    public void updateCoopPoint(int coopPointId, int selfConfidence, CoopPointState state, boolean shouldNotify) {
+        val coopPointCanidateList = GameData.getCoopPointDataMap().values().stream().filter(x -> x.getId() == coopPointId).toList();
+        if (coopPointCanidateList.isEmpty()) return;
+        val coopPointData = coopPointCanidateList.get(0);
+
+        //save
+        val coopPoint = this.coopCards.get(coopPointData.getChapterId()).getPoints().get(coopPointId);
+        coopPoint.selfConfidence = selfConfidence;
+        coopPoint.state = state;
+
+        //send packet
+        if (shouldNotify) {
+            player.sendPacket(new PacketCoopPointUpdateNotify(new CoopPoint(coopPointId, selfConfidence, state)));
+        }
     }
 
 

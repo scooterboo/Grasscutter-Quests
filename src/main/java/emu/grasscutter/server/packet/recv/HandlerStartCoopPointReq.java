@@ -34,16 +34,21 @@ public class HandlerStartCoopPointReq extends TypedPacketHandler<StartCoopPointR
             mCoop.setStatus(Status.RUNNING);
             val tempMap = new HashMap<Integer, Integer>();
             //TODO: investigate this tempMap variable
+            //It's tempValueMap in BinOutput/Coop/Coop101401
+            //IDK what it does.
+            //OOOH!! temperament!!
             tempMap.put(3, 3);
             mCoop.setTempVarMap(tempMap);
             session.getPlayer().getCoopHandler().getCoopCards().get(chapterId).getMainCoop().fromProto(mCoop);
+
+            //packets
+            session.send(new PacketMainCoopUpdateNotify(List.of(mCoop)));
 
             //quests
             val acceptQuest = coopPoint.get(0).getAcceptQuest();
             session.getPlayer().getQuestManager().queueEvent(QuestCond.QUEST_COND_MAIN_COOP_START, chapterId, acceptQuest);
 
-            //packets
-            session.send(new PacketMainCoopUpdateNotify(List.of(mCoop)));
+            //more packets
             session.send(new PacketStartCoopPointRsp(req.getCoopPoint(), mCoop));
         }
 	}

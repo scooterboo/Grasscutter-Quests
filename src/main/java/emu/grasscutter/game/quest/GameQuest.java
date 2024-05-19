@@ -103,6 +103,7 @@ public class GameQuest {
         getQuestData().getBeginExec().forEach(e -> getOwner().getServer().getQuestSystem().triggerExec(this, e, e.getParam()));
         getOwner().getQuestManager().checkQuestAlreadyFullfilled(this);
         getOwner().getDungeonEntryManager().checkQuestForDungeonEntryUpdate(this);
+        getOwner().getCoopHandler().checkNextCoopPointAccept(this.getSubQuestId());
 
         Grasscutter.getLogger().debug("Quest {} is started", subQuestId);
         save();

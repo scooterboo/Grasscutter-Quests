@@ -4,7 +4,6 @@ import emu.grasscutter.game.quest.enums.QuestCond;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
-import emu.grasscutter.server.packet.send.PacketCoopPointUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketMainCoopUpdateNotify;
 import emu.grasscutter.server.packet.send.PacketSaveMainCoopRsp;
 import lombok.val;
@@ -27,10 +26,10 @@ public class HandlerSaveMainCoopReq extends TypedPacketHandler<SaveMainCoopReq> 
         coopCardMainCoop.setSavePointIdList(tmpSet.stream().toList());
         coopCardMainCoop.setSelfConfidence(req.getSelfConfidence());
         coopCardMainCoop.setTempVarMap(req.getTempVarMap());
+        coopCardMainCoop.setStatus(Status.RUNNING);
         coopHandler.getCoopCards().get(req.getId()).getMainCoop().fromProto(coopCardMainCoop);
 
         //send mainCoop packet
-        coopCardMainCoop.setStatus(Status.RUNNING);
         session.send(new PacketMainCoopUpdateNotify(List.of(coopCardMainCoop)));
 
         //finish quests
@@ -38,20 +37,8 @@ public class HandlerSaveMainCoopReq extends TypedPacketHandler<SaveMainCoopReq> 
         questManager.queueEvent(QuestContent.QUEST_CONTENT_MAIN_COOP_ENTER_SAVE_POINT, req.getId(), req.getSavePointId());
         questManager.queueEvent(QuestContent.QUEST_CONTENT_MAIN_COOP_ENTER_ANY_SAVE_POINT, req.getId());
 
-        //finish coop point
-        session.send(
-                new PacketCoopPointUpdateNotify(
-                        new CoopPoint(coopHandler.getCurCoopPoint(), req.getSelfConfidence(), CoopPointState.STATE_FINISHED)));
-
         //start quests
         questManager.queueEvent(QuestCond.QUEST_COND_MAIN_COOP_ENTER_SAVE_POINT, req.getId(), req.getSavePointId());
-
-        //start next coop point
-        //TODO start next coop point
-        //session.send(new PacketCoopPointUpdateNotify()));
-
-        //TODO update progress
-        //session.send(new PacketCoopProgressUpdateNotify()));
 
         //respond
         session.send(new PacketSaveMainCoopRsp(req.getId(), List.of(req.getSavePointId())));
