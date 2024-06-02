@@ -1,6 +1,5 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import messages.coop.CoopDataNotify;
@@ -11,7 +10,6 @@ public class PacketCoopDataNotify extends BaseTypedPacket<CoopDataNotify> {
     public PacketCoopDataNotify(Player player) {
         super(new CoopDataNotify());
         //chapter list
-        Grasscutter.getLogger().info(player.toString());
         proto.setChapterList(player.getCoopHandler().getFullCoopDataList());
 
         //curCoopPoint, haveProgress
