@@ -99,7 +99,6 @@ public class CoopHandler {
         val updateList = GameData.getCoopChapterDataMap().values().stream().filter(x -> !x.getUnlockCond().stream().filter(y -> y.getArgs()[0] == arg && y.getType().equals(condType)).toList().isEmpty());
         val coopChapterList = new ArrayList<CoopChapter>();
         updateList.forEach(chapter -> {
-            Grasscutter.getLogger().info("trying: {}", chapter.getId());
             val coopChapter = new CoopChapter();
 
             //id
