@@ -99,29 +99,7 @@ public class CoopHandler {
         val updateList = GameData.getCoopChapterDataMap().values().stream().filter(x -> !x.getUnlockCond().stream().filter(y -> y.getArgs()[0] == arg && y.getType().equals(condType)).toList().isEmpty());
         val coopChapterList = new ArrayList<CoopChapter>();
         updateList.forEach(chapter -> {
-            val coopChapter = new CoopChapter();
-
-            //id
-            coopChapter.setId(chapter.getId());
-
-            //state, lockReasonList
-            val coopCardEntry = this.coopCards.computeIfAbsent(chapter.getId(), v -> new CoopCardEntry(chapter.getId()));
-            if (coopCardEntry.getAccepted()) {
-                coopChapter.setState(CoopChapterState.STATE_ACCEPT);
-            } else {
-                List<Integer> lockReasonList = this.getLockReasonList(chapter);
-                if (lockReasonList.isEmpty()) {
-                    coopChapter.setState(CoopChapterState.STATE_COND_MEET);
-                } else {
-                    coopChapter.setState(CoopChapterState.STATE_COND_NOT_MEET);
-                    coopChapter.setLockReasonList(lockReasonList);
-                }
-            }
-
-            //totalEndCount
-            coopChapter.setTotalEndCount(coopCardEntry.getTotalEndCount());
-
-            coopChapterList.add(coopChapter);
+            coopChapterList.add(initializeCoopChapter(chapter));
         });
 
         //send packet
@@ -133,27 +111,8 @@ public class CoopHandler {
         val chapterList = new ArrayList<CoopChapter>();
 
         GameData.getCoopChapterDataMap().values().forEach(chapter -> {
-            val coopChapter = new CoopChapter();
-
-            //id
-            coopChapter.setId(chapter.getId());
-
-            //state, lockReasonList
+            val coopChapter = initializeCoopChapter(chapter);
             val coopCardEntry = this.coopCards.computeIfAbsent(chapter.getId(), v -> new CoopCardEntry(chapter.getId()));
-            if (coopCardEntry.getAccepted()) {
-                coopChapter.setState(CoopChapterState.STATE_ACCEPT);
-            } else {
-                List<Integer> lockReasonList = this.getLockReasonList(chapter);
-                if (lockReasonList.isEmpty()) {
-                    coopChapter.setState(CoopChapterState.STATE_COND_MEET);
-                } else {
-                    coopChapter.setState(CoopChapterState.STATE_COND_NOT_MEET);
-                    coopChapter.setLockReasonList(lockReasonList);
-                }
-            }
-
-            //totalEndCount
-            coopChapter.setTotalEndCount(coopCardEntry.getTotalEndCount());
 
             //points
             List<CoopPoint> pointList = new ArrayList<>();
@@ -171,6 +130,32 @@ public class CoopHandler {
         });
 
         return chapterList;
+    }
+
+    public CoopChapter initializeCoopChapter(CoopChapterData chapter) {
+        val coopChapter = new CoopChapter();
+
+        //id
+        coopChapter.setId(chapter.getId());
+
+        //state, lockReasonList
+        val coopCardEntry = this.coopCards.computeIfAbsent(chapter.getId(), v -> new CoopCardEntry(chapter.getId()));
+        if (coopCardEntry.getAccepted()) {
+            coopChapter.setState(CoopChapterState.STATE_ACCEPT);
+        } else {
+            List<Integer> lockReasonList = this.getLockReasonList(chapter);
+            if (lockReasonList.isEmpty()) {
+                coopChapter.setState(CoopChapterState.STATE_COND_MEET);
+            } else {
+                coopChapter.setState(CoopChapterState.STATE_COND_NOT_MEET);
+                coopChapter.setLockReasonList(lockReasonList);
+            }
+        }
+
+        //totalEndCount
+        coopChapter.setTotalEndCount(coopCardEntry.getTotalEndCount());
+
+        return coopChapter;
     }
 
     private List<Integer> getLockReasonList(CoopChapterData chapter) {
