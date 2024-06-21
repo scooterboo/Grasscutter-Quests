@@ -119,4 +119,10 @@ public class PlayerCodex {
         this.player.save();
         this.player.sendPacket(new PacketCodexDataUpdateNotify(7, viewpoint.getId()));
     }
+
+    public void checkBook(int bookId) {
+        this.getUnlockedBook().add(bookId);
+        this.player.save();
+        this.player.sendPacket(new PacketCodexDataUpdateNotify(5, bookId));
+    }
 }
