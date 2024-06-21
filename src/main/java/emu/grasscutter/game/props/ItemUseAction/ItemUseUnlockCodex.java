@@ -15,7 +15,7 @@ public class ItemUseUnlockCodex extends ItemUseInt {
 
     @Override
     public boolean useItem(UseItemParams params) {
-        params.player.sendPacket(new PacketCodexDataUpdateNotify(5, this.i));
+        params.player.getCodex().checkBook(this.i);
         return true;
     }
 }
