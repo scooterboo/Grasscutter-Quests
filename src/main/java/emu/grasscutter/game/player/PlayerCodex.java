@@ -2,7 +2,6 @@ package emu.grasscutter.game.player;
 
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Transient;
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.CodexAnimalData;
 import emu.grasscutter.data.excels.CodexViewpointData;
@@ -123,7 +122,6 @@ public class PlayerCodex {
 
     public void checkBook(int bookId) {
         this.getUnlockedBook().add(bookId);
-        Grasscutter.getLogger().info("book: {}", bookId);
         this.player.save();
         this.player.sendPacket(new PacketCodexDataUpdateNotify(5, bookId));
     }
