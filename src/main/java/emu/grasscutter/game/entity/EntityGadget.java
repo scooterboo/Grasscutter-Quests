@@ -320,6 +320,7 @@ public class EntityGadget extends EntityBaseGadget implements ConfigAbilityDataA
 
         if (this.metaGadget != null) {
             gadgetInfo.setDraftId(this.metaGadget.getDraftId());
+            gadgetInfo.setInteractId(this.metaGadget.getInteractId());
         }
 
         if(owner != null){
