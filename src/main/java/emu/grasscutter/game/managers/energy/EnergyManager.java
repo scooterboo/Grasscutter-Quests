@@ -35,9 +35,9 @@ import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.val;
-import messages.ability.AbilityInvokeEntry;
-import messages.ability.action.AbilityActionGenerateElemBall;
-import messages.battle.EvtBeingHitInfo;
+import org.anime_game_servers.multi_proto.gi.messages.ability.AbilityInvokeEntry;
+import org.anime_game_servers.multi_proto.gi.messages.ability.action.AbilityActionGenerateElemBall;
+import org.anime_game_servers.multi_proto.gi.messages.battle.event.EvtBeingHitInfo;
 
 public class EnergyManager extends BasePlayerManager {
     private final Object2IntMap<EntityAvatar> avatarNormalProbabilities;

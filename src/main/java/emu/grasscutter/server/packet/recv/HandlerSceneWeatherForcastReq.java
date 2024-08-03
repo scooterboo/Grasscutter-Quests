@@ -8,7 +8,7 @@ import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketSceneWeatherForcastRsp;
 import lombok.val;
-import messages.scene.weather.SceneWeatherForecastReq;
+import org.anime_game_servers.multi_proto.gi.messages.scene.weather.SceneWeatherForecastReq;
 
 @Opcodes(PacketOpcodes.SceneWeatherForcastReq)
 public class HandlerSceneWeatherForcastReq extends TypedPacketHandler<SceneWeatherForecastReq> {

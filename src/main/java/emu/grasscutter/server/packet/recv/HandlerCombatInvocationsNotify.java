@@ -11,12 +11,12 @@ import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketEntityFightPropUpdateNotify;
 import emu.grasscutter.utils.Position;
 import lombok.val;
-import messages.battle.CombatInvocationsNotify;
-import messages.battle.CombatInvokeEntry;
-import messages.battle.EvtAnimatorParameterInfo;
-import messages.battle.EvtBeingHitInfo;
-import messages.general.entity.EntityMoveInfo;
-import messages.scene.entity.MotionState;
+import org.anime_game_servers.multi_proto.gi.messages.battle.CombatInvocationsNotify;
+import org.anime_game_servers.multi_proto.gi.messages.battle.CombatInvokeEntry;
+import org.anime_game_servers.multi_proto.gi.messages.battle.event.EvtAnimatorParameterInfo;
+import org.anime_game_servers.multi_proto.gi.messages.battle.event.EvtBeingHitInfo;
+import org.anime_game_servers.multi_proto.gi.messages.general.entity.EntityMoveInfo;
+import org.anime_game_servers.multi_proto.gi.messages.scene.entity.MotionState;
 
 public class HandlerCombatInvocationsNotify extends TypedPacketHandler<CombatInvocationsNotify> {
 

@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kotlin.Pair;
 import lombok.Getter;
 import lombok.val;
-import messages.scene.VisionType;
+import org.anime_game_servers.multi_proto.gi.messages.scene.VisionType;
 import org.anime_game_servers.gi_lua.models.*;
 import org.anime_game_servers.gi_lua.models.constants.EventType;
 import org.anime_game_servers.gi_lua.models.constants.VisionLevelType;

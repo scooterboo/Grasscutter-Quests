@@ -14,13 +14,13 @@ import emu.grasscutter.server.event.game.SendPacketEvent;
 import emu.grasscutter.utils.Crypto;
 import emu.grasscutter.utils.FileUtils;
 import emu.grasscutter.utils.Utils;
-import interfaces.PacketIdProvider;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.anime_game_servers.core.base.Version;
+import org.anime_game_servers.multi_proto.core.interfaces.PacketIdProvider;
 import packet_id.PacketIds;
 
 import static emu.grasscutter.config.Configuration.*;

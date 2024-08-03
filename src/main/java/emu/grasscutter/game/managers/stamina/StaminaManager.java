@@ -16,9 +16,9 @@ import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Position;
 import lombok.val;
-import messages.gadget.VehicleInteractType;
-import messages.general.entity.EntityMoveInfo;
-import messages.scene.entity.MotionState;
+import org.anime_game_servers.multi_proto.gi.messages.gadget.VehicleInteractType;
+import org.anime_game_servers.multi_proto.gi.messages.general.entity.EntityMoveInfo;
+import org.anime_game_servers.multi_proto.gi.messages.scene.entity.MotionState;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 

@@ -25,11 +25,11 @@ import emu.grasscutter.utils.Utils;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import lombok.Getter;
 import lombok.val;
-import messages.general.ability.AbilityControlBlock;
-import messages.general.ability.AbilityEmbryo;
-import messages.general.ability.AbilitySyncStateInfo;
-import messages.general.entity.SceneReliquaryInfo;
-import messages.scene.entity.*;
+import org.anime_game_servers.multi_proto.gi.messages.general.ability.AbilityControlBlock;
+import org.anime_game_servers.multi_proto.gi.messages.general.ability.AbilityEmbryo;
+import org.anime_game_servers.multi_proto.gi.messages.general.ability.AbilitySyncStateInfo;
+import org.anime_game_servers.multi_proto.gi.messages.general.entity.SceneReliquaryInfo;
+import org.anime_game_servers.multi_proto.gi.messages.scene.entity.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -234,11 +234,11 @@ public class EntityAvatar extends GameEntity {
 
     @Override
     public SceneEntityInfo toProto() {
-        val bornPosProto = new messages.general.Vector();
+        val bornPosProto = new org.anime_game_servers.multi_proto.gi.messages.general.Vector();
         val aiInfo = new SceneEntityAiInfo(true, bornPosProto);
         val authority = new EntityAuthorityInfo(new AbilitySyncStateInfo(), new EntityRendererChangedInfo(), aiInfo, bornPosProto);
 
-        val entityInfo = new SceneEntityInfo(messages.scene.entity.ProtEntityType.PROT_ENTITY_AVATAR, getId());
+        val entityInfo = new SceneEntityInfo(org.anime_game_servers.multi_proto.gi.messages.scene.entity.ProtEntityType.PROT_ENTITY_AVATAR, getId());
         entityInfo.setAnimatorParaList(List.of(new AnimatorParameterValueInfoPair()));
         entityInfo.setEntityClientData(new EntityClientData());
         entityInfo.setEntityAuthorityInfo(authority);
@@ -252,7 +252,7 @@ public class EntityAvatar extends GameEntity {
 
         this.addAllFightPropsToEntityInfo(entityInfo);
 
-        val pair = new messages.scene.entity.PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getAvatar().getLevel()));
+        val pair = new org.anime_game_servers.multi_proto.gi.messages.scene.entity.PropPair(PlayerProperty.PROP_LEVEL.getId(), ProtoHelper.newPropValue(PlayerProperty.PROP_LEVEL, getAvatar().getLevel()));
         entityInfo.setPropList(List.of(pair));
 
         entityInfo.setEntity(new SceneEntityInfo.Entity.Avatar(this.getSceneAvatarInfo()));

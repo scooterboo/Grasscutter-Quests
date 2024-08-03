@@ -17,10 +17,10 @@ import emu.grasscutter.utils.WeightedList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import messages.general.ability.AbilitySyncStateInfo;
-import messages.general.entity.SceneReliquaryInfo;
-import messages.general.entity.SceneWeaponInfo;
-import messages.general.item.*;
+import org.anime_game_servers.multi_proto.gi.messages.general.ability.AbilitySyncStateInfo;
+import org.anime_game_servers.multi_proto.gi.messages.general.entity.SceneReliquaryInfo;
+import org.anime_game_servers.multi_proto.gi.messages.general.entity.SceneWeaponInfo;
+import org.anime_game_servers.multi_proto.gi.messages.general.item.*;
 import org.bson.types.ObjectId;
 
 import java.util.*;

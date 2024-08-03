@@ -34,8 +34,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import messages.scene.EnterType;
-import messages.scene.entity.MotionState;
+import org.anime_game_servers.multi_proto.gi.messages.scene.EnterType;
+import org.anime_game_servers.multi_proto.gi.messages.scene.entity.MotionState;
 import org.jetbrains.annotations.NotNull;
 
 @Entity @Getter
