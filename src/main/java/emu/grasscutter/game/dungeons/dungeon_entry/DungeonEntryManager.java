@@ -14,7 +14,7 @@ import emu.grasscutter.game.quest.enums.QuestContent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.NonNull;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.dungeon.DungeonEntryInfo;
+import org.anime_game_servers.multi_proto.gi.messages.dungeon.entry.DungeonEntryInfo;
 import org.anime_game_servers.multi_proto.gi.messages.scene.entity.WeeklyBossResinDiscountInfo;
 import org.anime_game_servers.core.gi.enums.QuestState;
 
