@@ -4,7 +4,6 @@ import emu.grasscutter.data.common.ItemParamData;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCombineRsp;
-import lombok.val;
 import org.anime_game_servers.multi_proto.gi.messages.general.item.ItemParam;
 import org.anime_game_servers.multi_proto.gi.messages.item.combine.CombineReq;
 
@@ -30,12 +29,8 @@ public class HandlerCombineReq extends TypedPacketHandler<CombineReq> {
 
     private List<ItemParam> toItemParamList(List<ItemParamData> list) {
         return list.stream()
-            .map(item -> {
-                val itemParam = new ItemParam();
-                itemParam.setItemId(item.getId());
-                itemParam.setCount(item.getCount());
-                return itemParam;
-            }).toList();
+            .map(item -> new ItemParam(item.getId(), item.getCount()))
+            .toList();
     }
 }
 
