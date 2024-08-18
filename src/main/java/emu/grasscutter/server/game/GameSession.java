@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.val;
 import org.anime_game_servers.core.base.Version;
 import org.anime_game_servers.multi_proto.core.interfaces.PacketIdProvider;
-import packet_id.PacketIds;
+import org.anime_game_servers.multi_proto.gi.packet_id.PacketIds;
 
 import static emu.grasscutter.config.Configuration.*;
 import static emu.grasscutter.utils.Language.translate;
