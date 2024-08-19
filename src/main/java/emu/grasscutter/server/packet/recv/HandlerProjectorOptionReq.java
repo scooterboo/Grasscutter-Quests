@@ -17,7 +17,7 @@ public class HandlerProjectorOptionReq extends TypedPacketHandler<ProjectorOptio
         Grasscutter.getLogger().debug("JUST SOME DEBUG " + req.getOpType());
 
         if(session.getPlayer().getScene().getEntityById(req.getEntityId()) instanceof EntityGadget gadget) {
-            ProjectorOpType type = ProjectorOpType.values()[req.getOpType()];
+            ProjectorOpType type = req.getOpType();
             if(type == ProjectorOpType.PROJECTOR_OP_CREATE) {
                 if(gadget.getState() != ScriptGadgetState.GearStart)
                     gadget.setState(ScriptGadgetState.GearStart);

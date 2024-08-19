@@ -135,8 +135,11 @@ public class BlossomManager extends BasePlayerDataManager {
             .map(this.blossomSchedule::get);
         scheduleOption.ifPresent(schedule -> schedule.getRemainingUid().addAll(playersUid));
         return scheduleOption.map(schedule -> {
-            val proto = new BlossomChestInfo(schedule.getResin(), playersUid, playersUid);
+            val proto = new BlossomChestInfo();
 
+            proto.setQualifyUidList(playersUid);
+            proto.setRemainUidList(playersUid);
+            proto.setResin(schedule.getResin());
             proto.setRefreshId(schedule.getRefreshId());
             proto.setBlossomRefreshType(schedule.getRefreshType().getValue());
             return proto;
