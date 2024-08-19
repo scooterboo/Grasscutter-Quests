@@ -1,17 +1,15 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.ItemParamOuterClass.ItemParam;
-import emu.grasscutter.net.proto.TakeCompoundOutputRspOuterClass.TakeCompoundOutputRsp;
+import emu.grasscutter.game.inventory.GameItem;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.TakeCompoundOutputRsp;
 
-public class PacketTakeCompoundOutputRsp extends BasePacket {
+import java.util.List;
 
-    public PacketTakeCompoundOutputRsp(Iterable<ItemParam> itemList, int retcode) {
-        super(PacketOpcodes.TakeCompoundOutputRsp);
-        var builder = TakeCompoundOutputRsp.newBuilder()
-            .addAllItemList(itemList)
-            .setRetcode(retcode);
-        setData(builder.build());
+public class PacketTakeCompoundOutputRsp extends BaseTypedPacket<TakeCompoundOutputRsp> {
+    public PacketTakeCompoundOutputRsp(List<GameItem> itemList, int retcode) {
+        super(new TakeCompoundOutputRsp());
+        proto.setItemList(itemList.stream().map(GameItem::toItemParam).toList());
+        proto.setRetcode(retcode);
     }
 }
