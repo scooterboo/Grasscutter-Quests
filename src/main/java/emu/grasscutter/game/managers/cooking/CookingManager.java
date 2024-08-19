@@ -13,9 +13,9 @@ import emu.grasscutter.server.packet.send.PacketCookRecipeDataNotify;
 import emu.grasscutter.server.packet.send.PacketPlayerCookArgsRsp;
 import emu.grasscutter.server.packet.send.PacketPlayerCookRsp;
 import io.netty.util.internal.ThreadLocalRandom;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.CookRecipeData;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.PlayerCookArgsReq;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.PlayerCookReq;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.CookRecipeData;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.PlayerCookArgsReq;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.PlayerCookReq;
 
 import java.util.ArrayList;
 import java.util.HashSet;

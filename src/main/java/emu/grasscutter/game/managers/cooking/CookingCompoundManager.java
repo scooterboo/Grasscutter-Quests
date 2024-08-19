@@ -13,10 +13,10 @@ import emu.grasscutter.server.packet.send.PacketGetCompoundDataRsp;
 import emu.grasscutter.server.packet.send.PacketPlayerCompoundMaterialRsp;
 import emu.grasscutter.server.packet.send.PacketTakeCompoundOutputRsp;
 import emu.grasscutter.utils.Utils;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.CompoundQueueData;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.GetCompoundDataReq;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.PlayerCompoundMaterialReq;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.TakeCompoundOutputReq;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.CompoundQueueData;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.GetCompoundDataReq;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.PlayerCompoundMaterialReq;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.TakeCompoundOutputReq;
 
 import java.util.*;
 

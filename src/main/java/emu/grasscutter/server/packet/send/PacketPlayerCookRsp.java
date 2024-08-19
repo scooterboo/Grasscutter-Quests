@@ -4,8 +4,8 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.CookRecipeData;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.PlayerCookRsp;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.CookRecipeData;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.PlayerCookRsp;
 
 import java.util.List;
 

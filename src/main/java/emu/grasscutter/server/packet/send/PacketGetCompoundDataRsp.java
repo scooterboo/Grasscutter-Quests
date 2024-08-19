@@ -2,8 +2,8 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.CompoundQueueData;
-import org.anime_game_servers.multi_proto.gi.messages.cooking.GetCompoundDataRsp;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.CompoundQueueData;
+import org.anime_game_servers.multi_proto.gi.messages.item.cooking.GetCompoundDataRsp;
 
 import java.util.List;
 import java.util.Set;
