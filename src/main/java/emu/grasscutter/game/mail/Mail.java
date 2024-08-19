@@ -59,7 +59,8 @@ public class Mail {
     }
 
     public MailData toProto(Player player) {
-        val proto = new MailData(player.getMailId(this));
+        val proto = new MailData();
+        proto.setMailId(player.getMailId(this));
         proto.setMailTextContent(this.mailContent.toProto());
         proto.setItemList(this.itemList.stream().map(MailItem::toProto).toList());
         proto.setSendTime((int) this.sendTime);
@@ -128,6 +129,7 @@ public class Mail {
 
         public org.anime_game_servers.multi_proto.gi.messages.mail.MailItem toProto() {
             return new org.anime_game_servers.multi_proto.gi.messages.mail.MailItem(
+                null,
                 new EquipParam(this.itemId, this.itemCount, this.itemLevel,
                     0 //mock promote level
                     )
