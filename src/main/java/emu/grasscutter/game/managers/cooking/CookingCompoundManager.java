@@ -7,17 +7,16 @@ import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
-import emu.grasscutter.net.proto.CompoundQueueDataOuterClass.CompoundQueueData;
-import emu.grasscutter.net.proto.GetCompoundDataReqOuterClass.GetCompoundDataReq;
-import emu.grasscutter.net.proto.ItemParamOuterClass.ItemParam;
-import emu.grasscutter.net.proto.PlayerCompoundMaterialReqOuterClass.PlayerCompoundMaterialReq;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
-import emu.grasscutter.net.proto.TakeCompoundOutputReqOuterClass.TakeCompoundOutputReq;
-import emu.grasscutter.server.packet.send.PacketTakeCompoundOutputRsp;
 import emu.grasscutter.server.packet.send.PacketCompoundDataNotify;
 import emu.grasscutter.server.packet.send.PacketGetCompoundDataRsp;
 import emu.grasscutter.server.packet.send.PacketPlayerCompoundMaterialRsp;
+import emu.grasscutter.server.packet.send.PacketTakeCompoundOutputRsp;
 import emu.grasscutter.utils.Utils;
+import org.anime_game_servers.multi_proto.gi.messages.cooking.CompoundQueueData;
+import org.anime_game_servers.multi_proto.gi.messages.cooking.GetCompoundDataReq;
+import org.anime_game_servers.multi_proto.gi.messages.cooking.PlayerCompoundMaterialReq;
+import org.anime_game_servers.multi_proto.gi.messages.cooking.TakeCompoundOutputReq;
 
 import java.util.*;
 
@@ -50,7 +49,11 @@ public class CookingCompoundManager extends BasePlayerManager {
         List<CompoundQueueData> compoundQueueData = new ArrayList<>(player.getActiveCookCompounds().size());
         int currentTime = Utils.getCurrentSeconds();
         for (var item : player.getActiveCookCompounds().values()) {
-            var data = CompoundQueueData.newBuilder().setCompoundId(item.getCompoundId()).setOutputCount(item.getOutputCount(currentTime)).setOutputTime(item.getOutputTime(currentTime)).setWaitCount(item.getWaitCount(currentTime)).build();
+            var data = new CompoundQueueData();
+            data.setCompoundId(item.getCompoundId());
+            data.setOutputCount(item.getOutputCount(currentTime));
+            data.setOutputTime(item.getOutputTime(currentTime));
+            data.setWaitCount(item.getWaitCount(currentTime));
             compoundQueueData.add(data);
         }
         return compoundQueueData;
@@ -91,7 +94,11 @@ public class CookingCompoundManager extends BasePlayerManager {
             c = new ActiveCookCompoundData(id, compound.getCostTime(), count, currentTime);
             activeCompounds.put(id, c);
         }
-        var data = CompoundQueueData.newBuilder().setCompoundId(id).setOutputCount(c.getOutputCount(currentTime)).setOutputTime(c.getOutputTime(currentTime)).setWaitCount(c.getWaitCount(currentTime)).build();
+        var data = new CompoundQueueData();
+        data.setCompoundId(id);
+        data.setOutputCount(c.getOutputCount(currentTime));
+        data.setOutputTime(c.getOutputTime(currentTime));
+        data.setWaitCount(c.getWaitCount(currentTime));
         player.sendPacket(new PacketPlayerCompoundMaterialRsp(data));
     }
 
@@ -123,9 +130,9 @@ public class CookingCompoundManager extends BasePlayerManager {
         //give player the rewards
         if (success) {
             player.getInventory().addItems(allRewards.values(), ActionReason.Compound);
-            player.sendPacket(new PacketTakeCompoundOutputRsp(allRewards.values().stream().map(i -> ItemParam.newBuilder().setItemId(i.getItemId()).setCount(i.getCount()).build()).toList(), Retcode.RET_SUCC_VALUE));
+            player.sendPacket(new PacketTakeCompoundOutputRsp(allRewards.values().stream().toList(), Retcode.RET_SUCC_VALUE));
         } else {
-            player.sendPacket(new PacketTakeCompoundOutputRsp(null, Retcode.RET_COMPOUND_NOT_FINISH_VALUE));
+            player.sendPacket(new PacketTakeCompoundOutputRsp(new ArrayList<GameItem>(), Retcode.RET_COMPOUND_NOT_FINISH_VALUE));
         }
     }
 
