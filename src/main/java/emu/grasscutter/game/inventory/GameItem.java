@@ -11,8 +11,6 @@ import emu.grasscutter.database.DatabaseHelper;
 import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.FightProperty;
-import org.anime_game_servers.multi_proto.gi.messages.item.ItemHint;
-import emu.grasscutter.net.proto.ItemParamOuterClass;
 import emu.grasscutter.utils.WeightedList;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +19,7 @@ import org.anime_game_servers.multi_proto.gi.messages.general.ability.AbilitySyn
 import org.anime_game_servers.multi_proto.gi.messages.general.entity.SceneReliquaryInfo;
 import org.anime_game_servers.multi_proto.gi.messages.general.entity.SceneWeaponInfo;
 import org.anime_game_servers.multi_proto.gi.messages.general.item.*;
+import org.anime_game_servers.multi_proto.gi.messages.item.ItemHint;
 import org.bson.types.ObjectId;
 
 import java.util.*;
@@ -287,9 +286,6 @@ public class GameItem {
 
     }
 
-    public ItemParamOuterClass.ItemParam toItemParamOld() {
-        return ItemParamOuterClass.ItemParam.newBuilder().setItemId(this.itemId).setCount(this.count).build();
-    }
     public ItemParam toItemParam() {
         return new ItemParam(this.itemId, this.count);
     }
