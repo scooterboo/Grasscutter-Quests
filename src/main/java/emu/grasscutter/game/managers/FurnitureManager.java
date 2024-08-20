@@ -4,10 +4,11 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.home.FurnitureMakeSlotItem;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.proto.ItemParamOuterClass;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Utils;
+import lombok.val;
+import org.anime_game_servers.multi_proto.gi.messages.general.item.ItemParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,11 +125,11 @@ public class FurnitureManager extends BasePlayerManager {
         player.getInventory().addItem(makeData.getFurnitureItemID(), makeData.getCount());
         player.getHome().getFurnitureMakeSlotItemList().remove(slotItem.get());
 
+        val itemParam = new ItemParam();
+        itemParam.setItemId(makeData.getFurnitureItemID());
+        itemParam.setCount(makeData.getCount());
         player.getSession().send(new PacketTakeFurnitureMakeRsp(Retcode.RET_SUCC_VALUE, makeId,
-                List.of(ItemParamOuterClass.ItemParam.newBuilder()
-                                .setItemId(makeData.getFurnitureItemID())
-                                .setCount(makeData.getCount())
-                        .build()),
+            List.of(itemParam),
                 player.getHome().getFurnitureMakeSlotItemList().stream()
                         .map(FurnitureMakeSlotItem::toProto)
                         .toList()

@@ -1,28 +1,22 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.FurnitureMakeDataOuterClass;
-import emu.grasscutter.net.proto.FurnitureMakeSlotOuterClass;
-import emu.grasscutter.net.proto.FurnitureMakeStartRspOuterClass;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import lombok.val;
+import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeData;
+import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeSlot;
+import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeStartRsp;
 
 import java.util.List;
 
-public class PacketFurnitureMakeStartRsp extends BasePacket {
+public class PacketFurnitureMakeStartRsp extends BaseTypedPacket<FurnitureMakeStartRsp> {
+    public PacketFurnitureMakeStartRsp(int ret, List<FurnitureMakeData> furnitureMakeData) {
+        super(new FurnitureMakeStartRsp());
+        proto.setRetcode(ret);
 
-	public PacketFurnitureMakeStartRsp(int ret, List<FurnitureMakeDataOuterClass.FurnitureMakeData> furnitureMakeData) {
-		super(PacketOpcodes.FurnitureMakeStartRsp);
-
-		var proto = FurnitureMakeStartRspOuterClass.FurnitureMakeStartRsp.newBuilder();
-
-		proto.setRetcode(ret);
-
-		if(furnitureMakeData != null){
-			proto.setFurnitureMakeSlot(FurnitureMakeSlotOuterClass.FurnitureMakeSlot.newBuilder()
-					.addAllFurnitureMakeDataList(furnitureMakeData)
-					.build());
-		}
-
-		this.setData(proto);
-	}
+        if (furnitureMakeData != null) {
+            val furnitureMakeSlot = new FurnitureMakeSlot();
+            furnitureMakeSlot.setFurnitureMakeDataList(furnitureMakeData);
+            proto.setFurnitureMakeSlot(furnitureMakeSlot);
+        }
+    }
 }
