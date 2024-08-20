@@ -4,10 +4,10 @@ import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.HomeUnknown1NotifyOuterClass;
 
-public class PacketHomeUnknown1Notify extends BasePacket {
+public class PacketHomePreChangeEditModeNotify extends BasePacket {
 
-    public PacketHomeUnknown1Notify(boolean isEnterEditMode) {
-        super(PacketOpcodes.Unk2700_JDMPECKFGIG_ServerNotify);
+    public PacketHomePreChangeEditModeNotify(boolean isEnterEditMode) {
+        super(PacketOpcodes.HomePreChangeEditModeNotify);
 
         var proto = HomeUnknown1NotifyOuterClass.HomeUnknown1Notify.newBuilder();
 

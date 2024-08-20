@@ -4,7 +4,7 @@ import emu.grasscutter.net.packet.Opcodes;
 import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.server.game.GameSession;
-import emu.grasscutter.server.packet.send.PacketHomeUnknown2Rsp;
+import emu.grasscutter.server.packet.send.PacketHomeEnterEditModeFinishRsp;
 
 @Opcodes(PacketOpcodes.HomeEnterEditModeFinishReq)
 public class HandlerHomeEnterEditModeFinishReq extends PacketHandler {
@@ -14,7 +14,7 @@ public class HandlerHomeEnterEditModeFinishReq extends PacketHandler {
         /*
          * This packet is about the edit mode
          */
-        session.send(new PacketHomeUnknown2Rsp());
+        session.send(new PacketHomeEnterEditModeFinishRsp());
     }
 
 }

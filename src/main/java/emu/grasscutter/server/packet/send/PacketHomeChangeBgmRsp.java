@@ -4,9 +4,9 @@ import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.Unk2700OGHMHELMBNNServerRsp;
 
-public class PacketChangeHomeBgmRsp extends BasePacket {
-    public PacketChangeHomeBgmRsp() {
-        super(PacketOpcodes.Unk2700_OGHMHELMBNN_ServerRsp);
+public class PacketHomeChangeBgmRsp extends BasePacket {
+    public PacketHomeChangeBgmRsp() {
+        super(PacketOpcodes.HomeChangeBgmRsp);
 
         var rsp = Unk2700OGHMHELMBNNServerRsp.Unk2700_OGHMHELMBNN_ServerRsp.newBuilder()
             .setRetcode(0)

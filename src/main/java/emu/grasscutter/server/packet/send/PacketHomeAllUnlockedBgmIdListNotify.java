@@ -5,9 +5,9 @@ import emu.grasscutter.net.packet.BasePacket;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.Unk2700LOHBMOKOPLHServerNotify;
 
-public class PacketUnlockedHomeBgmNotify extends BasePacket {
-    public PacketUnlockedHomeBgmNotify(Player player) {
-        super(PacketOpcodes.Unk2700_LOHBMOKOPLH_ServerNotify);
+public class PacketHomeAllUnlockedBgmIdListNotify extends BasePacket {
+    public PacketHomeAllUnlockedBgmIdListNotify(Player player) {
+        super(PacketOpcodes.HomeAllUnlockedBgmIdListNotify);
 
         if (player.getRealmList() == null) {
             return;
