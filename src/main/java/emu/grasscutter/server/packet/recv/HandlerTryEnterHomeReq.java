@@ -8,7 +8,7 @@ import emu.grasscutter.server.packet.send.PacketTryEnterHomeRsp;
 import lombok.val;
 import org.anime_game_servers.multi_proto.gi.messages.home.TryEnterHomeReq;
 
-import static emu.grasscutter.net.proto.FriendEnterHomeOptionOuterClass.FriendEnterHomeOption.*;
+import org.anime_game_servers.multi_proto.gi.messages.community.friends.FriendEnterHomeOption;
 import static emu.grasscutter.net.proto.RetcodeOuterClass.Retcode.RET_HOME_HOME_REFUSE_GUEST_ENTER_VALUE;
 import static emu.grasscutter.net.proto.RetcodeOuterClass.Retcode.RET_HOME_OWNER_OFFLINE_VALUE;
 
@@ -20,15 +20,15 @@ public class HandlerTryEnterHomeReq extends TypedPacketHandler<TryEnterHomeReq> 
         if (req.getTargetUid() != session.getPlayer().getUid() && targetPlayer != null) {
             // I hope that tomorrow there will be a hero who can support multiplayer mode and write code like a poem
             val targetHome = GameHome.getByUid(req.getTargetUid());
-            switch (targetHome.getEnterHomeOption()) {
-                case FRIEND_ENTER_HOME_OPTION_NEED_CONFIRM_VALUE -> {
+            switch (FriendEnterHomeOption.values()[targetHome.getEnterHomeOption()]) {
+                case FRIEND_ENTER_HOME_OPTION_NEED_CONFIRM -> {
                     if (targetPlayer.isOnline()) break;
 
                     session.send(new PacketTryEnterHomeRsp(RET_HOME_OWNER_OFFLINE_VALUE, req.getTargetUid()));
                 }
-                case FRIEND_ENTER_HOME_OPTION_REFUSE_VALUE ->
+                case FRIEND_ENTER_HOME_OPTION_REFUSE ->
                     session.send(new PacketTryEnterHomeRsp(RET_HOME_HOME_REFUSE_GUEST_ENTER_VALUE, req.getTargetUid()));
-                case FRIEND_ENTER_HOME_OPTION_DIRECT_VALUE -> session.send(new PacketTryEnterHomeRsp());
+                case FRIEND_ENTER_HOME_OPTION_DIRECT -> session.send(new PacketTryEnterHomeRsp());
             }
             return;
         }
