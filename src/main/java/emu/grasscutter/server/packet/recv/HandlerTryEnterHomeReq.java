@@ -1,24 +1,20 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.game.home.GameHome;
-import emu.grasscutter.net.packet.Opcodes;
-import emu.grasscutter.net.packet.PacketHandler;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.TryEnterHomeReqOuterClass.TryEnterHomeReq;
+import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.event.player.PlayerTeleportEvent.TeleportType;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketTryEnterHomeRsp;
 import lombok.val;
+import org.anime_game_servers.multi_proto.gi.messages.home.TryEnterHomeReq;
 
 import static emu.grasscutter.net.proto.FriendEnterHomeOptionOuterClass.FriendEnterHomeOption.*;
-import static emu.grasscutter.net.proto.RetcodeOuterClass.Retcode.*;
+import static emu.grasscutter.net.proto.RetcodeOuterClass.Retcode.RET_HOME_HOME_REFUSE_GUEST_ENTER_VALUE;
+import static emu.grasscutter.net.proto.RetcodeOuterClass.Retcode.RET_HOME_OWNER_OFFLINE_VALUE;
 
-@Opcodes(PacketOpcodes.TryEnterHomeReq)
-public class HandlerTryEnterHomeReq extends PacketHandler {
-
+public class HandlerTryEnterHomeReq extends TypedPacketHandler<TryEnterHomeReq> {
     @Override
-    public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        val req = TryEnterHomeReq.parseFrom(payload);
+    public void handle(GameSession session, byte[] header, TryEnterHomeReq req) throws Exception {
         val targetPlayer = session.getServer().getPlayerByUid(req.getTargetUid(), true);
 
         if (req.getTargetUid() != session.getPlayer().getUid() && targetPlayer != null) {

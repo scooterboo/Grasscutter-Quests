@@ -1,17 +1,11 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.Unk2700FJEHHCPCBLGServerNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.home.HomeChangeBgmNotify;
 
-public class PacketHomeChangeBgmNotify extends BasePacket {
+public class PacketHomeChangeBgmNotify extends BaseTypedPacket<HomeChangeBgmNotify> {
     public PacketHomeChangeBgmNotify(int homeBgmId) {
-        super(PacketOpcodes.HomeChangeBgmNotify);
-
-        var notify = Unk2700FJEHHCPCBLGServerNotify.Unk2700_FJEHHCPCBLG_ServerNotify.newBuilder()
-            .setUnk2700BJHAMKKECEI(homeBgmId)
-            .build();
-
-        this.setData(notify);
+        super(new HomeChangeBgmNotify());
+        proto.setBgmId(homeBgmId);
     }
 }

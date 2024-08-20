@@ -1,12 +1,10 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.home.HomeEnterEditModeFinishRsp;
 
-public class PacketHomeEnterEditModeFinishRsp extends BasePacket {
-
+public class PacketHomeEnterEditModeFinishRsp extends BaseTypedPacket<HomeEnterEditModeFinishRsp> {
     public PacketHomeEnterEditModeFinishRsp() {
-        super(PacketOpcodes.HomeEnterEditModeFinishRsp);
-
+        super(new HomeEnterEditModeFinishRsp());
     }
 }

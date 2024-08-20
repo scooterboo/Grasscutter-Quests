@@ -1,17 +1,13 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.Unk2700MEBFPBDNPGOServerNotify;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.home.HomeNewUnlockedBgmIdListNotify;
 
-public class PacketHomeNewUnlockedBgmIdListNotify extends BasePacket {
+import java.util.List;
+
+public class PacketHomeNewUnlockedBgmIdListNotify extends BaseTypedPacket<HomeNewUnlockedBgmIdListNotify> {
     public PacketHomeNewUnlockedBgmIdListNotify(int homeBgmId) {
-        super(PacketOpcodes.HomeNewUnlockedBgmIdListNotify);
-
-        var notify = Unk2700MEBFPBDNPGOServerNotify.Unk2700_MEBFPBDNPGO_ServerNotify.newBuilder()
-            .addUnk2700ELJPLMIHNIP(homeBgmId)
-            .build();
-
-        this.setData(notify);
+        super(new HomeNewUnlockedBgmIdListNotify());
+        proto.setNewUnlockedBgmIdList(List.of(homeBgmId));
     }
 }
