@@ -1,9 +1,10 @@
 package emu.grasscutter.game.tower;
 
 import dev.morphia.annotations.Entity;
-import emu.grasscutter.net.proto.TowerMonthlyBriefOuterClass;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.val;
+import org.anime_game_servers.multi_proto.gi.messages.tower.TowerMonthlyBrief;
 
 @Entity
 @Getter
@@ -27,12 +28,12 @@ public class TowerMonthlyBriefInfo {
         this.totalStartCount = totalStartCount;
     }
 
-    public TowerMonthlyBriefOuterClass.TowerMonthlyBrief toProto() {
-        return TowerMonthlyBriefOuterClass.TowerMonthlyBrief.newBuilder()
-            .setTowerScheduleId(this.towerScheduleId)
-            .setBestFloorIndex(this.bestFloorIndex)
-            .setBestLevelIndex(this.bestLevelIndex)
-            .setTotalStarCount(this.totalStartCount)
-            .build();
+    public TowerMonthlyBrief toProto() {
+        val proto = new TowerMonthlyBrief();
+        proto.setTowerScheduleId(this.towerScheduleId);
+        proto.setBestFloorIndex(this.bestFloorIndex);
+        proto.setBestLevelIndex(this.bestLevelIndex);
+        proto.setTotalStarCount(this.totalStartCount);
+        return proto;
     }
 }
