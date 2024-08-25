@@ -5,17 +5,17 @@ import emu.grasscutter.net.packet.PacketHandler;
 import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.FireWorkReqOuterClass;
 import emu.grasscutter.server.game.GameSession;
-import emu.grasscutter.server.packet.send.PacketFireworkNotify;
-import emu.grasscutter.server.packet.send.PacketFireworkRsp;
+import emu.grasscutter.server.packet.send.PacketFireworksReformDataNotify;
+import emu.grasscutter.server.packet.send.PacketReformFireworksRsp;
 
-@Opcodes(PacketOpcodes.FireworkReq)
-public class HandlerFireWorkReq extends PacketHandler {
+@Opcodes(PacketOpcodes.ReformFireworksReq)
+public class HandlerReformFireworksReq extends PacketHandler {
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
 
         var req
                 = FireWorkReqOuterClass.FireWorkReq.parseFrom(payload);
-        session.send(new PacketFireworkNotify(req.getFireWorkData()));
-        session.send(new PacketFireworkRsp());
+        session.send(new PacketFireworksReformDataNotify(req.getFireWorkData()));
+        session.send(new PacketReformFireworksRsp());
     }
 }

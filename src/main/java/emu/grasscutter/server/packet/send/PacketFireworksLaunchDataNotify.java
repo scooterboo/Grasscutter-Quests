@@ -5,10 +5,10 @@ import emu.grasscutter.net.packet.PacketOpcodes;
 import emu.grasscutter.net.proto.FireworkSetNotifyOuterClass;
 import emu.grasscutter.net.proto.FireworkSetDataOuterClass;
 
-public class PacketFireworkSetNotify extends BasePacket {
+public class PacketFireworksLaunchDataNotify extends BasePacket {
 
-    public PacketFireworkSetNotify(FireworkSetDataOuterClass.FireworkSetData notify) {
-        super(PacketOpcodes.FireworkSetNotify);
+    public PacketFireworksLaunchDataNotify(FireworkSetDataOuterClass.FireworkSetData notify) {
+        super(PacketOpcodes.Unk2700_NBFOJLAHFCA_ServerNotify);
 
         var proto
                 = FireworkSetNotifyOuterClass.FireworkSetNotify.newBuilder();
