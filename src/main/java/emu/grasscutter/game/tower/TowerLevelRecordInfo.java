@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerLevelRecord;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerLevelRecord;
 
 import java.util.Set;
 import java.util.TreeSet;

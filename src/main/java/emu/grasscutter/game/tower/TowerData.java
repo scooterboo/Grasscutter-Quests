@@ -11,9 +11,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerCurLevelRecord;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerFloorRecord;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerTeam;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerCurLevelRecord;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerFloorRecord;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.TowerTeam;
 
 import java.util.*;
 

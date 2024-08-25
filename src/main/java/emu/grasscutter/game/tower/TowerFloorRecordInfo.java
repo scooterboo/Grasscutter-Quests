@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerFloorRecord;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerLevelRecord;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerFloorRecord;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerLevelRecord;
 
 import java.util.*;
 

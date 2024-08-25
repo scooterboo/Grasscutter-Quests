@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.game.tower.TowerManager;
 import emu.grasscutter.game.tower.TowerSystem;
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerAllDataRsp;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerAllDataRsp;
 
 import java.util.stream.Collectors;
 

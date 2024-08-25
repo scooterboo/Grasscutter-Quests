@@ -6,7 +6,7 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.tower.TowerFloorRecordInfo;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerBriefDataNotify;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.rotation.TowerBriefDataNotify;
 
 import java.util.Comparator;
 

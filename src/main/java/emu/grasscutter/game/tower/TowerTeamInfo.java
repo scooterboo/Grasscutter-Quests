@@ -4,7 +4,7 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Transient;
 import emu.grasscutter.game.avatar.TowerAvatar;
 import emu.grasscutter.game.player.Player;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerTeam;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.TowerTeam;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.val;

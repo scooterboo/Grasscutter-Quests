@@ -4,7 +4,7 @@ import dev.morphia.annotations.Entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.tower.TowerMonthlyBrief;
+import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.TowerMonthlyBrief;
 
 @Entity
 @Getter
