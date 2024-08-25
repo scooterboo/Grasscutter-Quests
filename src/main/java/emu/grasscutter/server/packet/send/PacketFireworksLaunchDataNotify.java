@@ -1,21 +1,15 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
-import emu.grasscutter.net.proto.FireworkSetNotifyOuterClass;
-import emu.grasscutter.net.proto.FireworkSetDataOuterClass;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.item.widget.firework.FireworksLaunchDataNotify;
+import org.anime_game_servers.multi_proto.gi.messages.item.widget.firework.FireworksLaunchSchemeData;
 
-public class PacketFireworksLaunchDataNotify extends BasePacket {
+import java.util.List;
 
-    public PacketFireworksLaunchDataNotify(FireworkSetDataOuterClass.FireworkSetData notify) {
-        super(PacketOpcodes.Unk2700_NBFOJLAHFCA_ServerNotify);
-
-        var proto
-                = FireworkSetNotifyOuterClass.FireworkSetNotify.newBuilder();
-
-        proto.setCode(1).addData(notify);
-
-        setData(proto.build());
+public class PacketFireworksLaunchDataNotify extends BaseTypedPacket<FireworksLaunchDataNotify> {
+    public PacketFireworksLaunchDataNotify(FireworksLaunchSchemeData notify) {
+        super(new FireworksLaunchDataNotify());
+        proto.setLastUseSchemeId(1);
+        proto.setSchemeDataList(List.of(notify));
     }
-
 }

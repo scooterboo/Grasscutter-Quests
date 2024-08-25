@@ -1,12 +1,10 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
+import emu.grasscutter.net.packet.BaseTypedPacket;
+import org.anime_game_servers.multi_proto.gi.messages.item.widget.firework.ReformFireworksRsp;
 
-public class PacketReformFireworksRsp extends BasePacket {
-
+public class PacketReformFireworksRsp extends BaseTypedPacket<ReformFireworksRsp> {
     public PacketReformFireworksRsp() {
-        super(PacketOpcodes.Unk2700_JCOECJGPNOL_ServerRsp);
+        super(new ReformFireworksRsp());
     }
-
 }
