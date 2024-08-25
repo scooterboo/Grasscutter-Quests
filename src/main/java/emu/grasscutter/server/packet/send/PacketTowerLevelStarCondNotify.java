@@ -15,9 +15,9 @@ public class PacketTowerLevelStarCondNotify extends BaseTypedPacket<TowerLevelSt
         proto.setLevelIndex(data.getCurrentLevelIndex());
         proto.setCondDataList(Stream.of(1, 2, 3)
             .map(i -> {
-                val TowerLevelStarCondData = new TowerLevelStarCondData();
-                TowerLevelStarCondData.setCondValue(i);
-                return TowerLevelStarCondData;
+                val towerLevelStarCondData = new TowerLevelStarCondData();
+                towerLevelStarCondData.setCondValue(i);
+                return towerLevelStarCondData;
             }).toList());
     }
 }
