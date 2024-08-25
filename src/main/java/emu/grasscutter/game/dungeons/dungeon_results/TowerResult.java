@@ -38,10 +38,10 @@ public class TowerResult extends BaseDungeonResult {
 
         val towerLevelEndNotify = new TowerLevelEndNotify();
         towerLevelEndNotify.setSuccess(success);
-        towerLevelEndNotify.setContinueState((success && this.hasNextFloor ? this.hasNextLevel ?
+        towerLevelEndNotify.setContinueState(success && this.hasNextFloor ? this.hasNextLevel ?
             ContinueStateType.CONTINUE_STATE_CAN_ENTER_NEXT_LEVEL :
             ContinueStateType.CONTINUE_STATE_CAN_ENTER_NEXT_FLOOR :
-            ContinueStateType.CONTINUE_STATE_CAN_NOT_CONTINUE));
+            ContinueStateType.CONTINUE_STATE_CAN_NOT_CONTINUE);
         towerLevelEndNotify.setFinishedStarCondList(IntStream.rangeClosed(1, this.stars).boxed().toList());
         towerLevelEndNotify.setNextFloorId(this.hasNextFloor ? this.nextFloorId : 0);
         towerLevelEndNotify.setRewardItemList(this.rewardItems.stream()
