@@ -7,8 +7,8 @@ import org.anime_game_servers.multi_proto.gi.messages.team.AvatarTeamAllDataNoti
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PacketCustomTeamListNotify extends BaseTypedPacket<AvatarTeamAllDataNotify> {
-    public PacketCustomTeamListNotify(Player player) {
+public class PacketAvatarTeamAllDataNotify extends BaseTypedPacket<AvatarTeamAllDataNotify> {
+    public PacketAvatarTeamAllDataNotify(Player player) {
         super(new AvatarTeamAllDataNotify());
 
         // Add the id list for custom teams.
