@@ -1,29 +1,17 @@
 package emu.grasscutter.server.packet.send;
 
-import emu.grasscutter.net.packet.BasePacket;
-import emu.grasscutter.net.packet.PacketOpcodes;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.proto.RetcodeOuterClass;
-import emu.grasscutter.net.proto.SceneKickPlayerRspOuterClass.SceneKickPlayerRsp;
+import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.SceneKickPlayerRsp;
 
-public class PacketSceneKickPlayerRsp extends BasePacket {
-	
+public class PacketSceneKickPlayerRsp extends BaseTypedPacket<SceneKickPlayerRsp> {
 	public PacketSceneKickPlayerRsp(int targetUid) {
-		super(PacketOpcodes.SceneKickPlayerRsp);
-
-		SceneKickPlayerRsp proto = SceneKickPlayerRsp.newBuilder()
-				.setTargetUid(targetUid)
-				.build();
-		
-		this.setData(proto);
+        super(new SceneKickPlayerRsp());
+        proto.setTargetUid(targetUid);
 	}
-	
-	public PacketSceneKickPlayerRsp() {
-		super(PacketOpcodes.SceneKickPlayerRsp);
 
-		SceneKickPlayerRsp proto = SceneKickPlayerRsp.newBuilder()
-				.setRetcode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE)
-				.build();
-		
-		this.setData(proto);
+	public PacketSceneKickPlayerRsp() {
+        super(new SceneKickPlayerRsp());
+        proto.setRetcode(RetcodeOuterClass.Retcode.RET_SVR_ERROR_VALUE);
 	}
 }
