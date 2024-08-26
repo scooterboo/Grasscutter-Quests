@@ -6,10 +6,11 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.net.packet.BasePacket;
+import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import org.anime_game_servers.multi_proto.gi.messages.player.SetPlayerBornDataReq;
+import org.anime_game_servers.multi_proto.gi.messages.player.SetPlayerBornDataRsp;
 
 import java.util.Arrays;
 
@@ -56,7 +57,7 @@ public class HandlerSetPlayerBornDataReq extends TypedPacketHandler<SetPlayerBor
         session.getPlayer().onPlayerBorn();
 
         // Born resp packet
-        session.send(new BasePacket(session.getPackageIdProvider().getPacketId("SetPlayerBornDataRsp")));
+        session.send(new BaseTypedPacket<>(new SetPlayerBornDataRsp()) {});
 
         // Default mail
         var welcomeMail = GAME_INFO.joinOptions.welcomeMail;
