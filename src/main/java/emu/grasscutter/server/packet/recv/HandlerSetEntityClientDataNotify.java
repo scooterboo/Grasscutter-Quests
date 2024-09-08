@@ -4,7 +4,7 @@ import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.SetEntityClientDataNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.SetEntityClientDataNotify;
 
 public class HandlerSetEntityClientDataNotify extends TypedPacketHandler<SetEntityClientDataNotify> {
 	@Override

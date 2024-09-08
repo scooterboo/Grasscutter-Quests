@@ -61,7 +61,7 @@ import emu.grasscutter.game.tower.TowerManager;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.World;
 import emu.grasscutter.net.packet.BasePacket;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.Reason;
+import org.anime_game_servers.multi_proto.gi.messages.multiplayer.MpEnterResultReason;
 import org.anime_game_servers.multi_proto.gi.messages.general.PropChangeReason;
 import emu.grasscutter.server.event.player.PlayerJoinEvent;
 import emu.grasscutter.server.event.player.PlayerQuitEvent;
@@ -1203,7 +1203,7 @@ public class Player {
         req.getRequester().sendPacket(new PacketPlayerApplyEnterMpResultNotify(
             this,
             false,
-            Reason.SYSTEM_JUDGE));
+            MpEnterResultReason.SYSTEM_JUDGE));
         return true;
     }
 

@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketSceneAudioNotify;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.SceneAudioNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.SceneAudioNotify;
 
 public class HandlerSceneAudioNotify extends TypedPacketHandler<SceneAudioNotify> {
 	@Override

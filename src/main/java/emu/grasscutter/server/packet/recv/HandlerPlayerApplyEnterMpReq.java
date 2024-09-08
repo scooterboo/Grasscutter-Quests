@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketPlayerApplyEnterMpRsp;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.PlayerApplyEnterMpReq;
+import org.anime_game_servers.multi_proto.gi.messages.multiplayer.PlayerApplyEnterMpReq;
 
 public class HandlerPlayerApplyEnterMpReq extends TypedPacketHandler<PlayerApplyEnterMpReq> {
     @Override

@@ -7,7 +7,7 @@ import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketTakePlayerLevelRewardRsp;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.TakePlayerLevelRewardReq;
+import org.anime_game_servers.multi_proto.gi.messages.player.TakePlayerLevelRewardReq;
 
 import java.util.List;
 import java.util.Set;

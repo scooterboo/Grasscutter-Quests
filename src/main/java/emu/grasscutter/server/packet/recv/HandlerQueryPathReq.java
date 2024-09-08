@@ -3,7 +3,7 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketQueryPathRsp;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.QueryPathReq;
+import org.anime_game_servers.multi_proto.gi.messages.pathfinding.QueryPathReq;
 
 public class HandlerQueryPathReq extends TypedPacketHandler<QueryPathReq> {
     @Override

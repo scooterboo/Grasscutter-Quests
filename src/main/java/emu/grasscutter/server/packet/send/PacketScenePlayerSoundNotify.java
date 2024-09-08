@@ -2,8 +2,8 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.Position;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.PlaySoundType;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.ScenePlayerSoundNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.PlaySoundType;
+import org.anime_game_servers.multi_proto.gi.messages.scene.ScenePlayerSoundNotify;
 
 import java.util.Objects;
 

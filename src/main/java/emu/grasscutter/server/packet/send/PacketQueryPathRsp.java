@@ -1,9 +1,9 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.QueryPathReq;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.QueryPathRsp;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.PathStatusType;
+import org.anime_game_servers.multi_proto.gi.messages.pathfinding.QueryPathReq;
+import org.anime_game_servers.multi_proto.gi.messages.pathfinding.QueryPathRsp;
+import org.anime_game_servers.multi_proto.gi.messages.pathfinding.PathStatusType;
 
 import java.util.List;
 

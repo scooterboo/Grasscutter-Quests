@@ -3,8 +3,8 @@ package emu.grasscutter.server.packet.recv;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.PlayerForceExitReq;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.second.PlayerForceExitRsp;
+import org.anime_game_servers.multi_proto.gi.messages.player.PlayerForceExitReq;
+import org.anime_game_servers.multi_proto.gi.messages.player.PlayerForceExitRsp;
 
 public class HandlerPlayerForceExitReq extends TypedPacketHandler<PlayerForceExitReq> {
 	@Override
