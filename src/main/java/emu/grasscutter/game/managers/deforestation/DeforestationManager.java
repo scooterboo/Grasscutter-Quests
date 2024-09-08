@@ -6,7 +6,7 @@ import emu.grasscutter.game.entity.EntityItem;
 import emu.grasscutter.game.player.BasePlayerManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.Scene;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.HitTreeNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.HitTreeNotify;
 import org.anime_game_servers.multi_proto.gi.messages.general.Vector;
 import emu.grasscutter.utils.Position;
 

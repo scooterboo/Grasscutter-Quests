@@ -2,7 +2,7 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.ExitTransPointRegionNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.ExitTransPointRegionNotify;
 
 public class HandlerExitTransPointRegionNotify extends TypedPacketHandler<ExitTransPointRegionNotify> {
     @Override

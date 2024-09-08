@@ -4,7 +4,7 @@ import emu.grasscutter.net.packet.BaseTypedPacket;
 import emu.grasscutter.utils.Position;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.BeginCameraSceneLookNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.camera.BeginCameraSceneLookNotify;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ public class PacketBeginCameraSceneLookNotify extends BaseTypedPacket<BeginCamer
         proto.setDuration(parameters.duration);
         proto.setAllowInput(parameters.isAllowInput);
         proto.setSetFollowPos(parameters.setFollowPos);
-        proto.setSetScreenxy(parameters.isScreenXY);
+        proto.setSetScreenXy(parameters.isScreenXY);
         proto.setRecoverKeepCurrent(parameters.recoverKeepCurrent);
         proto.setChangePlayMode(parameters.isChangePlayMode);
         proto.setScreenY(parameters.screenY);

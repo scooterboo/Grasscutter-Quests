@@ -6,7 +6,7 @@ import emu.grasscutter.server.game.GameSession;
 import lombok.val;
 import org.anime_game_servers.gi_lua.models.ScriptArgs;
 import org.anime_game_servers.gi_lua.models.constants.EventType;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.ClientScriptEventNotify;
+import org.anime_game_servers.multi_proto.gi.messages.scene.script.ClientScriptEventNotify;
 
 public class HandlerClientScriptEventNotify extends TypedPacketHandler<ClientScriptEventNotify> {
 	@Override

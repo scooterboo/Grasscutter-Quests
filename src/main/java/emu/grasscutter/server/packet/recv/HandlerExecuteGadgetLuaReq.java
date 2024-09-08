@@ -6,7 +6,7 @@ import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketExecuteGadgetLuaRsp;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.ExecuteGadgetLuaReq;
+import org.anime_game_servers.multi_proto.gi.messages.scene.script.ExecuteGadgetLuaReq;
 
 public class HandlerExecuteGadgetLuaReq extends TypedPacketHandler<ExecuteGadgetLuaReq> {
     @Override

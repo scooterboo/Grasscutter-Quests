@@ -1,8 +1,8 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.EnterWorldAreaReq;
-import org.anime_game_servers.multi_proto.gi.messages.unsorted.first.EnterWorldAreaRsp;
+import org.anime_game_servers.multi_proto.gi.messages.scene.EnterWorldAreaReq;
+import org.anime_game_servers.multi_proto.gi.messages.scene.EnterWorldAreaRsp;
 
 public class PacketEnterWorldAreaRsp extends BaseTypedPacket<EnterWorldAreaRsp> {
 
