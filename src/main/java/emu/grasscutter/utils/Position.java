@@ -1,14 +1,15 @@
 package emu.grasscutter.utils;
 
-import com.github.davidmoten.rtreemulti.geometry.Point;
+import java.io.Serializable;
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
+import com.github.davidmoten.rtreemulti.geometry.Point;
 import dev.morphia.annotations.Entity;
+import emu.grasscutter.net.proto.VectorOuterClass;
 import lombok.Getter;
 import lombok.Setter;
 import org.anime_game_servers.multi_proto.gi.messages.general.Vector;
-
-import java.io.Serializable;
-import java.util.List;
 
 @Entity
 public class Position implements Serializable, org.anime_game_servers.gi_lua.models.Position {
@@ -25,6 +26,9 @@ public class Position implements Serializable, org.anime_game_servers.gi_lua.mod
 
     public Position() {}
     public Position(org.anime_game_servers.core.gi.models.Vector luaPos) {
+        set(luaPos.getX(), luaPos.getY(), luaPos.getZ());
+    }
+    public Position(VectorOuterClass.Vector luaPos) {
         set(luaPos.getX(), luaPos.getY(), luaPos.getZ());
     }
 
@@ -173,7 +177,14 @@ public class Position implements Serializable, org.anime_game_servers.gi_lua.mod
     public Vector toProto() {
         return new Vector(this.getX(), this.getY(), this.getZ());
     }
-
+    @Deprecated
+    public VectorOuterClass.Vector toProtoOld() {
+        return VectorOuterClass.Vector.newBuilder()
+            .setX(this.getX())
+            .setY(this.getY())
+            .setZ(this.getZ())
+            .build();
+    }
     public Point toPoint() {
         return Point.create(x,y,z);
     }
