@@ -1,7 +1,5 @@
 package emu.grasscutter.game.entity;
 
-import java.util.*;
-
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.ability.AbilityModifierController;
@@ -10,7 +8,6 @@ import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.world.Scene;
 import emu.grasscutter.game.world.SpawnDataEntry;
 import emu.grasscutter.game.world.World;
-import emu.grasscutter.net.proto.VectorOuterClass.Vector;
 import emu.grasscutter.scripts.data.controller.EntityController;
 import emu.grasscutter.server.event.entity.EntityDamageEvent;
 import emu.grasscutter.server.event.entity.EntityDeathEvent;
@@ -29,6 +26,7 @@ import org.anime_game_servers.multi_proto.gi.messages.scene.entity.MotionState;
 import org.anime_game_servers.multi_proto.gi.messages.scene.entity.SceneEntityInfo;
 
 import javax.annotation.Nullable;
+import java.util.*;
 
 public abstract class GameEntity {
     @Getter private final Scene scene;
