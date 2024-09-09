@@ -7,11 +7,7 @@ import org.anime_game_servers.multi_proto.gi.messages.multiplayer.MpEnterResultR
 
 public class PacketPlayerApplyEnterMpResultNotify extends BaseTypedPacket<PlayerApplyEnterMpResultNotify> {
     public PacketPlayerApplyEnterMpResultNotify(Player target, boolean isAgreed, MpEnterResultReason reason) {
-        super(new PlayerApplyEnterMpResultNotify());
-        proto.setTargetUid(target.getUid());
-        proto.setTargetNickname(target.getNickname());
-        proto.setAgreed(isAgreed);
-        proto.setReason(reason);
+        this(target.getUid(), target.getNickname(), isAgreed, reason);
 	}
 
     public PacketPlayerApplyEnterMpResultNotify(int targetId, String targetName, boolean isAgreed, MpEnterResultReason reason) {
