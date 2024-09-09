@@ -26,6 +26,7 @@ import java.util.Set;
 @Builder(builderMethodName="of", setterPrefix="set")
 @ToString
 @Entity
+@AllArgsConstructor
 public class BlossomSchedule implements BaseBlossomROSData {
     // brief info related
     private final int sceneId;

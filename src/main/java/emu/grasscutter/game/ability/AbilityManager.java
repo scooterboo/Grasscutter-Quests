@@ -372,7 +372,11 @@ public final class AbilityManager extends BasePlayerManager {
                 //Search for the parent ability
 
                 //TODO: Research about hash
-                instancedAbilityData = GameData.getAbilityData(getAbilityName(modChange.getParentAbilityName()));
+
+                val abilityName = modChange.getParentAbilityName();
+                if(abilityName != null) {
+                    instancedAbilityData = GameData.getAbilityData(getAbilityName(abilityName));
+                }
             }
 
             if(instancedAbilityData == null ||  instancedAbilityData.modifiers == null) {

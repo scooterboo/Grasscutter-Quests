@@ -195,7 +195,7 @@ public class Player {
     // Manager data (Save-able to the database)
     private PlayerProfile playerProfile;  // Getter has null-check
     @Getter private TeamManager teamManager;
-    @Getter private BlossomManager blossomManager;
+    @Getter private transient BlossomManager blossomManager;
     private TowerData towerData;  // Getter has null-check
     @Getter private PlayerGachaInfo gachaInfo;
     private PlayerCollectionRecords collectionRecordStore;  // Getter has null-check

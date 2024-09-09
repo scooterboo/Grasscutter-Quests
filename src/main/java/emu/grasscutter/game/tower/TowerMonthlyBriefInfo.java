@@ -1,14 +1,14 @@
 package emu.grasscutter.game.tower;
 
 import dev.morphia.annotations.Entity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.val;
+import lombok.*;
 import org.anime_game_servers.multi_proto.gi.messages.spiral_abyss.TowerMonthlyBrief;
 
 @Entity
 @Getter
 @Builder(builderMethodName = "of")
+@AllArgsConstructor
+@NoArgsConstructor
 public class TowerMonthlyBriefInfo {
     private int towerScheduleId;
     private int bestFloorIndex;
