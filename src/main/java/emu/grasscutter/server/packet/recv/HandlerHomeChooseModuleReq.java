@@ -1,11 +1,11 @@
 package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.net.packet.TypedPacketHandler;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeChooseModuleReq;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketHomeChooseModuleRsp;
 import emu.grasscutter.server.packet.send.PacketHomeComfortInfoNotify;
 import emu.grasscutter.server.packet.send.PacketPlayerHomeCompInfoNotify;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.module.HomeChooseModuleReq;
 
 public class HandlerHomeChooseModuleReq extends TypedPacketHandler<HomeChooseModuleReq> {
     @Override

@@ -3,8 +3,8 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeBasicInfo;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeBasicInfoNotify;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.base_info.HomeBasicInfo;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.base_info.HomeBasicInfoNotify;
 
 public class PacketHomeBasicInfoNotify extends BaseTypedPacket<HomeBasicInfoNotify> {
 

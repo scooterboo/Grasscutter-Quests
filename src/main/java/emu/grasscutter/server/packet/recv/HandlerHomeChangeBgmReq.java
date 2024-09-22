@@ -4,7 +4,7 @@ import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketHomeChangeBgmNotify;
 import emu.grasscutter.server.packet.send.PacketHomeChangeBgmRsp;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeChangeBgmReq;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.bgm.HomeChangeBgmReq;
 
 public class HandlerHomeChangeBgmReq extends TypedPacketHandler<HomeChangeBgmReq> {
     @Override

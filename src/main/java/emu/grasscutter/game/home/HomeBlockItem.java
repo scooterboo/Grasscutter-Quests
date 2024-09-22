@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeBlockArrangementInfo;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.arangement.HomeBlockArrangementInfo;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class HomeBlockItem {
     public void update(HomeBlockArrangementInfo homeBlockArrangementInfo) {
         this.blockId = homeBlockArrangementInfo.getBlockId();
 
-        this.deployFurnitureList = homeBlockArrangementInfo.getDeployFurniureList().stream()
+        this.deployFurnitureList = homeBlockArrangementInfo.getDeployFurnitureList().stream()
                 .map(HomeFurnitureItem::parseFrom)
                 .toList();
 
@@ -56,7 +56,7 @@ public class HomeBlockItem {
         proto.setUnlocked(unlocked);
         proto.setComfortValue(calComfort());
 
-        proto.setDeployFurniureList(this.deployFurnitureList.stream().map(HomeFurnitureItem::toProto).toList());
+        proto.setDeployFurnitureList(this.deployFurnitureList.stream().map(HomeFurnitureItem::toProto).toList());
         proto.setPersistentFurnitureList(this.persistentFurnitureList.stream().map(HomeFurnitureItem::toProto).toList());
         proto.setDeployAnimalList(this.deployAnimalList.stream().map(HomeAnimalItem::toProto).toList());
         proto.setDeployNpcList(this.deployNPCList.stream().map(HomeNPCItem::toProto).toList());

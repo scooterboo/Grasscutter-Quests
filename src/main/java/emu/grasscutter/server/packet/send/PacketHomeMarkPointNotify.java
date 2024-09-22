@@ -3,8 +3,8 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.game.home.HomeBlockItem;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeMarkPointNotify;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeMarkPointSceneData;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.mark_point.HomeMarkPointNotify;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.mark_point.HomeMarkPointSceneData;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -4,7 +4,7 @@ import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketHomeSceneJumpRsp;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeSceneJumpReq;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.scene.HomeSceneJumpReq;
 
 public class HandlerHomeSceneJumpReq extends TypedPacketHandler<HomeSceneJumpReq> {
     @Override

@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeSceneArrangementInfo;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.arangement.HomeSceneArrangementInfo;
 
 import java.util.Map;
 import java.util.stream.Collectors;

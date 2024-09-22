@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeNpcData;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.HomeNpcData;
 
 @Entity
 @Data

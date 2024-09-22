@@ -6,7 +6,7 @@ import emu.grasscutter.server.packet.send.PacketHomeBasicInfoNotify;
 import emu.grasscutter.server.packet.send.PacketHomeChangeEditModeRsp;
 import emu.grasscutter.server.packet.send.PacketHomeComfortInfoNotify;
 import emu.grasscutter.server.packet.send.PacketHomePreChangeEditModeNotify;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeChangeEditModeReq;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.edit.HomeChangeEditModeReq;
 
 public class HandlerHomeChangeEditModeReq extends TypedPacketHandler<HomeChangeEditModeReq> {
 	@Override

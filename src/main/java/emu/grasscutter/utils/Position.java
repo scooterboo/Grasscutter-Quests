@@ -25,6 +25,10 @@ public class Position implements Serializable, org.anime_game_servers.gi_lua.mod
 
     public Position() {}
 
+    public Position(org.anime_game_servers.core.gi.models.Vector pos) {
+        set(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     public Position(float x, float y) {
         set(x, y);
     }
@@ -74,6 +78,10 @@ public class Position implements Serializable, org.anime_game_servers.gi_lua.mod
 
     // Deep copy
     public Position set(Position pos) {
+        return this.set(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public Position set(org.anime_game_servers.core.gi.models.Vector pos) {
         return this.set(pos.getX(), pos.getY(), pos.getZ());
     }
 

@@ -10,8 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeFurnitureData;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeMarkPointFurnitureData;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.HomeFurnitureData;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.mark_point.HomeMarkPointFurnitureData;
 
 @Entity
 @Data

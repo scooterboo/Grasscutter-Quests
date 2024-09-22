@@ -4,8 +4,8 @@ import emu.grasscutter.game.home.HomeBlockItem;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeComfortInfoNotify;
-import org.anime_game_servers.multi_proto.gi.messages.home.HomeModuleComfortInfo;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.base_info.HomeComfortInfoNotify;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.module.HomeModuleComfortInfo;
 
 import java.util.ArrayList;
 import java.util.List;
