@@ -2,7 +2,7 @@ package emu.grasscutter.server.packet.recv;
 
 import emu.grasscutter.net.packet.TypedPacketHandler;
 import emu.grasscutter.server.game.GameSession;
-import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeStartReq;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.FurnitureMakeStartReq;
 
 public class HandlerFurnitureMakeStartReq extends TypedPacketHandler<FurnitureMakeStartReq> {
 	@Override

@@ -3,14 +3,15 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
 import org.anime_game_servers.multi_proto.gi.messages.general.item.ItemParam;
-import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeData;
-import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeSlot;
-import org.anime_game_servers.multi_proto.gi.messages.home.TakeFurnitureMakeRsp;
+import org.anime_game_servers.multi_proto.gi.messages.general.Retcode;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.FurnitureMakeData;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.FurnitureMakeSlot;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.TakeFurnitureMakeRsp;
 
 import java.util.List;
 
 public class PacketTakeFurnitureMakeRsp extends BaseTypedPacket<TakeFurnitureMakeRsp> {
-    public PacketTakeFurnitureMakeRsp(int ret,
+    public PacketTakeFurnitureMakeRsp(Retcode ret,
                                       int makeId,
                                       List<ItemParam> output,
                                       List<FurnitureMakeData> others) {

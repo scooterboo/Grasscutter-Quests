@@ -4,8 +4,8 @@ import emu.grasscutter.game.home.FurnitureMakeSlotItem;
 import emu.grasscutter.game.home.GameHome;
 import emu.grasscutter.net.packet.BaseTypedPacket;
 import lombok.val;
-import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeRsp;
-import org.anime_game_servers.multi_proto.gi.messages.home.FurnitureMakeSlot;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.FurnitureMakeRsp;
+import org.anime_game_servers.multi_proto.gi.messages.serenitea_pot.furniture.FurnitureMakeSlot;
 
 public class PacketFurnitureMakeRsp extends BaseTypedPacket<FurnitureMakeRsp> {
 
