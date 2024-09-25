@@ -15,20 +15,20 @@ public class ActionServerLuaCall extends AbilityActionHandler {
         switch (action.luaCallType) {
             case "FromGroup" -> {
                 val scriptManager = target.getScene().getScriptManager();
-                val group = scriptManager.getGroupById(target.getGroupId());
-                val script = group.getScript();
                 val scriptArgs = new ScriptArgs(target.getGroupId(), 0)
                     .setTargetEntityId(target.getId())
                     .setSourceEntityId(target.getId());
-                val context = new GroupEventLuaContext(script.getEngine(), group, scriptArgs, scriptManager);
-                try {
-                    //Todo: read MPBMJIGLEMJ for # of arguments.
-                    script.callMethod(action.funcName, context, null);
-                } catch (Exception e) {
-                    Grasscutter.getLogger().error("Cannot find {} in group {}", context, target.getGroupId());
-                    e.printStackTrace();
+                val paramsCount = action.paramNum;
+                val scriptParams = new Integer[paramsCount];
+                switch (paramsCount){
+                    case 3:
+                        scriptParams[2] = (int) action.param3.get(ability);
+                    case 2:
+                        scriptParams[1] = (int) action.param2.get(ability);
+                    case 1:
+                        scriptParams[0] = (int) action.param1.get(ability);
                 }
-                return true;
+                return scriptManager.callGroupLuaFunction(action.funcName, scriptArgs, (Object[]) scriptParams);
             }
             default -> {
                 Grasscutter.getLogger().error("Unimplemented ActionServerLuaCall {}", action.luaCallType);

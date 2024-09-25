@@ -145,12 +145,16 @@ public class AbilityModifier implements Serializable {
         public DynamicFloat valueRangeMax;
         public String overrideMapKey;
 
+        public int paramNum;
         public DynamicFloat param1 = DynamicFloat.ZERO;
         public DynamicFloat param2 = DynamicFloat.ZERO;
         public DynamicFloat param3 = DynamicFloat.ZERO;
 
         public String luaCallType;
         public String funcName;
+        public String sourceName;
+        @SerializedName(value = "callParamList", alternate = "CallParamList")
+        public int[] callParamList;
 
         public enum DropType {
             LevelControl,
