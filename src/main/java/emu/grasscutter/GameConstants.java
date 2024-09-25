@@ -39,44 +39,16 @@ public final class GameConstants {
 
     // Default entity ability hashes.
     public static final String[] DEFAULT_ABILITY_STRINGS = {
-        //ConfigAbility_Avatar_AllDefault
         "Avatar_DefaultAbility_VisionReplaceDieInvincible",
         "Avatar_DefaultAbility_AvartarInShaderChange",
-
-        //ConfigAbility_Avatar_Player_Common
-        "Avatar_PlayerBoy_ExtraAttack_Common",
-        "Avatar_PlayerGirl_ExtraAttack_Common",
-        "Avatar_PlayerBoy_ExtraAttack",
-        "Avatar_PlayerGirl_ExtraAttack",
-        "Avatar_Player_ExtraAttack_Damage",
-        "Avatar_PlayerBoy_NormalAttack_DamageHandler",
-        "Avatar_PlayerGirl_NormalAttack_DamageHandler",
-        "Avatar_PlayerBoy_FallingAnthem",
-        "Avatar_PlayerGirl_FallingAnthem",
-        "Avatar_Trampoline_Jump_Controller",
-        "Avatar_Trampoline_Jump_SLC",
-
-        //ConfigAbility_Avatar_Common
         "Avatar_SprintBS_Invincible",
         "Avatar_Freeze_Duration_Reducer",
-        "Avatar_Girl_Catalyst_HitFallToGround_Hide",
-        "Avatar_Bow_Aim_EmoController",
-        "Avatar_RockGadget_Summon_Detect",
-        "RocketGadget_WeightRatio",
-        "Avatar_Common_Achievement_Listener",
-        "Avatar_FallAnthem_Achievement_Listener",
-        "Avatar_Watcher_SnowMountain_MPPlay",
         "Avatar_Attack_ReviveEnergy",
         "Avatar_Component_Initializer",
-        "Avatar_PlayMusic_Lyre_Controller",
-        "Avatar_Watcher_SuperTrial_RangeKillEnemy",
-//        "Avatar_RockGadget_KillByBlunt", //BAD. Don't use.
-//        "Avatar_ElementReaction_Test", //BAD. Don't use.
         "Avatar_HDMesh_Controller",
+        "Avatar_Trampoline_Jump_Controller",
         "Avatar_ArkheGrade_CD_Controller",
-        "Avatar_FluidAgitator",
-        "Avatar_TriggerNyxInstant",
-        "Avatar_NyxState_Listener"
+        "Avatar_TriggerNyxInstant"
     };
     public static final int[] DEFAULT_ABILITY_HASHES = Arrays.stream(DEFAULT_ABILITY_STRINGS).mapToInt(Utils::abilityHash).toArray();
     public static final int DEFAULT_ABILITY_NAME = Utils.abilityHash("Default");
