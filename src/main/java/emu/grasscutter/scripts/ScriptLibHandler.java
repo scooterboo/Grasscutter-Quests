@@ -239,7 +239,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
 
         val actualGroupId = getGroupIdOrCurrentId(context, groupId);
         val scriptManager = context.getSceneScriptManager();
-        SceneGroup group = getGroupOrCurrent(context, actualGroupId);
+        SceneGroup group = getGroupOrCurrent(context, groupId);
         SceneGroupInstance groupInstance = scriptManager.getGroupInstanceById(actualGroupId);
         if (group == null || groupInstance == null) {
             return 1;
@@ -1046,7 +1046,7 @@ public class ScriptLibHandler extends BaseHandler implements org.anime_game_serv
         logger.debug("[LUA] Call check RefreshBlossomGroup with {}", printTable(configTable));
 
         val actualGroupId = getGroupIdOrCurrentId(context, configTable.optInt("group_id", 0));
-        val group = getGroupOrCurrent(context, actualGroupId);
+        val group = getGroupOrCurrent(context, configTable.optInt("group_id", 0));
         if (group == null) return 1;
 
         val groupInstance = context.getSceneScriptManager().getGroupInstanceById(actualGroupId);
