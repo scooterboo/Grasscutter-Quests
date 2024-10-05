@@ -14,7 +14,7 @@ import emu.grasscutter.server.packet.send.PacketActivityUpdateWatcherNotify;
 import emu.grasscutter.utils.JsonUtils;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.anime_game_servers.multi_proto.gi.messages.activity.ActivityWatcherInfo;
+import org.anime_game_servers.multi_proto.gi.messages.activity.general.ActivityWatcherInfo;
 
 import java.util.ArrayList;
 import java.util.List;
