@@ -48,6 +48,7 @@ public abstract class ItemUseAddEnergy extends ItemUseAction {
             case ITEM_USE_TARGET_SPECIFY_AVATAR, ITEM_USE_TARGET_SPECIFY_ALIVE_AVATAR, ITEM_USE_TARGET_SPECIFY_DEAD_AVATAR ->
                 this.addEnergy(params.targetAvatar, params.count);  // Targeted items might care about this
             case ITEM_USE_TARGET_NONE -> false;
+            case ITEM_USE_TARGET_PLAYER_AVATAR -> false;
         };
     }
 
