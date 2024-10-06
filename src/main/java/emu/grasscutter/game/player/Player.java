@@ -1586,4 +1586,42 @@ public class Player {
                 .map(Map.Entry::getKey)
                 .toList();
     }
+
+    public void setLevelTag(int levelTag) {
+        //set all other levelTags in the levelTag groups to false
+        GameData.getLevelTagGroupsDataMap().values()
+            .forEach(group -> Arrays.stream(group.getLevelTagGroupList())
+                .forEach(subgroup -> {
+                    val tagList = Arrays.stream(subgroup.getLevelTagIdList()).boxed().toList();
+                    if (tagList.contains(levelTag)) {
+                        tagList.forEach(tag -> {
+                            if (tag != levelTag) {
+                                this.levelTags.put(tag, false);
+                            }
+                        });
+                    }
+                })
+            );
+
+        val levelTagData = GameData.getLevelTagDataMap().get(levelTag);
+
+        //add sceneTags
+        Arrays.stream(levelTagData.getAddSceneTagIdList()).forEach(sceneTagId ->
+            this.sceneTags.get(GameData.getSceneTagDataMap().get(sceneTagId).getSceneId())
+                .put(sceneTagId, true));
+
+        //remove sceneTags
+        Arrays.stream(levelTagData.getRemoveSceneTagIdList()).forEach(sceneTagId ->
+            this.sceneTags.get(GameData.getSceneTagDataMap().get(sceneTagId).getSceneId())
+                .put(sceneTagId, false));
+
+        //load dynamic groups
+        Arrays.stream(levelTagData.getLoadDynamicGroupList()).forEach(groupId -> this.scene.loadDynamicGroup(groupId));
+
+        this.levelTags.put(levelTag, true);
+
+        this.sendPacket(new PacketSceneDataNotify(this));
+        this.sendPacket(new PacketPlayerWorldSceneInfoListNotify(this));
+        this.sendPacket(new PacketLevelTagDataNotify(this));
+    }
 }
