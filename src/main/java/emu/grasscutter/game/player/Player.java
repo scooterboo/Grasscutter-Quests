@@ -408,13 +408,18 @@ public class Player {
         this.scene = scene;
     }
 
-    public void visitScene(int sceneId) {
-        val sceneTagData = GameData.getSceneTagDataMap().values();
-        val tags = this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>());
-        sceneTagData.stream()
-                .filter(tagData -> tagData.getSceneId() == sceneId && tagData.isDefaultValid())
+    public void visitScene(int visitSceneId) {
+        val tags = this.sceneTags.computeIfAbsent(visitSceneId, k -> new HashMap<>());
+        GameData.getSceneTagDataMap().values().stream()
+            .filter(tagData -> tagData.getSceneId() == visitSceneId && tagData.isDefaultValid())
                 .map(SceneTagData::getId)
                 .forEach(k -> tags.putIfAbsent(k, true));
+    }
+
+    public void initializeLevelTags() {
+        GameData.getLevelTagGroupsDataMap().values()
+            .forEach(group -> Arrays.stream(group.getInitialLevelTagIdList()).boxed()
+                .forEach(tagId -> this.levelTags.put(tagId, true)));
     }
 
     synchronized public void setClimate(ClimateType climate) {
@@ -1357,6 +1362,11 @@ public class Player {
 
         // Execute daily reset logic if this is a new day.
         this.doDailyReset();
+
+        //set LevelTags if they have not been set before
+        if (this.levelTags.isEmpty()) {
+            this.initializeLevelTags();
+        }
 
         // Activity needed for some quests
         activityManager = new ActivityManager(this);
