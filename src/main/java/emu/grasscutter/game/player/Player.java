@@ -150,6 +150,7 @@ public class Player {
     @Getter private Map<Integer, Integer> questGlobalVariables;
     @Getter private Map<Integer, Integer> openStates;
     @Getter private Map<Integer, Map<Integer, Boolean>> sceneTags;
+    @Getter private Map<Integer, Boolean> levelTags;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedSceneAreas;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedScenePoints;
     @Getter @Setter private List<Integer> chatEmojiIdList;
@@ -276,6 +277,7 @@ public class Player {
         this.questGlobalVariables = new HashMap<>();
         this.openStates = new HashMap<>();
         this.sceneTags = new HashMap<>();
+        this.levelTags = new HashMap<>();
         this.unlockedSceneAreas = new HashMap<>();
         this.unlockedScenePoints = new HashMap<>();
         this.chatEmojiIdList = new ArrayList<>();
@@ -1367,6 +1369,7 @@ public class Player {
 
         // Packets
         session.send(new PacketPlayerDataNotify(this)); // Player data
+        session.send(new PacketLevelTagDataNotify(this));
         session.send(new PacketStoreWeightLimitNotify());
         session.send(new PacketPlayerStoreNotify(this));
         session.send(new PacketAvatarDataNotify(this));
