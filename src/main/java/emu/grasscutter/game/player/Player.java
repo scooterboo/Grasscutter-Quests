@@ -1606,14 +1606,26 @@ public class Player {
         val levelTagData = GameData.getLevelTagDataMap().get(levelTag);
 
         //add sceneTags
-        Arrays.stream(levelTagData.getAddSceneTagIdList()).forEach(sceneTagId ->
-            this.sceneTags.get(GameData.getSceneTagDataMap().get(sceneTagId).getSceneId())
-                .put(sceneTagId, true));
+        Arrays.stream(levelTagData.getAddSceneTagIdList()).forEach(sceneTagId -> {
+            val sceneTag = GameData.getSceneTagDataMap().get(sceneTagId);
+            if (sceneTag == null) {
+                Grasscutter.getLogger().warn("trying to load unknown scene tag {} in level tag {}", sceneTagId, levelTag);
+            }
+            val sceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
+            this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>())
+                .put(sceneTagId, true);
+        });
 
         //remove sceneTags
-        Arrays.stream(levelTagData.getRemoveSceneTagIdList()).forEach(sceneTagId ->
-            this.sceneTags.get(GameData.getSceneTagDataMap().get(sceneTagId).getSceneId())
-                .put(sceneTagId, false));
+        Arrays.stream(levelTagData.getRemoveSceneTagIdList()).forEach(sceneTagId -> {
+            val sceneTag = GameData.getSceneTagDataMap().get(sceneTagId);
+            if (sceneTag == null) {
+                Grasscutter.getLogger().warn("trying to unload unknown scene tag {} in level tag {}", sceneTagId, levelTag);
+            }
+            val sceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
+            this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>())
+                .put(sceneTagId, false);
+        });
 
         //load dynamic groups
         Arrays.stream(levelTagData.getLoadDynamicGroupList()).forEach(groupId -> this.scene.loadDynamicGroup(groupId));
@@ -1623,5 +1635,9 @@ public class Player {
         this.sendPacket(new PacketSceneDataNotify(this));
         this.sendPacket(new PacketPlayerWorldSceneInfoListNotify(this));
         this.sendPacket(new PacketLevelTagDataNotify(this));
+
+        //trigger quest content/conditions
+        questManager.queueEvent(QuestContent.QUEST_CONTENT_SCENE_LEVEL_TAG_EQ, levelTag, 0);
+        questManager.queueEvent(QuestCond.QUEST_COND_SCENE_LEVEL_TAG_EQ, levelTag, 0);
     }
 }
