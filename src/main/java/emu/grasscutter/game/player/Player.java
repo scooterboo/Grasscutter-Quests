@@ -1611,8 +1611,8 @@ public class Player {
             if (sceneTag == null) {
                 Grasscutter.getLogger().warn("trying to load unknown scene tag {} in level tag {}", sceneTagId, levelTag);
             }
-            val sceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
-            this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>())
+            val sceneTagSceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
+            this.sceneTags.computeIfAbsent(sceneTagSceneId, k -> new HashMap<>())
                 .put(sceneTagId, true);
         });
 
@@ -1622,8 +1622,8 @@ public class Player {
             if (sceneTag == null) {
                 Grasscutter.getLogger().warn("trying to unload unknown scene tag {} in level tag {}", sceneTagId, levelTag);
             }
-            val sceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
-            this.sceneTags.computeIfAbsent(sceneId, k -> new HashMap<>())
+            val sceneTagSceneId = sceneTag != null ? sceneTag.getSceneId() : levelTagData.getSceneId();
+            this.sceneTags.computeIfAbsent(sceneTagSceneId, k -> new HashMap<>())
                 .put(sceneTagId, false);
         });
 
