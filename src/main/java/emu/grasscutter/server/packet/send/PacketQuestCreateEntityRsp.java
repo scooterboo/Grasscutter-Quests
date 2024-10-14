@@ -1,7 +1,7 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.net.packet.BaseTypedPacket;
-import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
+import org.anime_game_servers.multi_proto.gi.messages.general.Retcode;
 import org.anime_game_servers.multi_proto.gi.messages.quest.entities.QuestCreateEntityReq;
 import org.anime_game_servers.multi_proto.gi.messages.quest.entities.QuestCreateEntityRsp;
 
@@ -14,7 +14,7 @@ public class PacketQuestCreateEntityRsp extends BaseTypedPacket<QuestCreateEntit
         proto.setQuestId(req.getQuestId());
         proto.setRewind(req.isRewind());
         proto.setParentQuestId(req.getParentQuestId());
-        proto.setRetCode(entityId != -1 ? Retcode.RET_SUCC_VALUE : Retcode.RET_FAIL_VALUE);
+        proto.setRetCode(entityId != -1 ? Retcode.RET_SUCC : Retcode.RET_FAIL);
 	}
 
 }
