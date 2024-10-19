@@ -62,6 +62,17 @@ public class ItemUseAction {
             case ITEM_USE_ADD_DUNGEON_COND_TIME -> null;  // [int 1, int 15 or 20] - minigame shards
             case ITEM_USE_ADD_CHANNELLER_SLAB_BUFF -> null;  // [int] minigame buffs
             case ITEM_USE_ADD_REGIONAL_PLAY_VAR -> null;  // [String, int] - coral butterfly effect
+            case ITEM_USE_ADD_AVATAR_EXTRA_PROPERTY -> null;
+            case ITEM_USE_GAIN_GCG_CARD -> null;
+            case ITEM_USE_GAIN_GCG_CARD_FACE -> null;
+            case ITEM_USE_GAIN_GCG_CARD_BACK -> null;
+            case ITEM_USE_GAIN_GCG_CARD_FIELD -> null;
+            case ITEM_USE_OPEN_RENAME_DIALOG -> null;
+            case ITEM_USE_UNLOCK_PROFILE_PICTURE -> null;
+            case ITEM_USE_ADD_ALCHEMY_SIM_ITEM -> null;
+            case ITEM_USE_UNLOCK_PHOTOGRAPH_POSE -> null;
+            case ITEM_USE_UNLOCK_AVATAR_TRACE -> null;
+            case ITEM_USE_ADD_PHLOGISTON -> null;
         };
     }
 
