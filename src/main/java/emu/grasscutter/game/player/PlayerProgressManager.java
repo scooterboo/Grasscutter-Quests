@@ -284,7 +284,7 @@ public class PlayerProgressManager extends BasePlayerDataManager {
 
     public void unlockScene(int sceneId) {
         //set the scene to locked: false
-        this.player.getUnlockedScenes().put(sceneId, false);
+        this.player.getUnlockedScenes().put(sceneId, true);
 
         //Send packet.
         this.player.sendPacket(new PacketPlayerWorldSceneInfoListNotify(this.player));
@@ -292,7 +292,7 @@ public class PlayerProgressManager extends BasePlayerDataManager {
 
     public void lockScene(int sceneId) {
         //set the scene to locked: true
-        this.player.getUnlockedScenes().put(sceneId, true);
+        this.player.getUnlockedScenes().put(sceneId, false);
 
         //Send packet.
         this.player.sendPacket(new PacketPlayerWorldSceneInfoListNotify(this.player));

@@ -253,7 +253,7 @@ public class ConfigContainer {
         public ResinOptions resinOptions = new ResinOptions();
         public Rates rates = new Rates();
         public boolean questing = false;
-        public boolean lockScenesByDefault = true;
+        public boolean unlockScenesByDefault = false;
 
         public static class InventoryLimits {
             public int weapons = 2000;
