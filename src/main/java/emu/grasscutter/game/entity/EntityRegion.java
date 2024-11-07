@@ -10,6 +10,7 @@ import org.anime_game_servers.multi_proto.gi.messages.scene.entity.SceneEntityIn
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Getter
 public class EntityRegion extends GameEntity{
@@ -72,6 +73,16 @@ public class EntityRegion extends GameEntity{
         this.entityLeave = false;
         this.leftEntities.clear();
     }
+
+    public void clearDeadEntities() {
+        entities.removeAll(entities.stream()
+            .filter(entity -> this.getScene().getEntityById(entity.id) == null)
+            .collect(Collectors.toSet()));
+        notContainEntities.removeAll(notContainEntities.stream()
+            .filter(entity -> this.getScene().getEntityById(entity.id) == null)
+            .collect(Collectors.toSet()));
+    }
+
     @Override public Int2FloatMap getFightProperties() {return null;}
 
     @Override public Position getPosition() {return position;}

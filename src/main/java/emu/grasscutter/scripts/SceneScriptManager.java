@@ -570,6 +570,7 @@ public class SceneScriptManager {
 
         for (var region : this.regions.values()) {
             val metaRegion = region.getMetaRegion();
+            region.clearDeadEntities();
 
             getScene().getEntities().values().stream()
                 .filter(e -> e.getEntityType() == EntityType.Avatar)
