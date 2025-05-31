@@ -1,7 +1,6 @@
 package emu.grasscutter.game.managers.bargain;
 
 import emu.grasscutter.Grasscutter;
-import emu.grasscutter.Loggers;
 import emu.grasscutter.game.player.BasePlayerDataManager;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.BargainRecord;
@@ -9,7 +8,6 @@ import emu.grasscutter.server.packet.send.PacketBargainStartNotify;
 import emu.grasscutter.server.packet.send.PacketBargainTerminateNotify;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
-import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -18,8 +16,6 @@ import java.util.Map;
  * This system handles haggling a price with an NPC in certain quests.
  */
 public class BargainManager extends BasePlayerDataManager {
-    private static Logger logger = Loggers.getDefaultLogger();
-
     @Getter private Map<Integer, BargainRecord> bargains;
 
     public BargainManager(Player player) {
