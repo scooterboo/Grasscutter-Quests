@@ -42,18 +42,6 @@ public class GivingManager extends BasePlayerDataManager {
         this.itemGivings = new Int2ObjectOpenHashMap<>();
     }
 
-    public void onLogin(){
-        sendGivingRecordNotify();
-    }
-
-    /**
-     * Sends the giving records to the player.
-     */
-    public void sendGivingRecordNotify() {
-        // Send notification.
-        this.player.sendPacket(new PacketGivingRecordNotify(this.getGivingRecords()));
-    }
-
     /**
      * @return Serialized giving records to be used in a packet.
      */
@@ -74,7 +62,7 @@ public class GivingManager extends BasePlayerDataManager {
         // Save the givings.
         player.save();
 
-        this.sendGivingRecordNotify();
+        this.player.sendPacket(new PacketGivingRecordNotify(this.player));
     }
 
     /**
@@ -93,7 +81,7 @@ public class GivingManager extends BasePlayerDataManager {
         // Save the givings.
         player.save();
 
-        this.sendGivingRecordNotify();
+        this.player.sendPacket(new PacketGivingRecordNotify(this.player));
     }
 
     /**
@@ -150,7 +138,7 @@ public class GivingManager extends BasePlayerDataManager {
         // Save the givings.
         player.save();
 
-        this.sendGivingRecordNotify();
+        this.player.sendPacket(new PacketGivingRecordNotify(this.player));
         return success == null;
     }
 
