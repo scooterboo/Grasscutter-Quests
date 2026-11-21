@@ -52,6 +52,7 @@ public class CreateGadgetEntityConfig extends CreateEntityConfig<CreateGadgetEnt
     private int interactId = 0;
     private int gadgetState;
     private int chestDropId;
+    private String dropTag;
     private boolean chestShowCutscene;
     private GadgetData gadgetData = null;
     private ConfigEntityGadget configEntityGadget = null;
@@ -104,6 +105,7 @@ public class CreateGadgetEntityConfig extends CreateEntityConfig<CreateGadgetEnt
             this.worktopIsPersistent = gadget.getWorktopConfig().isPersistent();
         }
         this.chestDropId = gadget.getChestDropId();
+        this.dropTag = gadget.getDropTag();
         this.chestShowCutscene = gadget.getShowCutscene();
         this.bossChestInfo = BossChestInfo.fromSceneBossChest(gadget.getBossChest());
         this.arguments = gadget.getArguments();

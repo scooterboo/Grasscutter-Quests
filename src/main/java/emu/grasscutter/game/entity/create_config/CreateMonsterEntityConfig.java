@@ -19,7 +19,7 @@ public class CreateMonsterEntityConfig extends CreateEntityConfig<CreateMonsterE
     private MonsterData monsterData = null;
     private ConfigEntityMonster configEntity = null;
     private int dropId;
-    private int dropTag;
+    private String dropTag;
     private int aiId = 0;
     private int poseId = 0;
     private int campId = 0;
@@ -67,6 +67,7 @@ public class CreateMonsterEntityConfig extends CreateEntityConfig<CreateMonsterE
     public CreateMonsterEntityConfig(SceneMonster monster){
         super(monster);
         this.monsterId = monster.getMonsterId();
+        this.dropTag = monster.getDropTag();
         this.dropId = monster.getDropId();
         this.aiId = monster.getAiConfigId();
         this.poseId = monster.getPoseId();

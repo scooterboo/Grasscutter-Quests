@@ -186,11 +186,13 @@ public class GameData {
     @Getter @Setter private static ConfigGlobalCombat configGlobalCombat = null;
 
     // Custom community server resources
+    @Getter private static final List<ChestDropExcelConfigData> chestDropDataList = new ArrayList<>();
     @Getter private static final Int2ObjectMap<GadgetMapping> gadgetMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<SubfieldMapping> subfieldMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DropSubfieldMapping> dropSubfieldMappingMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<DropTableExcelConfigData> dropTableExcelConfigDataMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<MonsterMapping> monsterMappingMap = new Int2ObjectOpenHashMap<>();
+    @Getter private static final List<MonsterDropExcelConfigData> monsterDropDataList = new ArrayList<>();
     @Getter private static final Int2ObjectMap<ActivityCondGroup> activityCondGroupMap = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<SceneGroupReplacement> groupReplacements = new Int2ObjectOpenHashMap<>();
     @Getter private static final Int2ObjectMap<WeatherMapping> weatherMappingMap = new Int2ObjectOpenHashMap<>();

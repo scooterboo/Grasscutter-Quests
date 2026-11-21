@@ -916,6 +916,20 @@ public class ResourceLoader {
         } catch (Exception e) {
             logger.error("Unable to load drop table config data.", e);
         }
+
+        try {
+            GameData.getMonsterDropDataList().addAll(JsonUtils.loadToList(getResourcePath("Server/MonsterDropExcelConfigData.json"), MonsterDropExcelConfigData.class));
+        } catch (Exception e) {
+            logger.error("Unable to load monster drop table config data.", e);
+        }
+        logger.debug("Loaded monster drop table configs.");
+
+        try {
+            GameData.getChestDropDataList().addAll(JsonUtils.loadToList(getResourcePath("Server/ChestDropExcelConfigData.json"), ChestDropExcelConfigData.class));
+        } catch (Exception e) {
+            logger.error("Unable to load chest drop table config data.", e);
+        }
+        logger.debug("Loaded chest drop table configs.");
     }
 
     private static void loadWeatherMappings() {

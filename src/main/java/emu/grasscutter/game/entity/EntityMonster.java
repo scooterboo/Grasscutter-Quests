@@ -8,6 +8,7 @@ import emu.grasscutter.data.excels.EnvAnimalGatherConfigData;
 import emu.grasscutter.data.excels.MonsterAffixData;
 import emu.grasscutter.data.excels.MonsterCurveData;
 import emu.grasscutter.data.excels.MonsterData;
+import emu.grasscutter.data.server.MonsterDropExcelConfigData;
 import emu.grasscutter.game.ability.AbilityManager;
 import emu.grasscutter.game.dungeons.enums.DungeonPassConditionType;
 import emu.grasscutter.game.entity.create_config.CreateGadgetEntityConfig;
@@ -246,6 +247,15 @@ public class EntityMonster extends GameEntity<CreateMonsterEntityConfig> impleme
         );
     }
 
+    public void dropDropTag(String dropTag) {
+        if (dropTag == null) return;
+
+        GameData.getMonsterDropDataList().stream()
+            .filter(entry -> entry.getDropTag().equals(dropTag) && entry.getLevel() <= this.getLevel())
+            .max(Comparator.comparingInt(MonsterDropExcelConfigData::getLevel))
+            .ifPresent(entry -> this.dropItem(entry.getDropId()));
+    }
+
     @Override
     public void onDeath(int killerId) {
         super.onDeath(killerId); // Invoke super class's onDeath() method.
@@ -262,7 +272,7 @@ public class EntityMonster extends GameEntity<CreateMonsterEntityConfig> impleme
         if (killerId > 0) {
             this.dropItem(this.getMonsterData().getKillDropId());
             this.dropItem(this.getSpawnConfig().getDropId());
-            //TODO: handle dropTag
+            this.dropDropTag(this.getSpawnConfig().getDropTag());
         }
 
         if (scriptManager.isInit() && this.getGroupId() > 0) {
