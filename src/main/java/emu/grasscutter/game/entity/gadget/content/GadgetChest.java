@@ -1,27 +1,38 @@
 package emu.grasscutter.game.entity.gadget.content;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.server.ChestDropExcelConfigData;
 import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.gadget.chest.BossChestInteractHandler;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.server.packet.send.PacketGadgetInteractRsp;
 import lombok.val;
+import org.anime_game_servers.gi_lua.models.constants.ScriptGadgetState;
 import org.anime_game_servers.multi_proto.gi.messages.gadget.GadgetInteractReq;
 import org.anime_game_servers.multi_proto.gi.messages.gadget.InterOpType;
 import org.anime_game_servers.multi_proto.gi.messages.gadget.InteractType;
 import org.anime_game_servers.multi_proto.gi.messages.gadget.ResinCostType;
 import org.anime_game_servers.multi_proto.gi.messages.scene.entity.BossChestInfo;
 import org.anime_game_servers.multi_proto.gi.messages.scene.entity.SceneGadgetInfo;
-import org.anime_game_servers.gi_lua.models.constants.ScriptGadgetState;
-import org.anime_game_servers.gi_lua.models.scene.group.SceneGadget;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 
 public class GadgetChest extends GadgetContent {
 
     public GadgetChest(EntityGadget gadget) {
         super(gadget);
+    }
+
+    public void dropChestDropTag(String dropTag) {
+        if (dropTag == null) return;
+
+        GameData.getChestDropDataList().stream()
+            .filter(entry -> entry.getDropTag().equals(dropTag) && entry.getLevel() <= this.getGadget().getLevel())
+            .max(Comparator.comparingInt(ChestDropExcelConfigData::getLevel))
+            .ifPresent(entry -> this.getGadget().dropUnknownType(entry.getDropId()));
     }
 
     public boolean onInteract(Player player, GadgetInteractReq req) {
@@ -41,7 +52,9 @@ public class GadgetChest extends GadgetContent {
                 success = bossChestInteractHandler.onInteract(this, player,
                     req.getResinCostType() == ResinCostType.RESIN_COST_TYPE_CONDENSE);
             } else {
-                success = handler.onInteract(this, player);
+                this.getGadget().dropUnknownType(this.getGadget().getSpawnConfig().getChestDropId());
+                this.dropChestDropTag(this.getGadget().getSpawnConfig().getDropTag());
+                success = true;
             }
             if (!success) return false;
 

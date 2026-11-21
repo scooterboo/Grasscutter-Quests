@@ -1,6 +1,9 @@
 package emu.grasscutter.game.entity;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.excels.ItemData;
+import emu.grasscutter.data.server.DropTableExcelConfigData;
 import emu.grasscutter.game.ability.Ability;
 import emu.grasscutter.game.ability.AbilityModifierController;
 import emu.grasscutter.game.entity.create_config.CreateEntityConfig;
@@ -279,7 +282,7 @@ public abstract class GameEntity<T extends CreateEntityConfig<?>> {
     }
 
     private int[] parseCountRange(String range) {
-        var split = range.split(";");
+        var split = range.split("[;.]");
         if(split.length == 1) return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[0])};
         return new int[] {Integer.parseInt(split[0]), Integer.parseInt(split[1])};
     }
@@ -287,14 +290,13 @@ public abstract class GameEntity<T extends CreateEntityConfig<?>> {
     public boolean dropSubfieldItem(int dropId) {
         var drop = GameData.getDropSubfieldMappingMap().get(dropId);
         if(drop == null) return false;
-        return dropItem(drop.getItemId());
+        return dropUnknownType(drop.getItemId());
     }
 
-    public boolean dropItem(int dropId) {
-        var dropTableEntry = GameData.getDropTableExcelConfigDataMap().get(dropId);
-        if(dropTableEntry == null) return false;
-
+    public boolean dropDropTableEntry(DropTableExcelConfigData dropTableEntry, int recursionLevel) {
         var dropRandom = getScene().getWorld().getWorldRandomGenerator();
+
+        if (dropTableEntry.getDropVec() == null) return true;
 
         Int2ObjectMap<Integer> itemsToDrop = new Int2ObjectOpenHashMap<>();
         switch(dropTableEntry.getRandomType()) {
@@ -327,16 +329,82 @@ public abstract class GameEntity<T extends CreateEntityConfig<?>> {
         }
 
         for (var entry : itemsToDrop.int2ObjectEntrySet()) {
-            val itemData = GameData.getItemDataMap().get(entry.getIntKey());
-            val createConfig = new CreateGadgetEntityConfig(itemData, entry.getValue())
-                .setBornPos(getPosition().nearby2d(1f).addY(0.5f));
-            EntityItem item = new EntityItem(scene, createConfig);
-
-            scene.addEntity(item);
+            val returnValue = dropUnknownType(entry.getIntKey(), entry.getValue(), recursionLevel);
+            if (!returnValue) return false;
         }
 
         return true;
     }
+
+    public boolean dropItem(ItemData itemData, int count) {
+        try {
+            val createConfig = new CreateGadgetEntityConfig(itemData, count)
+                .setBornPos(getPosition().nearby2d(1f).addY(0.5f));
+            EntityItem item = new EntityItem(scene, createConfig);
+
+            scene.addEntity(item);
+        } catch (Exception e) {
+            Grasscutter.getLogger().error("unable to drop item {}", itemData.getId());
+        }
+        return true;
+    }
+
+    public boolean dropUnknownType(int unknownKey) {
+        return dropUnknownType(unknownKey, 1, 0);
+    }
+
+    public boolean dropUnknownType(int unknownKey, int count, int recursionLevel) {
+        if (unknownKey == 0 || count == 0) return true;
+
+        //Infinite recursion protection
+        if (recursionLevel > 10) {
+            Grasscutter.getLogger().error("Drop system recursed too deeply! Please trace back from id {}", unknownKey);
+            return false;
+        }
+        val nextRecursionLevel = recursionLevel + 1;
+
+        //Attempt at it being an item. This ends the recursion chain.
+        val itemData = GameData.getItemDataMap().get(unknownKey);
+        if (itemData != null) {
+            val returnValue = dropItem(itemData, count);
+            if (!returnValue) {
+                Grasscutter.getLogger().error("Drop system Failure! Please trace back from item id {}", unknownKey);
+                return false;
+            }
+            return true;
+        }
+
+        //Attempt at it being a DropTableEntry
+        val dropTableEntry = GameData.getDropTableExcelConfigDataMap().get(unknownKey);
+        if (dropTableEntry != null) {
+            for (int i = 0; i < count; i++) {
+                val returnValue = dropDropTableEntry(dropTableEntry, nextRecursionLevel);
+                if (!returnValue) {
+                    Grasscutter.getLogger().error("Drop system Failure! Please trace back from dropTable id {}", unknownKey);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Attempt at it being a DropSubTableEntry
+        val dropSubTableEntry = GameData.getDropSubTableExcelConfigDataMap().get(unknownKey);
+        if (dropSubTableEntry != null) {
+            for (int i = 0; i < count; i++) {
+                val returnValue = dropDropTableEntry(dropSubTableEntry, nextRecursionLevel);
+                if (!returnValue) {
+                    Grasscutter.getLogger().error("Drop system Failure! Please trace back from dropSubTable id {}", unknownKey);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Failed to locate key type
+        Grasscutter.getLogger().error("Drop system Failure! Please trace back from unknown drop id {}", unknownKey);
+        return false;
+    }
+
 
     public boolean dropSubfield(String subfieldName) {
         var subfieldMapping = GameData.getSubfieldMappingMap().get(getEntityTypeId());

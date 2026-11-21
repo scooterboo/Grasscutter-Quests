@@ -247,13 +247,13 @@ public class EntityMonster extends GameEntity<CreateMonsterEntityConfig> impleme
         );
     }
 
-    public void dropDropTag(String dropTag) {
+    public void dropMonsterDropTag(String dropTag) {
         if (dropTag == null) return;
 
         GameData.getMonsterDropDataList().stream()
             .filter(entry -> entry.getDropTag().equals(dropTag) && entry.getLevel() <= this.getLevel())
             .max(Comparator.comparingInt(MonsterDropExcelConfigData::getLevel))
-            .ifPresent(entry -> this.dropItem(entry.getDropId()));
+            .ifPresent(entry -> this.dropUnknownType(entry.getDropId()));
     }
 
     @Override
@@ -270,9 +270,9 @@ public class EntityMonster extends GameEntity<CreateMonsterEntityConfig> impleme
 
         //reward drops
         if (killerId > 0) {
-            this.dropItem(this.getMonsterData().getKillDropId());
-            this.dropItem(this.getSpawnConfig().getDropId());
-            this.dropDropTag(this.getSpawnConfig().getDropTag());
+            this.dropUnknownType(this.getMonsterData().getKillDropId());
+            this.dropUnknownType(this.getSpawnConfig().getDropId());
+            this.dropMonsterDropTag(this.getSpawnConfig().getDropTag());
         }
 
         if (scriptManager.isInit() && this.getGroupId() > 0) {

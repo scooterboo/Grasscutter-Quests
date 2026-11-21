@@ -144,6 +144,7 @@ public class ResourceLoader {
         loadScriptData();
         loadGadgetMappings();
         loadSubfieldMappings();
+        loadDropTables();
         loadWeatherMappings();
         loadMonsterMappings();
         loadActivityCondGroups();
@@ -906,30 +907,38 @@ public class ResourceLoader {
         } catch (Exception e) {
             logger.error("Unable to load drop subfield mappings.", e);
         }
+    }
 
+    private static void loadDropTables() {
         try {
             val dropTableExcelConfigDataMap = GameData.getDropTableExcelConfigDataMap();
-            try {
-                JsonUtils.loadToList(getResourcePath("Server/DropTableExcelConfigData.json"), DropTableExcelConfigData.class).forEach(entry -> dropTableExcelConfigDataMap.put(entry.getId(), entry));;
-            } catch (IOException | NullPointerException ignored) {}
+            JsonUtils.loadToList(getResourcePath("Server/DropTableExcelConfigData.json"), DropTableExcelConfigData.class).forEach(entry -> dropTableExcelConfigDataMap.put(entry.getId(), entry));
             logger.debug("Loaded {} drop table configs.", dropTableExcelConfigDataMap.size());
         } catch (Exception e) {
             logger.error("Unable to load drop table config data.", e);
         }
 
         try {
+            val dropSubTableExcelConfigDataMap = GameData.getDropSubTableExcelConfigDataMap();
+            JsonUtils.loadToList(getResourcePath("Server/DropSubTableExcelConfigData.json"), DropTableExcelConfigData.class).forEach(entry -> dropSubTableExcelConfigDataMap.put(entry.getId(), entry));
+            logger.debug("Loaded {} drop sub table configs.", dropSubTableExcelConfigDataMap.size());
+        } catch (Exception e) {
+            logger.error("Unable to load drop sub table config data.", e);
+        }
+
+        try {
             GameData.getMonsterDropDataList().addAll(JsonUtils.loadToList(getResourcePath("Server/MonsterDropExcelConfigData.json"), MonsterDropExcelConfigData.class));
+            logger.debug("Loaded monster drop table configs.");
         } catch (Exception e) {
             logger.error("Unable to load monster drop table config data.", e);
         }
-        logger.debug("Loaded monster drop table configs.");
 
         try {
             GameData.getChestDropDataList().addAll(JsonUtils.loadToList(getResourcePath("Server/ChestDropExcelConfigData.json"), ChestDropExcelConfigData.class));
+            logger.debug("Loaded chest drop table configs.");
         } catch (Exception e) {
             logger.error("Unable to load chest drop table config data.", e);
         }
-        logger.debug("Loaded chest drop table configs.");
     }
 
     private static void loadWeatherMappings() {
